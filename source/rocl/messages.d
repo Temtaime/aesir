@@ -1,0 +1,96 @@
+module rocl.messages;
+
+import
+		std.conv;
+
+
+enum LANGS = [ `en`, `ru` ];
+
+__gshared ubyte LANG = 1;
+
+mixin(
+{
+	string s;
+
+	foreach(i, m; MESSAGES)
+	{
+		s ~= `@property MSG_` ~ m[0] ~ `() { auto arr = MESSAGES[` ~ i.to!string ~ `]; auto k = LANG + 1; return arr.length > k ? arr[k] : arr[1]; }`;
+	}
+
+	return s;
+}
+());
+
+@property lang()
+{
+	return LANGS[LANG];
+}
+
+private:
+
+enum MESSAGES =
+[
+	[ `SETTINGS`, `Settings`, `Настройки` ],
+	[ `SHADOWS`, `Shadows`, `Тени` ],
+	[ `LIGHTING`, `Lighting`, `Освещение` ],
+	[ `RENDER_QUALITY`, `Render quality`, `Качество прорисовки` ],
+	[ `FOG`, `Fog`, `Туман` ],
+	[ `FULLSCREEN`, `Fullscreen`, `Полный экран` ],
+	[ `ANTIALIASING`, `Antialiasing`, `Сглаживание` ],
+	[ `VSYNC`, `V-Sync` ],
+	[ `NO`, `No`, `Нет` ],
+	[ `LOW`, `Low`, `Низко` ],
+	[ `MIDDLE`, `Middle`, `Средне` ],
+	[ `HIGH`, `High`, `Высоко` ],
+	[ `HIGHEST`, `Highest`, `Высочайше` ],
+	[ `DIFFUSE`, `Diffuse`, `Фоновое` ],
+	[ `FULL`, `Full`, `Полное` ],
+
+	[ `CHAR_SELECT`, `Character select`, `Выбор персонажа` ],
+	[ `ENTER`, `Enter`, `Войти` ],
+
+	[ `INVENTORY`, `Inventory`, `Инвентарь` ],
+	[ `WEIGHT`, `weight`, `вес` ],
+	[ `PCS`, `pcs`, `шт.` ],
+
+	[ `NEXT`, `Next`, `Далее` ],
+	[ `CLOSE`, `Close`, `Закрыть` ],
+
+	[ `SKILLS`, `Skills`, `Умения` ],
+	[ `USE`, `Use`, `Использовать` ],
+	[ `LEARN`, `Learn`, `Изучить` ],
+
+	[ `CHARACTER`, `Character`, `Персонаж` ],
+	[ `INV`, `Inv.`, `Инв.` ],
+	[ `EQP`, `Equip`, `Экип.` ],
+	[ `SK`, `Sk.`, `Умен.` ],
+	[ `OPTS`, `Opt.`, `Наст.` ],
+	[ `BASE_LVL`, `Base lvl`, `Баз. ур.` ],
+	[ `JOB_LVL`, `Job lvl`, `Проф. ур.` ],
+
+	[ `EQUIPMENT`, `Equipment`, `Экипировка` ],
+	[ `HEAD`, `Head`, `Голова` ],
+	[ `ARMOR`, `Armor`, `Броня` ],
+	[ `SHOES`, `Shoes`, `Ботинки` ],
+	[ `ROBE`, `Robe`, `Мантия` ],
+	[ `HAND_R`, `Right hand`, `Правая рука` ],
+	[ `HAND_L`, `Left hand`, `Левая рука` ],
+	[ `ACC`, `Accessory`, `Аксессуар` ],
+
+	[ `STORAGE`, `Storage`, `Склад` ],
+	[ `TRADING`, `Trading`, `Торговля` ],
+	[ `BUY`, `Buy`, `Купить` ],
+	[ `SELL`, `Sell`, `Продать` ],
+	[ `BUYING`, `Buying`, `Покупка` ],
+	[ `SELLING`, `Selling`, `Продажа` ],
+	[ `TOTAL`, `Total`, `Всего` ],
+
+	[ `CANCEL`, `Cancel`, `Отмена` ],
+
+	[ `CREATE`, `Create`, `Создать` ],
+	[ `CHAR_CREATION`, `Character creation`, `Создание персонажа` ],
+	[ `HAIR_COLOR`, `Hair color`, `Цвет волос` ],
+	[ `HAIR_STYLE`, `Hair style`, `Причёска` ],
+	[ `CHAR_NAME`, `Character name`, `Имя персонажа` ],
+	//[ ``, ``, `` ],
+];

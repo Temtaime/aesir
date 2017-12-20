@@ -1,0 +1,161 @@
+// ----------------------------------------- STRUCTS -----------------------------------------
+
+CharData <char id>.L <base exp>.L <zeny>.L <job exp>.L <job lvl>.L <waste>.20B <stat points>.W <hp>.L <max hp>.L <sp>.W <max sp>.W <speed>.W <class_>.W <hair style>.W <body_>.W <weapon>.W <base lvl>.W <skill points>.W <head bottom>.W <shield>.W <head top>.W <head middle>.W <hair color>.W <clothes color>.W <name>.24B <str>.B <agi>.B <vit>.B <int_>.B <dex>.B <luk>.B <slot>.W <rename>.W <map>.16B <delete time>.L <robe>.L <char moves>.L <rename2>.L <sex>.B
+
+ServerInfo <ip>.L <port>.W <name>.20B <users count>.W <waste>.132B
+
+Cards <c1>.W <c2>.W <c3>.W <c4>.W
+
+StackableItem <idx>.W <id>.W <type>.B <amount>.W <equip>.L <cards>.Cards <expire time>.L <flags>.B
+
+EquipItem <idx>.W <id>.W <type>.B <equip>.L <equip2>.L <refine>.B <cards>.Cards <expire time>.L <bound>.W <look>.W <random opt>.B <options>.25B <flags>.B
+
+Skill <skill id>.W <type>.L <level>.W <sp cost>.W <attack range>.W <skill name>.24B <upgradable>.B
+Hotkey <is skill>.B <id>.L <count>.W
+
+ItemSell <idx>.W <price>.L <overcharge price>.L
+ItemBuy <price>.L <discount price>.L <type>.B <id>.W
+ToBuy <amount>.W <id>.W
+ToSell <idx>.W <amount>.W
+
+MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
+
+// ----------------------------------------- LOGIN SERVER -----------------------------------------
+
+0064 <version_>.L <username>.24B <password>.24B <client type>.B
+0ac4 <auth code>.L <account id>.L <login id>.L <waste>.30B <gender>.B <waste2>.17B <servers>.ServerInfo? (AC_ACCEPT_LOGIN3)
+
+// ----------------------------------------- CHAR SERVER -----------------------------------------
+
+0065 <account id>.L <auth code>.L <login id>.L <client type>.W <gender>.B
+006b <max slots>.B <availiable slots>.B <premium slots>.B <waste>.20B <chars>.CharData?
+
+0a39 <name>.24B <slot>.B <hair color>.W <hair style>.W <starting job ID>.W <Unknown>.W <sex>.B
+006d <data>.CharData
+006e <code>.B
+
+0066 <idx>.B
+0071 <data>.MapLoginData
+0ac5 <data>.MapLoginData <waste>.128B
+
+// ----------------------------------------- MAP SERVER -----------------------------------------
+
+00bd <stpoint>.W <str>.B <need str>.B <agi>.B <need agi>.B <vit>.B <need vit>.B <int_>.B <need int>.B <dex>.B <need dex>.B <luk>.B <need luk>.B <atk>.W <atk2>.W <matk min>.W <matk max>.W <def>.W <def2>.W <mdef>.W <mdef2>.W <hit>.W <flee>.W <flee2>.W <crit>.W <aspd>.W <aspd2>.W
+
+0923 <account id>.L <char id>.L <auth code>.L <client time>.L <gender>.B (CZ_ENTER2)
+
+0283 <bl>.L
+02eb <start time>.L <position>.3B <x size>.B <y size>.B <font>.W (ZC_ACCEPT_ENTER2)
+
+0081 <error code>.B (SC_NOTIFY_BAN)
+006a <reason>.B <waste>.20B
+007d (CZ_NOTIFY_ACTORINIT)
+
+08a8 <dest>.P (CZ_REQUEST_MOVE2)
+
+09fd <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <tick>.L <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <walk data>.6B <waste>.W <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.B?
+
+09ff <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <position>.3B <waste>.W <dead sit>.B <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.B?
+
+09fe <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <position>.3B <waste>.W <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.B?
+
+0360 <client tick>.L (CZ_REQUEST_TIME2)
+
+080e <account id>.L <hp>.L <max hp>.L (ZC_NOTIFY_HP_TO_GROUPM_R2)
+0131 <owner id>.L <message>.80B (ZC_STORE_ENTRY)
+00b0 <var id>.W <value>.L (ZC_PAR_CHANGE)
+0141 <status id>.L <base status>.L <plus status>.L (ZC_COUPLESTATUS)
+
+0991 <items>.StackableItem?
+0a0d <items>.EquipItem?
+
+00c4 <shop id>.L (ZC_SELECT_DEALTYPE)
+00c5 <id>.L <type>.B (CZ_ACK_SELECT_DEALTYPE)
+00c6 <items>.ItemBuy? (ZC_PC_PURCHASE_ITEMLIST)
+00c7 <items>.ItemSell? (ZC_PC_SELL_ITEMLIST)
+00c8 <items>.ToBuy? (CZ_PC_PURCHASE_ITEMLIST)
+00c9 <items>.ToBuy? (CZ_PC_SELL_ITEMLIST)
+00ca <result>.B (ZC_PC_PURCHASE_RESULT)
+00cb <result>.B (ZC_PC_SELL_RESULT)
+
+0193 (CZ_CLOSE_STORE)
+00f8 (ZC_CLOSE_STORE)
+088c <index>.W <amount>.L (CZ_MOVE_ITEM_FROM_STORE_TO_BODY2)
+08aa <index>.W <amount>.L (CZ_MOVE_ITEM_FROM_BODY_TO_STORE2)
+00f2 <current count>.W <max count>.W (ZC_NOTIFY_STOREITEM_COUNTINFO)
+00f6 <index>.W <amount>.L (ZC_DELETE_ITEM_FROM_STORE)
+0a0a <idx>.W <amount>.L <id>.W <type>.B <flags>.B <attr>.B <refine>.B <cards>.Cards <random opt>.25B (ZC_ADD_ITEM_TO_STORE3)
+0995 <name>.24B <items>.StackableItem?
+0a10 <name>.24B <items>.EquipItem?
+
+010f <skills>.Skill? (ZC_SKILLINFO_LIST)
+0112 <skill id>.W (CZ_UPGRADE_SKILLLEVEL)
+0815 <skill lv>.W <skill id>.W <target id>.L (CZ_USE_SKILL2)
+0817 <skill lv>.W <skill id>.W <x>.W <y>.W (CZ_USE_SKILL_TOGROUND2)
+07fb <src id>.L <dst id>.L <x>.W <y>.W <skill id>.W <property>.L <delaytime>.L <is disposable>.B (ZC_USESKILL_ACK2)
+011a <skill id>.W <skill lv>.W <dst id>.L <src id>.L <result>.B (ZC_USE_SKILL)
+
+01d7 <id>.L <type>.B <value>.L (ZC_SPRITE_CHANGE2)
+
+00bb <status id>.W <amount>.B (CZ_STATUS_CHANGE)
+00be <status id>.W <value>.B (ZC_STATUS_CHANGE)
+00b1 <var id>.W <value>.L (ZC_LONGPAR_CHANGE)
+
+00af <index>.W <amount>.W (ZC_ITEM_THROW_ACK)
+07fa <delete type>.W <index>.W <amount>.W (ZC_DELETE_ITEM_FROM_BODY)
+093b <index>.W <amount>.W (CZ_ITEM_THROW2)
+099a <index>.W <equip location>.L <result>.B (ZC_ACK_TAKEOFF_EQUIP_V5)
+00ab <index>.W (CZ_REQ_TAKEOFF_EQUIP)
+00a9 <index>.W <position>.W (CZ_REQ_WEAR_EQUIP)
+0999 <index>.W <equip location>.L <view id>.W <result>.B (ZC_ACK_WEAR_EQUIP_V5)
+0439 <index>.W <account id>.L (CZ_USE_ITEM2)
+01c8 <index>.W <name id>.W <id>.L <amount>.W <result>.B (ZC_USE_ITEM_ACK2)
+
+0086 <id>.L <walk data>.6B <walk start time>.L (ZC_NOTIFY_PLAYERMOVE)
+0087 <walk start time>.L <walk data>.6B (ZC_NOTIFY_PLAYERMOVE_SELF)
+
+0080 <id>.L <type>.B (ZC_NOTIFY_VANISH)
+0091 <map name>.16B <x>.W <y>.W (ZC_NPCACK_MAPMOVE)
+
+08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3)
+
+00f3 <text>.B?
+00b4 <npc id>.L <message>.B? (ZC_SAY_DIALOG)
+
+00b5 <npc id>.L (ZC_WAIT_DIALOG)
+00b6 <npc id>.L (ZC_CLOSE_DIALOG)
+
+00b7 <npc id>.L <menu items>.B? (ZC_MENU_LIST)
+
+0142 <npc id>.L (ZC_OPEN_EDITDLG)
+01d4 <npc id>.L (ZC_OPEN_EDITDLGSTR)
+
+0090 <npc id>.L <type>.B (CZ_CONTACTNPC)
+00b8 <npc id>.L <choice>.B (CZ_CHOOSE_MENU)
+00b9 <npc id>.L (CZ_REQ_NEXT_SCRIPT)
+0143 <npc id>.L <value>.L (CZ_INPUT_EDITDLG)
+01d5 <npc id>.L <str>.B? (CZ_INPUT_EDITDLGSTR)
+0146 <npc id>.L (CZ_CLOSE_DIALOG_CLIENT)
+
+008d <bl>.L <text>.B? (ZC_NOTIFY_CHAT)
+008e <message>.B? (ZC_NOTIFY_PLAYERCHAT)
+017f <message>.B? (ZC_GUILD_CHAT)
+02c1 <id>.L <color>.L <message>.B? (ZC_NPC_CHAT)
+
+0437 <target id>.L <action>.B (CZ_REQUEST_ACT2)
+
+0964 <id>.L (CZ_ITEM_PICKUP2)
+00a1 <id>.L (ZC_ITEM_DISAPPEAR)
+084b <id>.L <name id>.W <type>.W <identified>.B <x>.W <y>.W <subX>.B <subY>.B <amount>.W (ZC_ITEM_FALL_ENTRY4)
+
+0a37 <idx>.W <amount>.W <id>.W <flags>.B <attr>.B <refine>.B <cards>.Cards <equip>.L <type>.B <result>.B <expire time>.L <bound>.W <random opt>.25B <favorite>.B <look>.W (ZC_ITEM_PICKUP_ACK3)
+
+01f3 <id>.L <effect id>.L (ZC_NOTIFY_EFFECT2)
+0977 <id>.L <HP>.L <maxHP>.L (ZC_HP_INFO)
+01de <skill id>.W <src id>.L <dst id>.L <tick>.L <src delay>.L <dst delay>.L <damage>.L <level>.W <div>.W <type>.B (ZC_NOTIFY_SKILL2)
+09ca <id>.L <creator id>.L <x>.W <y>.W <unit id>.L <range>.B <visible>.B <skill level>.B (ZC_SKILL_ENTRY5)
+0117 <skill id>.W <src id>.L <level>.W <x>.W <y>.W <tick>.L (ZC_NOTIFY_GROUNDSKILL)
+0983 <index>.W <id>.L <state>.B <total msec>.L <remain msec>.L <val>.3L (ZC_MSG_STATE_CHANGE3)
+
+0a00 <rotate>.B <hotkeys>.38Hotkey (ZC_SHORTCUT_KEY_LIST_V3)
+02ba <index>.W <hotkey>.Hotkey (CZ_SHORTCUT_KEY_CHANGE)

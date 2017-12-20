@@ -1,0 +1,57 @@
+{
+	"name": "perfontain",
+	"targetPath": "bin",
+
+	"buildRequirements": [ "silenceDeprecations" ],
+
+	"buildTypes":
+	{
+		"debug":
+		{
+			"versions": [ "AE_ENCRYPTED_NET" ],
+			"buildOptions": [ "debugMode" ],
+		},
+
+		"release":
+		{
+			"dflags": [ "-ffast-math" ],
+			"lflags-linux": [ "-s" ],
+			"buildOptions": [ "optimize", "releaseMode", "noBoundsCheck", "inline" ],
+		},
+	},
+
+	"dependencies":
+	{
+		"pegged": "~master",
+		"tt-utils": "==1.3.5",
+
+		"perfontain:deps": "*",
+	},
+
+	"subPackages":
+	[
+		{
+			"name": "deps",
+
+			"dependencies":
+			{
+				"tt-utils": "==1.3.5",
+			},
+
+			"targetType": "library",
+			"sourcePaths": [ "utils/deps/source" ],
+			"importPaths": [ "utils/deps/source" ],
+		}
+	],
+
+	"importPaths": [ "source" ],
+	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],
+
+	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
+	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "stb_image_x64" ],
+
+	"dflags": [ "-Jbin/data/shader" ],
+
+	"lflags-linux": [ "-Lutils/deps/libs" ],
+	"lflags-windows": [ "/LIBPATH:utils/deps/libs", "/STACK:16777216" ],
+}

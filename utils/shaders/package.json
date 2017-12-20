@@ -1,0 +1,8 @@
+﻿{
+	"name": "gen",
+
+	"dependencies":
+	{
+		"pegged": "~master"
+	}
+}
