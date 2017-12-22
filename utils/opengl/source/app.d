@@ -199,7 +199,7 @@ __gshared extern(System) @nogc nothrow\n{");
 
 	o.writeln("}
 
-private:
+//private:
 
 pragma(inline, false)
 {

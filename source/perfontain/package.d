@@ -322,7 +322,6 @@ package:
 		else
 		{
 			_debugInfo = new GUIQuad(PE.gui.root, colorWhite);
-			_debugInfo.pos = Vector2s(20);
 		}
 
 		string s;
@@ -339,6 +338,8 @@ package:
 
 		_debugInfo.toChildSize;
 		_debugInfo.size.x += 4;
+
+		_debugInfo.pos = Vector2s(window.size.x - _debugInfo.size.x - 20, 20);
 	}
 
 	GUIQuad _debugInfo;
