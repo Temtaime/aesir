@@ -68,7 +68,7 @@ final class WinShop : WinBasic
 		{
 			GUIElement[] arr;
 
-			foreach(u; [ MSG_BUYING, MSG_SELLING ])
+			foreach(u; only(MSG_BUYING, MSG_SELLING))
 			{
 				arr ~= new GUIStaticText(null, u);
 			}

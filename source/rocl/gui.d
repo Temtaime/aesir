@@ -196,6 +196,7 @@ final class GuiManager
 	WinStatus status;
 	WinInventory inv;
 	WinHotkeys hotkeys;
+	WinTrading trading;
 	WinCreation creation;
 	WinSettings settings;
 private:

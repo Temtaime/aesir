@@ -20,6 +20,7 @@ import
 		perfontain.misc.rc,
 
 		tt.error,
+		tt.logger,
 		tt.encoding;
 
 

@@ -58,7 +58,7 @@ void configReport(string e, string v, string r, string g)
 				updateBinary(`videoDriver`, id);
 			}
 		}
-		catch
+		catch(Exception)
 		{}
 	}
 }
@@ -100,7 +100,7 @@ auto send(JSONValue j)
 		auto data = [ `data`: j.toString ];
 		return post(`aesir.perfontain.ru/report.php`, data);
 	}
-	catch
+	catch(Exception)
 	{}
 
 	return null;
@@ -114,7 +114,7 @@ auto openKey()
 	{
 		return key.getKey(`TT AEsir`, REGSAM.KEY_READ | REGSAM.KEY_WRITE);
 	}
-	catch
+	catch(Exception)
 	{
 		return key.createKey(`TT AEsir`);
 	}
@@ -136,7 +136,7 @@ auto queryBinary(string name)
 			return res;
 		}
 	}
-	catch
+	catch(Exception)
 	{}
 
 	return null;

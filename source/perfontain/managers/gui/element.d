@@ -201,7 +201,10 @@ final:
 
 	void deattach()
 	{
-		attach(null);
+		if(isRcAlive)
+		{
+			attach(null);
+		}
 	}
 
 	void attach(GUIElement p)

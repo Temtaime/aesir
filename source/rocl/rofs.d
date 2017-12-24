@@ -43,7 +43,8 @@ protected:
 		{
 			return super.doRead(`tmp/` ~ name, dg);
 		}
-		catch {}
+		catch(Exception)
+		{}
 
 		debug
 		{}

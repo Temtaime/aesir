@@ -236,7 +236,7 @@ private:
 
 	auto calcCost(uint idx, Vector2s p) {
 		p -= _arr[idx].p;
-		return (p.x.abs + p.y.abs) * 10 + _arr[idx].dist;
+		return (int(p.x).abs + int(p.y).abs) * 10 + _arr[idx].dist;
 	}
 
 	struct S {

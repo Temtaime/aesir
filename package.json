@@ -2,8 +2,6 @@
 	"name": "perfontain",
 	"targetPath": "bin",
 
-	"buildRequirements": [ "silenceDeprecations" ],
-
 	"buildTypes":
 	{
 		"debug":
@@ -51,7 +49,7 @@
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
 	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "stb_image_x64" ],
 
-	"dflags": [ "-Jbin/data/shader" ],
+	"dflags": [ "-Jbin/data/shader", "-transition=intpromote" ],
 
 	"lflags-linux": [ "-Lutils/deps/libs" ],
 	"lflags-windows": [ "/LIBPATH:utils/deps/libs", "/STACK:16777216" ],

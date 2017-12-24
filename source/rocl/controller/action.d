@@ -13,6 +13,7 @@ import
 		rocl.status,
 		rocl.network,
 		rocl.controls,
+		rocl.messages,
 		rocl.entity.actor;
 
 
@@ -103,6 +104,25 @@ private:
 
 	bool onButton(ubyte k, bool st)
 	{
+		if(k == MOUSE_RIGHT && !st)
+		{
+			if(auto c = ROent.cur)
+			{
+				if(auto p = cast(Player)c)
+				{
+					if(p is ROent.self/* || ROent.self is null*/)
+					{
+						return false;
+					}
+
+					new MenuPopup;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		if(k != MOUSE_LEFT || !st)
 		{
 			return false;

@@ -46,8 +46,15 @@ class RCounted
 		}
 	}
 
-	final acquire()
+final:
+	bool isRcAlive()
 	{
+		return !!_refs;
+	}
+
+	void acquire()
+	{
+		assert(!_wasFreed);
 		_refs++;
 
 		version(LOG_RC)
@@ -61,7 +68,7 @@ class RCounted
 		}
 	}
 
-	final release()
+	void release()
 	{
 		assert(_refs);
 

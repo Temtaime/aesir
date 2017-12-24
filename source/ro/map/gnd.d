@@ -15,7 +15,8 @@ import
 		ro.grf,
 		ro.map,
 		ro.conf,
-		ro.conv;
+		ro.conv,
+		ro.conv.map;
 
 
 struct GndConverter
@@ -209,7 +210,7 @@ private:
 		{
 			SubMeshInfo sm =
 			{
-				tex: Converter.imageOf(`data/texture/` ~ t)
+				tex: RomConverter.imageOf(`data/texture/` ~ t)
 			};
 
 			with(sm.data)

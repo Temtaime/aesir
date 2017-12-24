@@ -4,7 +4,8 @@ import
 		perfontain;
 
 public import
-				perfontain.managers.gui.select.box;
+				perfontain.managers.gui.select.box,
+				perfontain.managers.gui.select.popup;
 
 
 enum : ubyte

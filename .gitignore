@@ -1,17 +1,17 @@
-.dub
-
 bin/tmp
 bin/data/gui
 bin/data/font
 bin/data/ro.db
 bin/perfontain*
 
+utils/deps
+utils/release-maker
+
+.dub
+
 source/perfontain/opengl/functions.d
 source/perfontain/shader/grammar.d
 source/rocl/network/packets.d
-
-utils/deps
-utils/release-maker
 
 utils/opengl/gen*
 utils/packets/gen*

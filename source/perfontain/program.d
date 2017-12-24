@@ -5,6 +5,7 @@ import
 		std.string,
 		std.traits,
 		std.exception,
+		std.algorithm,
 
 		core.bitop,
 

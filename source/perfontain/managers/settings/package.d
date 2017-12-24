@@ -24,7 +24,8 @@ final class SettingsManager
 		{
 			_st = PEfs.read!Settings(SETTINGS_FILE);
 		}
-		catch {}
+		catch(Exception)
+		{}
 	}
 
 	~this()

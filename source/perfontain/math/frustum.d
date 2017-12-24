@@ -17,7 +17,8 @@ struct FrustumCuller {
 		}
 	}
 
-	const collision()(auto ref in BBox box) {
+	const collision()(auto ref in BBox box)
+	{
 		ubyte c;
 
 		foreach(ref f; _planes) {

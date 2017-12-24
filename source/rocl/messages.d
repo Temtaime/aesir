@@ -92,5 +92,8 @@ enum MESSAGES =
 	[ `HAIR_COLOR`, `Hair color`, `Цвет волос` ],
 	[ `HAIR_STYLE`, `Hair style`, `Причёска` ],
 	[ `CHAR_NAME`, `Character name`, `Имя персонажа` ],
+
+	[ `DEALING`, `Request a deal`, `Запросить сделку` ],
+	[ `DEALING_WITH`, `Trading with`, `Обмен с` ],
 	//[ ``, ``, `` ],
 ];

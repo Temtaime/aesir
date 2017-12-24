@@ -19,6 +19,7 @@ import
 		ro.conv.all,
 		ro.conv.pack,
 		ro.conv.item,
+		ro.conv.effect,
 
 		rocl.rofs;
 
@@ -31,6 +32,8 @@ auto convert(T)(string res, string path, bool delegate() checker = null)
 	{
 	case `aaf`:
 		path = `effect/` ~ path;
+		break;
+
 	default:
 	}
 

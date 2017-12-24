@@ -82,6 +82,18 @@ struct BBox
 			Vector3 range() { return size / 2; }
 			Vector3 offset() { return (min + max) / 2; }
 		}
+
+		auto point(ubyte N)()
+		{
+			Vector3 res;
+
+			foreach(i; 0..3)
+			{
+				res[i] = (N & (2 ^^ i) ? max : min)[i];
+			}
+
+			return res;
+		}
 	}
 
 	Vector3
@@ -89,18 +101,6 @@ struct BBox
 				max = -MAX_VECTOR;
 private:
 	enum MAX_VECTOR = Vector3(1e9);
-
-	const point(ubyte N)()
-	{
-		Vector3 res;
-
-		foreach(i; 0..3)
-		{
-			res[i] = (N & (2 ^^ i) ? max : min)[i];
-		}
-
-		return res;
-	}
 
 	void add(Vector3 p)
 	{

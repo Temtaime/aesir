@@ -5,6 +5,7 @@ import
 		std.conv,
 		std.array,
 		std.regex,
+		std.algorithm,
 
 		perfontain;
 

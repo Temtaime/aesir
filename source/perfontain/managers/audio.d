@@ -49,7 +49,7 @@ final class AudioManager
 			{
 				data = PEfs.get(name);
 			}
-			catch
+			catch(Exception)
 			{
 				log.warning("can't find `%s' audio", name);
 				return;
