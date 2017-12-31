@@ -36,7 +36,7 @@ final class NpcController
 
 		b.onClick =
 		{
-			ROnet.send!Pk00b9(_npc);
+			ROnet.npcNext(_npc);
 
 			_clear = true;
 			win.childs.popBack;
@@ -57,7 +57,7 @@ final class NpcController
 
 				b.onClick =
 				{
-					ROnet.send!Pk0146(_npc);
+					ROnet.npcClose(_npc);
 					remove;
 				};
 			}
@@ -70,7 +70,7 @@ final class NpcController
 
 		w.onSelect = (idx)
 		{
-			ROnet.send!Pk00b8(_npc, idx);
+			ROnet.npcSelect(_npc, idx);
 			w.remove;
 		};
 

@@ -110,10 +110,10 @@ private:
 			{
 				if(auto p = cast(Player)c)
 				{
-					if(p is ROent.self/* || ROent.self is null*/)
+					/*if(p is ROent.self || ROent.self is null)
 					{
 						return false;
-					}
+					}*/
 
 					new MenuPopup;
 					return true;
@@ -197,7 +197,7 @@ private:
 				}
 				else
 				{
-					ROnet.send!Pk08a8(RoPos(p));
+					ROnet.moveTo(RoPos(p));
 					return true;
 				}
 

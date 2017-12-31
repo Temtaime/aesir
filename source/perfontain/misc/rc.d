@@ -54,7 +54,11 @@ final:
 
 	void acquire()
 	{
-		assert(!_wasFreed);
+		debug
+		{
+			assert(!_wasFreed);
+		}
+
 		_refs++;
 
 		version(LOG_RC)

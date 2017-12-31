@@ -95,7 +95,7 @@ final class Mob : Actor
 
 	override bool act()
 	{
-		ROnet.send!Pk0437(bl, 7);
+		ROnet.attackMob(bl);
 		return true;
 	}
 }
@@ -109,7 +109,7 @@ final class Npc : Actor
 
 	override bool act()
 	{
-		ROnet.send!Pk0090(bl, 1);
+		ROnet.talkNpc(bl);
 		return true;
 	}
 

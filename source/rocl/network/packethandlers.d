@@ -118,6 +118,36 @@ mixin template PacketHandlers()
 		send!Pk00c5(s, t);
 	}
 
+	void talkNpc(uint bl)
+	{
+		send!Pk0090(bl, 1);
+	}
+
+	void attackMob(uint bl)
+	{
+		send!Pk0437(bl, 7);
+	}
+
+	void moveTo(RoPos p)
+	{
+		send!Pk08a8(p);
+	}
+
+	void npcNext(uint npc)
+	{
+		send!Pk00b9(npc);
+	}
+
+	void npcSelect(uint npc, int idx) // TODO: TYPES
+	{
+		send!Pk00b8(npc, idx);
+	}
+
+	void npcClose(uint npc)
+	{
+		send!Pk0146(npc);
+	}
+
 	/// ====================================== INCOMING ======================================
 	void onLoginOk(Pk0ac4 p)
 	{

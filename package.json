@@ -6,7 +6,6 @@
 	{
 		"debug":
 		{
-			"versions": [ "AE_ENCRYPTED_NET" ],
 			"buildOptions": [ "debugMode" ],
 		},
 
@@ -49,7 +48,8 @@
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
 	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "stb_image_x64" ],
 
-	"dflags": [ "-Jbin/data/shader", "-transition=intpromote" ],
+	"dflags-dmd": [ "-transition=intpromote" ],
+	"dflags": [ "-Jbin/data/shader" ],
 
 	"lflags-linux": [ "-Lutils/deps/libs" ],
 	"lflags-windows": [ "/LIBPATH:utils/deps/libs", "/STACK:16777216" ],
