@@ -20,7 +20,7 @@
 	"dependencies":
 	{
 		"pegged": "~master",
-		"tt-utils": "==1.3.5",
+		"tt-utils": "==1.3.6",
 
 		"perfontain:deps": "*",
 	},
