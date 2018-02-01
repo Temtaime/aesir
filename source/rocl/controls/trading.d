@@ -21,21 +21,24 @@ class WinTrading : WinBasic2
 	{
 		super(MSG_DEALING_WITH, `trading`);
 
-		auto e = new TradingPart(main);
+		new TradingPart(main);
+		new TradingPart(main);
+
+		dst.moveX(src, POS_ABOVE);
 		/*{
 			auto ok = new Button(this, BTN_PART, `OK`);
 			ok.move(this, POS_MIN, 5, this, POS_MAX, -(WIN_BOTTOM_SZ.y - ok.size.y) / 2);
 		}*/
 
 		main.toChildSize;
-		main.size += Vector2s(4);
+		main.pad(2.Vector2s);
 
 		adjust;
 	}
 
 private:
-	mixin MakeChildRef!(TradingPart, `src`, 0);
-	mixin MakeChildRef!(TradingPart, `dst`, 1);
+	mixin MakeChildRef!(TradingPart, `src`, 1, 0);
+	mixin MakeChildRef!(TradingPart, `dst`, 1, 1);
 }
 
 class TradingPart : GUIElement
@@ -44,7 +47,7 @@ class TradingPart : GUIElement
 	{
 		super(p);
 
-		auto sc = new Scrolled(this, Vector2s(180, 36), 4, SCROLL_ARROW);
+		auto sc = new Scrolled(this, Vector2s(220, 36), 4, SCROLL_ARROW);
 
 		foreach(i; 0..5)
 		{

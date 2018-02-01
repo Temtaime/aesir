@@ -104,7 +104,7 @@ class WinBasic2 : GUIElement
 	{
 		super(PE.gui.root, WIN_MOVEABLE, n);
 
-		new GUIElement(this);
+		new GUIElement(this, WIN_BACKGROUND);
 		top.size.y = WIN_TOP_SZ.y;
 
 		{
@@ -112,12 +112,12 @@ class WinBasic2 : GUIElement
 			e.move(top, POS_MIN, WPOS_START, top, POS_CENTER);
 		}
 
-		new GUIElement(this);
+		new GUIElement(this, WIN_BACKGROUND);
 		main.moveY(top, POS_ABOVE);
 
 		if(bottom)
 		{
-			auto e = new GUIElement(this);
+			auto e = new GUIElement(this, WIN_BACKGROUND);
 			e.size.y = WIN_BOTTOM_SZ.y;
 		}
 	}

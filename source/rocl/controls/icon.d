@@ -32,7 +32,7 @@ class IconSkill : GUIElement
 {
 	this(string res, string path)
 	{
-		super(null);
+		super(null, WIN_BACKGROUND);
 
 		try
 		{

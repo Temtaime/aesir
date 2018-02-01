@@ -365,25 +365,22 @@ package:
 	{
 		p -= pos;
 
-		if(parent && (flags & WIN_BACKGROUND || !visible || p.x < 0 || p.y < 0 || p.x >= size.x || p.y >= size.y))
+		if(visible && p.x >= 0 && p.y >= 0 && p.x < size.x && p.y < size.y)
 		{
-			return null;
-		}
-
-		foreach(c; childs[].retro)
-		{
-			if(auto r = c.winByPos(p))
+			foreach(c; childs[].retro)
 			{
-				return r;
+				if(auto r = c.winByPos(p))
+				{
+					return r;
+				}
+			}
+
+			if(!(flags & WIN_BACKGROUND))
+			{
+				return this;
 			}
 		}
 
-		if(parent)
-		{
-			return this;
-		}
-
-		//assert(this is PEgui.root);
 		return null;
 	}
 
