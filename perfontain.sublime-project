@@ -2,14 +2,8 @@
 	"folders":
 	[
 		{
-			"path": "source"
-		},
-		{
-			"path": "bin/data/shader"
-		},
-		{
-			"path": "utils"
-		},
+			"path": "."
+		}
 	],
 	"build_systems":
 	[

@@ -180,8 +180,11 @@ class GUIEditText : GUIElement
 
 	override void onText(string s)
 	{
-		_text ~= s;
-		update;
+		if(!onChar || onChar(s))
+		{
+			_text ~= s;
+			update;
+		}
 	}
 
 	@property value()
@@ -195,7 +198,9 @@ class GUIEditText : GUIElement
 		update;
 	}
 
-	bool delegate(string) onEnter;
+	bool delegate(string)
+							onChar,
+							onEnter;
 protected:
 	override void onFocus(bool b)
 	{

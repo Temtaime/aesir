@@ -6,6 +6,7 @@ import
 		std.stdio,
 		std.ascii,
  		std.array,
+ 		std.traits,
  		std.typecons,
  		std.string,
  		std.regex,
@@ -48,14 +49,45 @@ enum : ubyte
 	POS_CENTER,
 }
 
+// TODO: MOVE TO ANOTHER PKG
+template MakeChildRef(T, string Name, Idx...)
+{
+	mixin(`inout(T) ` ~ Name ~ `() inout
+	{
+		GUIElement e = cast()this;
+
+		foreach(i; Idx)
+		{
+			if(i >= e.childs.length)
+			{
+				return null;
+			}
+
+			e = e.childs[i];
+		}
+
+		return cast(inout(T))e;
+	}`);
+}
+
 class GUIElement : RCounted
 {
-	this(GUIElement p)
+	this(GUIElement p, ubyte f = 0, string n = null)
 	{
 		if(p)
 		{
 			parent = p;
 			parent.childs ~= this;
+		}
+
+		if(f)
+		{
+			flags = f; // TODO: REMOVE IF
+		}
+
+		if(n)
+		{
+			name = n; // ditto
 		}
 
 		if(name.length)
@@ -121,36 +153,24 @@ class GUIElement : RCounted
 final:
 	auto byHierarchy()
 	{
-		struct S
-		{
-			const empty()
-			{
-				return !_e.parent;
-			}
+		return HierarchyRange!(typeof(this))(this);
+	}
 
-			void popFront()
-			{
-				assert(!empty);
-				_e = _e.parent;
-			}
-
-			inout front()
-			{
-				assert(!empty);
-				return _e;
-			}
-
-		private:
-			GUIElement _e;
-		}
-
-		return S(this);
+	const byHierarchy()
+	{
+		return HierarchyRange!(typeof(this))(cast()this);
 	}
 
 	void toChildSize()
 	{
 		size.x = childs[].map!(a => cast(short)(a.pos.x + a.size.x)).fold!max(short(0));
 		size.y = childs[].map!(a => cast(short)(a.pos.y + a.size.y)).fold!max(short(0));
+	}
+
+	void pad(Vector2s p)
+	{
+		size += p * 2;
+		childs[].each!(a => a.pos += p);
 	}
 
 	void moveX(GUIElement e, ubyte m, int d = 0)
@@ -176,7 +196,7 @@ final:
 
 	const absPos()
 	{
-		return (cast()this).byHierarchy.fold!((a, b) => a + b.pos)(Vector2s.init); // TODO: CAST
+		return byHierarchy.fold!((a, b) => a + b.pos)(Vector2s.init); // TODO: CAST
 	}
 
 	void focus(bool b = true)
@@ -368,6 +388,29 @@ package:
 	}
 
 private:
+	struct HierarchyRange(T)
+	{
+		const empty()
+		{
+			return !_e.parent;
+		}
+
+		void popFront()
+		{
+			assert(!empty);
+			_e = _e.parent;
+		}
+
+		T front()
+		{
+			assert(!empty);
+			return _e;
+		}
+
+	private:
+		GUIElement _e;
+	}
+
 	void moveFunc(string S)(GUIElement e, ubyte q, int d)
 		{
 			auto notParent = e !is parent;

@@ -1,6 +1,9 @@
 module rocl.controls.trading;
 
 import
+		std.conv,
+		std.ascii,
+
 		perfontain,
 
 		ro.conv.gui,
@@ -12,16 +15,27 @@ import
 
 final:
 
-class WinTrading : WinBasic
+class WinTrading : WinBasic2
 {
 	this()
 	{
-		auto e = new TradingPart(this);
-		e.pos = Vector2s(0, WIN_TOP_SZ.y + 2);
+		super(MSG_DEALING_WITH, `trading`);
 
-		name = `trading`;
-		super(Vector2s(360, e.end.y + WIN_BOTTOM_SZ.y + 2), MSG_DEALING_WITH);
+		auto e = new TradingPart(main);
+		/*{
+			auto ok = new Button(this, BTN_PART, `OK`);
+			ok.move(this, POS_MIN, 5, this, POS_MAX, -(WIN_BOTTOM_SZ.y - ok.size.y) / 2);
+		}*/
+
+		main.toChildSize;
+		main.size += Vector2s(4);
+
+		adjust;
 	}
+
+private:
+	mixin MakeChildRef!(TradingPart, `src`, 0);
+	mixin MakeChildRef!(TradingPart, `dst`, 1);
 }
 
 class TradingPart : GUIElement
@@ -38,9 +52,35 @@ class TradingPart : GUIElement
 			sc.add(e, true);
 		}
 
-		auto t = new GUIStaticText(this, `Ƶ`);
-		t.moveY(sc, POS_ABOVE);
+		{
+			auto e = new GUIElement(this);
 
-		size = Vector2s(180, 4 * 36 + t.size.y);
+			auto t = new GUIStaticText(e, `Ƶ`);
+			auto u = new Underlined(e);
+			auto v = new GUIEditText(u);
+
+			v.size.x = 80;
+
+			v.onChar = (a)
+			{
+				if(a.length == 1 && a[0].isDigit)
+				{
+					if(to!long(v.value ~ a) <= int.max)
+					{
+						return true;
+					}
+				}
+
+				return false;
+			};
+
+			u.update;
+			u.moveX(t, POS_ABOVE, 10);
+
+			e.toChildSize;
+			e.move(sc, POS_MIN, 10, sc, POS_ABOVE, 2);
+		}
+
+		toChildSize;
 	}
 }

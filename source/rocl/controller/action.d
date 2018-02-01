@@ -104,7 +104,7 @@ private:
 
 	bool onButton(ubyte k, bool st)
 	{
-		if(k == MOUSE_RIGHT && !st)
+		if(k == MOUSE_RIGHT)
 		{
 			if(auto c = ROent.cur)
 			{
@@ -115,7 +115,11 @@ private:
 						return false;
 					}*/
 
-					new MenuPopup;
+					if(!st)
+					{
+						new MenuPopup;
+					}
+
 					return true;
 				}
 			}
