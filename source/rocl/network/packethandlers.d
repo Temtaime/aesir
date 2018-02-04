@@ -148,6 +148,36 @@ mixin template PacketHandlers()
 		send!Pk0146(npc);
 	}
 
+	void requestTrade(uint bl)
+	{
+		send!Pk00e4(bl);
+	}
+
+	void replyTrade(ubyte r)
+	{
+		send!Pk00e6(r);
+	}
+
+	void tradeItem(ushort idx, uint cnt)
+	{
+		send!Pk00e8(idx, cnt);
+	}
+
+	void tradeAction(byte act)
+	{
+		final switch(act)
+		{
+		case -1:
+			send!Pk00ed;
+			break;
+		case 0:
+			send!Pk00eb;
+			break;
+		case 1:
+			send!Pk00ef;
+		}
+	}
+
 	/// ====================================== INCOMING ======================================
 	void onLoginOk(Pk0ac4 p)
 	{

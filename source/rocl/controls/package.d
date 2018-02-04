@@ -10,6 +10,7 @@ import
 
 		ro.conv.gui,
 
+		rocl,
 		rocl.gui,
 		rocl.game;
 
@@ -183,4 +184,44 @@ protected:
 	mixin MakeChildRef!(GUIElement, `top`, 0);
 	mixin MakeChildRef!(GUIElement, `main`, 1);
 	mixin MakeChildRef!(GUIElement, `bottom`, 2);
+}
+
+final class WinInfo : WinBasic2
+{
+	this(string s, bool withCancel = false)
+	{
+		super(MSG_INFO);
+
+		{
+			auto e = new ScrolledText(main, Vector2s(280, 4), SCROLL_ARROW);
+
+			e.autoBottom = false;
+			e.add(s);
+		}
+
+		main.toChildSize;
+		main.pad(5);
+
+		adjust;
+		center;
+
+		new Button(bottom, BTN_PART, MSG_OK);
+		ok.moveY(bottom, POS_CENTER);
+
+		if(withCancel)
+		{
+			new Button(bottom, BTN_PART, MSG_CANCEL);
+			cancel.move(bottom, POS_MAX, -5, bottom, POS_CENTER);
+
+			ok.moveX(cancel, POS_BELOW, -5);
+		}
+		else
+		{
+			ok.onClick = { remove; };
+			ok.moveX(bottom, POS_MAX, -5);
+		}
+	}
+
+	mixin MakeChildRef!(Button, `ok`, 2, 0);
+	mixin MakeChildRef!(Button, `cancel`, 2, 1);
 }

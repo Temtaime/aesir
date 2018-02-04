@@ -173,6 +173,11 @@ final:
 		childs[].each!(a => a.pos += p);
 	}
 
+	void pad(ushort n)
+	{
+		pad(n.Vector2s);
+	}
+
 	void moveX(GUIElement e, ubyte m, int d = 0)
 	{
 		moveFunc!`x`(e, m, d);
@@ -196,7 +201,7 @@ final:
 
 	const absPos()
 	{
-		return byHierarchy.fold!((a, b) => a + b.pos)(Vector2s.init); // TODO: CAST
+		return byHierarchy.fold!((a, b) => a + b.pos)(Vector2s.init);
 	}
 
 	void focus(bool b = true)

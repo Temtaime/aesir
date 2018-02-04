@@ -85,7 +85,9 @@ enum MESSAGES =
 	[ `SELLING`, `Selling`, `Продажа` ],
 	[ `TOTAL`, `Total`, `Всего` ],
 
+	[ `OK`, `OK` ],
 	[ `CANCEL`, `Cancel`, `Отмена` ],
+	[ `INFO`, `Information`, `Информация` ],
 
 	[ `CREATE`, `Create`, `Создать` ],
 	[ `CHAR_CREATION`, `Character creation`, `Создание персонажа` ],

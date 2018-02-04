@@ -159,3 +159,19 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 
 0a00 <rotate>.B <hotkeys>.38Hotkey (ZC_SHORTCUT_KEY_LIST_V3)
 02ba <index>.W <hotkey>.Hotkey (CZ_SHORTCUT_KEY_CHANGE)
+
+// trading
+
+00ea <index>.W <result>.B (ZC_ACK_ADD_EXCHANGE_ITEM)
+00ec <who>.B (ZC_CONCLUDE_EXCHANGE_ITEM)
+00ee (ZC_CANCEL_EXCHANGE_ITEM)
+00f0 <result>.B (ZC_EXEC_EXCHANGE_ITEM)
+0a09 <nameid>.W <item type>.B <amount>.L <identified>.B <damaged>.B <refine>.B <card1>.W <card2>.W <card3>.W <card4>.W (ZC_ADD_EXCHANGE_ITEM3)
+01f5 <result>.B <charid>.L <baselvl>.W (ZC_ACK_EXCHANGE_ITEM2)
+
+00e4 <account id>.L (CZ_REQ_EXCHANGE_ITEM)
+00e6 <result>.B (CZ_ACK_EXCHANGE_ITEM)
+00e8 <index>.W <amount>.L (CZ_ADD_EXCHANGE_ITEM)
+00eb (CZ_CONCLUDE_EXCHANGE_ITEM)
+00ed (CZ_CANCEL_EXCHANGE_ITEM)
+00ef (CZ_EXEC_EXCHANGE_ITEM)

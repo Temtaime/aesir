@@ -10,6 +10,7 @@ import
 
 		rocl,
 		rocl.game,
+		rocl.status.item,
 		rocl.controls.status.equip;
 
 
@@ -25,15 +26,35 @@ class WinTrading : WinBasic2
 		new TradingPart(main);
 
 		dst.moveX(src, POS_ABOVE);
-		/*{
-			auto ok = new Button(this, BTN_PART, `OK`);
-			ok.move(this, POS_MIN, 5, this, POS_MAX, -(WIN_BOTTOM_SZ.y - ok.size.y) / 2);
-		}*/
 
+		// resize
 		main.toChildSize;
 		main.pad(2.Vector2s);
 
 		adjust;
+
+		{
+			auto e = new Button(bottom, BTN_PART, `OK`);
+			e.move(bottom, POS_MIN, 5, bottom, POS_CENTER);
+		}
+
+		{
+			auto e = new Button(bottom, BTN_PART, `Trade`);
+			e.move(bottom, POS_CENTER, 0, bottom, POS_CENTER);
+		}
+
+		{
+			auto e = new Button(bottom, BTN_PART, `Cancel`);
+			e.move(bottom, POS_MAX, -5, bottom, POS_CENTER);
+		}
+	}
+
+	void add(Item m)
+	{
+		auto sc = src.sc;
+		auto e = new EquipSlot(null, m, sc.elemWidth);
+
+		sc.add(e, true);
 	}
 
 private:
@@ -47,13 +68,7 @@ class TradingPart : GUIElement
 	{
 		super(p);
 
-		auto sc = new Scrolled(this, Vector2s(220, 36), 4, SCROLL_ARROW);
-
-		foreach(i; 0..5)
-		{
-			auto e = new EquipSlot(null, RO.status.items.arr[i], sc.elemWidth);
-			sc.add(e, true);
-		}
+		new Scrolled(this, Vector2s(220, 36), 4, SCROLL_ARROW);
 
 		{
 			auto e = new GUIElement(this);
@@ -86,4 +101,6 @@ class TradingPart : GUIElement
 
 		toChildSize;
 	}
+
+	mixin MakeChildRef!(Scrolled, `sc`, 0);
 }
