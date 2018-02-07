@@ -1,33 +1,38 @@
 module rocl.controls.menu;
 
 import
+		std.array,
+		std.typecons,
+		std.algorithm,
+
 		perfontain,
 
 		rocl,
-		rocl.game;
+		rocl.game,
+		rocl.entity.actor;
 
 
 final class MenuPopup : PopupSelect
 {
-	this()
+	this(Player p)
 	{
-		onSelect = &select;
-
-		GUIElement[] arr =
+		auto arr =
 		[
-			new GUIStaticText(null, MSG_DEALING),
+			tuple(new GUIStaticText(null, MSG_DEALING), () => trade(p))
 		];
 
-		super(arr, Vector2s(-1));
+		onSelect = (a)
+		{
+			arr[a][1]();
+		};
+
+		super(arr.map!(a => cast(GUIElement)a[0]).array, Vector2s(-1));
 	}
 
 private:
-	void select(int idx)
+	void trade(Player p)
 	{
-		final switch(idx)
-		{
-		case 0:
-			ROgui.trading = new WinTrading;
-		}
+		ROnet.requestTrade(p.bl);
+		//ROgui.trading = new WinTrading;
 	}
 }

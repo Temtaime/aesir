@@ -18,6 +18,7 @@ enum
 	ITEM_INVENTORY,
 	ITEM_STORAGE,
 	ITEM_SHOP,
+	ITEM_TRADING,
 }
 
 final class Item : RCounted
@@ -30,6 +31,16 @@ final class Item : RCounted
 		source = ITEM_SHOP;
 
 		price = min(p.price, p.discountPrice);
+	}
+
+	this(ref in Pk0a09 p)
+	{
+		foreach(s; AliasSeq!(`id`, `type`, `amount`, `flags`, `attr`, `refine`, `cards`))
+		{
+			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
+		}
+
+		source = ITEM_TRADING;
 	}
 
 	this(ref in PkEquipItem p)
@@ -149,6 +160,8 @@ final class Item : RCounted
 
 			price;
 
+	short[4] cards;
+
 	short
 			id,
 			idx,
@@ -164,6 +177,7 @@ final class Item : RCounted
 
 	byte
 			type,
+			attr,
 			flags,
 			refine,
 			source;
@@ -176,14 +190,9 @@ final class Item : RCounted
 private:
 	void createFrom(T)(ref in T p)
 	{
-		foreach(s; AliasSeq!(`id`, `idx`, `type`, `flags`))
+		foreach(s; AliasSeq!(`id`, `idx`, `type`, `flags`, `cards`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}
-
-		card = p.cards.c1;
-		card2 = p.cards.c2;
-		card3 = p.cards.c3;
-		card4 = p.cards.c4;
 	}
 }

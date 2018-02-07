@@ -97,5 +97,7 @@ enum MESSAGES =
 
 	[ `DEALING`, `Request a deal`, `Запросить сделку` ],
 	[ `DEALING_WITH`, `Trading with`, `Обмен с` ],
+
+	[ `DEAL_REQUEST`, "Player ^0000ff%s^000000 with level ^ff0000%u^000000 requests a deal.\nAccept?", "Игрок ^0000ff%s^000000 с уровнем ^ff0000%u^000000 запрашивает сделку.\nПринять?" ],
 	//[ ``, ``, `` ],
 ];

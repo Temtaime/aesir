@@ -220,6 +220,8 @@ final class WinInfo : WinBasic2
 			ok.onClick = { remove; };
 			ok.moveX(bottom, POS_MAX, -5);
 		}
+
+		ok.focus;
 	}
 
 	mixin MakeChildRef!(Button, `ok`, 2, 0);

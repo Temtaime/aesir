@@ -117,7 +117,7 @@ private:
 
 					if(!st)
 					{
-						new MenuPopup;
+						new MenuPopup(p);
 					}
 
 					return true;

@@ -148,6 +148,7 @@ mixin template PacketHandlers()
 		send!Pk0146(npc);
 	}
 
+	// TRADING
 	void requestTrade(uint bl)
 	{
 		send!Pk00e4(bl);
@@ -175,6 +176,49 @@ mixin template PacketHandlers()
 			break;
 		case 1:
 			send!Pk00ef;
+		}
+	}
+
+	private
+	{
+		void onTradeItem(Pk0a09 p)
+		{}
+
+		void onTradeAdd(Pk00ea p)
+		{}
+
+		void onTradeReady(Pk00ec p)
+		{}
+
+		void onTradeCancel(Pk00ee p)
+		{}
+
+		void onTradeDone(Pk00f0 p)
+		{}
+
+		void onTradeReply(Pk01f5 p)
+		{
+			if(p.result == 3)
+			{
+				ROgui.trading = new WinTrading;
+			}
+		}
+
+		void onTradeRequested(Pk01f4 p)
+		{
+			auto e = new WinInfo(format(MSG_DEAL_REQUEST, p.nick.charsToString, p.baselvl), true);
+
+			e.ok.onClick =
+			{
+				replyTrade(3);
+				e.remove;
+			};
+
+			e.cancel.onClick =
+			{
+				replyTrade(4);
+				e.remove;
+			};
 		}
 	}
 
