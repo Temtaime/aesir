@@ -182,19 +182,31 @@ mixin template PacketHandlers()
 	private
 	{
 		void onTradeItem(Pk0a09 p)
-		{}
+		{
+			ROgui.trading.items.add(new Item(p));
+		}
 
 		void onTradeAdd(Pk00ea p)
-		{}
+		{
 
-		void onTradeReady(Pk00ec p)
-		{}
+		}
+
+		void onTradeLock(Pk00ec p)
+		{
+			ROgui.trading.lock(!p.who);
+		}
 
 		void onTradeCancel(Pk00ee p)
-		{}
+		{
+			ROgui.trading.remove;
+			ROgui.trading = null;
+		}
 
 		void onTradeDone(Pk00f0 p)
-		{}
+		{
+			ROgui.trading.remove;
+			ROgui.trading = null;
+		}
 
 		void onTradeReply(Pk01f5 p)
 		{

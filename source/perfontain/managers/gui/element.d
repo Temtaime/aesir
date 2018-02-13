@@ -72,7 +72,7 @@ template MakeChildRef(T, string Name, Idx...)
 
 class GUIElement : RCounted
 {
-	this(GUIElement p, ubyte f = 0, string n = null)
+	this(GUIElement p, ubyte f = 0, string n = null, Vector2s sz = Vector2s.init)
 	{
 		if(p)
 		{
@@ -82,12 +82,17 @@ class GUIElement : RCounted
 
 		if(f)
 		{
-			flags = f; // TODO: REMOVE IF
+			flags = f;
 		}
 
 		if(n)
 		{
-			name = n; // ditto
+			name = n;
+		}
+
+		if(sz.x)
+		{
+			size = sz;
 		}
 
 		if(name.length)
@@ -98,7 +103,7 @@ class GUIElement : RCounted
 			{
 				auto u = *v + size;
 
-				if(v.x >= 0 && v.y >= 0 && u.x <= PEwindow._size.x && u.y <= PEwindow._size.y)
+				if(v.x >= 0 && v.y >= 0 && u.x <= PEwindow.size.x && u.y <= PEwindow.size.y)
 				{
 					pos = *v;
 				}

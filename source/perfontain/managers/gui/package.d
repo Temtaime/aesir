@@ -170,8 +170,7 @@ package:
 			{
 				auto arr = childs[];
 
-				arr.remove(arr.countUntil!(a => a is w));
-				arr[$ - 1] = w;
+				swap(arr.find!(a => a is w)[0], arr.back);
 			}
 		}
 

@@ -162,7 +162,7 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 
 01f4 <nick>.24B <charid>.L <baselvl>.W (ZC_REQ_EXCHANGE_ITEM2)
 01f5 <result>.B <charid>.L <baselvl>.W (ZC_ACK_EXCHANGE_ITEM2)
-0a09 <id>.W <type>.B <amount>.L <flags>.B <attr>.B <refine>.B <cards>.4W (ZC_ADD_EXCHANGE_ITEM3)
+0a09 <id>.W <type>.B <amount>.L <flags>.B <attr>.B <refine>.B <cards>.4W <random opt>.25B (ZC_ADD_EXCHANGE_ITEM3)
 00ea <index>.W <result>.B (ZC_ACK_ADD_EXCHANGE_ITEM)
 00ec <who>.B (ZC_CONCLUDE_EXCHANGE_ITEM)
 00ee (ZC_CANCEL_EXCHANGE_ITEM)

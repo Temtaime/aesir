@@ -21,7 +21,7 @@ final class Button : GUIElement
 
 	override void onSubmit()
 	{
-		if(onClick)
+		if(enabled && onClick)
 		{
 			onClick();
 		}
@@ -29,7 +29,7 @@ final class Button : GUIElement
 
 	override void onPress(bool st)
 	{
-		if(onClick && !st && flags & WIN_HAS_MOUSE)
+		if(enabled && onClick && !st && flags & WIN_HAS_MOUSE)
 		{
 			onClick();
 		}
@@ -41,15 +41,15 @@ final class Button : GUIElement
 	{
 		auto n = p + pos;
 
-		doDraw(n, flags & WIN_HAS_MOUSE || _pressed ? _id + 2 : _id);
+		doDraw(n, enabled && (flags & WIN_HAS_MOUSE || _pressed) ? _id + 2 : _id);
 
 		{
-			auto u = &_mhs[_pressed];
-
+			auto u = &_mhs[_pressed && enabled];
 			drawImage(u.h, 0, n + (size - u.sz) / 2, colorBlack, u.sz);
 		}
 	}
 
+	bool enabled = true;
 	void delegate() onClick;
 private:
 	struct S
@@ -69,15 +69,16 @@ private:
 	void doDraw(Vector2s p, uint id) const
 	{
 		auto sz = PE.gui.sizes[id];
+		auto c = enabled ? colorWhite : colorGray;
 
 		// left
-		drawImage(id, p, colorWhite, sz);
+		drawImage(id, p, c, sz);
 
 		// right
-		drawImage(id, p + Vector2s(size.x - sz.x, 0), colorWhite, sz, DRAW_MIRROR_H);
+		drawImage(id, p + Vector2s(size.x - sz.x, 0), c, sz, DRAW_MIRROR_H);
 
 		// spacer
-		drawImage(id + 1, p + Vector2s(sz.x, 0), colorWhite, Vector2s(size.x - sz.x * 2, sz.y), DRAW_MIRROR_H);
+		drawImage(id + 1, p + Vector2s(sz.x, 0), c, Vector2s(size.x - sz.x * 2, sz.y), DRAW_MIRROR_H);
 	}
 
 	S[2] _mhs;

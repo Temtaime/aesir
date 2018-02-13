@@ -154,7 +154,7 @@ class GUIEditText : GUIElement
 			p.x += _w;
 		}
 
-		if(flags & WIN_HAS_INPUT && (PE.tick - _tick) % 1000 < 500)
+		if(enabled && flags & WIN_HAS_INPUT && (PE.tick - _tick) % 1000 < 500)
 		{
 			drawQuad(p, Vector2s(1, size.y), colorBlack);
 		}
@@ -171,7 +171,7 @@ class GUIEditText : GUIElement
 
 	override void onKey(uint k, bool st)
 	{
-		if(k == SDLK_BACKSPACE && st && _text.length)
+		if(enabled && k == SDLK_BACKSPACE && st && _text.length)
 		{
 			_text.popBack;
 			update;
@@ -180,7 +180,7 @@ class GUIEditText : GUIElement
 
 	override void onText(string s)
 	{
-		if(!onChar || onChar(s))
+		if(enabled && (!onChar || onChar(s)))
 		{
 			_text ~= s;
 			update;
@@ -197,6 +197,8 @@ class GUIEditText : GUIElement
 		_text = null;
 		update;
 	}
+
+	bool enabled = true;
 
 	bool delegate(string)
 							onChar,
