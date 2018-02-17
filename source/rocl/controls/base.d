@@ -233,14 +233,6 @@ class Meter : GUIElement
 		size = Vector2s(80, 5);
 	}
 
-	~this()
-	{
-		if(_win)
-		{
-			_win.remove;
-		}
-	}
-
 	override void draw(Vector2s p) const
 	{
 		if(maxValue)
@@ -252,29 +244,11 @@ class Meter : GUIElement
 		}
 	}
 
-	override void onMove()
-	{
-		if(_win)
-		{
-			_win.updatePos;
-		}
-	}
-
 	override void onHover(bool st)
 	{
-		if(!_tip)
+		if(_tip && st)
 		{
-			return;
-		}
-
-		if(st)
-		{
-			_win = new TipPopup(format(` %u / %u `, value, maxValue));
-		}
-		else
-		{
-			_win.remove;
-			_win = null;
+			new TextTooltip(format(`%s / %s`, price(value), price(maxValue)));
 		}
 	}
 
@@ -284,28 +258,4 @@ class Meter : GUIElement
 	void delegate() onUpdate;
 private:
 	bool _tip;
-	TipPopup _win;
-}
-
-class TipPopup : GUIStaticText
-{
-	this(string s)
-	{
-		super(PE.gui.root, s);
-
-		color = colorWhite;
-		flags |= WIN_TOP_MOST;
-	}
-
-	override void draw(Vector2s p) const
-	{
-		drawQuad(p + pos, size, Color(0, 0, 0, 180));
-
-		super.draw(p);
-	}
-
-	void updatePos()
-	{
-		pos = PE.window.mpos - Vector2s(-4, size.y + 4);
-	}
 }

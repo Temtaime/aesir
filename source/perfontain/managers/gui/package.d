@@ -29,7 +29,8 @@ public import
 				perfontain.managers.gui.basic,
 				perfontain.managers.gui.scroll,
 				perfontain.managers.gui.select,
-				perfontain.managers.gui.element;
+				perfontain.managers.gui.element,
+				perfontain.managers.gui.tooltip;
 
 
 final class GUIManager
@@ -47,8 +48,7 @@ final class GUIManager
 		PE.onDoubleClick.permanent(&onDoubleClick);
 
 		// root
-		root = new GUIElement(null, WIN_BACKGROUND);
-		root.size = PE.window.size;
+		root = new GUIElement(null, PE.window.size, WIN_BACKGROUND);
 
 		// misc
 		_moveSub.x = -1;
@@ -78,6 +78,8 @@ final class GUIManager
 		}
 	}
 
+	Signal!(void, GUIElement) onCurrentChanged;
+
 	RC!GUIElement root;
 	RC!MeshHolder holder;
 
@@ -88,7 +90,7 @@ package:
 		if(_cur is e)
 		{
 			_cur.onHover(false);
-			_cur = null;
+			onCurrentChanged(_cur = null);
 		}
 
 		if(_focus)
@@ -212,6 +214,8 @@ private:
 						w.flags &= ~WIN_HAS_MOUSE;
 						w.onHover(false);
 					}
+
+					onCurrentChanged(_cur); // TODO: PLACE
 
 					if(_cur)
 					{

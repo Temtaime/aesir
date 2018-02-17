@@ -32,7 +32,7 @@ class IconSkill : GUIElement
 {
 	this(string res, string path)
 	{
-		super(null, WIN_BACKGROUND);
+		super(null, Vector2s.init, WIN_BACKGROUND);
 
 		try
 		{
@@ -112,6 +112,27 @@ abstract class HotkeyIcon : GUIElement
 				{
 					foreach(z; w.byHierarchy)
 					{
+						if(auto r = cast(WinTrading)z)
+						{
+							if(auto im = cast(ItemIcon)u)
+							{
+								auto q = cast()im.m;// TODO: FIX
+
+								if(q.source == ITEM_INVENTORY)
+								{
+									if(!q.trading)
+									{
+										q.trading = q.amount;
+
+										ROnet.tradeItem(q.idx, q.amount);
+									}
+
+									//q.trade(q.amount);
+									//r.put(cast()q); // todo fix
+								}
+							}
+						}
+
 						if(cast(WinInventory)z)
 						{
 							if(auto im = cast(ItemIcon)u)
@@ -126,6 +147,7 @@ abstract class HotkeyIcon : GUIElement
 
 							break;
 						}
+
 						if(cast(WinStorage)z)
 						{
 							if(auto im = cast(ItemIcon)u)
@@ -140,7 +162,8 @@ abstract class HotkeyIcon : GUIElement
 
 							break;
 						}
-						else if(auto e = cast(WinHotkeys)z)
+
+						if(auto e = cast(WinHotkeys)z)
 						{
 							if(e.add(u))
 							{
@@ -167,10 +190,9 @@ abstract class HotkeyIcon : GUIElement
 
 	void retip()
 	{
-		if(_tip)
+		if(auto s = tip)
 		{
-			_tip.remove;
-			_tip = new TextTip(` ` ~ tip ~ ` `);
+			new TextTooltip(s);
 		}
 	}
 
@@ -186,13 +208,8 @@ abstract class HotkeyIcon : GUIElement
 		{
 			if(auto s = tip)
 			{
-				_tip = new TextTip(` ` ~ s ~ ` `);
+				new TextTooltip(s);
 			}
-		}
-		else if(_tip)
-		{
-			_tip.remove;
-			_tip = null;
 		}
 	}
 
@@ -201,11 +218,6 @@ abstract class HotkeyIcon : GUIElement
 		if(_e)
 		{
 			_e.pos = PE.window.mpos - _e.size / 2;
-		}
-
-		if(_tip)
-		{
-			_tip.pos = PE.window.mpos - Vector2s(-4, _tip.size.y + 4);
 		}
 
 		parent.onMove;
@@ -228,7 +240,6 @@ private:
 	RC!ConnectionPoint _p;
 
 	bool _mouse;
-	GUIElement _tip;
 }
 
 final class SkillIcon : HotkeyIcon
@@ -266,15 +277,18 @@ final class SkillIcon : HotkeyIcon
 
 final class ItemIcon : HotkeyIcon
 {
-	this(GUIElement w, in Item t)
+	this(GUIElement w, Item t)
 	{
-		m = t;
-
 		{
 			auto u = t.data.res;
 
 			super(w, u, itemPath(u));
 		}
+
+		m = t;
+
+		_rm = m.onRemove.add(_ => remove);
+		_rc = m.onCountChanged.add(_ => retip);
 	}
 
 	override string tip()
@@ -311,5 +325,8 @@ final class ItemIcon : HotkeyIcon
 		}
 	}
 
-	const Item m;
+	Item m;
+private:
+	RC!ConnectionPoint _rc;
+	RC!ConnectionPoint _rm;
 }

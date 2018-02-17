@@ -39,17 +39,26 @@ class WinTrading : WinBasic2
 
 			ok.onClick =
 			{
+				{
+					auto v = src.zeny;
+
+					src.zeny(v);
+					ROnet.tradeItem(0, v);
+				}
+
+				ok.enabled = false;
 				ROnet.tradeAction(0);
 			};
 		}
 
 		{
-			new Button(bottom, BTN_PART, `Trade`);
+			new Button(bottom, BTN_PART, MSG_TRADE);
 			trade.move(bottom, POS_CENTER, 0, bottom, POS_CENTER);
 
 			trade.onClick =
 			{
 				ROnet.tradeAction(1);
+				trade.enabled = false;
 			};
 
 			trade.enabled = false;
@@ -62,28 +71,22 @@ class WinTrading : WinBasic2
 			e.onClick =
 			{
 				ROnet.tradeAction(-1);
+				e.enabled = false;
 			};
 		}
 
-		items.onAdded.permanent(&add);
+		itemsSrc.onAdded.permanent(a => add(src.sc, a));
+		itemsDst.onAdded.permanent(a => add(dst.sc, a));
 	}
 
-	void zeny(uint cnt, bool self)
+	void zeny(uint cnt)
 	{
-
+		dst.zeny(cnt);
 	}
 
 	void lock(bool self)
 	{
-		if(self)
-		{
-			//src.lock;
-			ok.enabled = false;
-		}
-		else
-		{
-			//dst.lock();
-		}
+		(self ? src : dst).locked = true;
 
 		if(src.locked && dst.locked)
 		{
@@ -91,13 +94,13 @@ class WinTrading : WinBasic2
 		}
 	}
 
-	Items items;
+	Items
+			itemsSrc,
+			itemsDst;
 private:
-	void add(Item m)
+	void add(Scrolled sc, Item m)
 	{
-		auto sc = dst.sc;
 		auto e = new EquipSlot(null, m, sc.elemWidth);
-
 		sc.add(e, true);
 	}
 
@@ -106,6 +109,8 @@ private:
 
 	mixin MakeChildRef!(Button, `ok`, 2, 0);
 	mixin MakeChildRef!(Button, `trade`, 2, 1);
+
+	RCArray!Item _srcItems;
 }
 
 class TradingPart : GUIElement
@@ -121,10 +126,10 @@ class TradingPart : GUIElement
 			new Underlined(e);
 
 			{
-				auto v = new GUIEditText(und);
+				new GUIEditText(und);
 
-				v.size.x = 80;
-				v.onChar = a => a.length == 1 && a[0].isDigit && to!long(v.value ~ a) <= ROgui.inv.zeny;
+				edit.size.x = 80;
+				edit.onChar = a => a.length == 1 && a[0].isDigit && to!long(edit.value ~ a) <= ROgui.inv.zeny;
 
 				und.update;
 			}
@@ -152,13 +157,26 @@ class TradingPart : GUIElement
 		}
 	}
 
-	void lock(uint z)
+	void zeny(uint z)
 	{
+		und.childs.clear;
+
+		auto e = new GUIStaticText(und, price(z));
+		e.moveY(und, POS_MAX, -1);
 	}
+
+	auto zeny()
+	{
+		auto v = edit.value;
+		return v.length ? edit.value.to!uint : 0;
+	}
+
+	bool locked;
 
 	mixin MakeChildRef!(Scrolled, `sc`, 0);
 private:
-	mixin publicProperty!(bool, `locked`);
+	mixin publicProperty!(uint, `zeny`);
 
 	mixin MakeChildRef!(Underlined, `und`, 1, 0);
+	mixin MakeChildRef!(GUIEditText, `edit`, 1, 0, 0);
 }

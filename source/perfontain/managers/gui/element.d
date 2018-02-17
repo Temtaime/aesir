@@ -72,7 +72,7 @@ template MakeChildRef(T, string Name, Idx...)
 
 class GUIElement : RCounted
 {
-	this(GUIElement p, ubyte f = 0, string n = null, Vector2s sz = Vector2s.init)
+	this(GUIElement p, Vector2s sz = Vector2s.init, ubyte f = 0, string n = null)
 	{
 		if(p)
 		{

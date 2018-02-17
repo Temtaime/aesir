@@ -2,6 +2,7 @@ module perfontain.signals;
 
 import
 		std.array,
+		std.range,
 		std.algorithm,
 
 		perfontain.misc.rc;
@@ -83,6 +84,11 @@ struct Signal(T, A...)
 	void opCall()(A args)
 	{
 		_arr.each!(a => a.f(args));
+	}
+
+	void reverse(A args)
+	{
+		_arr.retro.each!(a => a.f(args));
 	}
 
 private:

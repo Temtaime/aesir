@@ -86,6 +86,7 @@ enum MESSAGES =
 	[ `TOTAL`, `Total`, `Всего` ],
 
 	[ `OK`, `OK` ],
+	[ `TRADE`, `Trade`, `Торг` ],
 	[ `CANCEL`, `Cancel`, `Отмена` ],
 	[ `INFO`, `Information`, `Информация` ],
 

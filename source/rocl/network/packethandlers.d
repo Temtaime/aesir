@@ -183,12 +183,56 @@ mixin template PacketHandlers()
 	{
 		void onTradeItem(Pk0a09 p)
 		{
-			ROgui.trading.items.add(new Item(p));
+			if(p.id)
+			{
+				ROgui.trading.itemsDst.add(new Item(p));
+			}
+			else
+			{
+				ROgui.trading.zeny(p.amount);
+			}
 		}
 
 		void onTradeAdd(Pk00ea p)
 		{
+			if(!p.index)
+			{
+				return; // TODO: ZENY CHECK
+			}
 
+			if(auto e = RO.status.items.getIdx(p.index))
+			{
+				if(auto t = e.trading)
+				{
+					e.trading = 0;
+
+					if(p.result) // TODO LOG
+					{}
+					else
+					{
+						auto d = cast(short)(e.amount - t);
+
+						{
+							auto c = e.clone;
+
+							c.amount = t;
+							c.source = ITEM_TRADING;
+
+							ROgui.trading.itemsSrc.add(c);
+						}
+
+						if(d)
+						{
+							e.reamount(d);
+							e.trading = 0;
+						}
+						else
+						{
+							RO.status.items.remove(e);
+						}
+					}
+				}
+			}
 		}
 
 		void onTradeLock(Pk00ec p)

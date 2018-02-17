@@ -245,8 +245,7 @@ package(perfontain):
 					PE.onMoveDelta(Vector2s(evt.motion.xrel, evt.motion.yrel));
 				}
 
-				PE.onMove(Vector2s(evt.motion.x, evt.motion.y));
-
+				PE.onMove.reverse(Vector2s(evt.motion.x, evt.motion.y));
 				break;
 
 			case SDL_TEXTINPUT:
