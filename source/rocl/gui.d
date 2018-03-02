@@ -24,6 +24,7 @@ import
 		rocl.controls.status,
 		rocl.controls.numbers,
 		rocl.controls.charselect,
+		rocl.controls.hotkeysettings,
 
 		tt.error;
 
@@ -48,6 +49,8 @@ final class GuiManager
 		}
 
 		values = new ValueManager;
+
+		new WinHotkeySettings;
 
 		//PE.onAspect.permanent(&onAspect);
 	}

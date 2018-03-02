@@ -1,7 +1,7 @@
 module perfontain.managers.gui.tab;
 
 import
-		std.array,
+		std.experimental.all,
 
 		perfontain;
 
@@ -9,7 +9,42 @@ public import
 				perfontain.managers.gui.tab.selector;
 
 
-final class TabWindow : GUIElement
+abstract class TabsWindow : GUIElement
+{
+	this(GUIElement p, ubyte n)
+	{
+		super(p);
+
+		foreach(_; 0..n)
+		{
+			new GUIElement(this, Vector2s.init, WIN_HIDDEN);
+		}
+	}
+
+	void adjust()
+	{
+		tabs.each!(a => a.toChildSize);
+		toChildSize;
+	}
+
+	void select(ubyte n)
+	{
+		tabs[_idx].show(false);
+		tabs[_idx = n].show;
+	}
+
+	inout(GUIElement)[] tabs() inout;
+
+	inout tab()
+	{
+		return tabs[_idx];
+	}
+
+protected:
+	mixin publicProperty!(ubyte, `idx`);
+}
+
+final class TabWindow : GUIElement // TODO: MIGRATE
 {
 	this(GUIElement p, ushort w, ushort[] sz, ushort id, short h = -1)
 	{

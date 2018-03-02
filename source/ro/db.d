@@ -60,6 +60,12 @@ final class RoDb
 		return res.length ? res.front[0] : `???`;
 	}
 
+	auto skilldesc(string id)
+	{
+		auto res = query!string(format(`select desc_%s from skills where name = upper(%s);`, lang, escape(id)));
+		return res.length ? res.front[0] : `???`;
+	}
+
 	auto itemOf(ushort id)
 	{
 		if(auto p = id in _items)

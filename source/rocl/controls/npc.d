@@ -109,19 +109,24 @@ class WinNpcSelect : WinNpc
 
 			{
 				auto ds = new DialogSelector;
+				auto ew = w.elemWidth;
 
 				foreach(uint i, s; arr)
 				{
-					auto dg =
+					foreach(ts; toStaticTexts(s, Vector2s(ew, -1)))
 					{
 						auto e = new SelectableItem(null, ds);
+
 						e.idx = i + 1;
+						e.size = Vector2s(ew, PE.fonts.base.height);
 
-						return e;
-					};
+						alias dg = (a)
+						{
+							a.pos.y = 0;
+							a.attach(e);
+						};
 
-					foreach(e; toStaticTexts(colorSplit(s), Vector2s(w.elemWidth, -1), dg))
-					{
+						ts.each!dg;
 						w.add(e, true);
 					}
 				}

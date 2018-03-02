@@ -47,6 +47,9 @@ enum Elements =
 	`INV_TAB_ITEM`,
 	`INV_TAB_EQUIP`,
 	`INV_TAB_ETC`,
+
+	`TOOLTIP_PART`,
+	`TOOLTIP_SPACER`,
 ];
 
 mixin(

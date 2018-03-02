@@ -22,6 +22,7 @@ import
 		rocl.game,
 		rocl.status,
 		rocl.controls,
+		rocl.controls.skills,
 		rocl.controls.status.equip,
 		rocl.controls.status.stats,
 		rocl.controls.status.bonuses,
@@ -188,14 +189,6 @@ abstract class HotkeyIcon : GUIElement
 		}
 	}
 
-	void retip()
-	{
-		if(auto s = tip)
-		{
-			new TextTooltip(s);
-		}
-	}
-
 	override void onHover(bool b)
 	{
 		if(_mouse && !_e && !b)
@@ -206,10 +199,7 @@ abstract class HotkeyIcon : GUIElement
 
 		if(b)
 		{
-			if(auto s = tip)
-			{
-				new TextTooltip(s);
-			}
+			tooltip;
 		}
 	}
 
@@ -231,7 +221,7 @@ abstract class HotkeyIcon : GUIElement
 	void use();
 	void drop() {}
 
-	string tip();
+	void tooltip();
 
 	PkHotkey hotkey();
 	HotkeyIcon clone(GUIElement w);
@@ -261,9 +251,16 @@ final class SkillIcon : HotkeyIcon
 		return PkHotkey(true, sk.id, sk.lvl);
 	}
 
-	override string tip()
+	override void tooltip()
 	{
-		return cast(WinHotkeys)parent ? ROdb.skill(sk.name) : null;
+		if(cast(WinHotkeys)parent)
+		{
+			new TextTooltip(ROdb.skill(sk.name));
+		}
+		else
+		{
+			new BigTooltip(ROdb.skilldesc(sk.name));
+		}
 	}
 
 	override void use()
@@ -288,12 +285,13 @@ final class ItemIcon : HotkeyIcon
 		m = t;
 
 		_rm = m.onRemove.add(_ => remove);
-		_rc = m.onCountChanged.add(_ => retip);
+		_rc = m.onCountChanged.add(_ => tooltip);
 	}
 
-	override string tip()
+	override void tooltip()
 	{
-		return format(`%s%s`, m.data.name, m.amount > 1 ? format(` : %u %s`, m.amount, MSG_PCS) : null);
+		auto s = format(`%s%s`, m.data.name, m.amount > 1 ? format(` : %u %s`, m.amount, MSG_PCS) : null);
+		new TextTooltip(s);
 	}
 
 	override PkHotkey hotkey()

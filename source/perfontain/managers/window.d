@@ -181,14 +181,15 @@ package(perfontain):
 				PE.onWheel.first(sc);
 				break;
 
-			case SDL_KEYDOWN:
-				onKey(evt.key.keysym.sym, true);
-
-				PE.hotkeys.onPress(evt.key.keysym.scancode);
-				break;
-
 			case SDL_KEYUP:
-				onKey(evt.key.keysym.sym, false);
+			case SDL_KEYDOWN:
+				auto r = evt.key.keysym.sym;
+
+				if(!evt.key.repeat || r == SDLK_BACKSPACE)
+				{
+					PE.onKey(r, evt.key.state == SDL_PRESSED);
+				}
+
 				break;
 
 			case SDL_WINDOWEVENT:
@@ -266,10 +267,6 @@ package(perfontain):
 	}
 
 //private:
-	void onKey(SDL_Keycode key, bool pressed)
-	{
-		PE.onKey(key, pressed);
-	}
 
 	const(bool) *keys;
 private:
