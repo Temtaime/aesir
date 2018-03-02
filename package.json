@@ -11,7 +11,7 @@
 
 		"release":
 		{
-			"dflags": [ "-ffast-math" ],
+			"dflags-ldc2": [ "-ffast-math" ],
 			"lflags-linux": [ "-s" ],
 			"buildOptions": [ "optimize", "releaseMode", "noBoundsCheck", "inline" ],
 		},
@@ -46,7 +46,7 @@
 	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],
 
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
-	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "stb_image_x64" ],
+	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "stb_image_x64", "zip_x64" ],
 
 	"dflags-dmd": [ "-transition=intpromote" ],
 	"dflags": [ "-Jbin/data/shader" ],

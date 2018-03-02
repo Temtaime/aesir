@@ -50,7 +50,7 @@ final class GuiManager
 
 		values = new ValueManager;
 
-		new WinHotkeySettings;
+		//new WinHotkeySettings;
 
 		//PE.onAspect.permanent(&onAspect);
 	}
