@@ -51,10 +51,10 @@ class WinBase : WinBasic
 		{
 			auto arr =
 			[
-				tuple(MSG_INV, [ SDL_SCANCODE_LALT, SDL_SCANCODE_E ], () => doShow(ROgui.inv)),
-				tuple(MSG_EQP, [ SDL_SCANCODE_LALT, SDL_SCANCODE_Q ], () => doShow(ROgui.status)),
-				tuple(MSG_SK, [ SDL_SCANCODE_LALT, SDL_SCANCODE_S ], () => doShow(ROgui.skills)),
-				tuple(MSG_OPTS, [ SDL_SCANCODE_LALT, SDL_SCANCODE_O ], () => doShow(ROgui.settings)),
+				tuple(MSG_INV, [ SDLK_LALT, SDLK_e ], () => doShow(ROgui.inv)),
+				tuple(MSG_EQP, [ SDLK_LALT, SDLK_q ], () => doShow(ROgui.status)),
+				tuple(MSG_SK, [ SDLK_LALT, SDLK_s ], () => doShow(ROgui.skills)),
+				tuple(MSG_OPTS, [ SDLK_LALT, SDLK_o ], () => doShow(ROgui.settings)),
 			];
 
 			Button e;
@@ -72,7 +72,7 @@ class WinBase : WinBasic
 					e = b;
 				}
 
-				PE.hotkeys.add(new Hotkey(d, v[1]));
+				PE.hotkeys.add(Hotkey(null, d, cast(uint[])v[1]));
 			}
 
 			foreach(v; childs[$ - arr.length..$])

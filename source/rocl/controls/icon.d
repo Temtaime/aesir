@@ -90,7 +90,7 @@ abstract class HotkeyIcon : GUIElement
 
 	void bind(Hotkey *h)
 	{
-		_p = PE.hotkeys.add(h, false);
+		_p = PE.hotkeys.add(*h, false);
 	}
 
 	override void onPress(bool b)

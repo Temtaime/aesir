@@ -134,11 +134,11 @@ class WinHotkeys : GUIElement
 			{
 				auto z = (q.y - 1) * 9 + q.x;
 
-				h = z >= hotkeys.length ? SDL_SCANCODE_COMMA + z - cast(uint)hotkeys.length : SDL_SCANCODE_A + hotkeys[z] - 'a';
+				h = z >= hotkeys.length ? SDLK_COMMA + z - cast(uint)hotkeys.length : SDLK_a + hotkeys[z] - 'a';
 			}
 			else
 			{
-				h = SDL_SCANCODE_F1 + q.x;
+				h = SDLK_F1 + q.x;
 			}
 
 			auto f =
@@ -149,7 +149,7 @@ class WinHotkeys : GUIElement
 				}
 			};
 
-			w.bind(new Hotkey(f, h));
+			w.bind(new Hotkey(null, f, h));
 		}
 
 		if(p.x < 0)

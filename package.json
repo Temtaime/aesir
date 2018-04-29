@@ -6,14 +6,19 @@
 	{
 		"debug":
 		{
+			"versions": [ "AE_ENCRYPTED_NET" ],
 			"buildOptions": [ "debugMode" ],
+
+			"dflags": [ "-transition=intpromote" ],
 		},
 
 		"release":
 		{
+			"buildOptions": [ "optimize", "releaseMode", "noBoundsCheck", "inline" ],
+
+			"dflags": [ "-transition=intpromote" ],
 			"dflags-ldc2": [ "-ffast-math" ],
 			"lflags-linux": [ "-s" ],
-			"buildOptions": [ "optimize", "releaseMode", "noBoundsCheck", "inline" ],
 		},
 	},
 
@@ -22,35 +27,63 @@
 		"pegged": "~master",
 		"tt-utils": "==1.3.6",
 
+		"perfontain:ro": "*",
 		"perfontain:deps": "*",
+		"perfontain:engine": "*",
 	},
 
 	"subPackages":
 	[
 		{
+			"name": "engine",
+			"targetPath": "libs",
+			"targetType": "library",
+
+			"dependencies":
+			{
+				"pegged": "~master",
+				"tt-utils": "==1.3.6",
+			},
+
+			"sourcePaths": [ "source/perfontain" ],
+			"importPaths": [ "source", "utils/deps/source" ]
+		},
+
+		{
 			"name": "deps",
-			"targetPath": "bin",
+			"targetPath": "libs",
+			"targetType": "library",
 
 			"dependencies":
 			{
 				"tt-utils": "==1.3.6",
 			},
 
+			"sourcePaths": [ "utils/deps/source" ]
+		},
+
+		{
+			"name": "ro",
+			"targetPath": "libs",
 			"targetType": "library",
-			"sourcePaths": [ "utils/deps/source" ],
-			"importPaths": [ "utils/deps/source" ],
+
+			"dependencies":
+			{
+				"pegged": "~master",
+				"tt-utils": "==1.3.6",
+			},
+
+			"sourcePaths": [ "source/ro" ],
+			"importPaths": [ "source", "utils/deps/source" ]
 		}
 	],
 
-	"importPaths": [ "source" ],
+	"sourcePaths": [ "source/rocl" ],
 	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],
 
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
 	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "stb_image_x64", "zip_x64" ],
 
-	"dflags-dmd": [ "-transition=intpromote" ],
-	"dflags": [ "-Jbin/data/shader" ],
-
 	"lflags-linux": [ "-Lutils/deps/libs" ],
-	"lflags-windows": [ "/LIBPATH:utils/deps/libs", "/STACK:16777216" ],
+	"lflags-windows": [ "/LIBPATH:utils/deps/libs" ],
 }

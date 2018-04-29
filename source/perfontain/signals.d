@@ -71,6 +71,14 @@ struct Signal(T, A...)
 				if(s.f(args)) break;
 			}
 		}
+
+		void last(A args)
+		{
+			foreach_reverse(s; _arr)
+			{
+				if(s.f(args)) break;
+			}
+		}
 	}
 
 	void latest(A args)

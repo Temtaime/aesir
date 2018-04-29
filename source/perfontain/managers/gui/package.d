@@ -294,20 +294,24 @@ private:
 		return false;
 	}
 
-	void onKey(uint k, bool st)
+	bool onKey(uint k, bool st)
 	{
 		if(k == SDLK_RETURN || k == SDLK_KP_ENTER)
 		{
 			if(!st && _focus)
 			{
 				_focus.onSubmit;
+				return true;
 			}
 		}
 		else if(_inp)
 		{
 			_inp.focus;
 			_inp.onKey(k, st);
+			return true;
 		}
+
+		return false;
 	}
 
 	void focus(GUIElement e, bool b)

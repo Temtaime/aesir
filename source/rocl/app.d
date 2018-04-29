@@ -29,14 +29,6 @@ void main(string[] args)
 {
 	SetConsoleOutputCP(65001);
 
-	version(linux)
-	{
-		enum N = 16777216;
-		static immutable r = rlimit(N, N);
-
-		!setrlimit(RLIMIT_STACK, &r) || throwError(`can't set stack size`);
-	}
-
 	PEfs = new RoFileSystem;
 
 	PE.doInit;

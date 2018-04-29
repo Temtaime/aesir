@@ -239,50 +239,27 @@ private:
 
 class GUIStaticText : GUIElement
 {
-	this(GUIElement p, string text, ubyte font = 0, Font f = null)
+	this(GUIElement p, string text, ubyte font = 0, Font f = null, short maxWidth = short.max)
 	{
-		super(p);
-
-		_font = font;
-		_text = text;
-		_f = f ? f : PE.fonts.base;
-
-		flags = WIN_BACKGROUND;
-		create;
-	}
-
-	override void onShow(bool b)
-	{
-		if(b)
+		if(!f)
 		{
-			create;
-		}
-		else
-		{
-			_ob = null;
+			f = PE.fonts.base;
 		}
 
-		//log(`text %s - %s`, b, _text);
+		auto arr = f.toLines(text, maxWidth, 1, font);
+
+		auto r = PEobjs.makeHolder(f.render(arr[0], font));
+		_mh = r[0];
+
+		super(p, r[1], WIN_BACKGROUND);
 	}
 
 	override void draw(Vector2s p) const
 	{
-		drawImage(_ob, 0, p + pos, color);
+		drawImage(_mh, 0, p + pos, color);
 	}
 
 	Color color = colorBlack;
 private:
-	void create()
-	{
-		auto v = PEobjs.makeHolder(_f.render(_text, _font));
-
-		_ob = v[0];
-		size = v[1];
-	}
-
-	RC!Font _f;
-	RC!MeshHolder _ob;
-
-	ubyte _font;
-	string _text;
+	RC!MeshHolder _mh;
 }

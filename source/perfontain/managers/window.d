@@ -187,7 +187,7 @@ package(perfontain):
 
 				if(!evt.key.repeat || r == SDLK_BACKSPACE)
 				{
-					PE.onKey(r, evt.key.state == SDL_PRESSED);
+					PE.onKey.last(r, evt.key.state == SDL_PRESSED);
 				}
 
 				break;

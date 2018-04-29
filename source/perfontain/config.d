@@ -25,7 +25,7 @@ enum
 
 	// misc
 	LOG_FILE = `perfontain.log`,
-	SETTINGS_FILE = `settings.psf`,
+	SETTINGS_FILE = `settings.json`,
 }
 
 static immutable

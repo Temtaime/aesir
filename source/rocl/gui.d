@@ -50,7 +50,11 @@ final class GuiManager
 
 		values = new ValueManager;
 
-		//new WinHotkeySettings;
+		new WinHotkeySettings;
+
+		{
+
+		}
 
 		//PE.onAspect.permanent(&onAspect);
 	}
@@ -83,7 +87,7 @@ final class GuiManager
 
 			// TODO: REMOVE
 			{
-				PE.hotkeys.add(new Hotkey({ hotkeys.show(!hotkeys.visible); }, SDL_SCANCODE_F12));
+				PE.hotkeys.add(Hotkey(null, { hotkeys.show(!hotkeys.visible); }, SDLK_F12));
 			}
 
 			//chat.focus; // TODO: MAKE ONSUBMIT RETURN BOOL AND SEARCH FOR INPUT WINDOW

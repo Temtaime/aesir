@@ -20,14 +20,23 @@ class WinHotkeySettings : WinBasic2
 
 		foreach(i, u; e.tabs)
 		{
-			//new GUIStaticText(u, i.to!string);
-			foreach(k; 0..10)
+			if(i < 2)
 			{
-				auto r = new HotkeySelector(u, `My super action`);
+				foreach(k; 0..18)
+				{
+					auto n = format(`hk_%u`, i * 18 + k);
+					auto r = new HotkeySelector(u, n, format(`Hotkey %u-%u`, i * 2 + k / 9 + 1, k % 9 + 1));
 
-				r.pos.y = cast(short)(r.size.y * k + 4);
+					r.pos = Vector2s(k >= 9 ? r.size.x + 10 : 0, r.size.y * (k % 9) + 4);
+					//r.pos.y = cast(short)(r.size.y * k + 4);
+				}
 			}
-
+			else
+			{
+				static immutable acts =
+				[
+				];
+			}
 		}
 
 		e.adjust;
@@ -37,22 +46,22 @@ class WinHotkeySettings : WinBasic2
 
 		adjust;
 		center;
+	}
 
-		//PE.onKey.permanent((a, b) { SDL_GetKeyName(a).fromStringz.writeln; });
+	~this()
+	{
+		childs.clear;
 	}
 }
 
 class HotkeySelector : GUIElement
 {
-	this(GUIElement p, string n)
+	this(GUIElement p, string n, string text)
 	{
 		super(p);
 
-		auto t = new GUIStaticText(this, n);
-
 		{
-			auto f = PE.fonts.base;
-			auto w = 120;//f.widthOf(`SHIFT+CTRL+Z`);
+			auto t = new GUIStaticText(this, text);
 
 			new class Underlined
 			{
@@ -80,12 +89,26 @@ class HotkeySelector : GUIElement
 				}
 			};
 
-			und.size = Vector2s(w + 8, f.height + 1);
+			und.size = Vector2s(120, PE.fonts.base.height + 1);
 			und.moveX(t, POS_ABOVE, 4);
 		}
 
+		{
+			_name = n;
+
+			if(auto arr = n in PE.settings.hotkeys)
+			{
+				_keys = *arr;
+			}
+		}
+
 		toChildSize;
-		makeText(`none`);
+		makeText;
+	}
+
+	~this()
+	{
+		PE.settings.hotkeys[_name] = _keys;
 	}
 
 private:
@@ -103,27 +126,41 @@ private:
 		else
 		{
 			_cp = null;
+
+			if(!_keys.length)
+			{
+				makeText;
+			}
+
+			PE.hotkeys.update(_name, _keys);
 		}
 	}
 
-	void processKey(uint k, bool st)
+	bool processKey(uint k, bool st)
 	{
-		if(st && k != SDLK_ESCAPE)
+		if(st && k != SDLK_ESCAPE && _keys.all!(a => specials.canFind(a)))
 		{
 			_keys ~= k;
-			makeText(_keys.map!(a => nameOf(a)).join(`+`));
+			makeText();
 		}
 		else
 		{
 			record(false);
 		}
+
+		return true;
+	}
+
+	void makeText()
+	{
+		makeText(_keys ? _keys.map!(a => nameOf(a)).join(`+`) : `none`);
 	}
 
 	void makeText(string s)
 	{
 		und.childs.clear;
 
-		auto e = new GUIStaticText(und, s);
+		auto e = new GUIStaticText(und, s, 0, null, und.size.x);
 		e.moveX(und, POS_CENTER);
 	}
 
@@ -132,6 +169,18 @@ private:
 		return cast(string)SDL_GetKeyName(k).fromStringz;
 	}
 
+	static immutable specials =
+	[
+		SDLK_LALT,
+		SDLK_LCTRL,
+		SDLK_LSHIFT,
+
+		SDLK_RALT,
+		SDLK_RCTRL,
+		SDLK_RSHIFT,
+	];
+
 	uint[] _keys;
+	const string _name;
 	RC!ConnectionPoint _cp;
 }

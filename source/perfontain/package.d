@@ -201,7 +201,6 @@ final class Engine
 		}
 
 		_run = true;
-		glEnable(GL_DEPTH_TEST);
 
 		ctors;
 		triggerAspect;
@@ -213,8 +212,12 @@ final class Engine
 	{
 		while(processWork)
 		{
+			glEnable(GL_DEPTH_TEST);
+
 			shadows.process;
 			scene.draw;
+
+			glDisable(GL_DEPTH_TEST);
 			gui.draw;
 
 			PEwindow.swapBuffers;
@@ -249,7 +252,7 @@ final class Engine
 	Signal!(bool, ubyte) onDoubleClick;
 	Signal!(bool, Vector2s) onWheel;
 
-	Signal!(void, uint, bool) onKey;
+	Signal!(bool, uint, bool) onKey;
 package:
 	mixin createCtorsDtors!(fs, settings, window, render, shadows, _samplers, _state, audio, timers, textures, scene, fonts, _objs, gui, hotkeys);
 
@@ -292,7 +295,7 @@ package:
 
 				//window.title = format(`Perfontain Engine: %u fps`, _fpsCount);
 
-				debug
+				//debug
 				{
 					showDebug;
 				}

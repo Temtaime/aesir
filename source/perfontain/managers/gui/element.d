@@ -33,7 +33,6 @@ enum : ubyte
 	WIN_MOVEABLE		= 4,
 	WIN_BACKGROUND		= 8,
 	WIN_HIDDEN			= 16,
-	WIN_CASCADE_SHOW	= 32, // TODO: GET RID
 	WIN_HAS_INPUT		= 64,
 	WIN_TOP_MOST		= 128,
 }
@@ -99,13 +98,14 @@ class GUIElement : RCounted
 		{
 			pos.x = -1;
 
-			if(auto v = name in PE.settings.wins)
+			if(auto w = name in PE.settings.wins)
 			{
-				auto u = *v + size;
+				auto v = w.pos;
+				auto u = v + size;
 
 				if(v.x >= 0 && v.y >= 0 && u.x <= PEwindow.size.x && u.y <= PEwindow.size.y)
 				{
-					pos = *v;
+					pos = v;
 				}
 			}
 		}
@@ -115,7 +115,7 @@ class GUIElement : RCounted
 	{
 		if(name.length)
 		{
-			PE.settings.wins[name] = pos;
+			PE.settings.wins[name] = WindowData(pos);
 		}
 
 		PE.gui.onDie(this);
@@ -262,13 +262,7 @@ final:
 			return;
 		}
 
-		onShow(b);
 		byFlag(flags, WIN_HIDDEN, !b);
-
-		if(flags & WIN_CASCADE_SHOW)
-		{
-			childs[].each!(a => a.show(b));
-		}
 	}
 
 	/// flags
