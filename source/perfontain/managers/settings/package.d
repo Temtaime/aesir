@@ -50,19 +50,19 @@ final class SettingsManager
 
 				_st.wins[idx] = data;
 			}
+
+			foreach(k, arr; j[`hotkeys`].object)
+			{
+				auto e = arr.array.map!(a => cast(uint)a.integer.ifThrown(0)).array;
+
+				if(k.length && e.all)
+				{
+					_st.hotkeys[k] = e;
+				}
+			}
 		}
 		catch(Exception)
 		{}
-
-		foreach(k, arr; j[`hotkeys`].object)
-		{
-			auto e = arr.array.map!(a => cast(uint)a.integer.ifThrown(0)).array;
-
-			if(k.length && e.all)
-			{
-				_st.hotkeys[k] = e;
-			}
-		}
 	}
 
 	void disableUnsupported()
