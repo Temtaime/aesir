@@ -72,7 +72,7 @@ class WinBase : WinBasic
 					e = b;
 				}
 
-				PE.hotkeys.add(Hotkey(null, d, cast(uint[])v[1]));
+				//PE.hotkeys.add(Hotkey(null, d, cast(uint[])v[1]));
 			}
 
 			foreach(v; childs[$ - arr.length..$])

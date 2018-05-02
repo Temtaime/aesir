@@ -101,9 +101,6 @@ class WindowManager
 		}
 
 		SDL_StopTextInput();
-		keys = cast(bool *)SDL_GetKeyboardState(null);
-
-		// events
 		onVSync(PE.settings.vsync);
 
 		PE.settings.vsyncChange.permanent(&onVSync);
@@ -120,7 +117,7 @@ class WindowManager
 
 	@property cursor(bool v)
 	{
-		!SDL_SetRelativeMouseMode(!v) || throwSDLError;
+		//!SDL_SetRelativeMouseMode(!v) || throwSDLError;
 	}
 
 	@property title(string s)
@@ -187,7 +184,18 @@ package(perfontain):
 
 				if(!evt.key.repeat || r == SDLK_BACKSPACE)
 				{
-					PE.onKey.last(r, evt.key.state == SDL_PRESSED);
+					auto st = evt.key.state == SDL_PRESSED;
+
+					if(st)
+					{
+						_keys ~= r;
+					}
+					else
+					{
+						_keys = _keys.remove(_keys.countUntil(r));
+					}
+
+					PE.onKey.last(r, st);
 				}
 
 				break;
@@ -223,7 +231,7 @@ package(perfontain):
 					SDL_BUTTON_RIGHT: MOUSE_RIGHT
 				];
 
-				auto t = map[evt.button.button];
+				auto t = map[cast(SDL_D_MouseButton)evt.button.button]; // TODO: REPORT DERELICT
 				auto b = evt.button.state == SDL_PRESSED;
 
 				if(!b && evt.button.clicks == 2)
@@ -266,10 +274,9 @@ package(perfontain):
 		}
 	}
 
-//private:
-
-	const(bool) *keys;
 private:
+	mixin publicProperty!(uint[], `keys`);
+
 	void onVSync(bool v)
 	{
 		//if(!v || SDL_GL_SetSwapInterval(-1))

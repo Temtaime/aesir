@@ -50,11 +50,35 @@ final class GuiManager
 
 		values = new ValueManager;
 
-		new WinHotkeySettings;
-
 		{
+			foreach(i; 0..36)
+			{
+				auto dg =
+				{
+					uint idx = i, k;
 
+					if(idx > 8)
+					{
+						auto n = idx - 9;
+						auto hotkeys = `qwertyuioasdfghjklzxcvbnm`;
+
+						k = n >= hotkeys.length
+												? [ SDLK_COMMA, /*SDLK_PERIOD*/46 ][n - hotkeys.length]
+												: SDLK_a + hotkeys[n] - 'a';
+					}
+					else
+					{
+						k = SDLK_F1 + idx;
+					}
+
+					PE.hotkeys.add(Hotkey(format(`hk_%u`, idx), { idx.log; }, cast(SDL_Keycode)k));
+				};
+
+				dg();
+			}
 		}
+
+		new WinHotkeySettings;
 
 		//PE.onAspect.permanent(&onAspect);
 	}

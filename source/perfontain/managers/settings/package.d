@@ -41,24 +41,14 @@ final class SettingsManager
 
 		try
 		{
-			foreach(idx, w; j[`wins`].object)
+			foreach(name, w; j[`wins`].object)
 			{
-				WindowData data;
-
-				data.pos = Vector2s(w[`x`].integer.ifThrown(0),
-									w[`y`].integer.ifThrown(0));
-
-				_st.wins[idx] = data;
+				collectException(_st.wins[name] = WindowData(Vector2s(w[`x`].integer, w[`y`].integer)));
 			}
 
-			foreach(k, arr; j[`hotkeys`].object)
+			foreach(name, arr; j[`hotkeys`].object)
 			{
-				auto e = arr.array.map!(a => cast(uint)a.integer.ifThrown(0)).array;
-
-				if(k.length && e.all)
-				{
-					_st.hotkeys[k] = e;
-				}
+				collectException(_st.hotkeys[name] = arr.array.map!(a => cast(SDL_Keycode)a.integer).array);
 			}
 		}
 		catch(Exception)

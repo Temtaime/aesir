@@ -294,7 +294,7 @@ private:
 		return false;
 	}
 
-	bool onKey(uint k, bool st)
+	bool onKey(SDL_Keycode k, bool st)
 	{
 		if(k == SDLK_RETURN || k == SDLK_KP_ENTER)
 		{

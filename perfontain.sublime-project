@@ -26,6 +26,11 @@
 					"shell_cmd": "dub run"
 				},
 				{
+					"name": "debug info",
+					"working_dir": "$project_path",
+					"shell_cmd": "dub build --arch=x86_64 --build=debugWithInfo"
+				},
+				{
 					"name": "release",
 					"working_dir": "$project_path",
 					"shell_cmd": "dub build --arch=x86_64 --build=release --compiler=ldc2"

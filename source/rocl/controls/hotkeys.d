@@ -149,7 +149,7 @@ class WinHotkeys : GUIElement
 				}
 			};
 
-			w.bind(new Hotkey(null, f, h));
+			//w.bind(new Hotkey(null, f, h));
 		}
 
 		if(p.x < 0)

@@ -136,7 +136,7 @@ private:
 		}
 	}
 
-	bool processKey(uint k, bool st)
+	bool processKey(SDL_Keycode k, bool st)
 	{
 		if(st && k != SDLK_ESCAPE && _keys.all!(a => specials.canFind(a)))
 		{
@@ -164,7 +164,7 @@ private:
 		e.moveX(und, POS_CENTER);
 	}
 
-	static nameOf(uint k)
+	static nameOf(SDL_Keycode k)
 	{
 		return cast(string)SDL_GetKeyName(k).fromStringz;
 	}
@@ -180,7 +180,7 @@ private:
 		SDLK_RSHIFT,
 	];
 
-	uint[] _keys;
+	SDL_Keycode[] _keys;
 	const string _name;
 	RC!ConnectionPoint _cp;
 }

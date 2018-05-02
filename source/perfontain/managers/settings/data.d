@@ -31,8 +31,8 @@ struct WindowData
 
 struct Settings
 {
-	uint[][string] hotkeys;
 	WindowData[string] wins;
+	SDL_Keycode[][string] hotkeys;
 
 	ubyte
 			lights = LIGHTS_GLOBAL,

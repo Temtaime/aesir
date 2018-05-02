@@ -13,13 +13,12 @@ final class HotkeyManager
 		PE.onKey.permanent(&onKey);
 	}
 
-	void update(string name, uint[] keys...)
+	void update(string name, SDL_Keycode[] keys...)
 	{
 		auto e = _arr.find!(a => a.name == name);
 		e.length || throwError(`trying to update unknown hotkey: %s`, name);
 
-		e[0].keys = keys;
-		PE.settings.hotkeys[name] = keys;
+		PE.settings.hotkeys[name] = e[0].keys = keys.dup;
 	}
 
 	auto add(Hotkey h, bool permanent = true)
@@ -43,14 +42,17 @@ final class HotkeyManager
 	}
 
 private:
-	bool onKey(uint k, bool st)
+	bool onKey(SDL_Keycode k, bool st)
 	{
-		foreach(h; _arr.filter!(a => a.keys.canFind(k)))
+		if(st)
 		{
-			if(h.keys.all!(a => PE.window.keys[SDL_GetScancodeFromKey(a)])) // TODO: REMAKE
+			foreach(h; _arr)
 			{
-				h.dg();
-				return true;
+				if(h.keys.isPermutation(PE.window.keys))
+				{
+					h.dg();
+					return true;
+				}
 			}
 		}
 
@@ -62,18 +64,14 @@ private:
 
 struct Hotkey
 {
-	this(string n, void delegate() f, uint[] ks...)
+	this(string n, void delegate() f, SDL_Keycode[] ks...)
 	{
-		name = n;
 		dg = f;
+		name = n;
 		keys = ks.dup;
 	}
 
-	const
-	{
-		string name;
-		void delegate() dg;
-	}
-
-	uint[] keys;
+	string name;
+	void delegate() dg;
+	SDL_Keycode[] keys;
 }

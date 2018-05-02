@@ -12,6 +12,14 @@
 			"dflags": [ "-transition=intpromote" ],
 		},
 
+		"debugWithInfo":
+		{
+			"versions": [ "AE_ENCRYPTED_NET" ],
+			"buildOptions": [ "debugMode", "debugInfo" ],
+
+			"dflags": [ "-transition=intpromote" ],
+		},
+
 		"release":
 		{
 			"buildOptions": [ "optimize", "releaseMode", "noBoundsCheck", "inline" ],
@@ -26,10 +34,16 @@
 	{
 		"pegged": "~master",
 		"tt-utils": "==1.3.6",
+		"derelict-sdl2": ">=3.1.0-alpha.3",
 
 		"perfontain:ro": "*",
 		"perfontain:deps": "*",
 		"perfontain:engine": "*",
+	},
+
+	"subConfigurations":
+	{
+		"derelict-sdl2": "derelict-sdl2-static"
 	},
 
 	"subPackages":
@@ -43,6 +57,7 @@
 			{
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
+				"derelict-sdl2": ">=3.1.0-alpha.3",
 			},
 
 			"sourcePaths": [ "source/perfontain" ],
@@ -71,12 +86,15 @@
 			{
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
+				"derelict-sdl2": ">=3.1.0-alpha.3",
 			},
 
 			"sourcePaths": [ "source/ro" ],
 			"importPaths": [ "source", "utils/deps/source" ]
 		}
 	],
+
+	"versions": [ "Derelict_Static" ],
 
 	"sourcePaths": [ "source/rocl" ],
 	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],

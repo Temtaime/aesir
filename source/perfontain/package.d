@@ -252,7 +252,7 @@ final class Engine
 	Signal!(bool, ubyte) onDoubleClick;
 	Signal!(bool, Vector2s) onWheel;
 
-	Signal!(bool, uint, bool) onKey;
+	Signal!(bool, SDL_Keycode, bool) onKey;
 package:
 	mixin createCtorsDtors!(fs, settings, window, render, shadows, _samplers, _state, audio, timers, textures, scene, fonts, _objs, gui, hotkeys);
 

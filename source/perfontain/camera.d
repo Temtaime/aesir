@@ -107,10 +107,10 @@ package:
 			return;
 		}
 
-		bool f = PEwindow.keys[SDL_SCANCODE_UP];
-		bool b = PEwindow.keys[SDL_SCANCODE_DOWN];
-		bool l = PEwindow.keys[SDL_SCANCODE_LEFT];
-		bool r = PEwindow.keys[SDL_SCANCODE_RIGHT], u;
+		bool f = PEwindow.keys.canFind(SDLK_UP);
+		bool b = PEwindow.keys.canFind(SDLK_DOWN);
+		bool l = PEwindow.keys.canFind(SDLK_LEFT);
+		bool r = PEwindow.keys.canFind(SDLK_RIGHT), u;
 
 		if(f)
 		{
