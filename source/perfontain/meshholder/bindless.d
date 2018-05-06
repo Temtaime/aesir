@@ -23,7 +23,7 @@ protected:
 
 			foreach(ref s; m.subs)
 			{
-				auto idx = _texIndex[s.tex];
+				auto idx = cast(ushort)_texs.countUntil(s.tex);
 				auto start = cast(uint)data.indices.length;
 
 				processSubMesh(data, s);
@@ -33,10 +33,7 @@ protected:
 			meshes ~= hm;
 		}
 
-		foreach(im; _texIndex.byKeyValue.array.sort!((a, b) => a.value < b.value).map!(a => a.key))
-		{
-			add(res, im, true);
-		}
+		_texs.each!(a => add(res, a, true));
 	}
 
 	void processSubMesh(ref SubMeshData data, ref in SubMeshInfo s)

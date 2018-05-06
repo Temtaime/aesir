@@ -32,7 +32,7 @@
 
 	"dependencies":
 	{
-		"stb": ">=1.1.3",
+		"stb": ">=1.1.4",
 		"pegged": "~master",
 		"tt-utils": "==1.3.6",
 		"derelict-sdl2": ">=3.1.0-alpha.3",
@@ -55,7 +55,7 @@
 
 			"dependencies":
 			{
-				"stb": ">=1.1.3",
+				"stb": ">=1.1.4",
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
 				"derelict-sdl2": ">=3.1.0-alpha.3",
@@ -72,7 +72,7 @@
 
 			"dependencies":
 			{
-				"stb": ">=1.1.3",
+				"stb": ">=1.1.4",
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
 				"derelict-sdl2": ">=3.1.0-alpha.3",

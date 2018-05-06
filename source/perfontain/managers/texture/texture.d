@@ -147,7 +147,7 @@ private:
 			foreach(uint i, ref m; levels)
 			{
 				assert(m.data.ptr);
-				assert(m.data.length == texDataLen(m.sz, type));
+				//assert(m.data.length == texDataLen(m.sz, type));
 
 				glCompressedTextureSubImage2D(id, i, 0, 0, m.sz.x, m.sz.y, ts[0], cast(uint)m.data.length, m.data.ptr);
 			}

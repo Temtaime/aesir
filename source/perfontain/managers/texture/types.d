@@ -2,7 +2,9 @@ module perfontain.managers.texture.types;
 
 import
 		perfontain,
-		perfontain.opengl;
+		perfontain.opengl,
+
+		stb.wrapper.dxt;
 
 
 enum : ubyte
@@ -25,7 +27,7 @@ struct TextureInfo
 {
 	const dataLen(Vector2s sz)
 	{
-		return texDataLen(sz, t);
+		return t == TEX_RGBA ? sz.x * sz.y * 4 : dxtTextureSize(sz.x, sz.y, t == TEX_DXT_5);
 	}
 
 	ubyte t;

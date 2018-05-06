@@ -54,14 +54,14 @@ abstract class HolderCreator
 			{
 				assert(s.data.vertices.length);
 
-				if(!(s.tex in _texIndex))
+				if(!_texs.canFind(s.tex))
 				{
-					_texIndex[s.tex] = cast(ushort)_texIndex.length;
+					_texs ~= s.tex;
 				}
 			}
 		}
 
-		assert(_texIndex.length);
+		assert(_texs.length);
 		makeData(res);
 
 		if(_type == RENDER_SCENE) with(res)
@@ -99,5 +99,5 @@ protected:
 				_vsize;
 	}
 
-	ushort[const Image] _texIndex;
+	const(Image)[] _texs;
 }

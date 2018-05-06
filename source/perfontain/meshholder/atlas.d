@@ -52,7 +52,7 @@ private:
 
 			foreach(v; vs)
 			{
-				auto c = calcCoords(s.tex, *cast(Vector2 *)&v[$ - 2]);
+				auto c = calcCoords(s.tex, *cast(Vector2*)&v[$ - 2]);
 
 				data.vertices ~= v[0..$ - 2].toByte;
 				data.vertices ~= c.toByte;
@@ -63,10 +63,9 @@ private:
 	void makeAtlasTexture(ref HolderData f)
 	{
 		Vector2s sz;
-		auto ims = _texIndex.keys;
 
 		auto rgb = !(_flags & MH_DXT);
-		auto data = new stbrp_rect[ims.length];
+		auto data = new stbrp_rect[_texs.length];
 
 		{
 			uint sq;
@@ -75,8 +74,8 @@ private:
 			foreach(uint i, ref s; data)
 			{
 				s.id = i;
-				s.w = func(ims[i].w + ATLAS_PAD * 2);
-				s.h = func(ims[i].h + ATLAS_PAD * 2);
+				s.w = func(_texs[i].w + ATLAS_PAD * 2);
+				s.h = func(_texs[i].h + ATLAS_PAD * 2);
 
 				sq += s.w * s.h;
 			}
@@ -87,7 +86,7 @@ private:
 
 		auto atlas = new Image(sz.x, sz.y, null);
 
-		foreach(r, im; zip(data, ims.indexed(data.map!(a => a.id))))
+		foreach(r, im; zip(data, _texs.indexed(data.map!(a => a.id))))
 		{
 			assert(rgb || !(r.x & 3) && !(r.y & 3));
 
