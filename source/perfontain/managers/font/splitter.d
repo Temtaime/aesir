@@ -6,7 +6,7 @@ import
 		std.range,
 		std.algorithm,
 
-		ciema;
+		stb.wrapper.image;
 
 
 struct CharColor

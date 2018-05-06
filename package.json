@@ -32,12 +32,12 @@
 
 	"dependencies":
 	{
+		"stb": ">=1.1.3",
 		"pegged": "~master",
 		"tt-utils": "==1.3.6",
 		"derelict-sdl2": ">=3.1.0-alpha.3",
 
 		"perfontain:ro": "*",
-		"perfontain:deps": "*",
 		"perfontain:engine": "*",
 	},
 
@@ -55,26 +55,14 @@
 
 			"dependencies":
 			{
+				"stb": ">=1.1.3",
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
 				"derelict-sdl2": ">=3.1.0-alpha.3",
 			},
 
 			"sourcePaths": [ "source/perfontain" ],
-			"importPaths": [ "source", "utils/deps/source" ]
-		},
-
-		{
-			"name": "deps",
-			"targetPath": "libs",
-			"targetType": "library",
-
-			"dependencies":
-			{
-				"tt-utils": "==1.3.6",
-			},
-
-			"sourcePaths": [ "utils/deps/source" ]
+			"importPaths": [ "source" ]
 		},
 
 		{
@@ -84,13 +72,14 @@
 
 			"dependencies":
 			{
+				"stb": ">=1.1.3",
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
 				"derelict-sdl2": ">=3.1.0-alpha.3",
 			},
 
 			"sourcePaths": [ "source/ro" ],
-			"importPaths": [ "source", "utils/deps/source" ]
+			"importPaths": [ "source" ]
 		}
 	],
 
@@ -100,8 +89,8 @@
 	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],
 
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
-	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "stb_image_x64", "zip_x64" ],
+	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "zip_x64" ],
 
-	"lflags-linux": [ "-Lutils/deps/libs" ],
-	"lflags-windows": [ "/LIBPATH:utils/deps/libs" ],
+	"lflags-linux": [ "-Lutils/deps" ],
+	"lflags-windows": [ "/LIBPATH:utils/deps" ],
 }

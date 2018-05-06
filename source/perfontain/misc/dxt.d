@@ -5,7 +5,8 @@ import
 		std.algorithm,
 		std.parallelism,
 
-		ciema,
+		stb.dxt,
+		stb.wrapper.image,
 
 		perfontain;
 
@@ -106,7 +107,7 @@ auto compressDXT(in Image im, ubyte type)
 		for(auto y = cy * N; y < ey; y += 4)
 		for(auto x = cx * N; x < ex; x += 4)
 		{
-			Color[4][4] block = void;
+			Color[4][4] block;
 
 			foreach(k; 0..4)
 			{
@@ -124,13 +125,3 @@ auto compressDXT(in Image im, ubyte type)
 
 	return res;
 }
-
-private:
-
-enum
-{
-	STB_DXT_DITHER		= 1,
-	STB_DXT_HIGHQUAL	= 2,
-}
-
-extern(C) void stb_compress_dxt_block(void *, in void *, uint, uint mode);

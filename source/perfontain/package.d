@@ -77,7 +77,7 @@ public import
 				perfontain.filesystem,
 				perfontain.rendertarget,
 
-				ciema,
+				stb.wrapper.image,
 
 				tt.error,
 				tt.logger;

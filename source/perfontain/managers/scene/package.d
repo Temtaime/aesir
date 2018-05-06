@@ -7,7 +7,7 @@ import
 		std.typecons,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 

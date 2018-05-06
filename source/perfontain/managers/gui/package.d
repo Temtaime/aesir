@@ -12,7 +12,7 @@ import
 		std.encoding,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 

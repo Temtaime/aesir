@@ -5,7 +5,7 @@ import
 		std.stdio,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain.math.matrix,
 		perfontain.misc,

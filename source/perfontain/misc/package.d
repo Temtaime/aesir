@@ -11,7 +11,7 @@ import
 
 		core.stdc.string,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain.opengl,
 		perfontain.config,

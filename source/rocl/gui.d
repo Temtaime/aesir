@@ -8,7 +8,7 @@ import
 		std.random,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 

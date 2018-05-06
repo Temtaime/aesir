@@ -10,7 +10,7 @@ import
 		std.string,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 		derelict.sdl2.sdl,
 		derelict.sdl2.ttf,
 
