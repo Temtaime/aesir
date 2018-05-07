@@ -108,11 +108,9 @@ final class GuiManager
 
 			foreach(e; acts)
 			{
-				PE.hotkeys.add(Hotkey(e[0], e[1], e[2], SDLK_LALT));
+				PE.hotkeys.add(Hotkey(e[0], e[1], SDLK_LALT, e[2]));
 			}
 		}
-
-		new WinHotkeySettings;
 
 		//PE.onAspect.permanent(&onAspect);
 	}
@@ -236,6 +234,20 @@ final class GuiManager
 		_cs = null;
 	}
 
+	void createHotkeySettings()
+	{
+		if(!hotkeySettings)
+		{
+			hotkeySettings = new WinHotkeySettings;
+		}
+	}
+
+	void removeHotkeySettings()
+	{
+		hotkeySettings.remove;
+		hotkeySettings = null;
+	}
+
 	void createCharSelect(in PkCharData *data)
 	{
 		if(_cs)
@@ -264,6 +276,7 @@ final class GuiManager
 	WinTrading trading;
 	WinCreation creation;
 	WinSettings settings;
+	WinHotkeySettings hotkeySettings;
 private:
 	mixin publicProperty!(bool, `isGame`);
 

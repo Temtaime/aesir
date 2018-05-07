@@ -77,6 +77,28 @@ abstract class HolderCreator
 			}
 
 			res.data.minimize;
+
+			/*{
+				import utils.vertexcache, std.stdio;
+
+				auto t1 = stsvco_compute_ACMR(data.indices.ptr, cast(uint)data.indices.length, 32);
+
+				foreach(ref m; meshes)
+				{
+					auto p = &m.subs.back;
+
+					auto	a = m.subs.front.start,
+							b = p.start + p.len;
+
+
+
+					stsvco_optimize(data.indices.ptr + a, b - a, data.indices[a..b].reduce!max + 1, 32);
+				}
+
+				auto t2 = stsvco_compute_ACMR(data.indices.ptr, cast(uint)data.indices.length, 32);
+
+				writefln(`%s -> %s`, t1, t2);
+			}*/
 		}
 
 		return res;

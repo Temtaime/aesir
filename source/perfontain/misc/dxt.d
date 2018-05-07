@@ -28,9 +28,11 @@ auto makeTexInfo(in Image im, ubyte t, bool mipmaps = true)
 	TextureInfo res = { t };
 
 	auto useDXT = t <= TEX_DXT_5;
+	auto arr = mipmaps ? im.toMipmaps : (&im)[0..1];
 
-	res.levels = im
-					.toMipmaps.map!(a => TextureData(Vector2s(a.w, a.h), useDXT ? a.dxtCompress(t == TEX_DXT_5) : a[].toByte))
+	res.levels = arr
+					.map!(a => TextureData(Vector2s(a.w, a.h), useDXT ? a.dxtCompress(t == TEX_DXT_5) : a[].toByte))
 					.array;
+
 	return res;
 }

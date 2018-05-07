@@ -89,6 +89,7 @@ enum MESSAGES =
 	[ `TRADE`, `Trade`, `Торг` ],
 	[ `CANCEL`, `Cancel`, `Отмена` ],
 	[ `INFO`, `Information`, `Информация` ],
+	[ `HOTKEYS`, `Hotkeys`, `Горячие клавиши` ],
 	[ `HOTKEY_SETTINGS`, `Hotkey settings`, `Настройка горячих клавиш` ],
 
 	[ `CREATE`, `Create`, `Создать` ],

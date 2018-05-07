@@ -5,6 +5,8 @@ import
 
 		perfontain,
 
+		ro.conv.gui,
+
 		rocl,
 		rocl.game;
 
@@ -17,44 +19,56 @@ class WinHotkeySettings : WinBasic2
 	{
 		super(MSG_HOTKEY_SETTINGS);
 
-		auto e = new TextTabs(main, [ MSG_SKILLS ~ ` 1-2`, MSG_SKILLS ~ ` 3-4`, MSG_INTERFACE ]);
-
-		foreach(i, u; e.tabs)
 		{
-			if(i < 2)
-			{
-				foreach(k; 0..18)
-				{
-					auto n = format(`hk_%u`, i * 18 + k);
-					auto r = new HotkeySelector(u, n, format(`Hotkey %u-%u`, i * 2 + k / 9 + 1, k % 9 + 1));
+			auto e = new TextTabs(main, [ MSG_SKILLS ~ ` 1-2`, MSG_SKILLS ~ ` 3-4`, MSG_INTERFACE ]);
 
-					r.pos = Vector2s(k >= 9 ? r.size.x + 10 : 0, r.size.y * (k % 9) + 4);
+			foreach(i, u; e.tabs)
+			{
+				if(i < 2)
+				{
+					foreach(k; 0..18)
+					{
+						auto n = format(`hk_%u`, i * 18 + k);
+						auto r = new HotkeySelector(u, n, format(`Hotkey %u-%u`, i * 2 + k / 9 + 1, k % 9 + 1));
+
+						r.pos = Vector2s(k >= 9 ? r.size.x + 10 : 0, r.size.y * (k % 9) + 4);
+					}
+				}
+				else
+				{
+					auto acts =
+					[
+						tuple(MSG_WIN_EQUIP, `hk_equip`),
+						tuple(MSG_WIN_SKILLS, `hk_skills`),
+						tuple(MSG_WIN_SETTINGS, `hk_settings`),
+						tuple(MSG_WIN_INVENTORY, `hk_inventory`),
+					];
+
+					auto x = acts.map!(a => cast(short)PE.fonts.base.widthOf(a[0])).reduce!max;
+
+					foreach(k, act; acts)
+					{
+						auto r = new HotkeySelector(u, act[1], act[0], x);
+						r.pos = Vector2s(0, r.size.y * k + 4);
+					}
 				}
 			}
-			else
-			{
-				auto acts =
-				[
-					tuple(MSG_WIN_EQUIP, `hk_equip`),
-					tuple(MSG_WIN_SKILLS, `hk_skills`),
-					tuple(MSG_WIN_SETTINGS, `hk_settings`),
-					tuple(MSG_WIN_INVENTORY, `hk_inventory`),
-				];
 
-				foreach(k, act; acts)
-				{
-					auto r = new HotkeySelector(u, act[1], act[0]);
-					r.pos = Vector2s(0, r.size.y * k + 4);
-				}
-			}
+			e.adjust;
 		}
-
-		e.adjust;
 
 		main.toChildSize;
 		main.pad(10);
 
 		adjust;
+
+		{
+			auto b = new Button(this, BTN_PART, MSG_OK);
+
+			b.move(this, POS_MAX, -5, bottom, POS_CENTER);
+			b.onClick = &ROgui.removeHotkeySettings;
+		}
+
 		center;
 	}
 
@@ -66,7 +80,7 @@ class WinHotkeySettings : WinBasic2
 
 class HotkeySelector : GUIElement
 {
-	this(GUIElement p, string n, string text)
+	this(GUIElement p, string n, string text, short x = -1)
 	{
 		super(p);
 
@@ -100,7 +114,15 @@ class HotkeySelector : GUIElement
 			};
 
 			und.size = Vector2s(120, PE.fonts.base.height + 1);
-			und.moveX(t, POS_ABOVE, 4);
+
+			if(x < 0)
+			{
+				und.moveX(t, POS_ABOVE, 4);
+			}
+			else
+			{
+				und.pos.x = x;
+			}
 		}
 
 		{

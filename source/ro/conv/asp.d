@@ -27,6 +27,7 @@ import
 		ro.sprite.act,
 		ro.sprite.svg;
 
+
 struct AspFile
 {
 	static immutable
