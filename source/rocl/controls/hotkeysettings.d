@@ -5,7 +5,8 @@ import
 
 		perfontain,
 
-		rocl;
+		rocl,
+		rocl.game;
 
 
 final:
@@ -28,14 +29,23 @@ class WinHotkeySettings : WinBasic2
 					auto r = new HotkeySelector(u, n, format(`Hotkey %u-%u`, i * 2 + k / 9 + 1, k % 9 + 1));
 
 					r.pos = Vector2s(k >= 9 ? r.size.x + 10 : 0, r.size.y * (k % 9) + 4);
-					//r.pos.y = cast(short)(r.size.y * k + 4);
 				}
 			}
 			else
 			{
-				static immutable acts =
+				auto acts =
 				[
+					tuple(MSG_WIN_EQUIP, `hk_equip`),
+					tuple(MSG_WIN_SKILLS, `hk_skills`),
+					tuple(MSG_WIN_SETTINGS, `hk_settings`),
+					tuple(MSG_WIN_INVENTORY, `hk_inventory`),
 				];
+
+				foreach(k, act; acts)
+				{
+					auto r = new HotkeySelector(u, act[1], act[0]);
+					r.pos = Vector2s(0, r.size.y * k + 4);
+				}
 			}
 		}
 

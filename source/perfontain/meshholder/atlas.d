@@ -120,10 +120,7 @@ private:
 
 		debug
 		{
-			auto im = atlas.dup;
-
-			im[].each!((ref a) => a.a = 255);
-			im.saveToFile(`atlas.png`, IM_PNG);
+			atlas.saveToFile(`atlas.png`);
 		}
 
 		add(f, atlas, false);

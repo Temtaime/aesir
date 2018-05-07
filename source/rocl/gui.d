@@ -1,12 +1,7 @@
 module rocl.gui;
 
 import
-		std.conv,
-		std.range,
-		std.format,
-		std.string,
-		std.random,
-		std.algorithm,
+		std.experimental.all,
 
 		stb.wrapper.image,
 
@@ -71,10 +66,49 @@ final class GuiManager
 						k = SDLK_F1 + idx;
 					}
 
-					PE.hotkeys.add(Hotkey(format(`hk_%u`, idx), { idx.log; }, cast(SDL_Keycode)k));
+					auto f =
+					{
+						if(ROgui.chat.disabled)
+						{
+							auto e = ROgui
+											.hotkeys
+											.childs[]
+											.map!(a => cast(HotkeyIcon)a)
+											.find!(a => ROgui.hotkeys.posToId(a.pos) == idx);
+
+							if(e.length)
+							{
+								e[0].use;
+								return true;
+							}
+						}
+
+						return false;
+					};
+
+					PE.hotkeys.add(Hotkey(format(`hk_%u`, idx), f, cast(SDL_Keycode)k));
 				};
 
 				dg();
+			}
+
+			auto show(GUIElement e)
+			{
+				e.show(!e.visible);
+				e.focus;
+			}
+
+			auto acts =
+			[
+				tuple(`hk_equip`, { show(ROgui.status); return true; }, SDLK_e),
+				tuple(`hk_skills`, { show(ROgui.skills); return true; }, SDLK_s),
+				tuple(`hk_settings`, { show(ROgui.settings); return true; }, SDLK_o),
+				tuple(`hk_inventory`, { show(ROgui.inv); return true; }, SDLK_i),
+			];
+
+			foreach(e; acts)
+			{
+				PE.hotkeys.add(Hotkey(e[0], e[1], e[2], SDLK_LALT));
 			}
 		}
 
@@ -111,7 +145,7 @@ final class GuiManager
 
 			// TODO: REMOVE
 			{
-				PE.hotkeys.add(Hotkey(null, { hotkeys.show(!hotkeys.visible); }, SDLK_F12));
+				//PE.hotkeys.add(Hotkey(null, { hotkeys.show(!hotkeys.visible); }, SDLK_F12));
 			}
 
 			//chat.focus; // TODO: MAKE ONSUBMIT RETURN BOOL AND SEARCH FOR INPUT WINDOW

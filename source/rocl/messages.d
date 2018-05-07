@@ -103,6 +103,10 @@ enum MESSAGES =
 
 	[ `INTERFACE`, `Interface`, `Интерфейс` ],
 
+	[ `WIN_EQUIP`, `Equip window`, `Окно экипировки` ],
+	[ `WIN_SKILLS`, `Skills window`, `Окно умений` ],
+	[ `WIN_SETTINGS`, `Settings window`, `Окно настроек` ],
+	[ `WIN_INVENTORY`, `Inventory window`, `Окно инвентаря` ],
 
 	//[ ``, ``, `` ],
 ];

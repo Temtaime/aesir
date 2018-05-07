@@ -47,6 +47,12 @@ enum
 	NODE_INT_DRAWN		= 1, // TODO: make private somehow ???
 }
 
+struct FrameOrientation
+{
+	uint time;
+	Quaternion q;
+}
+
 final class ObjecterNode : Node
 {
 	override void draw(in DrawInfo *di)
@@ -86,8 +92,7 @@ final class ObjecterNode : Node
 		super.draw(m);
 	}
 
-	import ro.map; // TODO: remove
-	RomFrameOrientation[] oris;
+	FrameOrientation[] oris;
 
 	RC!MeshHolder mh;
 	Matrix4 matrix;

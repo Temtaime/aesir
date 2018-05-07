@@ -50,8 +50,12 @@ private:
 			{
 				if(h.keys.isPermutation(PE.window.keys))
 				{
-					h.dg();
-					return true;
+					if(h.dg())
+					{
+						return true;
+					}
+
+					break;
 				}
 			}
 		}
@@ -64,7 +68,7 @@ private:
 
 struct Hotkey
 {
-	this(string n, void delegate() f, SDL_Keycode[] ks...)
+	this(string n, bool delegate() f, SDL_Keycode[] ks...)
 	{
 		dg = f;
 		name = n;
@@ -72,6 +76,6 @@ struct Hotkey
 	}
 
 	string name;
-	void delegate() dg;
+	bool delegate() dg;
 	SDL_Keycode[] keys;
 }

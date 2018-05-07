@@ -112,15 +112,15 @@ private:
 		//PE.hotkeys.add(Hotkey({ log(`lispsm %s`, PE.shadows.lispsm ^= true); }, SDLK_LCTRL, SDLK_a));
 		debug
 		{
-			PE.hotkeys.add(Hotkey(null, { PEstate.wireframe = !PEstate.wireframe; }, SDLK_F11));
-			PE.hotkeys.add(Hotkey(null, { PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA); }, SDLK_F10));
+			PE.hotkeys.add(Hotkey(null, { PEstate.wireframe = !PEstate.wireframe; return true; }, SDLK_F11));
+			PE.hotkeys.add(Hotkey(null, { PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA); return true; }, SDLK_F10));
 		}
 
 		auto p = Vector3(0, 24.810, 0);
 		PEscene.camera = new CameraFPS(p, p + Vector3(0.657, 0, -0.657));
 
 		auto w = new WinSettings(true);
-		PE.hotkeys.add(Hotkey(null, { w.show(!w.visible); }, SDLK_F12));
+		PE.hotkeys.add(Hotkey(null, { w.show(!w.visible); return true; }, SDLK_F12));
 	}
 
 	bool initialize(uint fov)

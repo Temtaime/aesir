@@ -66,16 +66,10 @@ struct RomCell
 struct RomNode
 {
 	@(`ushort`) RomNode[] childs;
-	@(`ushort`) RomFrameOrientation[] oris;
+	@(`ushort`) FrameOrientation[] oris;
 
 	Matrix4 trans;
 	short id;
-}
-
-struct RomFrameOrientation
-{
-	uint time;
-	Quaternion q;
 }
 
 struct RomPose

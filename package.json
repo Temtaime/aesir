@@ -61,8 +61,7 @@
 				"derelict-sdl2": ">=3.1.0-alpha.3",
 			},
 
-			"sourcePaths": [ "source/perfontain" ],
-			"importPaths": [ "source" ]
+			"sourcePaths": [ "source/perfontain" ]
 		},
 
 		{
@@ -82,8 +81,6 @@
 			"importPaths": [ "source" ]
 		}
 	],
-
-	"versions": [ "Derelict_Static" ],
 
 	"sourcePaths": [ "source/rocl" ],
 	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],

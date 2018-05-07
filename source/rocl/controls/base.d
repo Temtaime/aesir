@@ -51,10 +51,10 @@ class WinBase : WinBasic
 		{
 			auto arr =
 			[
-				tuple(MSG_INV, [ SDLK_LALT, SDLK_e ], () => doShow(ROgui.inv)),
-				tuple(MSG_EQP, [ SDLK_LALT, SDLK_q ], () => doShow(ROgui.status)),
-				tuple(MSG_SK, [ SDLK_LALT, SDLK_s ], () => doShow(ROgui.skills)),
-				tuple(MSG_OPTS, [ SDLK_LALT, SDLK_o ], () => doShow(ROgui.settings)),
+				tuple(MSG_INV, () => doShow(ROgui.inv)),
+				tuple(MSG_EQP, () => doShow(ROgui.status)),
+				tuple(MSG_SK, () => doShow(ROgui.skills)),
+				tuple(MSG_OPTS, () => doShow(ROgui.settings)),
 			];
 
 			Button e;
@@ -62,7 +62,7 @@ class WinBase : WinBasic
 			foreach(i, v; arr)
 			{
 				auto b = new Button(this, BTN_PART, v[0], PE.fonts.small);
-				auto d = v[2].toDelegate;
+				auto d = v[1].toDelegate;
 
 				b.onClick = d;
 				b.pos = Vector2s(size.x - b.size.x - 3, WIN_TOP_SZ.y + i * (b.size.y + 2) + 2);
@@ -71,8 +71,6 @@ class WinBase : WinBasic
 				{
 					e = b;
 				}
-
-				//PE.hotkeys.add(Hotkey(null, d, cast(uint[])v[1]));
 			}
 
 			foreach(v; childs[$ - arr.length..$])

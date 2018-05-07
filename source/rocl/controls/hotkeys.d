@@ -127,31 +127,6 @@ class WinHotkeys : GUIElement
 		w.attach(this);
 		w.pos = posOf(q);
 
-		{
-			uint h;
-
-			if(q.y)
-			{
-				auto z = (q.y - 1) * 9 + q.x;
-
-				h = z >= hotkeys.length ? SDLK_COMMA + z - cast(uint)hotkeys.length : SDLK_a + hotkeys[z] - 'a';
-			}
-			else
-			{
-				h = SDLK_F1 + q.x;
-			}
-
-			auto f =
-			{
-				if(ROgui.chat.disabled)
-				{
-					w.use;
-				}
-			};
-
-			//w.bind(new Hotkey(null, f, h));
-		}
-
 		if(p.x < 0)
 		{
 			ROnet.setHotkey(q.y * 9 + q.x, w.hotkey);
@@ -172,17 +147,21 @@ class WinHotkeys : GUIElement
 		return true;
 	}
 
-	static immutable hotkeys = `qwertyuioasdfghjklzxcvbnm`;
-
-//private:
-	static posOf(Vector2s p)
+	auto posToId(Vector2s p)
 	{
-		return p * KS + Vector2s(SP + 1);
+		p = fromPos(p);
+		return p.y * 9 + p.x;
 	}
 
+private:
 	static fromPos(Vector2s p)
 	{
 		return (p - Vector2s(SP + 1)) / KS;
+	}
+
+	static posOf(Vector2s p)
+	{
+		return p * KS + Vector2s(SP + 1);
 	}
 
 	enum

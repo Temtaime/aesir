@@ -88,11 +88,6 @@ abstract class HotkeyIcon : GUIElement
 		}
 	}
 
-	void bind(Hotkey *h)
-	{
-		_p = PE.hotkeys.add(*h, false);
-	}
-
 	override void onPress(bool b)
 	{
 		_mouse = b;
@@ -170,9 +165,7 @@ abstract class HotkeyIcon : GUIElement
 							{
 								if(auto p = cast(WinHotkeys)parent)
 								{
-									auto q = p.fromPos(pos);
-
-									ROnet.setHotkey(q.y * 9 + q.x, PkHotkey.init);
+									ROnet.setHotkey(p.posToId(pos), PkHotkey.init);
 									remove;
 								}
 
@@ -227,8 +220,6 @@ abstract class HotkeyIcon : GUIElement
 	HotkeyIcon clone(GUIElement w);
 private:
 	HotkeyIcon _e;
-	RC!ConnectionPoint _p;
-
 	bool _mouse;
 }
 
