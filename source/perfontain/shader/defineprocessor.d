@@ -47,7 +47,7 @@ private:
 			return *p;
 		}
 
-		auto r = EXGL(cast(string)PEfs.get(`data/shader/` ~ n ~ `.c`));
+		auto r = EXGL(PEfs.get(`data/shader/` ~ n ~ `.c`).assumeUTF);
 		r.successful || throwError(`shader %s - %s`, n, r.failMsg);
 
 		return _shaders[n] = r.children.front.children;

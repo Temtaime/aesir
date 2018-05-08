@@ -31,11 +31,8 @@ final class ActionController
 
 	void onCharCreate()
 	{
-		with(ROgui) // TODO: REWRITE
-		{
-			removeCs;
-			creation = new WinCreation;
-		}
+		ROgui.removeCharSelect;
+		ROgui.createCreation;
 	}
 
 	void onCharSelected()

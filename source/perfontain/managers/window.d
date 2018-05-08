@@ -1,11 +1,7 @@
 module perfontain.managers.window;
 
 import
-		std.algorithm,
-		std.conv,
-		std.stdio,
-		std.range,
-		std.string,
+		std.experimental.all,
 
 		perfontain.misc,
 		perfontain,
@@ -292,7 +288,7 @@ private:
 
 	bool throwSDLError(string f = __FILE__, uint l = __LINE__)
 	{
-		return throwErrorImpl(f, l, cast(string)SDL_GetError().fromStringz);
+		return throwErrorImpl(f, l, SDL_GetError().fromStringz.assumeUnique);
 	}
 
 	SDL_Window *_win;

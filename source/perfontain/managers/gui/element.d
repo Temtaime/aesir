@@ -255,6 +255,20 @@ final:
 		release;
 	}
 
+	auto showOrHide()
+	{
+		if(visible)
+		{
+			show(false);
+		}
+		else
+		{
+			show;
+			focus;
+		}
+	}
+
+
 	void show(bool b = true)
 	{
 		if(!(flags & WIN_HIDDEN) == b)

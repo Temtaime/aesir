@@ -1,14 +1,7 @@
 module ro.db;
 
 import
-		std.conv,
-		std.file,
-		std.array,
-		std.regex,
-		std.stdio,
-		std.string,
-		std.encoding,
-		std.typecons,
+		std.experimental.all,
 
 		etc.c.sqlite3,
 
@@ -17,7 +10,7 @@ import
 		rocl,
 
 		tt.error,
-		tt.logger;
+		tt.logger : log;
 
 
 struct RoItemData
@@ -40,7 +33,7 @@ final class RoDb
 			p = tempDir ~ `/pfstempdb`;
 		}
 
-		!sqlite3_open(p.toStringz, &_db) || throwError(cast(string)sqlite3_errmsg(_db).fromStringz);
+		!sqlite3_open(p.toStringz, &_db) || throwError(sqlite3_errmsg(_db).fromStringz.assumeUnique);
 	}
 
 	~this()

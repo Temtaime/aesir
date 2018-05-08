@@ -33,7 +33,7 @@ import
 @property ref RO() { return Game.instance; }
 
 @property ROdb() { return RO._db; }
-@property ROgui() { return RO._gmgr; }
+@property ROgui() { return RO.gui; }
 @property ROent() { return RO._emgr; }
 @property ROres() { return RO._rmgr; }
 @property ROnet() { return RO._pmgr; }
@@ -92,6 +92,7 @@ final class Game
 		}
 	}
 
+	GuiManager gui;
 	RoSettings settings;
 
 	Status status;
@@ -157,11 +158,10 @@ private:
 		_emgr.process;
 	}
 
-	mixin createCtorsDtors!(_rmgr, _db, _gmgr, _emgr, _pmgr, _npc, action, status, items, effects);
+	mixin createCtorsDtors!(_rmgr, _db, gui, _emgr, _pmgr, _npc, action, status, items, effects);
 
 	RoDb _db;
 
-	GuiManager _gmgr;
 	NpcController _npc;
 	PacketManager _pmgr;
 	EntityManager _emgr;

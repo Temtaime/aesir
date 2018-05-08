@@ -1,21 +1,16 @@
 module ro.conv.map;
 
 import
-		std.conv,
-		std.range,
-		std.stdio,
-		std.array,
-		std.string,
-		std.typecons,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain,
 
 		ro.map,
 		ro.grf,
 		ro.conf,
+		ro.conv,
 
-		ro.conv;
+		tt.logger : log;
 
 
 final class RomConverter : Converter
@@ -218,7 +213,7 @@ private:
 		{
 			string map;
 
-			foreach(s; (cast(string)PEfs.get(`data/fogparametertable.txt`)).splitter(`#`).map!strip)
+			foreach(s; PEfs.get(`data/fogparametertable.txt`).assumeUTF.assumeUnique.splitter(`#`).map!strip)
 			{
 				if(s.endsWith(`.rsw`))
 				{
@@ -338,7 +333,7 @@ struct LightsCalculator
 	auto calc(ref ushort[] res)
 	{
 		// pointers to array elements
-		auto index = new ushort[] *[_indices.length];
+		auto index = new ushort[]*[_indices.length];
 
 		// sort to find max lengths
 		makeIndex!((a, b) => a.length > b.length)(_indices, index);
@@ -350,7 +345,6 @@ struct LightsCalculator
 							.map!(a => a.index)
 							.array
 							.assumeSorted;
-
 
 		foreach(sub; index.map!(a => *a))
 		{

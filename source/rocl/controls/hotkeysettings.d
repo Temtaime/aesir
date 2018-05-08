@@ -198,7 +198,7 @@ private:
 
 	static nameOf(SDL_Keycode k)
 	{
-		return cast(string)SDL_GetKeyName(k).fromStringz;
+		return SDL_GetKeyName(k).fromStringz.assumeUnique;
 	}
 
 	static immutable specials =

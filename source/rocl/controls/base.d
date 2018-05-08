@@ -51,10 +51,10 @@ class WinBase : WinBasic
 		{
 			auto arr =
 			[
-				tuple(MSG_INV, () => doShow(ROgui.inv)),
-				tuple(MSG_EQP, () => doShow(ROgui.status)),
-				tuple(MSG_SK, () => doShow(ROgui.skills)),
-				tuple(MSG_OPTS, () => doShow(ROgui.settings)),
+				tuple(MSG_INV, () => ROgui.inv.showOrHide),
+				tuple(MSG_EQP, () => ROgui.status.showOrHide),
+				tuple(MSG_SK, () => ROgui.skills.showOrHide),
+				tuple(MSG_OPTS, () => ROgui.settings.showOrHide),
 			];
 
 			Button e;
@@ -125,12 +125,6 @@ class WinBase : WinBasic
 
 	LevelMeter	base,
 				job;
-private:
-	static doShow(GUIElement e)
-	{
-		e.show(!e.visible);
-		e.focus;
-	}
 }
 
 class PercMeter : GUIElement

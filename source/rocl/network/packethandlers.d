@@ -336,6 +336,8 @@ mixin template PacketHandlers()
 	/// ====================================== KAFRA ======================================
 	void onKafraItems(Pk0995 p)
 	{
+		RO.gui.createStore;
+
 		foreach(ref v; p.items)
 		{
 			ROgui.store.items.add(new Item(v));
@@ -349,6 +351,8 @@ mixin template PacketHandlers()
 
 	void onKafraEquipItems(Pk0a10 p)
 	{
+		RO.gui.createStore;
+
 		foreach(ref v; p.items)
 		{
 			ROgui.store.items.add(new Item(v));
@@ -643,7 +647,7 @@ mixin template PacketHandlers()
 		}
 		else
 		{
-			ROgui.makeCreation;
+			ROgui.createCreation;
 		}
 	}
 

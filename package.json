@@ -25,7 +25,7 @@
 			"buildOptions": [ "optimize", "releaseMode", "noBoundsCheck", "inline" ],
 
 			"dflags": [ "-transition=intpromote" ],
-			"dflags-ldc2": [ "-ffast-math" ],
+			"dflags-ldc2": [ "-ffast-math", "-enable-cross-module-inlining" ],
 			"lflags-linux": [ "-s" ],
 		},
 	},

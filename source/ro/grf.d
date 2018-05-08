@@ -26,7 +26,7 @@ import
 
 string charsToString(T)(in T[] str) if(T.sizeof == 1)
 {
-	return cast(string)str.toByte.until(0).array;
+	return str.toByte.until(0).array.assumeUTF;
 }
 
 string convertName(in char[] str)
@@ -127,7 +127,7 @@ final class Grf : RCounted
 	{
 		if(auto f = name in _files)
 		{
-			return uncompress(_f[f.off..f.off + f.zlenAl], f.len);
+			return uncompress(_f[f.off..f.off + f.zlenAl], f.len).toByte;
 		}
 
 		return null;
