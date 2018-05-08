@@ -27,7 +27,7 @@ class WinHotkeys : GUIElement
 
 		if(pos.x < 0)
 		{
-			pos = PE.window.size - size - Vector2s(0, ROgui.chat.size.y);
+			pos = PE.window.size - size - Vector2s(0, RO.gui.chat.size.y);
 		}
 	}
 

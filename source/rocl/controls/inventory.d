@@ -230,7 +230,7 @@ final class WinInventory : WinBasic
 
 		if(pos.x < 0)
 		{
-			pos = Vector2s(0, ROgui.base.size.y);
+			pos = Vector2s(0, RO.gui.base.size.y);
 		}
 
 		RO.status.items.onAdded.permanent(&tab.register);

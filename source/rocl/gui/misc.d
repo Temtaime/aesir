@@ -37,7 +37,7 @@ void registerHotkeys()
 								.hotkeys
 								.childs[]
 								.map!(a => cast(HotkeyIcon)a)
-								.find!(a => ROgui.hotkeys.posToId(a.pos) == idx);
+								.find!(a => RO.gui.hotkeys.posToId(a.pos) == idx);
 
 					if(e.length)
 					{
@@ -57,10 +57,10 @@ void registerHotkeys()
 
 	auto acts =
 	[
-		tuple(`hk_equip`, { ROgui.status.showOrHide; return true; }, SDLK_e),
-		tuple(`hk_skills`, { ROgui.skills.showOrHide; return true; }, SDLK_s),
-		tuple(`hk_settings`, { ROgui.settings.showOrHide; return true; }, SDLK_o),
-		tuple(`hk_inventory`, { ROgui.inv.showOrHide; return true; }, SDLK_i),
+		tuple(`hk_equip`, { RO.gui.status.showOrHide; return true; }, SDLK_e),
+		tuple(`hk_skills`, { RO.gui.skills.showOrHide; return true; }, SDLK_s),
+		tuple(`hk_settings`, { RO.gui.settings.showOrHide; return true; }, SDLK_o),
+		tuple(`hk_inventory`, { RO.gui.inv.showOrHide; return true; }, SDLK_i),
 	];
 
 	foreach(e; acts)

@@ -51,10 +51,10 @@ class WinBase : WinBasic
 		{
 			auto arr =
 			[
-				tuple(MSG_INV, () => ROgui.inv.showOrHide),
-				tuple(MSG_EQP, () => ROgui.status.showOrHide),
-				tuple(MSG_SK, () => ROgui.skills.showOrHide),
-				tuple(MSG_OPTS, () => ROgui.settings.showOrHide),
+				tuple(MSG_INV, () => RO.gui.inv.showOrHide),
+				tuple(MSG_EQP, () => RO.gui.status.showOrHide),
+				tuple(MSG_SK, () => RO.gui.skills.showOrHide),
+				tuple(MSG_OPTS, () => RO.gui.settings.showOrHide),
 			];
 
 			Button e;

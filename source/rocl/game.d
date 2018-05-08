@@ -33,7 +33,6 @@ import
 @property ref RO() { return Game.instance; }
 
 @property ROdb() { return RO._db; }
-@property ROgui() { return RO.gui; }
 @property ROent() { return RO._emgr; }
 @property ROres() { return RO._rmgr; }
 @property ROnet() { return RO._pmgr; }

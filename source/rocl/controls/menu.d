@@ -33,6 +33,6 @@ private:
 	void trade(Player p)
 	{
 		ROnet.requestTrade(p.bl);
-		//ROgui.trading = new WinTrading;
+		//RO.gui.trading = new WinTrading;
 	}
 }

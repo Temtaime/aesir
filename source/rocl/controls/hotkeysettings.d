@@ -66,7 +66,7 @@ class WinHotkeySettings : WinBasic2
 			auto b = new Button(this, BTN_PART, MSG_OK);
 
 			b.move(this, POS_MAX, -5, bottom, POS_CENTER);
-			b.onClick = &ROgui.removeHotkeySettings;
+			b.onClick = &RO.gui.removeHotkeySettings;
 		}
 
 		center;

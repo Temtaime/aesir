@@ -92,7 +92,7 @@ struct Stat
 private:
 	void onUpdate()
 	{
-		ROgui.status.stats.update(this);
+		RO.gui.status.stats.update(this);
 	}
 }
 
@@ -105,7 +105,7 @@ struct Bonus
 private:
 	void onUpdate()
 	{
-		ROgui.status.bonuses.update(this);
+		RO.gui.status.bonuses.update(this);
 	}
 }
 
@@ -177,6 +177,6 @@ final class Skill
 private:
 	void onUpdate()
 	{
-		ROgui.skills.update(this);
+		RO.gui.skills.update(this);
 	}
 }

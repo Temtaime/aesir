@@ -112,10 +112,10 @@ final class GuiManager
 	WinStatus status;
 	WinInventory inv;
 	WinHotkeys hotkeys;
-	WinTrading trading;
 
 	mixin MakeWindow!(WinShop, `shop`);
 	mixin MakeWindow!(WinStorage, `store`);
+	mixin MakeWindow!(WinTrading, `trading`);
 	mixin MakeWindow!(WinCreation, `creation`);
 	mixin MakeWindow!(WinSettings, `settings`);
 	mixin MakeWindow!(WinCharSelect, `charSelect`);

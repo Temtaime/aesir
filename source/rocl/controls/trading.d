@@ -129,7 +129,7 @@ class TradingPart : GUIElement
 				new GUIEditText(und);
 
 				edit.size.x = 80;
-				edit.onChar = a => a.length == 1 && a[0].isDigit && to!long(edit.value ~ a) <= ROgui.inv.zeny;
+				edit.onChar = a => a.length == 1 && a[0].isDigit && to!long(edit.value ~ a) <= RO.gui.inv.zeny;
 
 				und.update;
 			}

@@ -1,15 +1,7 @@
 module rocl.opti;
 
 import
-		std.utf,
-		std.conv,
-		std.file,
-		std.zlib,
-		std.stdio,
-		std.array,
-		std.mmfile,
-		std.string,
-		std.algorithm,
+		std.experimental.all,
 
 		etc.c.zlib,
 
