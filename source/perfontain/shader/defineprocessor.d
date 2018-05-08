@@ -12,7 +12,8 @@ import
 		pegged.grammar,
 
 		perfontain,
-		perfontain.shader.grammar;
+		perfontain.shader.grammar,
+		perfontain.shader.resource;
 
 
 struct DefineProcessor
@@ -47,7 +48,7 @@ private:
 			return *p;
 		}
 
-		auto r = EXGL(PEfs.get(`data/shader/` ~ n ~ `.c`).assumeUTF);
+		auto r = EXGL(n.shaderSource);
 		r.successful || throwError(`shader %s - %s`, n, r.failMsg);
 
 		return _shaders[n] = r.children.front.children;

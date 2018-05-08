@@ -15,8 +15,9 @@ import
 		ro.conf,
 
 		rocl.game,
-		rocl.opti,
 		rocl.paths,
+
+		utils.wrapper.zip,
 
 		tt.error,
 		tt.logger;
@@ -24,6 +25,20 @@ import
 
 final class RoFileSystem : FileSystem
 {
+	this()
+	{
+		debug
+		{}
+		else
+		{
+			_zip = new Zip(RES_FILE, false);
+		}
+	}
+	~this()
+	{
+		_zip.destroy;
+	}
+
 	auto grfs()
 	{
 		if(!_arr.length)
@@ -50,15 +65,12 @@ protected:
 		{}
 		else
 		{
-			if(!_op)
+			try
 			{
-				_op = new Opti(OPTI_FILE);
+				return dg(_zip.get(name), false);
 			}
-
-			if(auto data = _op.get(name))
-			{
-				return dg(data, false);
-			}
+			catch(Exception)
+			{}
 		}
 
 		try
@@ -102,6 +114,6 @@ protected:
 	}
 
 private:
-	RC!Opti _op;
+	Zip _zip;
 	RCArray!Grf _arr;
 }

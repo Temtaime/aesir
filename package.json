@@ -32,7 +32,7 @@
 
 	"dependencies":
 	{
-		"stb": ">=1.2.0",
+		"stb": ">=1.3.0",
 		"pegged": "~master",
 		"tt-utils": "==1.3.6",
 		"derelict-sdl2": ">=3.1.0-alpha.3",
@@ -55,14 +55,15 @@
 
 			"dependencies":
 			{
-				"stb": ">=1.2.0",
+				"stb": ">=1.3.0",
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
 				"derelict-sdl2": ">=3.1.0-alpha.3",
 			},
 
 			"sourcePaths": [ "source/perfontain" ],
-			"importPaths": [ "source/perfontain" ]
+			"importPaths": [ "source/perfontain" ],
+			"stringImportPaths": [ "source/perfontain/shader/res" ],
 		},
 
 		{
@@ -72,7 +73,7 @@
 
 			"dependencies":
 			{
-				"stb": ">=1.2.0",
+				"stb": ">=1.3.0",
 				"pegged": "~master",
 				"tt-utils": "==1.3.6",
 				"derelict-sdl2": ">=3.1.0-alpha.3",
@@ -87,7 +88,7 @@
 	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],
 
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
-	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "zip_x64" ],
+	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64" ],
 
 	"lflags-linux": [ "-Lutils/deps" ],
 	"lflags-windows": [ "/LIBPATH:utils/deps" ],

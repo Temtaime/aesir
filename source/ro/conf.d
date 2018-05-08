@@ -14,7 +14,7 @@ enum
 
 	SPRITE_PROP = 1 / (7 * ROM_SCALE_DIV),
 
-	OPTI_FILE = `resources.opti`,
+	RES_FILE = `resources.zip`,
 
 	// network
 	CLIENT_TYPE = 1,
