@@ -73,38 +73,30 @@ final class GuiManager
 			status.show(false);
 			skills.show(false);
 
-			// TODO: REMOVE
-			{
-				//PE.hotkeys.add(Hotkey(null, { hotkeys.show(!hotkeys.visible); }, SDLK_F12));
-			}
-
 			//chat.focus; // TODO: MAKE ONSUBMIT RETURN BOOL AND SEARCH FOR INPUT WINDOW
 
 			PE.scene.camera = new CameraRO(Vector3(0));
 		}
 		else
 		{
-			{
-				createSettings;
+			createSettings;
 
-				settings.show(false);
+			base = new WinBase;
+			inv = new WinInventory;
+			chat = new RoChat;
 
-				base = new WinBase;
-				inv = new WinInventory;
-				chat = new RoChat;
-
-				inv.show(false);
-				base.show(false);
-				chat.show(false);
-			}
+			inv.show(false);
+			base.show(false);
+			chat.show(false);
+			settings.show(false);
 
 			auto
 					p = Vector3(265.44, 61.420, -128.0),
 					d = Vector3(-0.034, -0.639, -0.768);
 
 			auto c = new CameraFPS(p, p + d);
-
 			c.fixed = true;
+
 			PE.scene.camera = c;
 		}
 

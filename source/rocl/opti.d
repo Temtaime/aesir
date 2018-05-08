@@ -66,7 +66,7 @@ final class Opti : RCounted
 		}
 	}
 
-	const(void)[] get(string name)
+	auto get(string name)
 	{
 		if(auto f = name in _files)
 		{

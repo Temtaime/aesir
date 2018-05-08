@@ -80,7 +80,7 @@ final class Game
 						user = r[0],
 						pass = r[2];
 
-				ROgui.show;
+				gui.show;
 				ROnet.login(user, pass);
 			}
 			else
