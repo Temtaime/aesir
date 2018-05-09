@@ -12,7 +12,8 @@ import
 		ro.map,
 		ro.conv,
 
-		rocl.paths;
+		rocl.paths,
+		rocl.render.water;
 
 
 struct RomLoader
@@ -70,11 +71,9 @@ private:
 		processObjects(node);
 		node.recalcBBox;
 
+		if(_rom.waterData.meshes)
 		{
-			auto n = allocateRC!ObjecterNode;
-
-			n.id = 0;
-			n.mh = new MeshHolder(_rom.waterData);
+			auto n = allocateRC!WaterNode(_rom);
 			n.bbox = node.bbox;
 
 			node.childs ~= n;

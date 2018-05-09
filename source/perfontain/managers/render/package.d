@@ -140,21 +140,17 @@ private:
 		uint subs;
 
 		{
-			void[] tmp;
-
 			auto fs = calcFlags;
 			auto start = fs & DATA_SM_MAT ? 64 : 0;
 
-			auto len = (_pg.minLen(`pe_transforms`) - start + 15) / 16 * 16;
+			auto len = _pg.minLen(`pe_transforms`) - start + 15;
+			len = len / 16 * 16;
 
-			{
-				auto k = len * nodes.length + start;
-				tmp = alloca(k)[0..k];
-			}
+			auto tmp = ScopeArray!ubyte(len * nodes.length + start);
 
 			if(fs & DATA_SM_MAT)
 			{
-				tmp[0..64] = PE.shadows.matrix.toByte;
+				tmp[0..64][] = PE.shadows.matrix.toByte;
 			}
 
 			foreach(uint i, ref n; nodes)
@@ -165,15 +161,13 @@ private:
 				subs += n.mh.meshes[n.id].subs.length;
 			}
 
-			_pg.ssbo(`pe_transforms`, tmp);
+			_pg.ssbo(`pe_transforms`, tmp[]);
 		}
 
 		if(GL_ARB_bindless_texture)
 		{
-			auto k = subs * 16;
-			auto tmp = alloca(k)[0..k].toByte;
-
-			k = 0;
+			uint k;
+			auto tmp = ScopeArray!ubyte(subs * 16);
 
 			foreach(uint i, ref n; nodes)
 			{
@@ -186,9 +180,9 @@ private:
 
 					PE.textures.use(tex);
 
-					tmp[k..k + 8] = h.toByte;
-					tmp[k + 8..k + 12] = i.toByte;
-					tmp[k + 12..k + 16] = 0;
+					tmp[k..k + 8][] = h.toByte;
+					tmp[k + 8..k + 12][] = i.toByte;
+					tmp[k + 12..k + 16][] = 0;
 
 					k += 16;
 				}
@@ -196,7 +190,7 @@ private:
 
 			assert(k == tmp.length);
 
-			_pg.ssbo(`pe_submeshes`, tmp);
+			_pg.ssbo(`pe_submeshes`, tmp[]);
 		}
 		else if(!_rt || PE.shadows.textured)
 		{

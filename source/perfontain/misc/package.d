@@ -7,7 +7,10 @@ import
 		std.traits,
 		std.string,
 		std.algorithm,
+		std.experimental.allocator,
+		std.experimental.allocator.mallocator,
 		std.experimental.allocator.gc_allocator,
+		std.experimental.allocator.building_blocks.free_tree,
 
 		core.stdc.string,
 
@@ -324,4 +327,47 @@ struct TimeMeter
 private:
 	string _msg;
 	uint _t;
+}
+
+struct ScopeArray(T)
+{
+	this(size_t len)
+	{
+		_data = alloc.makeArray!T(len);
+	}
+
+	~this()
+	{
+		alloc.dispose(_data);
+	}
+
+	inout opSlice()
+	{
+		return _data;
+	}
+
+	ref opIndex(size_t i) inout
+	{
+		return _data[i];
+	}
+
+	inout opSlice(size_t a, size_t b)
+	{
+		return _data[a..b];
+	}
+
+	@property opDollar(size_t dim : 0)()
+	{
+		return length;
+	}
+
+	@property length()
+	{
+		return _data.length;
+	}
+
+private:
+	T[] _data;
+
+	static FreeTree!Mallocator alloc;
 }
