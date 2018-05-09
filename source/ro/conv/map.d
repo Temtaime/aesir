@@ -30,6 +30,7 @@ final class RomConverter : Converter
 
 		processGround(res);
 		processLights(res);
+		processWaterParam(res);
 		processFloorObjects(res);
 		processLightsIndices(res);
 		processFogEntries(res);
@@ -65,12 +66,50 @@ private:
 
 	auto processFloor(ref RomFile f)
 	{
-		auto meshes = GndConverter(`data/` ~ _rsw.gnd.convertName).process;
+		auto res = GndConverter(`data/` ~ _rsw.gnd.convertName, f.water.level, f.water.height).process;
 
-		f.floor = meshes.map!(a => RomFloor(a.calcBBox)).array;
+		f.floor = res[0].map!(a => RomFloor(a.calcBBox)).array;
 		f.floor.each!((ref a) => _lights.push(a.box));
 
-		return meshes;
+		auto water = res[1];
+
+		if(water[0].subs)
+		{
+			foreach(i, ref w; water)
+			{
+				auto n = format(`data/texture/워터/water%u%02u.jpg`, f.water.type, i);
+				w.subs[0].tex = new Image(PEfs.get(n));
+
+				with(w.subs[0].data)
+				{
+					auto vs = asVertexes
+										.chunks(4)
+										.map!(a => chain(a[0..3], a[1..4].retro)) // TODO: COMMON FUNC
+										.join;
+
+					vertices = vs.toByte;
+					indices = makeIndices(cast(uint)vs.length / 3);
+				}
+			}
+
+			f.waterData = makeHolderCreator(water, RENDER_SCENE, MH_DXT).process;
+		}
+
+		return res[0];
+	}
+
+	auto processWaterParam(ref RomFile f)
+	{
+		f.water.level = -_rsw.waterLevel / ROM_SCALE_DIV;
+		f.water.height = _rsw.waterHeight / ROM_SCALE_DIV;
+
+		f.water.speed = _rsw.waterSpeed;
+		f.water.pitch = _rsw.waterPitch;
+		f.water.animSpeed = _rsw.waterAnimSpeed;
+
+		f.water.type = cast(ubyte)_rsw.waterType;
+
+		/**/
 	}
 
 	void processFloorObjects(ref RomFile f)

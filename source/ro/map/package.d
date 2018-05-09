@@ -14,7 +14,7 @@ struct RomFile
 	static immutable
 	{
 		char[3] bom = `ROM`;
-		ubyte ver = 17;
+		ubyte ver = 18;
 	}
 
 	float
@@ -27,6 +27,7 @@ struct RomFile
 				diffuse,
 				lightDir;
 
+	RomWater water;
 	RomGround ground;
 
 	@(`ushort`) RomFloor[] floor;
@@ -37,7 +38,19 @@ struct RomFile
 	@(`ushort`) RomLight[] lights;
 	@(`uint`) ushort[] lightIndices;
 
-	HolderData objectsData;
+	HolderData	objectsData,
+				waterData;
+}
+
+struct RomWater
+{
+	float	pitch,
+			speed,
+			level,
+			height;
+
+	uint animSpeed;
+	ubyte type;
 }
 
 struct RomGround

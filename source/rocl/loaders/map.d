@@ -70,6 +70,16 @@ private:
 		processObjects(node);
 		node.recalcBBox;
 
+		{
+			auto n = allocateRC!ObjecterNode;
+
+			n.id = 0;
+			n.mh = new MeshHolder(_rom.waterData);
+			n.bbox = node.bbox;
+
+			node.childs ~= n;
+		}
+
 		sc.node = new Node;
 		sc.node.childs ~= new OctreeNode(node);
 		sc.node.bbox = node.bbox;

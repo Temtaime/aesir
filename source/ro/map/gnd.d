@@ -6,6 +6,7 @@ import
 		std.array,
 		std.range,
 		std.string,
+		std.typecons,
 		std.algorithm,
 
 		perfontain,
@@ -21,14 +22,18 @@ import
 
 struct GndConverter
 {
-	this(string path)
+	this(string path, float level, float height)
 	{
+		_waterLevel = level;
+		_waterHeight = height;
+
 		_gnd = PEfs.read!GndFile(path);
 	}
 
 	auto process()
 	{
 		MeshInfo[] res;
+		MeshInfo[32] water;
 
 		auto	tx = (_gnd.width + ROM_SPLIT_MAP - 1) / ROM_SPLIT_MAP,
 				ty = (_gnd.height + ROM_SPLIT_MAP - 1) / ROM_SPLIT_MAP;
@@ -43,7 +48,7 @@ struct GndConverter
 				auto	y = j * ROM_SPLIT_MAP,
 						sy = min(_gnd.height - y, ROM_SPLIT_MAP);
 
-				auto r = processSub(cast(ushort)x, cast(ushort)y, cast(ushort)sx, cast(ushort)sy);
+				auto r = processSub(water, cast(ushort)x, cast(ushort)y, cast(ushort)sx, cast(ushort)sy);
 
 				if(r.subs.length)
 				{
@@ -52,7 +57,7 @@ struct GndConverter
 			}
 		}
 
-		return res;
+		return tuple(res, water);
 	}
 
 private:
@@ -185,7 +190,7 @@ private:
 		}
 	}
 
-	auto processSub(ushort x, ushort y, ushort sx, ushort sy)
+	auto processSub(ref MeshInfo[32] water, ushort x, ushort y, ushort sx, ushort sy)
 	{
 		Subs mi;
 
@@ -196,7 +201,40 @@ private:
 			foreach(j; 0..sy)
 			foreach(i; 0..sx)
 			{
-				grid[i][j] = surfaceOf(cast(ushort)(i + x), cast(ushort)(j + y), s);
+				auto	u = cast(ushort)(i + x),
+						v = cast(ushort)(j + y);
+
+				auto r = &(grid[i][j] = surfaceOf(u, v, s));
+
+				if(r.tex)
+				{
+					if(r.va[].any!(a => a.y < _waterLevel + _waterHeight))
+					{
+						//writefln(`%s %s`, x + i, y + j);
+						if(!water[0].subs)
+						{
+							water.each!((ref a) => a.subs ~= SubMeshInfo.init);
+						}
+
+						auto vs = r.va;
+						auto arr = vs.toByte;
+						auto t = ROM_SCALE_DIV;
+
+						vs[0].t = Vector2((u + 0) % t / t, (v + 0) % t / t);
+						vs[1].t = Vector2((u + 1) % t / t, (v + 0) % t / t);
+						vs[2].t = Vector2((u + 0) % t / t, (v + 1) % t / t);
+						vs[3].t = Vector2((u + 1) % t / t, (v + 1) % t / t);
+
+						if(!vs[1].t.x) vs[1].t.x = 1;
+						if(!vs[2].t.y) vs[2].t.y = 1;
+
+						if(!vs[3].t.x) vs[3].t.x = 1;
+						if(!vs[3].t.y) vs[3].t.y = 1;
+
+						vs.each!((ref a) => a.y = _waterLevel);
+						water.each!((ref a) => a.subs[0].data.vertices ~= arr);
+					}
+				}
 			}
 
 			static if(ROM_OPTIMIZE_GRID)
@@ -317,6 +355,9 @@ private:
 	}
 
 	GndFile _gnd;
+
+	float	_waterLevel,
+			_waterHeight;
 }
 
 // TODO: MOVE ALL THESE FUNCTIONS
