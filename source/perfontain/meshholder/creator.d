@@ -52,6 +52,7 @@ abstract class HolderCreator
 
 			foreach(ref s; m.subs)
 			{
+				assert(s.data.indices.length);
 				assert(s.data.vertices.length);
 
 				if(!_texs.canFind(s.tex))

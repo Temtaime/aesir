@@ -213,7 +213,7 @@ private:
 		{
 			string map;
 
-			foreach(s; PEfs.get(`data/fogparametertable.txt`).assumeUTF.assumeUnique.splitter(`#`).map!strip)
+			foreach(s; PEfs.get(`data/fogparametertable.txt`).as!char.assumeUnique.splitter(`#`).map!strip)
 			{
 				if(s.endsWith(`.rsw`))
 				{

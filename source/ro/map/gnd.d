@@ -64,11 +64,9 @@ private:
 		auto c = _gnd.cell(x, y);
 		auto sid = c.surfs[idx];
 
-		Surface res;
-
 		if(sid < 0)
 		{
-			return res;
+			return Surface.init;
 		}
 
 		// IDX 0 - горизонтальная поверхность
@@ -78,11 +76,15 @@ private:
 		if(idx == 1 && y == _gnd.height - 1 || idx == 2 && x == _gnd.width - 1)
 		{
 			// для передней поверхности необходима клетка перед ней || для боковой поверхности необходима клетка правее нее
-			return res;
+			return Surface.init;
 		}
 
 		auto sur = &_gnd.surs[sid];
-		res.tex = _gnd.texs[sur.texId].name.convertName;
+
+		Surface res =
+		{
+			tex: _gnd.texs[sur.texId].name.convertName
+		};
 
 		foreach(i, ref v; res.va)
 		{
@@ -103,6 +105,7 @@ private:
 	 			{
 					pz = _gnd.cell(x, y + 1).heights[i - 2];
 	 			}
+
 				break;
 
 			case 2:
@@ -111,12 +114,15 @@ private:
 				case 0:
 					pz = c.heights[3];
 					break;
+
 				case 1:
 					pz = c.heights[1];
 					break;
+
 				case 2:
 					pz = _gnd.cell(x + 1, y).heights[2];
 					break;
+
 				default:
 					pz = _gnd.cell(x + 1, y).heights[0];
 				}
@@ -224,9 +230,12 @@ private:
 				indices = makeIndices(cast(uint)vs.length / 3);
 
 				clear;
-			}
 
-			mm.subs ~= sm;
+				if(indices.length)
+				{
+					mm.subs ~= sm;
+				}
+			}
 		}
 
 		return mm;
@@ -311,11 +320,20 @@ private:
 }
 
 // TODO: MOVE ALL THESE FUNCTIONS
-bool arePointsOnOneLine(ref Vector3 a, ref Vector3 b, ref Vector3 c) { return valueEqual(calcNormal(a, b, c).length, 0); }
+bool arePointsOnOneLine(ref Vector3 a, ref Vector3 b, ref Vector3 c)
+{
+	return valueEqual(calcNormal(a, b, c).length, 0);
+}
 
-auto toInts(in float[] arr) { return arr.map!(a => cast(int)lrint(a * 100)).array; }
+auto toInts(in float[] arr)
+{
+	return arr.map!(a => cast(int)lrint(a * 100)).array;
+}
 
-bool compareCoords(T)(ref in T a, ref in T b) { return a.flat.toInts[] == b.flat.toInts[];  }
+bool compareCoords(T)(ref in T a, ref in T b)
+{
+	return a.flat.toInts[] == b.flat.toInts[];
+}
 
 private:
 

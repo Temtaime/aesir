@@ -26,7 +26,7 @@ import
 
 string charsToString(T)(in T[] str) if(T.sizeof == 1)
 {
-	return str.toByte.until(0).array.assumeUTF;
+	return cast(string)str.toByte.until(0).array;
 }
 
 string convertName(in char[] str)

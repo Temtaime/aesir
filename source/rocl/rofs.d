@@ -1,10 +1,7 @@
 module rocl.rofs;
 
 import
-		std.path,
-		std.file,
-		std.array,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain,
 
@@ -17,10 +14,10 @@ import
 		rocl.game,
 		rocl.paths,
 
-		utils.wrapper.zip,
-
 		tt.error,
-		tt.logger;
+		tt.logger,
+
+		utils.wrapper.zip : Zip;
 
 
 final class RoFileSystem : FileSystem
@@ -34,6 +31,7 @@ final class RoFileSystem : FileSystem
 			_zip = new Zip(RES_FILE, false);
 		}
 	}
+
 	~this()
 	{
 		_zip.destroy;
@@ -65,12 +63,10 @@ protected:
 		{}
 		else
 		{
-			try
+			if(auto data = _zip.get(name).ifThrown(null))
 			{
-				return dg(_zip.get(name), false);
+				return dg(data, false);
 			}
-			catch(Exception)
-			{}
 		}
 
 		try
