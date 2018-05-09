@@ -25,6 +25,8 @@ final class RenderManager
 
 	auto alloc()
 	{
+		pragma(inline, true);
+
 		if(_arr.length == _used)
 		{
 			_arr.length += 128;
@@ -144,7 +146,7 @@ private:
 			auto start = fs & DATA_SM_MAT ? 64 : 0;
 
 			auto len = _pg.minLen(`pe_transforms`) - start + 15;
-			len = len / 16 * 16;
+			len &= ~15;
 
 			auto tmp = ScopeArray!ubyte(len * nodes.length + start);
 

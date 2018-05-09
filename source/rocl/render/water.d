@@ -29,6 +29,11 @@ final class WaterNode : Node
 
 	override void draw(in DrawInfo *di)
 	{
+		if(PE.shadows.passActive)
+		{
+			return;
+		}
+
 		auto tex = cast(ushort)(PE.tick * 60 / 1000 / _water.animSpeed % 32);
 
 		auto m = PE.render.alloc;
@@ -40,8 +45,6 @@ final class WaterNode : Node
 		m.id = tex;
 		m.blendingMode = blend ? blendingNormal : noBlending;
 		m.flags = DI_NO_DEPTH;
-
-		m.lightStart = m.lightEnd = 0;
 	}
 
 private:

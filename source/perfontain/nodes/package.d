@@ -94,7 +94,9 @@ final class ObjecterNode : Node
 
 	FrameOrientation[] oris;
 
+	RC!Program prog;
 	RC!MeshHolder mh;
+
 	Matrix4 matrix;
 
 	uint lightStart, lightEnd;

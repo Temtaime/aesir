@@ -333,12 +333,12 @@ struct ScopeArray(T)
 {
 	this(size_t len)
 	{
-		_data = alloc.makeArray!T(len);
+		_data = alloc.allocate(len * T.sizeof).as!T;
 	}
 
 	~this()
 	{
-		alloc.dispose(_data);
+		alloc.deallocate(_data);
 	}
 
 	inout opSlice()
