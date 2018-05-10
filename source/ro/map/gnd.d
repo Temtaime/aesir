@@ -361,10 +361,6 @@ private:
 }
 
 // TODO: MOVE ALL THESE FUNCTIONS
-bool arePointsOnOneLine(ref Vector3 a, ref Vector3 b, ref Vector3 c)
-{
-	return valueEqual(calcNormal(a, b, c).length, 0);
-}
 
 auto toInts(in float[] arr)
 {

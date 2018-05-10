@@ -120,3 +120,8 @@ auto angleTo(ref in Vector3 a, ref in Vector3 b)
 {
 	return acos(a * b / (a.length * b.length));
 }
+
+bool arePointsOnOneLine(ref Vector3 a, ref Vector3 b, ref Vector3 c)
+{
+	return valueEqual(calcNormal(a, b, c).length, 0);
+}

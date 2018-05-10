@@ -7,16 +7,28 @@ mixin template VectorImpl()
 		uint k;
 
 		foreach(ref v; args)
+		{
 			static if(.isVector!(typeof(v)))
+			{
 				foreach(ref e; v.flat)
+				{
 					flat[k++] = cast(T)e;
+				}
+			}
 			else
+			{
 				flat[k++] = cast(T)v;
+			}
+		}
 
 		if(k == 1)
+		{
 			flat[k..$] = flat[0];
+		}
 		else
+		{
 			assert(k == C, `not all elements in the vector have a value`); // TODO: STATIC ASSERT
+		}
 	}
 
 	@property inout ref
@@ -33,13 +45,12 @@ mixin template VectorImpl()
 		auto u()() if(C > 6) { return flat[6]; }
 		auto v()() if(C > 7) { return flat[7]; }
 
-		// special case for vertex(HACK ???)
-		auto p()() if(C > 2) { return *cast(inout(Vector3) *)(flat.ptr + 0); }
-		auto n()() if(C > 5) { return *cast(inout(Vector3) *)(flat.ptr + 3); }
-		auto t()() if(C > 7) { return *cast(inout(Vector2) *)(flat.ptr + 6); }
+		auto p()() if(C > 2) { return *cast(inout(Vector3)*)(flat.ptr + 0); }
+		auto n()() if(C > 5) { return *cast(inout(Vector3)*)(flat.ptr + 3); }
+		auto t()() if(C > 7) { return *cast(inout(Vector2)*)(flat.ptr + 6); }
 	}
 
-	auto opDispatch(string s)() @property const if(s.length > 1)
+	@property opDispatch(string s)() const if(s.length > 1)
 	{
 		Vector!(T, s.length) ret = void;
 
@@ -51,21 +62,28 @@ mixin template VectorImpl()
 		return ret;
 	}
 
-	auto opSlice() inout { return flat[]; }
+	inout opSlice()
+	{
+		return flat[];
+	}
 
 	static if(isFloatingPoint!T)
 	{
-		ref normalize() { return this /= length; }
+		ref normalize()
+		{
+			return this /= length;
+		}
 
 	const
 	@property:
-		auto normalized() { return this / length; }
+		auto normalized()
+		{
+			return this / length;
+		}
 
 		auto length()
 		{
-			T sum = 0;
-			foreach(v; flat) sum += v * v;
-			return sqrt(sum);
+			return flat.fold!((a, b) => a + b * b)(T(0)).sqrt;
 		}
 	}
 }

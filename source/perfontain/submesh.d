@@ -7,6 +7,7 @@ import
 		std.typecons,
 		std.container,
 		std.algorithm,
+		std.container.rbtree,
 
 		perfontain,
 		perfontain.misc.rc,
@@ -48,6 +49,11 @@ struct SubMeshData
 		}
 	}
 
+	void unify()
+	{
+		while(unifySub) {}
+	}
+
 	void clear()
 	{
 		auto vs = asVertexes;
@@ -81,7 +87,7 @@ struct SubMeshData
 			t[0].n = t[1].n = t[2].n = ns ? -n : n;
 		}
 
-		Vector3 *[][int[3]] aa;
+		Vector3*[][int[3]] aa;
 
 		foreach(ref v; tris)
 		{
@@ -133,6 +139,117 @@ struct SubMeshData
 		{
 			v = cast(uint)ra.lowerBound(cor[v]).length;
 		}
+	}
+
+private:
+	bool unifySub()
+	{
+		struct S
+		{
+			uint idx;
+			ubyte[3] verts;
+		}
+
+		auto tris = cast(Vertex[3][])asTriangles.array;
+
+		int[5][3][] ts;
+		S[][int[5][2]][bool] aa;
+
+		foreach(idx, t; tris)
+		{
+			int[5][3] u;
+
+			//auto wise = ((t[2].p - t[1].p) ^ (t[3].p - t[1].p)).z > 0;
+
+			foreach(i, ref v; t)
+			{
+				float[5] arr;
+
+				arr[0..3] = v.p.flat;
+				arr[3..5] = v.t.flat;
+
+				u[i] = arr.toInts;
+			}
+
+			foreach(p; 3.iota.permutations)
+			{
+				int[5][2] r;
+
+				r[0] = u[p[0]];
+				r[1] = u[p[1]];
+
+				ubyte[3] arr =
+				[
+					cast(ubyte)p[0],
+					cast(ubyte)p[1],
+					cast(ubyte)p[2],
+				];
+
+				aa[true][r] ~= S(cast(uint)idx, arr);
+			}
+		}
+
+		Vertex[] res;
+		RedBlackTree!uint processed;
+
+		bool changed;
+
+		foreach(wise, q; aa)
+		{
+			foreach(ref cords, arr; q)
+			{
+				arr = arr.filter!(a => processed.equalRange(a.idx).empty).array;
+
+				if(arr.empty)
+				{
+					continue;
+				}
+
+				if(arr.length == 1)
+				{
+					res ~= tris[arr[0].idx];
+					processed.insert(arr[0].idx);
+					continue;
+				}
+
+				auto rest = cartesianProduct(arr, arr).filter!(a => a[0].idx != a[1].idx);
+
+				foreach(u, v; rest)
+				{
+					if(!processed.equalRange(u.idx).empty) continue;
+					if(!processed.equalRange(v.idx).empty) continue;
+
+					auto	a = tris[u.idx][u.verts[2]],
+							b = tris[u.idx][u.verts[0]],
+							c = tris[v.idx][v.verts[2]];
+
+					if(arePointsOnOneLine(a.p, b.p, c.p))
+					{
+						auto e = (a.t - b.t) / (a.p - b.p).length * (c.p - a.p).length;
+
+						e.x = a.u + (b.u > a.u ? e.x : -e.x);
+						e.y = a.u + (b.v > a.v ? e.y : -e.y);
+
+						if(valueEqual(c.u, e.x) && valueEqual(c.v, e.y))
+						{
+							res ~= a;
+							res ~= tris[u.idx][u.verts[1]];
+							res ~= c;
+
+							processed.insert(u.idx);
+							processed.insert(v.idx);
+
+							changed = true;
+						}
+					}
+				}
+			}
+		}
+
+		vertices = res.toByte;
+		indices = makeIndices(cast(uint)res.length / 3);
+
+		return changed;
 	}
 }
 

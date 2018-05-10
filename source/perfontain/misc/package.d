@@ -189,6 +189,18 @@ void byFlag(T)(ref T v, uint bit, bool st)
 
 @property
 {
+	auto toFloats(ubyte N)(in int[N] arr)
+	{
+		float[N] res;
+
+		foreach(i, ref v; res)
+		{
+			v = arr[i] / 1000f;
+		}
+
+		return res;
+	}
+
 	auto toInts(ubyte N)(in float[N] arr)
 	{
 		int[N] res;
