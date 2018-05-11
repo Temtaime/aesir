@@ -84,6 +84,7 @@ final class Game
 			}
 			else
 			{
+				std.file.remove(`tmp/map/prontera.rom`);
 				mapViewer;
 			}
 

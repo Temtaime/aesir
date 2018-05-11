@@ -166,7 +166,7 @@ private:
 		uint k;
 		Matrix4[][RsmObject *] res;
 
-		foreach(ref r; objects!`model`)
+		foreach(ref r; objects!`model`) static if(false)
 		{
 			auto name = r.fileName.convertName;
 			auto negScale = r.scale.fold!((a, b) => a * b) < 0;

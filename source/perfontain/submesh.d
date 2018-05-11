@@ -190,7 +190,7 @@ private:
 		}
 
 		Vertex[] res;
-		RedBlackTree!uint processed;
+		auto processed = new RedBlackTree!uint;
 
 		bool changed;
 
@@ -225,10 +225,17 @@ private:
 
 					if(arePointsOnOneLine(a.p, b.p, c.p))
 					{
-						auto e = (a.t - b.t) / (a.p - b.p).length * (c.p - a.p).length;
+						auto e = (a.t - b.t) / (a.p - b.p).length * (a.p - c.p).length;
+
+						import std.math;
+
+						e.x = e.x.fabs;
+						e.y = e.y.fabs;
+
+						//e.writeln;
 
 						e.x = a.u + (b.u > a.u ? e.x : -e.x);
-						e.y = a.u + (b.v > a.v ? e.y : -e.y);
+						e.y = a.v + (b.v > a.v ? e.y : -e.y);
 
 						if(valueEqual(c.u, e.x) && valueEqual(c.v, e.y))
 						{
