@@ -108,8 +108,6 @@ private:
 		f.water.animSpeed = _rsw.waterAnimSpeed;
 
 		f.water.type = cast(ubyte)_rsw.waterType;
-
-		/**/
 	}
 
 	void processFloorObjects(ref RomFile f)
@@ -166,7 +164,7 @@ private:
 		uint k;
 		Matrix4[][RsmObject *] res;
 
-		foreach(ref r; objects!`model`) static if(false)
+		foreach(ref r; objects!`model`)
 		{
 			auto name = r.fileName.convertName;
 			auto negScale = r.scale.fold!((a, b) => a * b) < 0;

@@ -145,17 +145,6 @@ private:
 			v.v = sur.v[i];
 		}
 
-		if(x % 2)
-		{
-			res.va =
-			[
-				res.va[0],
-				res.va[3],
-				res.va[1],
-				res.va[2],
-			];
-		}
-
 		return res;
 	}
 
@@ -217,11 +206,10 @@ private:
 
 				auto r = &(grid[i][j] = surfaceOf(u, v, s));
 
-				if(r.tex && 0)
+				if(r.tex)
 				{
 					if(r.va[].any!(a => a.y < _waterLevel + _waterHeight))
 					{
-						//writefln(`%s %s`, x + i, y + j);
 						if(!water[0].subs)
 						{
 							water.each!((ref a) => a.subs ~= SubMeshInfo.init);
@@ -250,7 +238,7 @@ private:
 
 			static if(ROM_OPTIMIZE_GRID)
 			{
-				//optimizeGrid(grid, s);
+				optimizeGrid(grid, s);
 			}
 
 			foreach(ref c; grid.joiner.filter!(a => a.tex.length))
@@ -279,6 +267,7 @@ private:
 				indices = makeIndices(cast(uint)vs.length / 3);
 
 				clear;
+				//minimize;
 				//unify;
 
 				if(indices.length)
