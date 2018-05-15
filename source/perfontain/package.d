@@ -226,8 +226,8 @@ final class Engine
 
 	void quit() { _run = false; }
 
-    GUIManager gui;
-    FontManager fonts;
+	GUIManager gui;
+	FontManager fonts;
 	SceneManager scene;
 	AudioManager audio;
 	TimerManager timers;

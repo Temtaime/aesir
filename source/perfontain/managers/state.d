@@ -59,10 +59,10 @@ package(perfontain):
 		{
 			alias F = glGetBooleanv;
 		}
-        else
-        {
+		else
+		{
 			static assert(0);
-        }
+		}
 
 		static if(N == 1)
 		{

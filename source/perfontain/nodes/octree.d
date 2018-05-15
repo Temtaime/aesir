@@ -57,25 +57,25 @@ private:
 				continue;
 			}
 
-            switch(res) {
-            case F_INTERSECTS:
-            	if(PEscene._culler.collision(node.bbox) == F_OUTSIDE)
-            	{
+			switch(res) {
+			case F_INTERSECTS:
+				if(PEscene._culler.collision(node.bbox) == F_OUTSIDE)
+				{
 					break;
-            	}
+				}
 
 				goto case;
 
-            case F_INSIDE:
-            	node.draw(_di);
-            	break;
+			case F_INSIDE:
+				node.draw(_di);
+				break;
 
 			default:
 				if(!s.inside)
 				{
 					continue;
 				}
-            }
+			}
 
 			node.flags |= NODE_INT_DRAWN;
 		}

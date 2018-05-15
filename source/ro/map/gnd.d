@@ -106,10 +106,10 @@ private:
 				{
 					pz = c.heights[i + 2];
 				}
-	 			else
-	 			{
+				else
+				{
 					pz = _gnd.cell(x, y + 1).heights[i - 2];
-	 			}
+				}
 
 				break;
 

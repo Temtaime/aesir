@@ -93,64 +93,20 @@ private:
 		}
 	}
 
-	enum
-	{
-		DATA_MODEL		= 1,
-		DATA_COLOR		= 2,
-		DATA_NORMAL		= 4,
-		DATA_LIGHTS		= 8,
-		DATA_SM_MAT		= 16,
-	}
-
-	const calcFlags()
-	{
-		ubyte r;
-
-		if(!_rt)
-		{
-			if(_tp == RENDER_SCENE)
-			{
-				if(PE.settings.shadows)
-				{
-					if(PE.shadows.normals)
-					{
-						r |= DATA_NORMAL;
-					}
-
-					r |= DATA_MODEL | DATA_SM_MAT;
-				}
-
-				if(PE.settings.lights)
-				{
-					if(PE.scene.hasLights)
-					{
-						r |= DATA_LIGHTS | DATA_MODEL;
-					}
-
-					r |= DATA_NORMAL;
-				}
-			}
-
-			r |= DATA_COLOR;
-		}
-
-		return r;
-	}
-
 	void drawNodes(in DrawInfo[] nodes)
 	{
 		uint subs;
 
 		{
-			auto fs = calcFlags;
-			auto start = fs & DATA_SM_MAT ? 64 : 0;
+			auto fs = _pg.flags;
+			auto start = fs & PROG_DATA_SM_MAT ? 64 : 0;
 
 			auto len = _pg.minLen(`pe_transforms`) - start + 15;
 			len &= ~15;
 
 			auto tmp = ScopeArray!ubyte(len * nodes.length + start);
 
-			if(fs & DATA_SM_MAT)
+			if(fs & PROG_DATA_SM_MAT)
 			{
 				tmp[0..64][] = PE.shadows.matrix.toByte;
 			}
@@ -221,30 +177,28 @@ private:
 
 		add(di.matrix * *_viewProj);
 
-		if(flags & DATA_MODEL)
+		if(flags & PROG_DATA_MODEL)
 		{
 			add(di.matrix);
 		}
 
-		if(flags & DATA_NORMAL)
+		if(flags & PROG_DATA_NORMAL)
 		{
 			add(di.matrix.inversed.transpose);
 		}
 
-		if(flags & DATA_COLOR)
+		if(flags & PROG_DATA_COLOR)
 		{
 			add(di.color.toVec);
 		}
 
-		if(flags & DATA_LIGHTS)
+		if(flags & PROG_DATA_LIGHTS)
 		{
 			add(di.lightStart);
 			add(di.lightEnd);
 		}
 
 		arr[p..$] = 0;
-
-		//log(`%s %s`, arr.length, (p + 15) / 16 * 16);
 
 		assert(arr.length == (p + 15) / 16 * 16);
 	}
@@ -253,6 +207,7 @@ private:
 	ubyte _tp;
 	Program _pg;
 	RenderTarget _rt;
+
 	const(Matrix4) *_viewProj;
 
 	// DI allocator

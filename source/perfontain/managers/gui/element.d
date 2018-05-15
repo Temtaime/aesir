@@ -5,15 +5,15 @@ import
 		std.range,
 		std.stdio,
 		std.ascii,
- 		std.array,
- 		std.traits,
- 		std.typecons,
- 		std.string,
- 		std.regex,
+		std.array,
+		std.traits,
+		std.typecons,
+		std.string,
+		std.regex,
 		std.encoding,
- 		std.algorithm,
+		std.algorithm,
 
- 		stb.wrapper.image,
+		stb.wrapper.image,
 
 		perfontain,
 

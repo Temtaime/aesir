@@ -267,8 +267,8 @@ mixin template readableToString()
 		string r;
 		alias T = typeof(this);
 
-        import std.string : format;
-        import std.traits : FunctionTypeOf, Unqual;
+		import std.string : format;
+		import std.traits : FunctionTypeOf, Unqual;
 
 		foreach(m; __traits(allMembers, T))
 		{
@@ -284,8 +284,8 @@ mixin template readableToString()
 
 mixin template createCtorsDtors(A...)
 {
-    void ctors() { foreach(ref a; A) if(!a) a = new typeof(a); }
-    void dtors() { foreach_reverse(a; A) a.destroy; }
+	void ctors() { foreach(ref a; A) if(!a) a = new typeof(a); }
+	void dtors() { foreach_reverse(a; A) a.destroy; }
 }
 
 mixin template publicProperty(T, string name, string value = null)

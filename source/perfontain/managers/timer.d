@@ -7,7 +7,7 @@ import
 
 		perfontain,
 		perfontain.misc,
- 		perfontain.signals;
+		perfontain.signals;
 
 
 enum : ubyte

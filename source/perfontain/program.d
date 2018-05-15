@@ -1,19 +1,25 @@
 module perfontain.program;
 
 import
-		std.range,
-		std.string,
-		std.traits,
-		std.exception,
-		std.algorithm,
+		std.experimental.all,
 
 		core.bitop,
 
 		perfontain.opengl,
 		perfontain,
 
-		tt.error;
+		tt.error,
+		tt.logger : log;
 
+
+enum
+{
+	PROG_DATA_MODEL		= 1,
+	PROG_DATA_COLOR		= 2,
+	PROG_DATA_NORMAL	= 4,
+	PROG_DATA_LIGHTS	= 8,
+	PROG_DATA_SM_MAT	= 16,
+}
 
 final class Program : RCounted
 {
@@ -30,7 +36,35 @@ final class Program : RCounted
 
 		foreach(s; shaders)
 		{
+			s.parseAttribs;
 			glDetachShader(_id, s.id);
+		}
+
+		{
+			ubyte f;
+
+			auto arr =
+			[
+				tuple(`pe_transforms.pe_shadow_matrix`, PROG_DATA_SM_MAT),
+				tuple(`pe_transforms.transforms[].model`, PROG_DATA_MODEL),
+				tuple(`pe_transforms.transforms[].color`, PROG_DATA_COLOR),
+				tuple(`pe_transforms.transforms[].normal`, PROG_DATA_NORMAL),
+				tuple(`pe_transforms.transforms[].lightStart`, PROG_DATA_LIGHTS),
+			];
+
+			foreach(s; shaders)
+			{
+				foreach(a; arr)
+				{
+					if(a[0] in s.attribs)
+					{
+						f |= a[1];
+						break;
+					}
+				}
+			}
+
+			flags = f;
 		}
 	}
 
@@ -72,7 +106,7 @@ final class Program : RCounted
 		}
 		else static if(is(T == ulong))
 		{
-			glProgramUniform2uiv(_id, s.loc, 1, cast(uint *)&value);
+			glProgramUniform2uiv(_id, s.loc, 1, cast(uint*)&value);
 		}
 		else static if(is(T == Vector3))
 		{
@@ -125,6 +159,7 @@ final class Program : RCounted
 		assert(false);
 	}
 
+	const ubyte flags;
 private:
 	static bind(uint id)
 	{

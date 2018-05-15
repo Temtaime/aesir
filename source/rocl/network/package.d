@@ -63,17 +63,17 @@ final class PacketManager
 	{
 		if(_reader.alive)
 		{
-		 	if(_flags & M_PING && PE.tick - _tick >= 30_000)
-		 	{
-		 		_tick = PE.tick;
+			if(_flags & M_PING && PE.tick - _tick >= 30_000)
+			{
+				_tick = PE.tick;
 
-		 		version(AE_ENCRYPTED_NET)
-		 		{
-		 			_tick &= ~1;
-		 		}
+				version(AE_ENCRYPTED_NET)
+				{
+					_tick &= ~1;
+				}
 
-		 		send!Pk0360(_tick);
-		 	}
+				send!Pk0360(_tick);
+			}
 
 			for(_reader.process; processPacket; ) {}
 		}
