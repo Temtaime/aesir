@@ -36,36 +36,33 @@ final class Program : RCounted
 
 		foreach(s; shaders)
 		{
-			s.parseAttribs;
 			glDetachShader(_id, s.id);
 		}
 
+		parseAttribs;
+
+		static immutable Attrs =
+		[
+			tuple(`pe_transforms.pe_shadow_matrix`, PROG_DATA_SM_MAT),
+			tuple(`pe_transforms.transforms[0].model`, PROG_DATA_MODEL),
+			tuple(`pe_transforms.transforms[0].color`, PROG_DATA_COLOR),
+			tuple(`pe_transforms.transforms[0].normal`, PROG_DATA_NORMAL),
+			tuple(`pe_transforms.transforms[0].lightStart`, PROG_DATA_LIGHTS),
+		];
+
+		foreach(s; shaders)
 		{
-			ubyte f;
-
-			auto arr =
-			[
-				tuple(`pe_transforms.pe_shadow_matrix`, PROG_DATA_SM_MAT),
-				tuple(`pe_transforms.transforms[].model`, PROG_DATA_MODEL),
-				tuple(`pe_transforms.transforms[].color`, PROG_DATA_COLOR),
-				tuple(`pe_transforms.transforms[].normal`, PROG_DATA_NORMAL),
-				tuple(`pe_transforms.transforms[].lightStart`, PROG_DATA_LIGHTS),
-			];
-
-			foreach(s; shaders)
+			foreach(a; Attrs)
 			{
-				foreach(a; arr)
+				if(a[0] in _attribs)
 				{
-					if(a[0] in s.attribs)
-					{
-						f |= a[1];
-						break;
-					}
+					_flags |= a[1];
+					break;
 				}
 			}
-
-			flags = f;
 		}
+
+		_attribs.writeln;
 	}
 
 	~this()
@@ -159,8 +156,80 @@ final class Program : RCounted
 		assert(false);
 	}
 
-	const ubyte flags;
 private:
+	mixin publicProperty!(ubyte, `flags`);
+
+	void parseAttribs()
+	{
+		int cnt, nameLen;
+
+		enum Attribs =
+		[
+			tuple(GL_ACTIVE_UNIFORMS, GL_ACTIVE_UNIFORM_MAX_LENGTH, `glGetActiveUniform`),
+			tuple(GL_ACTIVE_ATTRIBUTES, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, `glGetActiveAttrib`),
+			//tuple(GL_ACTIVE_UNIFORM_BLOCKS, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, `glGetActiveAttrib`),
+		];
+
+		static foreach(e; Attribs)
+		{
+			glGetProgramiv(_id, e[0], &cnt);
+			glGetProgramiv(_id, e[1], &nameLen);
+
+			foreach(i; 0..cnt)
+			{
+				int size;
+				uint len, type;
+
+				auto name = new char[nameLen];
+				mixin(e[2] ~ `(_id, i, cast(uint)name.length, &len, &size, &type, name.ptr);`);
+
+				_attribs[name[0..len].idup] = Attrib(type, size);
+			}
+		}
+
+		int numBlocks;
+		glGetProgramInterfaceiv(_id, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &numBlocks);
+
+		auto blockProperties = [GL_NUM_ACTIVE_VARIABLES];
+		auto activeUnifProp = [GL_ACTIVE_VARIABLES];
+		auto unifProperties = [GL_NAME_LENGTH, GL_TYPE, GL_LOCATION];
+
+		int res;
+
+		glGetProgramInterfaceiv(_id, GL_SHADER_STORAGE_BLOCK, GL_MAX_NAME_LENGTH, &res);
+
+		uint len;
+		auto name = new char[res];
+
+		for(int blockIx = 0; blockIx < numBlocks; ++blockIx)
+		{
+			int numActiveUnifs = 0;
+			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, blockIx, 1, blockProperties.ptr, 1, null, &numActiveUnifs);
+
+
+			glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, blockIx, cast(uint)name.length, &len, name.ptr);
+			auto ee = name[0..len].idup;
+
+
+			if(!numActiveUnifs)
+				continue;
+
+			auto blockUnifs = new int[(numActiveUnifs)];
+			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, blockIx, 1, activeUnifProp.ptr, numActiveUnifs, null, &blockUnifs[0]);
+
+			for(int unifIx = 0; unifIx < numActiveUnifs; ++unifIx)
+			{
+				int[3] values;
+				glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, blockUnifs[unifIx], 1, unifProperties.ptr, 1, null, values.ptr);
+
+				auto nameData = new char[values[0]];
+				glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, blockUnifs[unifIx], cast(uint)nameData.length, &len, &nameData[0]);
+
+				_attribs[ee ~ `.` ~ nameData[0..len].assumeUnique] = Attrib.init;
+			}
+		}
+	}
+
 	static bind(uint id)
 	{
 		if(set(PEstate._prog, id))
@@ -220,5 +289,7 @@ private:
 	__gshared size_t _ssbo;
 
 	uint _id;
+
+	Attrib[string] _attribs;
 	UniformData*[string] _unis;
 }

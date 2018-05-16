@@ -84,7 +84,7 @@ final class Game
 			}
 			else
 			{
-				std.file.remove(`tmp/map/prontera.rom`);
+				if(std.file.exists(`tmp/map/prontera.rom`)) std.file.remove(`tmp/map/prontera.rom`);
 				mapViewer;
 			}
 

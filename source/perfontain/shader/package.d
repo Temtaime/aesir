@@ -53,41 +53,12 @@ final class Shader : RCounted
 		glDeleteShader(id);
 	}
 
-	void parseAttribs()
-	{
-		int cnt, nameLen;
-
-		enum Attribs =
-		[
-			tuple(GL_ACTIVE_UNIFORMS, GL_ACTIVE_UNIFORM_MAX_LENGTH, `glGetActiveUniform`),
-			tuple(GL_ACTIVE_ATTRIBUTES, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, `glGetActiveAttrib`),
-		];
-
-		static foreach(e; Attribs)
-		{
-			glGetProgramiv(id, e[0], &cnt);
-			glGetProgramiv(id, e[1], &nameLen);
-
-			foreach(i; 0..cnt)
-			{
-				int size;
-				uint len, type;
-
-				auto name = new char[nameLen];
-				mixin(e[2] ~ `(id, i, cast(uint)name.length, &len, &size, &type, name.ptr);`);
-
-				attribs[name[0..len].idup] = Attrib(type, size);
-			}
-		}
-	}
-
 	const
 	{
 		uint id;
 		ubyte type;
 	}
 
-	Attrib[string] attribs;
 private:
 	auto compileLog()
 	{
