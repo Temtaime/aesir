@@ -38,13 +38,6 @@ class Node : RCounted
 
 	Matrix4 matrix;
 	BBox bbox;
-
-	ubyte flags;
-}
-
-enum
-{
-	NODE_INT_DRAWN		= 1, // TODO: make private somehow ???
 }
 
 struct FrameOrientation

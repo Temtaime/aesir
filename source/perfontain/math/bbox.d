@@ -10,6 +10,7 @@ import
 		perfontain.misc,
 		perfontain.math.matrix;
 
+
 enum : ubyte
 {
 	F_OUTSIDE,
@@ -58,6 +59,12 @@ struct BBox
 			}
 
 			return r;
+		}
+
+		bool hasInside()(auto ref in Vector3 v)
+		{
+			return	max.vfold!(Op!`>=`, Op!`&&`)(v) &&
+					min.vfold!(Op!`<=`, Op!`&&`)(v);
 		}
 
 		auto collision()(auto ref in BBox b)

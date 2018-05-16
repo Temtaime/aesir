@@ -220,5 +220,5 @@ private:
 	__gshared size_t _ssbo;
 
 	uint _id;
-	UniformData *[string] _unis;
+	UniformData*[string] _unis;
 }

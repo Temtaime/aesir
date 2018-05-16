@@ -4,10 +4,14 @@ import
 		perfontain.math.bbox,
 		perfontain.math.matrix;
 
-struct FrustumCuller {
-	this(ref in Matrix4 m) {
+
+struct FrustumCuller
+{
+	this(ref in Matrix4 m)
+	{
 		foreach(i; 0..6)
-		foreach(j; 0..4) {
+		foreach(j; 0..4)
+		{
 			auto k = j * 4;
 
 			auto a = m.flat[3 + k];
@@ -21,20 +25,29 @@ struct FrustumCuller {
 	{
 		ubyte c;
 
-		foreach(ref f; _planes) {
+		foreach(ref f; _planes)
+		{
 			ubyte k;
 
-			foreach(n; IndexTuple!8)
-				if(f.p * box.point!n + f.w > 0) k++;
+			static foreach(n; 0..8)
+			{
+				if(f.p * box.point!n + f.w > 0)
+				{
+					k++;
+				}
+			}
 
 			if(!k)
+			{
 				return F_OUTSIDE;
+			}
 
 			c += k == 8;
 		}
 
 		return c == 6 ? F_INSIDE : F_INTERSECTS;
 	}
+
 package:
 	Vector4[6] _planes;
 }
