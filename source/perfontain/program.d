@@ -56,19 +56,13 @@ final class Program : RCounted
 			tuple(`pe_transforms.transforms[0].lightStart`, PROG_DATA_LIGHTS),
 		];
 
-		foreach(s; shaders)
+		foreach(a; Attrs)
 		{
-			foreach(a; Attrs)
+			if(a[0] in _attribs)
 			{
-				if(a[0] in _attribs)
-				{
-					_flags |= a[1];
-					break;
-				}
+				_flags |= a[1];
 			}
 		}
-
-		_attribs.writeln;
 	}
 
 	~this()
@@ -210,7 +204,8 @@ private:
 
 	void parseBlock(uint idx)
 	{
-		int cnt, nameLen;
+		int		cnt,
+				nameLen;
 
 		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,  [ GL_NUM_ACTIVE_VARIABLES ].ptr, 1, null, &cnt);
 
