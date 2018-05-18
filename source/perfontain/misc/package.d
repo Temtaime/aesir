@@ -302,7 +302,7 @@ mixin template makeHelpers(A...)
 	{
 		string res;
 
-		foreach(i; IndexTuple!(A.length / 2))
+		static foreach(i; 0..A.length / 2)
 		{
 			auto n = A[i * 2], f = A[i * 2 + 1];
 

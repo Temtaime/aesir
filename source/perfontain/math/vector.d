@@ -1,7 +1,20 @@
 module perfontain.math.vector;
 
+
 mixin template VectorImpl()
 {
+	this(R)(R range) if(isInputRange!R)
+	{
+		uint k;
+
+		foreach(v; range)
+		{
+			flat[k++] = v;
+		}
+
+		assert(k == C);
+	}
+
 	this(A...)(auto ref in A args)
 	{
 		uint k;
@@ -27,7 +40,7 @@ mixin template VectorImpl()
 		}
 		else
 		{
-			assert(k == C, `not all elements in the vector have a value`); // TODO: STATIC ASSERT
+			assert(k == C);
 		}
 	}
 
@@ -37,10 +50,6 @@ mixin template VectorImpl()
 		auto y()() if(C > 1) { return flat[1]; }
 		auto z()() if(C > 2) { return flat[2]; }
 		auto w()() if(C > 3) { return flat[3]; }
-
-		auto a()() if(C > 3) { return flat[3]; }
-		auto b()() if(C > 4) { return flat[4]; }
-		auto c()() if(C > 5) { return flat[5]; }
 
 		auto u()() if(C > 6) { return flat[6]; }
 		auto v()() if(C > 7) { return flat[7]; }
@@ -52,14 +61,14 @@ mixin template VectorImpl()
 
 	@property opDispatch(string s)() const if(s.length > 1)
 	{
-		Vector!(T, s.length) ret = void;
+		Vector!(T, s.length) res;
 
-		foreach(i; IndexTuple!(ret.C))
+		static foreach(i; 0..res.C)
 		{
-			ret[i] = mixin(`this.` ~ s[i]);
+			res[i] = mixin(`this.` ~ s[i]);
 		}
 
-		return ret;
+		return res;
 	}
 
 	inout opSlice()
@@ -67,23 +76,26 @@ mixin template VectorImpl()
 		return flat[];
 	}
 
-	static if(isFloatingPoint!T)
+	static if(isFP)
 	{
+		const length()
+		{
+			return flat[].fold!((a, b) => a + b * b)(T(0)).sqrt;
+		}
+
 		ref normalize()
 		{
 			return this /= length;
 		}
 
-	const
-	@property:
-		auto normalized()
+		const normalized()
 		{
 			return this / length;
 		}
+	}
 
-		auto length()
-		{
-			return flat.fold!((a, b) => a + b * b)(T(0)).sqrt;
-		}
+	const zip(ref in Matrix v)
+	{
+		return std.range.zip(flat[], v[]);
 	}
 }

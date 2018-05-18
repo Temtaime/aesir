@@ -22,12 +22,6 @@ import
 		tt.error;
 
 
-struct Attrib
-{
-	uint	type,
-			size;
-}
-
 final class Shader : RCounted
 {
 	this(string name, string data, ubyte t)

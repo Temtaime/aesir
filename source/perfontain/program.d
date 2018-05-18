@@ -21,6 +21,12 @@ enum
 	PROG_DATA_SM_MAT	= 16,
 }
 
+struct Attrib
+{
+	uint	type,
+			size;
+}
+
 final class Program : RCounted
 {
 	this(Shader[] shaders)
@@ -161,72 +167,79 @@ private:
 
 	void parseAttribs()
 	{
-		int cnt, nameLen;
-
 		enum Attribs =
 		[
 			tuple(GL_ACTIVE_UNIFORMS, GL_ACTIVE_UNIFORM_MAX_LENGTH, `glGetActiveUniform`),
 			tuple(GL_ACTIVE_ATTRIBUTES, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, `glGetActiveAttrib`),
-			//tuple(GL_ACTIVE_UNIFORM_BLOCKS, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, `glGetActiveAttrib`),
 		];
 
 		static foreach(e; Attribs)
 		{
-			glGetProgramiv(_id, e[0], &cnt);
-			glGetProgramiv(_id, e[1], &nameLen);
-
-			foreach(i; 0..cnt)
 			{
-				int size;
-				uint len, type;
+				int cnt, nameLen;
+
+				glGetProgramiv(_id, e[0], &cnt);
+				glGetProgramiv(_id, e[1], &nameLen);
 
 				auto name = new char[nameLen];
-				mixin(e[2] ~ `(_id, i, cast(uint)name.length, &len, &size, &type, name.ptr);`);
 
-				_attribs[name[0..len].idup] = Attrib(type, size);
+				foreach(i; 0..cnt)
+				{
+					int size;
+					uint type;
+
+					mixin(e[2] ~ `(_id, i, cast(uint)name.length, cast(uint*)&nameLen, &size, &type, name.ptr);`);
+
+					_attribs[name[0..nameLen].idup] = Attrib(type, size);
+				}
 			}
 		}
 
-		int numBlocks;
-		glGetProgramInterfaceiv(_id, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &numBlocks);
-
-		auto blockProperties = [GL_NUM_ACTIVE_VARIABLES];
-		auto activeUnifProp = [GL_ACTIVE_VARIABLES];
-		auto unifProperties = [GL_NAME_LENGTH, GL_TYPE, GL_LOCATION];
-
-		int res;
-
-		glGetProgramInterfaceiv(_id, GL_SHADER_STORAGE_BLOCK, GL_MAX_NAME_LENGTH, &res);
-
-		uint len;
-		auto name = new char[res];
-
-		for(int blockIx = 0; blockIx < numBlocks; ++blockIx)
 		{
-			int numActiveUnifs = 0;
-			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, blockIx, 1, blockProperties.ptr, 1, null, &numActiveUnifs);
+			int cnt;
+			glGetProgramInterfaceiv(_id, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &cnt);
 
-
-			glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, blockIx, cast(uint)name.length, &len, name.ptr);
-			auto ee = name[0..len].idup;
-
-
-			if(!numActiveUnifs)
-				continue;
-
-			auto blockUnifs = new int[(numActiveUnifs)];
-			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, blockIx, 1, activeUnifProp.ptr, numActiveUnifs, null, &blockUnifs[0]);
-
-			for(int unifIx = 0; unifIx < numActiveUnifs; ++unifIx)
+			foreach(idx; 0..cnt)
 			{
-				int[3] values;
-				glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, blockUnifs[unifIx], 1, unifProperties.ptr, 1, null, values.ptr);
-
-				auto nameData = new char[values[0]];
-				glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, blockUnifs[unifIx], cast(uint)nameData.length, &len, &nameData[0]);
-
-				_attribs[ee ~ `.` ~ nameData[0..len].assumeUnique] = Attrib.init;
+				parseBlock(idx);
 			}
+		}
+
+		_attribs.rehash;
+	}
+
+	void parseBlock(uint idx)
+	{
+		int cnt, nameLen;
+
+		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,  [ GL_NUM_ACTIVE_VARIABLES ].ptr, 1, null, &cnt);
+
+		if(!cnt)
+		{
+			return;
+		}
+
+		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,  [ GL_NAME_LENGTH ].ptr, 1, null, &nameLen);
+
+		auto block = new char[nameLen];
+		glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen, cast(uint*)&nameLen, block.ptr);
+		block.length = nameLen;
+
+		auto vars = new int[cnt];
+		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1, [ GL_ACTIVE_VARIABLES ].ptr, cnt, null, vars.ptr);
+
+		foreach(var; vars)
+		{
+			enum Query = [ GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_SIZE ];
+			enum N = cast(uint)Query.length;
+
+			int[N] arr;
+			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, Query.ptr, N, null, arr.ptr);
+
+			auto varName = new char[arr[0]];
+			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0], cast(uint*)&nameLen, varName.ptr);
+
+			_attribs[format(`%s.%s`, block, varName[0..nameLen])] = Attrib(arr[1], arr[2]);
 		}
 	}
 

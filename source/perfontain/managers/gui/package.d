@@ -191,7 +191,7 @@ private:
 
 				with(_cur.parent)
 				{
-					p = vmap!((a, b) => clamp(a, short(0), b))(p, size - _cur.size);
+					p = p.zipMap!((a, b) => clamp(a, short(0), b))(size - _cur.size);
 
 					if(_cur.pos != p)
 					{

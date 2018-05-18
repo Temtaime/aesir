@@ -2,6 +2,7 @@ module perfontain.math;
 
 import
 		std.math,
+		std.algorithm,
 
 		perfontain.math.matrix;
 

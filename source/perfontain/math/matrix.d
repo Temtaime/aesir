@@ -18,36 +18,13 @@ public import
 				perfontain.math.constants;
 
 
-template IndexTuple(int e, int s = 0, T...)
+auto zipMap(alias F, T, uint N)(auto ref in Matrix!(T, 1, N) a, auto ref in Matrix!(T, 1, N) b)
 {
-	static if(s == e)
-		alias IndexTuple = T;
-	else
-		static if(s > e)
-			alias IndexTuple = IndexTuple!(e, s - 1, T, s);
-		else
-			alias IndexTuple = IndexTuple!(e, s + 1, T, s);
-}
+	Vector!(typeof(F(T.init, T.init)), N) res;
 
-auto vmap(alias F, uint N, T, R)(auto ref in Matrix!(T, 1, N) u, auto ref in R v) // TODO: DMD BUG
-{
-	Vector!(typeof(F(T.init, v[0])), N) res;
-
-	foreach(i, ref e; res.flat)
+	foreach(i, ref v; res)
 	{
-		e = F(u[i], v[i]);
-	}
-
-	return res;
-}
-
-auto vfold(alias F, alias F2, uint N, T, R)(auto ref in Matrix!(T, 1, N) v, auto ref in R r) // TODO: DMD BUG
-{
-	Unqual!(typeof(F(v[0], r[0]))) res = F(v[0], r[0]); // TODO: REWRITE ?
-
-	foreach(i, e; v.flat[1..$])
-	{
-		res = F2(res, F(e, r[i + 1]));
+		v = F(a[i], b[i]);
 	}
 
 	return res;
@@ -82,7 +59,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 
 	static
 	{
-		auto zero() // TODO: REWRITE
+		auto zero()
 		{
 			Matrix res;
 			res.flat[] = 0;
@@ -139,20 +116,22 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		{
 			Matrix!(T, M, R) ret = void;
 
-			foreach(i; IndexTuple!M)
-			foreach(j; IndexTuple!N)
+			static foreach(i; 0..M)
+			static foreach(j; 0..N)
 			{
-				auto c = A[i][j];
-
-				foreach(k; IndexTuple!R)
 				{
-					static if(j)
+					auto c = A[i][j];
+
+					static foreach(k; 0..R)
 					{
-						ret.A[i][k] += b.A[j][k] * c;
-					}
-					else
-					{
-						ret.A[i][k] = b.A[j][k] * c;
+						static if(j)
+						{
+							ret.A[i][k] += b.A[j][k] * c;
+						}
+						else
+						{
+							ret.A[i][k] = b.A[j][k] * c;
+						}
 					}
 				}
 			}
@@ -211,12 +190,12 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 	{
 		ref opIndex(size_t i) inout
 		{
-			return *cast(Matrix!(T, 1, N) *)A[i].ptr;
+			return *cast(Matrix!(T, 1, N)*)A[i].ptr;
 		}
 
 		inout opSlice()
 		{
-			return (cast(Matrix!(T, 1, N) *)flat.ptr)[0..M];
+			return (cast(Matrix!(T, 1, N)*)flat.ptr)[0..M];
 		}
 	}
 
@@ -236,7 +215,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 
 		static if(C == 3)
 		{
-			static if(is(T == float))
+			static if(isFP)
 			{
 				alias Quat = QuaternionT!T;
 			}
@@ -284,7 +263,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		{
 			auto opBinary(string op: `*`)(auto ref in Matrix b) const
 			{
-				return this.vfold!(Op!`*`, Op!`+`)(b);
+				return zip(b).map!(a => a[0] * a[1]).fold!((a, b) => a + b);
 			}
 		}
 	}
