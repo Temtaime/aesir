@@ -130,7 +130,7 @@ private:
 
 		void onAspect(float aspect)
 		{
-			PE.scene.proj = Matrix4.makePerspective(aspect, fov, 10, 500);
+			PE.scene.proj = Matrix4.makePerspective(aspect, fov, 10, 1000);
 		}
 
 		PE.onAspect.permanent(&onAspect);

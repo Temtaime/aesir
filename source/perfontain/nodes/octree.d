@@ -13,17 +13,17 @@ final class OctreeNode : Node
 	this(Node node)
 	{
 		_nodes = node.childs;
-
-		_root.box = bbox = node.bbox;
 		_drawn.length = _nodes.length;
 
-		create(_root);
+		_root.box = bbox = node.bbox;
+		_root.nodes = iota(cast(uint)_nodes.length).array;
 
-		_drawn[] = false;
+		create(_root);
 	}
 
 	override void draw(in DrawInfo* di)
 	{
+
 		check(_root, di);
 
 		_drawn[] = false;
@@ -52,12 +52,20 @@ private:
 		}
 	}
 
-	void create(ref Tree t)
+	void create(ref Tree t, uint depth = 2)
 	{
-		auto box = &t.box;
-		auto center = _nodes[].map!(a => a.bbox.center).reduce!((a, b) => a + b) / _nodes.length;
+		/*{
+			BBox box;
+			_nodes[].indexed(t.nodes).each!(a => box += a.bbox);
 
-		assert(box.hasInside(center));
+			t.box.min = t.box.min.zipMap!max(box.min);
+			t.box.max = t.box.max.zipMap!min(box.max);
+		}*/
+
+		auto box = &t.box;
+		auto center = box.center;
+
+		//writefln(`%s %s`, t.nodes.length, *box);
 
 		auto bb =
 		[
@@ -71,24 +79,19 @@ private:
 		{
 			auto e = Tree(b);
 
-			foreach(i, n; _nodes[].enumerate.filter!(a => !_drawn[a.index]))
+			foreach(i; t.nodes)
 			{
-				if(auto res = b.collision(n.bbox))
+				if(b.collision(_nodes[i].bbox))
 				{
-					if(res == F_INSIDE)
-					{
-						_drawn[i] = true;
-					}
-
-					e.nodes ~= cast(uint)i;
+					e.nodes ~= i;
 				}
 			}
 
 			if(auto cnt = e.nodes.length)
 			{
-				if(cnt < t.nodes.length && cnt > 16)
+				if(depth)
 				{
-					create(e);
+					create(e, depth - 1);
 				}
 
 				t.childs ~= e;

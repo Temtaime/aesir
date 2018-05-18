@@ -170,7 +170,8 @@ private:
 		static foreach(e; Attribs)
 		{
 			{
-				int cnt, nameLen;
+				int		cnt,
+						nameLen;
 
 				glGetProgramiv(_id, e[0], &cnt);
 				glGetProgramiv(_id, e[1], &nameLen);
