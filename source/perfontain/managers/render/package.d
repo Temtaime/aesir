@@ -1,11 +1,7 @@
 module perfontain.managers.render;
 
 import
-		std.array,
-		std.typecons,
-		std.algorithm,
-
-		core.stdc.stdlib,
+		std.experimental.all,
 
 		perfontain,
 		perfontain.opengl,
@@ -23,16 +19,9 @@ final class RenderManager
 		drawAlloc ~= new DrawAllocator(RENDER_SCENE);
 	}
 
-	auto alloc()
+	void toQueue(ref DrawInfo di)
 	{
-		pragma(inline, true);
-
-		if(_arr.length == _used)
-		{
-			_arr.length += 128;
-		}
-
-		return &(_arr[_used++] = DrawInfo.init);
+		_infos ~= di;
 	}
 
 	void doDraw(Program pg, ubyte tp, ref const(Matrix4) viewProj, RenderTarget rt, bool doSort = true)
@@ -42,54 +31,35 @@ final class RenderManager
 		_rt = rt;
 		_viewProj = &viewProj;
 
-		auto sub = _arr[0.._used];
-
-		if(sub.length)
+		if(_infos.length)
 		{
+			auto ss = _infos[];
+
 			if(doSort)
 			{
-				sub.sort!((ref a, ref b) => DrawInfo.cmp!true(a, b), SwapStrategy.stable);
+				ss.sort!((a, b) => DrawInfo.cmp(a, b), SwapStrategy.stable);
 			}
 
-			if(GL_ARB_bindless_texture)
-			{
-				process!(DrawInfo.cmp!false)(sub);
-			}
-			else
-			{
-				process!(DrawInfo.cmp!true)(sub);
-			}
-
-			_used = 0;
+			process!(DrawInfo.cmp);
+			_infos.clear;
 		}
 	}
 
 	RCArray!DrawAllocator drawAlloc;
 private:
-	void process(alias F)(in DrawInfo[] index)
+	void process(alias F)()
 	{
-		for(auto start = index.ptr, cur = start + 1; true; cur++)
+		DrawInfo[] index = (&_infos[0])[0.._infos.length];
+
+		foreach(ref v, cnt; index.group!((a, b) => F(a, b) == F(b, a)))
 		{
-			bool end = cur > &index.back;
+			auto arr = index[0..cnt];
+			index = index[cnt..$];
 
-			if(end || F(*start, *cur) != F(*cur, *start))
-			{
-				auto sub = start[0..cur - start];
+			PEstate.depthMask = !(v.flags & DI_NO_DEPTH);
+			PEstate.blendingMode = v.blendingMode;
 
-				{
-					PEstate.depthMask = !(start.flags & DI_NO_DEPTH);
-					PEstate.blendingMode = start.blendingMode;
-
-					drawNodes(sub);
-				}
-
-				if(end)
-				{
-					break;
-				}
-
-				start = cur;
-			}
+			drawNodes(arr);
 		}
 	}
 
@@ -210,7 +180,5 @@ private:
 
 	const(Matrix4) *_viewProj;
 
-	// DI allocator
-	uint _used;
-	DrawInfo[] _arr;
+	Array!DrawInfo _infos;
 }

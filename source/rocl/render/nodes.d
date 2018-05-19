@@ -95,16 +95,15 @@ final class ItemNode : Node // TODO: BBOX ON CREATION
 		// TODO: OPTIMIZE
 		bbox = BBox(Vector3(_q.xy, 0), Vector3(_q.zw, 0)) * mat;
 
-		auto m = PE.render.alloc;
+		DrawInfo m;
 		auto c = colorWhite;
 
 		m.mh = _mh;
 		m.color = c;
 		m.matrix = mat;
-		m.id = 0;
-		m.flags = 0;
-		m.lightStart = m.lightEnd = 0;
 		m.blendingMode = c.a == 255 ? noBlending : blendingNormal;
+
+		PE.render.toQueue(m);
 	}
 
 	auto pickUp()
@@ -167,7 +166,7 @@ final class EffectNode : Node
 
 		foreach(ref a; f.anims)
 		{
-			auto m = PE.render.alloc;
+			DrawInfo m;
 
 			//writefln(`%s %s`, a.mesh, a.c);
 
@@ -178,7 +177,7 @@ final class EffectNode : Node
 			m.blendingMode = a.blendingMode;
 			m.flags = DI_NO_DEPTH; // TODO: CW ???
 
-			m.lightStart = m.lightEnd = 0;
+			PE.render.toQueue(m);
 		}
 	}
 

@@ -124,17 +124,16 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 
 		foreach(ref im; fs.images)
 		{
-			auto m = PE.render.alloc;
+			DrawInfo m;
 			auto c = im.color;
 
 			m.mh = spr.mh;
 			m.color = c;
 			m.matrix = mat;
 			m.id = im.mesh;
-			//m.depth = 0.01;
-			m.flags = 0;//DI_NO_PROJ;
-			m.lightStart = m.lightEnd = 0;
 			m.blendingMode = c.a == 255 ? noBlending : blendingNormal;
+
+			PE.render.toQueue(m);
 		}
 
 		foreach_reverse(i, SpriteObject s; sprites[1..$])
@@ -160,16 +159,14 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 
 			foreach(ref im; u.images)
 			{
-				auto m = PE.render.alloc;
+				DrawInfo m;
 
 				m.mh = s.mh;
 				m.color = im.color;
 				m.matrix = m2;
 				m.id = im.mesh;
-				//m.depth = 0.01;
-				m.flags = 0;//DI_NO_PROJ;
-				m.lightStart = m.lightEnd = 0;
-				m.blendingMode = noBlending;
+
+				PE.render.toQueue(m);
 			}
 		}
 

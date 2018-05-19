@@ -19,26 +19,22 @@ struct DrawInfo
 	uint	lightStart,
 			lightEnd;
 
-	Color color;
+	Color color = colorWhite;
 	ushort id;
 
 	ubyte	flags,
-			blendingMode;
+			blendingMode = noBlending;
 package:
 	static diff(string val, string cmp = `<`, string as = ``)
 	{
 		return `if(` ~ as ~ `(a.` ~ val ~ `) != ` ~ as ~ `(b.` ~ val ~ `)) return ` ~ as ~ `(a.` ~ val ~ `) ` ~ cmp ~ as ~ `(b.` ~ val ~ `);`;
 	}
 
-	static cmp(bool Holder)(ref in DrawInfo a, ref in DrawInfo b)
+	static cmp(ref in DrawInfo a, ref in DrawInfo b)
 	{
 		mixin(diff(`prog`, `<`, `cast(void*)`));
 		mixin(diff(`flags & DI_NO_DEPTH`));
-
-		static if(Holder)
-		{
-			mixin(diff(`mh`, `<`, `cast(void*)`));
-		}
+		mixin(diff(`mh`, `<`, `cast(void*)`));
 
 		return a.blendingMode < b.blendingMode;
 	}

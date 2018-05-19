@@ -30,6 +30,8 @@ final class OctreeNode : Node
 	}
 
 private:
+	enum DEPTH = 2;
+
 	void check(ref Tree t, in DrawInfo* di)
 	{
 		if(auto res = PEscene._culler.collision(t.box))
@@ -52,7 +54,7 @@ private:
 		}
 	}
 
-	void create(ref Tree t, uint depth = 2)
+	void create(ref Tree t, uint depth = DEPTH)
 	{
 		/*{
 			BBox box;

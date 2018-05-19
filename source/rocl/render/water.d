@@ -36,7 +36,7 @@ final class WaterNode : Node
 
 		auto tex = cast(ushort)(PE.tick * 60 / 1000 / _water.animSpeed % 32);
 
-		auto m = PE.render.alloc;
+		DrawInfo m;
 		auto blend = _water.type != 4 && _water.type != 6;
 
 		m.mh = _mh;
@@ -45,6 +45,8 @@ final class WaterNode : Node
 		m.id = tex;
 		m.blendingMode = blend ? blendingNormal : noBlending;
 		m.flags = DI_NO_DEPTH;
+
+		PE.render.toQueue(m);
 	}
 
 private:

@@ -322,7 +322,8 @@ protected:
 
 	const drawImage(in MeshHolder mh, uint id, Vector2s p, Color c = colorWhite, Vector2s sz = Vector2s.init, ubyte flags = 0)
 	{
-		auto d = PE.render.alloc;
+
+		DrawInfo d;
 
 		d.mh = cast()mh;
 		d.id = cast(ushort)id;
@@ -374,8 +375,10 @@ protected:
 			d.matrix *= Matrix4.translate(Vector3(p, 0));
 		}
 
-		d.blendingMode = blendingNormal;
 		d.color = c;
+		d.blendingMode = blendingNormal;
+
+		PE.render.toQueue(d);
 	}
 
 package:
