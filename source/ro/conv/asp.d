@@ -11,7 +11,7 @@ import
 		std.string,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 
@@ -26,6 +26,7 @@ import
 		ro.sprite.spr,
 		ro.sprite.act,
 		ro.sprite.svg;
+
 
 struct AspFile
 {

@@ -4,11 +4,9 @@ CharData <char id>.L <base exp>.L <zeny>.L <job exp>.L <job lvl>.L <waste>.20B <
 
 ServerInfo <ip>.L <port>.W <name>.20B <users count>.W <waste>.132B
 
-Cards <c1>.W <c2>.W <c3>.W <c4>.W
+StackableItem <idx>.W <id>.W <type>.B <amount>.W <equip>.L <cards>.4W <expire time>.L <flags>.B
 
-StackableItem <idx>.W <id>.W <type>.B <amount>.W <equip>.L <cards>.Cards <expire time>.L <flags>.B
-
-EquipItem <idx>.W <id>.W <type>.B <equip>.L <equip2>.L <refine>.B <cards>.Cards <expire time>.L <bound>.W <look>.W <random opt>.B <options>.25B <flags>.B
+EquipItem <idx>.W <id>.W <type>.B <equip>.L <equip2>.L <refine>.B <cards>.4W <expire time>.L <bound>.W <look>.W <random opt>.B <options>.25B <flags>.B
 
 Skill <skill id>.W <type>.L <level>.W <sp cost>.W <attack range>.W <skill name>.24B <upgradable>.B
 Hotkey <is skill>.B <id>.L <count>.W
@@ -84,7 +82,7 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 08aa <index>.W <amount>.L (CZ_MOVE_ITEM_FROM_BODY_TO_STORE2)
 00f2 <current count>.W <max count>.W (ZC_NOTIFY_STOREITEM_COUNTINFO)
 00f6 <index>.W <amount>.L (ZC_DELETE_ITEM_FROM_STORE)
-0a0a <idx>.W <amount>.L <id>.W <type>.B <flags>.B <attr>.B <refine>.B <cards>.Cards <random opt>.25B (ZC_ADD_ITEM_TO_STORE3)
+0a0a <idx>.W <amount>.L <id>.W <type>.B <flags>.B <attr>.B <refine>.B <cards>.4W <random opt>.25B (ZC_ADD_ITEM_TO_STORE3)
 0995 <name>.24B <items>.StackableItem?
 0a10 <name>.24B <items>.EquipItem?
 
@@ -148,7 +146,7 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 00a1 <id>.L (ZC_ITEM_DISAPPEAR)
 084b <id>.L <name id>.W <type>.W <identified>.B <x>.W <y>.W <subX>.B <subY>.B <amount>.W (ZC_ITEM_FALL_ENTRY4)
 
-0a37 <idx>.W <amount>.W <id>.W <flags>.B <attr>.B <refine>.B <cards>.Cards <equip>.L <type>.B <result>.B <expire time>.L <bound>.W <random opt>.25B <favorite>.B <look>.W (ZC_ITEM_PICKUP_ACK3)
+0a37 <idx>.W <amount>.W <id>.W <flags>.B <attr>.B <refine>.B <cards>.4W <equip>.L <type>.B <result>.B <expire time>.L <bound>.W <random opt>.25B <favorite>.B <look>.W (ZC_ITEM_PICKUP_ACK3)
 
 01f3 <id>.L <effect id>.L (ZC_NOTIFY_EFFECT2)
 0977 <id>.L <HP>.L <maxHP>.L (ZC_HP_INFO)
@@ -159,3 +157,20 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 
 0a00 <rotate>.B <hotkeys>.38Hotkey (ZC_SHORTCUT_KEY_LIST_V3)
 02ba <index>.W <hotkey>.Hotkey (CZ_SHORTCUT_KEY_CHANGE)
+
+// trading
+
+01f4 <nick>.24B <charid>.L <baselvl>.W (ZC_REQ_EXCHANGE_ITEM2)
+01f5 <result>.B <charid>.L <baselvl>.W (ZC_ACK_EXCHANGE_ITEM2)
+0a09 <id>.W <type>.B <amount>.L <flags>.B <attr>.B <refine>.B <cards>.4W <random opt>.25B (ZC_ADD_EXCHANGE_ITEM3)
+00ea <index>.W <result>.B (ZC_ACK_ADD_EXCHANGE_ITEM)
+00ec <who>.B (ZC_CONCLUDE_EXCHANGE_ITEM)
+00ee (ZC_CANCEL_EXCHANGE_ITEM)
+00f0 <result>.B (ZC_EXEC_EXCHANGE_ITEM)
+
+00e4 <account id>.L (CZ_REQ_EXCHANGE_ITEM)
+00e6 <result>.B (CZ_ACK_EXCHANGE_ITEM)
+00e8 <index>.W <amount>.L (CZ_ADD_EXCHANGE_ITEM)
+00eb (CZ_CONCLUDE_EXCHANGE_ITEM)
+00ed (CZ_CANCEL_EXCHANGE_ITEM)
+00ef (CZ_EXEC_EXCHANGE_ITEM)

@@ -10,6 +10,7 @@ import
 		perfontain.misc,
 		perfontain.math.matrix;
 
+
 enum : ubyte
 {
 	F_OUTSIDE,
@@ -52,24 +53,31 @@ struct BBox
 		{
 			BBox r;
 
-			foreach(v; staticMap!(point, IndexTuple!8).only)
+			static foreach(v; 0..8)
 			{
-				r.add(v * m);
+				r.add(point!v * m);
 			}
 
 			return r;
 		}
 
+		bool hasInside()(auto ref in Vector3 v)
+		{
+			return	max.zipMap!((a, b) => a >= b)(v)[].all &&
+					min.zipMap!((a, b) => a <= b)(v)[].all;
+		}
+
 		auto collision()(auto ref in BBox b)
 		{
-			if(	max.vfold!(Op!`>=`, Op!`&&`)(b.max) &&
-				min.vfold!(Op!`<=`, Op!`&&`)(b.min))
+
+			if(	max.zipMap!((a, b) => a >= b)(b.max)[].all &&
+				min.zipMap!((a, b) => a <= b)(b.min)[].all)
 			{
 				return F_INSIDE;
 			}
 
-			return	max.vfold!(Op!`<`, Op!`||`)(b.min) ||
-					min.vfold!(Op!`>`, Op!`||`)(b.max) ? F_OUTSIDE : F_INTERSECTS;
+			return	max.zipMap!((a, b) => a < b)(b.min)[].any ||
+					min.zipMap!((a, b) => a > b)(b.max)[].any ? F_OUTSIDE : F_INTERSECTS;
 		}
 
 		string toString() { return format(`[ min = %s, max = %s ]`, min, max); }
@@ -104,14 +112,14 @@ private:
 
 	void add(Vector3 p)
 	{
-		min = min.vmap!(std.algorithm.min)(p);
-		max = max.vmap!(std.algorithm.max)(p);
+		min = min.zipMap!(std.algorithm.min)(p);
+		max = max.zipMap!(std.algorithm.max)(p);
 	}
 
 	ref merge(ref in BBox b)
 	{
-		min = min.vmap!(std.algorithm.min)(b.min);
-		max = max.vmap!(std.algorithm.max)(b.max);
+		min = min.zipMap!(std.algorithm.min)(b.min);
+		max = max.zipMap!(std.algorithm.max)(b.max);
 
 		return this;
 	}

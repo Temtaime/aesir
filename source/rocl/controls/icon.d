@@ -22,6 +22,7 @@ import
 		rocl.game,
 		rocl.status,
 		rocl.controls,
+		rocl.controls.skills,
 		rocl.controls.status.equip,
 		rocl.controls.status.stats,
 		rocl.controls.status.bonuses,
@@ -32,7 +33,7 @@ class IconSkill : GUIElement
 {
 	this(string res, string path)
 	{
-		super(null);
+		super(null, Vector2s.init, WIN_BACKGROUND);
 
 		try
 		{
@@ -87,11 +88,6 @@ abstract class HotkeyIcon : GUIElement
 		}
 	}
 
-	void bind(Hotkey *h)
-	{
-		_p = PE.hotkeys.add(h, false);
-	}
-
 	override void onPress(bool b)
 	{
 		_mouse = b;
@@ -112,6 +108,27 @@ abstract class HotkeyIcon : GUIElement
 				{
 					foreach(z; w.byHierarchy)
 					{
+						if(auto r = cast(WinTrading)z)
+						{
+							if(auto im = cast(ItemIcon)u)
+							{
+								auto q = cast()im.m;// TODO: FIX
+
+								if(q.source == ITEM_INVENTORY)
+								{
+									if(!q.trading)
+									{
+										q.trading = q.amount;
+
+										ROnet.tradeItem(q.idx, q.amount);
+									}
+
+									//q.trade(q.amount);
+									//r.put(cast()q); // todo fix
+								}
+							}
+						}
+
 						if(cast(WinInventory)z)
 						{
 							if(auto im = cast(ItemIcon)u)
@@ -126,6 +143,7 @@ abstract class HotkeyIcon : GUIElement
 
 							break;
 						}
+
 						if(cast(WinStorage)z)
 						{
 							if(auto im = cast(ItemIcon)u)
@@ -140,15 +158,14 @@ abstract class HotkeyIcon : GUIElement
 
 							break;
 						}
-						else if(auto e = cast(WinHotkeys)z)
+
+						if(auto e = cast(WinHotkeys)z)
 						{
 							if(e.add(u))
 							{
 								if(auto p = cast(WinHotkeys)parent)
 								{
-									auto q = p.fromPos(pos);
-
-									ROnet.setHotkey(q.y * 9 + q.x, PkHotkey.init);
+									ROnet.setHotkey(p.posToId(pos), PkHotkey.init);
 									remove;
 								}
 
@@ -165,15 +182,6 @@ abstract class HotkeyIcon : GUIElement
 		}
 	}
 
-	void retip()
-	{
-		if(_tip)
-		{
-			_tip.remove;
-			_tip = new TextTip(` ` ~ tip ~ ` `);
-		}
-	}
-
 	override void onHover(bool b)
 	{
 		if(_mouse && !_e && !b)
@@ -184,15 +192,7 @@ abstract class HotkeyIcon : GUIElement
 
 		if(b)
 		{
-			if(auto s = tip)
-			{
-				_tip = new TextTip(` ` ~ s ~ ` `);
-			}
-		}
-		else if(_tip)
-		{
-			_tip.remove;
-			_tip = null;
+			tooltip;
 		}
 	}
 
@@ -201,11 +201,6 @@ abstract class HotkeyIcon : GUIElement
 		if(_e)
 		{
 			_e.pos = PE.window.mpos - _e.size / 2;
-		}
-
-		if(_tip)
-		{
-			_tip.pos = PE.window.mpos - Vector2s(-4, _tip.size.y + 4);
 		}
 
 		parent.onMove;
@@ -219,16 +214,13 @@ abstract class HotkeyIcon : GUIElement
 	void use();
 	void drop() {}
 
-	string tip();
+	void tooltip();
 
 	PkHotkey hotkey();
 	HotkeyIcon clone(GUIElement w);
 private:
 	HotkeyIcon _e;
-	RC!ConnectionPoint _p;
-
 	bool _mouse;
-	GUIElement _tip;
 }
 
 final class SkillIcon : HotkeyIcon
@@ -250,9 +242,16 @@ final class SkillIcon : HotkeyIcon
 		return PkHotkey(true, sk.id, sk.lvl);
 	}
 
-	override string tip()
+	override void tooltip()
 	{
-		return cast(WinHotkeys)parent ? ROdb.skill(sk.name) : null;
+		if(cast(WinHotkeys)parent)
+		{
+			new TextTooltip(ROdb.skill(sk.name));
+		}
+		else
+		{
+			new BigTooltip(ROdb.skilldesc(sk.name));
+		}
 	}
 
 	override void use()
@@ -266,20 +265,24 @@ final class SkillIcon : HotkeyIcon
 
 final class ItemIcon : HotkeyIcon
 {
-	this(GUIElement w, in Item t)
+	this(GUIElement w, Item t)
 	{
-		m = t;
-
 		{
 			auto u = t.data.res;
 
 			super(w, u, itemPath(u));
 		}
+
+		m = t;
+
+		_rm = m.onRemove.add(_ => remove);
+		_rc = m.onCountChanged.add(_ => tooltip);
 	}
 
-	override string tip()
+	override void tooltip()
 	{
-		return format(`%s%s`, m.data.name, m.amount > 1 ? format(` : %u %s`, m.amount, MSG_PCS) : null);
+		auto s = format(`%s%s`, m.data.name, m.amount > 1 ? format(` : %u %s`, m.amount, MSG_PCS) : null);
+		new TextTooltip(s);
 	}
 
 	override PkHotkey hotkey()
@@ -311,5 +314,8 @@ final class ItemIcon : HotkeyIcon
 		}
 	}
 
-	const Item m;
+	Item m;
+private:
+	RC!ConnectionPoint _rc;
+	RC!ConnectionPoint _rm;
 }

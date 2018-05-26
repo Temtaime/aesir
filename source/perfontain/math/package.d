@@ -2,6 +2,7 @@ module perfontain.math;
 
 import
 		std.math,
+		std.algorithm,
 
 		perfontain.math.matrix;
 
@@ -113,10 +114,15 @@ auto triangleArea(in Vector3 a, in Vector3 b, in Vector3 c)
 
 auto calcNormal(ref in Vector3 a, ref in Vector3 b, ref in Vector3 c)
 {
-    return (b - c) ^ (a - c);
+	return (b - c) ^ (a - c);
 }
 
 auto angleTo(ref in Vector3 a, ref in Vector3 b)
 {
 	return acos(a * b / (a.length * b.length));
+}
+
+bool arePointsOnOneLine(ref Vector3 a, ref Vector3 b, ref Vector3 c)
+{
+	return valueEqual(calcNormal(a, b, c).length, 0);
 }

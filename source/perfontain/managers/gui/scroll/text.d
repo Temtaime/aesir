@@ -50,7 +50,7 @@ private:
 			eachGroup!((a, b) => a.col != b.col)(line, (CharColor[] a) => add(e, a));
 
 			e.size.y = e.childs[0].size.y;
-			e.flags = WIN_CASCADE_SHOW;
+			//e.flags = WIN_CASCADE_SHOW;
 		}
 
 		sc.add(e, true, autoBottom);

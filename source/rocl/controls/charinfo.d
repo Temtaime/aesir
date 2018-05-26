@@ -34,7 +34,7 @@ final class CharInfo : RCounted
 			_skTimer.exec;
 		}
 
-		_skTimer = ROgui.values.show(_ent.pos, num);
+		_skTimer = RO.gui.values.show(_ent.pos, num);
 	}
 
 	void doCast(uint dur, bool enemy)

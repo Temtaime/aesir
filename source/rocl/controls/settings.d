@@ -123,5 +123,12 @@ final class WinSettings : WinBasic
 
 			e.pos = Vector2s(WPOS_START, size.y - WIN_BOTTOM_SZ.y - e.size.y - 2);
 		}
+		else
+		{
+			auto b = new Button(this, BTN_PART, MSG_HOTKEYS);
+
+			b.move(this, POS_MAX, -5, this, POS_MAX, -3);
+			b.onClick = () => RO.gui.createHotkeySettings;
+		}
 	}
 }

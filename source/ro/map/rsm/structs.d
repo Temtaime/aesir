@@ -25,7 +25,7 @@ struct RsmMesh
 		Vector3[] vertices;
 		RsmTextureCoord[] texsInfo;
 		RsmSurface[] surs;
-		RomFrameOrientation[] frames;
+		FrameOrientation[] frames;
 	}
 
 	debug

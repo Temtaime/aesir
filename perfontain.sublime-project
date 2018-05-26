@@ -2,14 +2,8 @@
 	"folders":
 	[
 		{
-			"path": "source"
-		},
-		{
-			"path": "bin/data/shader"
-		},
-		{
-			"path": "utils"
-		},
+			"path": "."
+		}
 	],
 	"build_systems":
 	[
@@ -17,7 +11,7 @@
 			"name": "dub",
 			"shell_cmd": "dub build --arch=x86_64",
 			"working_dir": "$project_path",
-			"file_regex": "^(.+?)(?:-mixin-[0-9]+)?\\(([0-9]+)\\)(): (.+)$",
+			"file_regex": "^(.+?)(?:-mixin-[0-9]+)?\\(([0-9]+),[0-9]+\\)(): (.+)$",
 
 			"variants":
 			[
@@ -30,6 +24,11 @@
 					"name": "packet gen",
 					"working_dir": "$project_path/utils/packets",
 					"shell_cmd": "dub run"
+				},
+				{
+					"name": "debug info",
+					"working_dir": "$project_path",
+					"shell_cmd": "dub build --arch=x86_64 --build=debugWithInfo"
 				},
 				{
 					"name": "release",

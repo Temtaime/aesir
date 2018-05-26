@@ -1,9 +1,7 @@
 module rocl.controls.charselect;
 
 import
-		std.conv,
-		std.range,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain,
 		perfontain.opengl,
@@ -40,7 +38,7 @@ class WinCharSelect : WinBasic
 
 			static if(is(T : int))
 			{
-				s = cast(string)s.as!ubyte.retro.chunks(3).join(' ').retro.array;
+				s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
 			}
 
 			stats ~= [ name, s ];

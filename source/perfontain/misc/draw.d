@@ -26,8 +26,8 @@ final class DrawAllocator : RCounted
 		{
 			uint k;
 
-			auto counts = cast(uint *)alloca(submeshes * 4);
-			auto starts = cast(size_t *)alloca(submeshes * size_t.sizeof);
+			auto counts = ScopeArray!uint(submeshes);
+			auto starts = ScopeArray!size_t(submeshes);
 
 			foreach(ref n; nodes)
 			{
@@ -50,7 +50,7 @@ final class DrawAllocator : RCounted
 
 			assert(k == submeshes);
 
-			glMultiDrawElements(GL_TRIANGLES, counts, GL_UNSIGNED_INT, cast(void **)starts, submeshes);
+			glMultiDrawElements(GL_TRIANGLES, counts[].ptr, GL_UNSIGNED_INT, cast(void **)starts[].ptr, submeshes);
 		}
 		else
 		{

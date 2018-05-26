@@ -12,7 +12,7 @@ import
 		std.encoding,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 
@@ -29,7 +29,8 @@ public import
 				perfontain.managers.gui.basic,
 				perfontain.managers.gui.scroll,
 				perfontain.managers.gui.select,
-				perfontain.managers.gui.element;
+				perfontain.managers.gui.element,
+				perfontain.managers.gui.tooltip;
 
 
 final class GUIManager
@@ -47,8 +48,7 @@ final class GUIManager
 		PE.onDoubleClick.permanent(&onDoubleClick);
 
 		// root
-		root = new GUIElement(null);
-		root.size = PE.window.size;
+		root = new GUIElement(null, PE.window.size, WIN_BACKGROUND);
 
 		// misc
 		_moveSub.x = -1;
@@ -78,6 +78,8 @@ final class GUIManager
 		}
 	}
 
+	Signal!(void, GUIElement) onCurrentChanged;
+
 	RC!GUIElement root;
 	RC!MeshHolder holder;
 
@@ -88,7 +90,7 @@ package:
 		if(_cur is e)
 		{
 			_cur.onHover(false);
-			_cur = null;
+			onCurrentChanged(_cur = null);
 		}
 
 		if(_focus)
@@ -170,8 +172,7 @@ package:
 			{
 				auto arr = childs[];
 
-				arr.remove(arr.countUntil!(a => a is w));
-				arr[$ - 1] = w;
+				swap(arr.find!(a => a is w)[0], arr.back);
 			}
 		}
 
@@ -190,7 +191,7 @@ private:
 
 				with(_cur.parent)
 				{
-					p = vmap!((a, b) => clamp(a, short(0), b))(p, size - _cur.size);
+					p = p.zipMap!((a, b) => clamp(a, short(0), b))(size - _cur.size);
 
 					if(_cur.pos != p)
 					{
@@ -213,6 +214,8 @@ private:
 						w.flags &= ~WIN_HAS_MOUSE;
 						w.onHover(false);
 					}
+
+					onCurrentChanged(_cur); // TODO: PLACE
 
 					if(_cur)
 					{
@@ -291,20 +294,24 @@ private:
 		return false;
 	}
 
-	void onKey(uint k, bool st)
+	bool onKey(SDL_Keycode k, bool st)
 	{
 		if(k == SDLK_RETURN || k == SDLK_KP_ENTER)
 		{
 			if(!st && _focus)
 			{
 				_focus.onSubmit;
+				return true;
 			}
 		}
 		else if(_inp)
 		{
 			_inp.focus;
 			_inp.onKey(k, st);
+			return true;
 		}
+
+		return false;
 	}
 
 	void focus(GUIElement e, bool b)

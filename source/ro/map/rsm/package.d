@@ -25,7 +25,7 @@ struct RsmObject
 	Matrix4 trans;
 
 	RsmObject[] childs;
-	RomFrameOrientation[] oris;
+	FrameOrientation[] oris;
 }
 
 struct RsmConverter

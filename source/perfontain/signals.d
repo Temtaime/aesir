@@ -2,6 +2,7 @@ module perfontain.signals;
 
 import
 		std.array,
+		std.range,
 		std.algorithm,
 
 		perfontain.misc.rc;
@@ -70,6 +71,14 @@ struct Signal(T, A...)
 				if(s.f(args)) break;
 			}
 		}
+
+		void last(A args)
+		{
+			foreach_reverse(s; _arr)
+			{
+				if(s.f(args)) break;
+			}
+		}
 	}
 
 	void latest(A args)
@@ -83,6 +92,11 @@ struct Signal(T, A...)
 	void opCall()(A args)
 	{
 		_arr.each!(a => a.f(args));
+	}
+
+	void reverse(A args)
+	{
+		_arr.retro.each!(a => a.f(args));
 	}
 
 private:

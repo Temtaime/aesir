@@ -29,7 +29,7 @@ class StatsUpper : GUIStaticText
 
 	override void onPress(bool)
 	{
-		auto idx = cast(int)ROgui
+		auto idx = cast(int)RO.gui
 									.status
 									.stats
 									.childs[]

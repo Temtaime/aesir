@@ -1,11 +1,7 @@
 module perfontain.managers.render;
 
 import
-		std.array,
-		std.typecons,
-		std.algorithm,
-
-		core.stdc.stdlib,
+		std.experimental.all,
 
 		perfontain,
 		perfontain.opengl,
@@ -23,14 +19,9 @@ final class RenderManager
 		drawAlloc ~= new DrawAllocator(RENDER_SCENE);
 	}
 
-	auto alloc()
+	void toQueue(ref DrawInfo di)
 	{
-		if(_arr.length == _used)
-		{
-			_arr.length += 128;
-		}
-
-		return &(_arr[_used++] = DrawInfo.init);
+		_infos ~= di;
 	}
 
 	void doDraw(Program pg, ubyte tp, ref const(Matrix4) viewProj, RenderTarget rt, bool doSort = true)
@@ -40,99 +31,36 @@ final class RenderManager
 		_rt = rt;
 		_viewProj = &viewProj;
 
-		auto sub = _arr[0.._used];
-
-		if(sub.length)
+		if(_infos.length)
 		{
+			auto ss = _infos[];
+
 			if(doSort)
 			{
-				sub.sort!((ref a, ref b) => DrawInfo.cmp!true(a, b), SwapStrategy.stable);
+				ss.sort!((a, b) => DrawInfo.cmp(a, b), SwapStrategy.stable);
 			}
 
-			if(GL_ARB_bindless_texture)
-			{
-				process!(DrawInfo.cmp!false)(sub);
-			}
-			else
-			{
-				process!(DrawInfo.cmp!true)(sub);
-			}
-
-			_used = 0;
+			process!(DrawInfo.cmp);
+			_infos.clear;
 		}
 	}
 
 	RCArray!DrawAllocator drawAlloc;
 private:
-	void process(alias F)(in DrawInfo[] index)
+	void process(alias F)()
 	{
-		for(auto start = index.ptr, cur = start + 1; true; cur++)
+		auto index = &_infos[0];
+
+		foreach(ref v, cnt; _infos[].group!((a, b) => F(a, b) == F(b, a)))
 		{
-			bool end = cur > &index.back;
+			auto arr = index[0..cnt];
+			index += cnt;
 
-			if(end || F(*start, *cur) != F(*cur, *start))
-			{
-				auto sub = start[0..cur - start];
+			PEstate.depthMask = !(v.flags & DI_NO_DEPTH);
+			PEstate.blendingMode = v.blendingMode;
 
-				{
-					PEstate.depthMask = !(start.flags & DI_NO_DEPTH);
-					PEstate.blendingMode = start.blendingMode;
-
-					drawNodes(sub);
-				}
-
-				if(end)
-				{
-					break;
-				}
-
-				start = cur;
-			}
+			drawNodes(arr);
 		}
-	}
-
-	enum
-	{
-		DATA_MODEL		= 1,
-		DATA_COLOR		= 2,
-		DATA_NORMAL		= 4,
-		DATA_LIGHTS		= 8,
-		DATA_SM_MAT		= 16,
-	}
-
-	const calcFlags()
-	{
-		ubyte r;
-
-		if(!_rt)
-		{
-			if(_tp == RENDER_SCENE)
-			{
-				if(PE.settings.shadows)
-				{
-					if(PE.shadows.normals)
-					{
-						r |= DATA_NORMAL;
-					}
-
-					r |= DATA_MODEL | DATA_SM_MAT;
-				}
-
-				if(PE.settings.lights)
-				{
-					if(PE.scene.hasLights)
-					{
-						r |= DATA_LIGHTS | DATA_MODEL;
-					}
-
-					r |= DATA_NORMAL;
-				}
-			}
-
-			r |= DATA_COLOR;
-		}
-
-		return r;
 	}
 
 	void drawNodes(in DrawInfo[] nodes)
@@ -140,21 +68,17 @@ private:
 		uint subs;
 
 		{
-			void[] tmp;
+			auto fs = _pg.flags;
+			auto start = fs & PROG_DATA_SM_MAT ? 64 : 0;
 
-			auto fs = calcFlags;
-			auto start = fs & DATA_SM_MAT ? 64 : 0;
+			auto len = _pg.minLen(`pe_transforms`) - start + 15;
+			len &= ~15;
 
-			auto len = (_pg.minLen(`pe_transforms`) - start + 15) / 16 * 16;
+			auto tmp = ScopeArray!ubyte(len * nodes.length + start);
 
+			if(fs & PROG_DATA_SM_MAT)
 			{
-				auto k = len * nodes.length + start;
-				tmp = alloca(k)[0..k];
-			}
-
-			if(fs & DATA_SM_MAT)
-			{
-				tmp[0..64] = PE.shadows.matrix.toByte;
+				tmp[0..64][] = PE.shadows.matrix.toByte;
 			}
 
 			foreach(uint i, ref n; nodes)
@@ -165,15 +89,13 @@ private:
 				subs += n.mh.meshes[n.id].subs.length;
 			}
 
-			_pg.ssbo(`pe_transforms`, tmp);
+			_pg.ssbo(`pe_transforms`, tmp[]);
 		}
 
 		if(GL_ARB_bindless_texture)
 		{
-			auto k = subs * 16;
-			auto tmp = alloca(k)[0..k].toByte;
-
-			k = 0;
+			uint k;
+			auto tmp = ScopeArray!ubyte(subs * 16);
 
 			foreach(uint i, ref n; nodes)
 			{
@@ -186,9 +108,9 @@ private:
 
 					PE.textures.use(tex);
 
-					tmp[k..k + 8] = h.toByte;
-					tmp[k + 8..k + 12] = i.toByte;
-					tmp[k + 12..k + 16] = 0;
+					tmp[k..k + 8][] = h.toByte;
+					tmp[k + 8..k + 12][] = i.toByte;
+					tmp[k + 12..k + 16][] = 0;
 
 					k += 16;
 				}
@@ -196,7 +118,7 @@ private:
 
 			assert(k == tmp.length);
 
-			_pg.ssbo(`pe_submeshes`, tmp);
+			_pg.ssbo(`pe_submeshes`, tmp[]);
 		}
 		else if(!_rt || PE.shadows.textured)
 		{
@@ -225,30 +147,28 @@ private:
 
 		add(di.matrix * *_viewProj);
 
-		if(flags & DATA_MODEL)
+		if(flags & PROG_DATA_MODEL)
 		{
 			add(di.matrix);
 		}
 
-		if(flags & DATA_NORMAL)
+		if(flags & PROG_DATA_NORMAL)
 		{
 			add(di.matrix.inversed.transpose);
 		}
 
-		if(flags & DATA_COLOR)
+		if(flags & PROG_DATA_COLOR)
 		{
 			add(di.color.toVec);
 		}
 
-		if(flags & DATA_LIGHTS)
+		if(flags & PROG_DATA_LIGHTS)
 		{
 			add(di.lightStart);
 			add(di.lightEnd);
 		}
 
 		arr[p..$] = 0;
-
-		//log(`%s %s`, arr.length, (p + 15) / 16 * 16);
 
 		assert(arr.length == (p + 15) / 16 * 16);
 	}
@@ -257,9 +177,8 @@ private:
 	ubyte _tp;
 	Program _pg;
 	RenderTarget _rt;
+
 	const(Matrix4) *_viewProj;
 
-	// DI allocator
-	uint _used;
-	DrawInfo[] _arr;
+	Array!DrawInfo _infos;
 }

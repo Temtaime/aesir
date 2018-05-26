@@ -85,7 +85,12 @@ enum MESSAGES =
 	[ `SELLING`, `Selling`, `Продажа` ],
 	[ `TOTAL`, `Total`, `Всего` ],
 
+	[ `OK`, `OK` ],
+	[ `TRADE`, `Trade`, `Торг` ],
 	[ `CANCEL`, `Cancel`, `Отмена` ],
+	[ `INFO`, `Information`, `Информация` ],
+	[ `HOTKEYS`, `Hotkeys`, `Горячие клавиши` ],
+	[ `HOTKEY_SETTINGS`, `Hotkey settings`, `Настройка горячих клавиш` ],
 
 	[ `CREATE`, `Create`, `Создать` ],
 	[ `CHAR_CREATION`, `Character creation`, `Создание персонажа` ],
@@ -95,5 +100,14 @@ enum MESSAGES =
 
 	[ `DEALING`, `Request a deal`, `Запросить сделку` ],
 	[ `DEALING_WITH`, `Trading with`, `Обмен с` ],
+	[ `DEAL_REQUEST`, "Player ^0000ff%s^000000 with level ^ff0000%u^000000 requests a deal.\nAccept?", "Игрок ^0000ff%s^000000 с уровнем ^ff0000%u^000000 запрашивает сделку.\nПринять?" ],
+
+	[ `INTERFACE`, `Interface`, `Интерфейс` ],
+
+	[ `WIN_EQUIP`, `Equip window`, `Окно экипировки` ],
+	[ `WIN_SKILLS`, `Skills window`, `Окно умений` ],
+	[ `WIN_SETTINGS`, `Settings window`, `Окно настроек` ],
+	[ `WIN_INVENTORY`, `Inventory window`, `Окно инвентаря` ],
+
 	//[ ``, ``, `` ],
 ];

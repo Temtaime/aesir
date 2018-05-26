@@ -1,14 +1,7 @@
 module ro.db;
 
 import
-		std.conv,
-		std.file,
-		std.array,
-		std.regex,
-		std.stdio,
-		std.string,
-		std.encoding,
-		std.typecons,
+		std.experimental.all,
 
 		etc.c.sqlite3,
 
@@ -17,7 +10,7 @@ import
 		rocl,
 
 		tt.error,
-		tt.logger;
+		tt.logger : log;
 
 
 struct RoItemData
@@ -40,7 +33,7 @@ final class RoDb
 			p = tempDir ~ `/pfstempdb`;
 		}
 
-		!sqlite3_open(p.toStringz, &_db) || throwError(cast(string)sqlite3_errmsg(_db).fromStringz);
+		!sqlite3_open(p.toStringz, &_db) || throwError(sqlite3_errmsg(_db).fromStringz.assumeUnique);
 	}
 
 	~this()
@@ -57,6 +50,12 @@ final class RoDb
 	auto skill(uint id)
 	{
 		auto res = query!string(format(`select %s from skills where id = %s;`, lang, id));
+		return res.length ? res.front[0] : `???`;
+	}
+
+	auto skilldesc(string id)
+	{
+		auto res = query!string(format(`select desc_%s from skills where name = upper(%s);`, lang, escape(id)));
 		return res.length ? res.front[0] : `???`;
 	}
 

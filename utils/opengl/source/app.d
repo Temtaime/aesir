@@ -201,13 +201,13 @@ __gshared extern(System) @nogc nothrow\n{");
 
 //private:
 
-pragma(inline, false)
+auto load(in char* name)
 {
-	auto load(in char *name)
-	{
-		auto ret = SDL_GL_GetProcAddress(name);
-		ret || throwError(`can't load opengl function: %s`, name.to!string);
-		return ret;
-	}
-}");
+	pragma(inline, false);
+
+	auto ret = SDL_GL_GetProcAddress(name);
+	ret || throwError(`can't load opengl function: %s`, name.to!string);
+	return ret;
+}
+");
 }

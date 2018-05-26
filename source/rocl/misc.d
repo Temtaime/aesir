@@ -1,12 +1,10 @@
 module rocl.misc;
 
 import
-		std.range,
-		std.encoding,
-		std.algorithm;
+		std.experimental.all;
 
 
 auto toStr(in ubyte[] arr)
 {
-	return (cast(string)arr.findSplitBefore(only(0))[0]).idup.sanitize;
+	return arr.findSplitBefore(0.only)[0].assumeUTF.idup.sanitize;
 }

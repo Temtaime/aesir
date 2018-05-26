@@ -86,7 +86,7 @@ final class EntityManager
 		{
 			ROres.load(RO.status.map = name);
 
-			if(ROgui.isGame)
+			if(RO.gui.isGame)
 			{
 				_self.show;
 			}
@@ -96,14 +96,14 @@ final class EntityManager
 			RO.items.clear;
 		}
 
-		if(!ROgui.isGame)
+		if(!RO.gui.isGame)
 		{
 			with(ROnet.st)
 			{
 				_self = createChar(curChar, accountId, gender);
 			}
 
-			ROgui.show(true);
+			RO.gui.show(true);
 		}
 
 		_self.fix(pos.PosDir);

@@ -51,10 +51,10 @@ class WinBase : WinBasic
 		{
 			auto arr =
 			[
-				tuple(MSG_INV, [ SDL_SCANCODE_LALT, SDL_SCANCODE_E ], () => doShow(ROgui.inv)),
-				tuple(MSG_EQP, [ SDL_SCANCODE_LALT, SDL_SCANCODE_Q ], () => doShow(ROgui.status)),
-				tuple(MSG_SK, [ SDL_SCANCODE_LALT, SDL_SCANCODE_S ], () => doShow(ROgui.skills)),
-				tuple(MSG_OPTS, [ SDL_SCANCODE_LALT, SDL_SCANCODE_O ], () => doShow(ROgui.settings)),
+				tuple(MSG_INV, () => RO.gui.inv.showOrHide),
+				tuple(MSG_EQP, () => RO.gui.status.showOrHide),
+				tuple(MSG_SK, () => RO.gui.skills.showOrHide),
+				tuple(MSG_OPTS, () => RO.gui.settings.showOrHide),
 			];
 
 			Button e;
@@ -62,7 +62,7 @@ class WinBase : WinBasic
 			foreach(i, v; arr)
 			{
 				auto b = new Button(this, BTN_PART, v[0], PE.fonts.small);
-				auto d = v[2].toDelegate;
+				auto d = v[1].toDelegate;
 
 				b.onClick = d;
 				b.pos = Vector2s(size.x - b.size.x - 3, WIN_TOP_SZ.y + i * (b.size.y + 2) + 2);
@@ -71,8 +71,6 @@ class WinBase : WinBasic
 				{
 					e = b;
 				}
-
-				PE.hotkeys.add(new Hotkey(d, v[1]));
 			}
 
 			foreach(v; childs[$ - arr.length..$])
@@ -127,12 +125,6 @@ class WinBase : WinBasic
 
 	LevelMeter	base,
 				job;
-private:
-	static doShow(GUIElement e)
-	{
-		e.show(!e.visible);
-		e.focus;
-	}
 }
 
 class PercMeter : GUIElement
@@ -233,14 +225,6 @@ class Meter : GUIElement
 		size = Vector2s(80, 5);
 	}
 
-	~this()
-	{
-		if(_win)
-		{
-			_win.remove;
-		}
-	}
-
 	override void draw(Vector2s p) const
 	{
 		if(maxValue)
@@ -252,29 +236,11 @@ class Meter : GUIElement
 		}
 	}
 
-	override void onMove()
-	{
-		if(_win)
-		{
-			_win.updatePos;
-		}
-	}
-
 	override void onHover(bool st)
 	{
-		if(!_tip)
+		if(_tip && st)
 		{
-			return;
-		}
-
-		if(st)
-		{
-			_win = new TipPopup(format(` %u / %u `, value, maxValue));
-		}
-		else
-		{
-			_win.remove;
-			_win = null;
+			new TextTooltip(format(`%s / %s`, price(value), price(maxValue)));
 		}
 	}
 
@@ -284,28 +250,4 @@ class Meter : GUIElement
 	void delegate() onUpdate;
 private:
 	bool _tip;
-	TipPopup _win;
-}
-
-class TipPopup : GUIStaticText
-{
-	this(string s)
-	{
-		super(PE.gui.root, s);
-
-		color = colorWhite;
-		flags |= WIN_TOP_MOST;
-	}
-
-	override void draw(Vector2s p) const
-	{
-		drawQuad(p + pos, size, Color(0, 0, 0, 180));
-
-		super.draw(p);
-	}
-
-	void updatePos()
-	{
-		pos = PE.window.mpos - Vector2s(-4, size.y + 4);
-	}
 }

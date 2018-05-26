@@ -17,7 +17,6 @@ import
 		ro.conv.map,
 		ro.conv.gui,
 		ro.conv.all,
-		ro.conv.pack,
 		ro.conv.item,
 		ro.conv.effect,
 
@@ -56,19 +55,15 @@ bool processConv(string[] args)
 {
 	try
 	{
-		bool all, pack;
+		bool all;
 
 		string
 				res,
 				path;
 
-		getopt(args, config.passThrough, `res`, &res, `path`, &path, `all`, &all, `pack`, &pack);
+		getopt(args, config.passThrough, `res`, &res, `path`, &path, `all`, &all);
 
-		if(pack)
-		{
-			makeResPack;
-		}
-		else if(all)
+		if(all)
 		{
 			doConvert;
 		}

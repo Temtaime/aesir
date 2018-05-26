@@ -1,8 +1,7 @@
 module perfontain.meshholder;
 
 import
-		std.array,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain;
 

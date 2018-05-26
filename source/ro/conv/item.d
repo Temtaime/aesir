@@ -10,6 +10,8 @@ import
 
 		perfontain,
 
+		stb.wrapper.dxt,
+
 		ro.conv,
 
 		rocl.gui,
@@ -28,7 +30,7 @@ final class ItemConverter : Converter
 		_im.clean;
 
 		RoItem res;
-		res.data[] = compressDXT(_im, TEX_DXT_5);
+		res.data[] = _im.dxtCompress(true);
 
 		return res.binaryWrite;
 	}
@@ -45,5 +47,5 @@ struct RoItem
 		ubyte ver = 1;
 	}
 
-	ubyte[texDataLen(Vector2s(24), TEX_DXT_5)] data;
+	ubyte[dxtTextureSize(24, 24, true)] data;
 }

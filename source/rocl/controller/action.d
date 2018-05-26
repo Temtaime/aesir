@@ -31,11 +31,8 @@ final class ActionController
 
 	void onCharCreate()
 	{
-		with(ROgui) // TODO: REWRITE
-		{
-			removeCs;
-			creation = new WinCreation;
-		}
+		RO.gui.removeCharSelect;
+		RO.gui.createCreation;
 	}
 
 	void onCharSelected()
@@ -98,13 +95,13 @@ private:
 		with(ROnet.st)
 		{
 			ch = cast(ubyte)a.bl;
-			ROgui.createCharSelect(curChar);
+			RO.gui.createCharSelect(curChar);
 		}
 	}
 
 	bool onButton(ubyte k, bool st)
 	{
-		if(k == MOUSE_RIGHT && !st)
+		if(k == MOUSE_RIGHT)
 		{
 			if(auto c = ROent.cur)
 			{
@@ -115,7 +112,11 @@ private:
 						return false;
 					}*/
 
-					new MenuPopup;
+					if(!st)
+					{
+						new MenuPopup(p);
+					}
+
 					return true;
 				}
 			}
@@ -128,7 +129,7 @@ private:
 			return false;
 		}
 
-		auto res = ROgui.isGame ? doAct || RO.items.pickUp || mapMove : doCS;
+		auto res = RO.gui.isGame ? doAct || RO.items.pickUp || mapMove : doCS;
 
 		if(_sk)
 		{
@@ -140,7 +141,7 @@ private:
 
 	bool doCS()
 	{
-		if(!ROgui.creation)
+		if(!RO.gui.creation)
 		{
 			if(auto c = ROent.cur)
 			{

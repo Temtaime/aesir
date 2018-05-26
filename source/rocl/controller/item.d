@@ -9,7 +9,9 @@ import
 		perfontain.math,
 
 		rocl.game,
-		rocl.network;
+		rocl.network,
+
+		rocl.render.nodes;
 
 
 final class ItemController

@@ -124,17 +124,16 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 
 		foreach(ref im; fs.images)
 		{
-			auto m = PE.render.alloc;
+			DrawInfo m;
 			auto c = im.color;
 
 			m.mh = spr.mh;
 			m.color = c;
 			m.matrix = mat;
 			m.id = im.mesh;
-			//m.depth = 0.01;
-			m.flags = 0;//DI_NO_PROJ;
-			m.lightStart = m.lightEnd = 0;
 			m.blendingMode = c.a == 255 ? noBlending : blendingNormal;
+
+			PE.render.toQueue(m);
 		}
 
 		foreach_reverse(i, SpriteObject s; sprites[1..$])
@@ -160,16 +159,14 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 
 			foreach(ref im; u.images)
 			{
-				auto m = PE.render.alloc;
+				DrawInfo m;
 
 				m.mh = s.mh;
 				m.color = im.color;
 				m.matrix = m2;
 				m.id = im.mesh;
-				//m.depth = 0.01;
-				m.flags = 0;//DI_NO_PROJ;
-				m.lightStart = m.lightEnd = 0;
-				m.blendingMode = noBlending;
+
+				PE.render.toQueue(m);
 			}
 		}
 
@@ -215,122 +212,4 @@ private:
 	byte	_action = -1,
 			_next = -1,
 			_event = -1;
-}
-
-import rocl.game, rocl.paths, ro.conv, ro.conv.item, ro.conf;
-
-final class ItemNode : Node // TODO: BBOX ON CREATION
-{
-	this(ushort id)
-	{
-		HolderSubMesh sub =
-		{
-			len: 6
-		};
-
-		HolderData od =
-		{
-			type: RENDER_SCENE
-		};
-
-		od.meshes ~= HolderMesh(sub.sliceOne.dup);
-
-		{
-			auto u = ROdb.itemOf(id).res;
-			auto data = convert!RoItem(u, itemPath(u));
-
-			TextureInfo tex =
-			{
-				TEX_DXT_5,
-				[ TextureData(Vector2s(24), data.data) ]
-			};
-
-			od.textures ~= tex;
-		}
-
-		auto m = Matrix4.scale(Vector3(Vector2(24), 0)) * Matrix4.scale(-SPRITE_PROP, -SPRITE_PROP, 1);
-
-		with(od.data)
-		{
-			foreach(i; 0..2)
-			{
-				auto x = -0.5f * (-1) ^^ i;
-
-				foreach(j; 0..2)
-				{
-					auto y = -0.5f * (-1) ^^ j;
-
-					auto e = Vertex(Vector3(x, y, 0) * m, Vector3(0, 0, 1), Vector2(i, j));
-					vertices ~= e.toByte;
-				}
-			}
-
-			indices = triangleOrder ~ triangleOrderReversed;
-			indices[3..$] += 1;
-
-			auto bb = BBox(asVertexes);
-			_q = Vector4(bb.min.xy, bb.max.xy);
-		}
-
-		_mh = new MeshHolder(od);
-	}
-
-	~this()
-	{
-		RO.items.remove(this);
-	}
-
-	override void draw(in DrawInfo *di) // TODO: move in onTick
-	{
-		if(PE.shadows.passActive)
-		{
-			return;
-		}
-
-		auto cam = PEscene.camera;
-		auto mat = cam._inversed * matrix;
-
-		// TODO: OPTIMIZE
-		bbox = BBox(Vector3(_q.xy, 0), Vector3(_q.zw, 0)) * mat;
-
-		auto m = PE.render.alloc;
-		auto c = colorWhite;
-
-		m.mh = _mh;
-		m.color = c;
-		m.matrix = mat;
-		m.id = 0;
-		m.flags = 0;
-		m.lightStart = m.lightEnd = 0;
-		m.blendingMode = c.a == 255 ? noBlending : blendingNormal;
-	}
-
-	auto pickUp()
-	{
-		auto u = bbox * PE.scene.viewProject;
-
-		auto
-				a = project(u.min, PE.window.size),
-				b = project(u.max, PE.window.size);
-
-		auto m = PE.window.mpos;
-
-		//log(`%s %s`, a, b);
-
-		if(
-			m.x > a.x && m.x < b.x &&
-			m.y > b.y && m.y < a.y
-									)
-		{
-			return planeIntersection(a, Vector3(a.x, b.yz), b, Vector3(PE.window.mpos, 1), Vector3(0, 0, -1));
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-private:
-	Vector4 _q;
-	RC!MeshHolder _mh;
 }

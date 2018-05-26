@@ -38,20 +38,19 @@ class Node : RCounted
 
 	Matrix4 matrix;
 	BBox bbox;
-
-	ubyte flags;
 }
 
-enum
+struct FrameOrientation
 {
-	NODE_INT_DRAWN		= 1, // TODO: make private somehow ???
+	uint time;
+	Quaternion q;
 }
 
 final class ObjecterNode : Node
 {
 	override void draw(in DrawInfo *di)
 	{
-		auto m = PE.render.alloc;
+		DrawInfo m;
 
 		if(oris.length)
 		{
@@ -74,22 +73,22 @@ final class ObjecterNode : Node
 		}
 
 		m.mh = mh;
-		//m.depth = 0;
-		m.color = colorWhite;
-		m.blendingMode = noBlending;
 
 		m.lightStart = lightStart;
 		m.lightEnd = lightEnd;
 		m.id = id;
 		m.flags = di.flags;
 
-		super.draw(m);
+		super.draw(&m);
+
+		PE.render.toQueue(m);
 	}
 
-	import ro.map; // TODO: remove
-	RomFrameOrientation[] oris;
+	FrameOrientation[] oris;
 
+	RC!Program prog;
 	RC!MeshHolder mh;
+
 	Matrix4 matrix;
 
 	uint lightStart, lightEnd;

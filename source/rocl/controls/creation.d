@@ -99,7 +99,7 @@ class WinCreation : WinBasic
 
 			b.onClick =
 			{
-				ROgui.removeCreation;
+				RO.gui.removeCreation;
 				RO.action.charSelect(0);
 			};
 		}
@@ -109,7 +109,7 @@ class WinCreation : WinBasic
 
 	void onDone(ref PkCharData p)
 	{
-		ROgui.removeCreation;
+		RO.gui.removeCreation;
 
 		with(ROnet.st)
 		{

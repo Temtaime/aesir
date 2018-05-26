@@ -1,21 +1,16 @@
 module ro.conv.map;
 
 import
-		std.conv,
-		std.range,
-		std.stdio,
-		std.array,
-		std.string,
-		std.typecons,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain,
 
 		ro.map,
 		ro.grf,
 		ro.conf,
+		ro.conv,
 
-		ro.conv;
+		tt.logger : log;
 
 
 final class RomConverter : Converter
@@ -35,6 +30,7 @@ final class RomConverter : Converter
 
 		processGround(res);
 		processLights(res);
+		processWaterParam(res);
 		processFloorObjects(res);
 		processLightsIndices(res);
 		processFogEntries(res);
@@ -70,12 +66,48 @@ private:
 
 	auto processFloor(ref RomFile f)
 	{
-		auto meshes = GndConverter(`data/` ~ _rsw.gnd.convertName).process;
+		auto res = GndConverter(`data/` ~ _rsw.gnd.convertName, f.water.level, f.water.height).process;
 
-		f.floor = meshes.map!(a => RomFloor(a.calcBBox)).array;
+		f.floor = res[0].map!(a => RomFloor(a.calcBBox)).array;
 		f.floor.each!((ref a) => _lights.push(a.box));
 
-		return meshes;
+		auto water = res[1];
+
+		if(water[0].subs)
+		{
+			foreach(i, ref w; water)
+			{
+				auto n = format(`data/texture/워터/water%u%02u.jpg`, f.water.type, i);
+				w.subs[0].tex = new Image(PEfs.get(n));
+
+				with(w.subs[0].data)
+				{
+					auto vs = asVertexes
+										.chunks(4)
+										.map!(a => chain(a[0..3], a[1..4].retro)) // TODO: COMMON FUNC
+										.join;
+
+					vertices = vs.toByte;
+					indices = makeIndices(cast(uint)vs.length / 3);
+				}
+			}
+
+			f.waterData = makeHolderCreator(water, RENDER_SCENE, MH_DXT).process;
+		}
+
+		return res[0];
+	}
+
+	auto processWaterParam(ref RomFile f)
+	{
+		f.water.level = -_rsw.waterLevel / ROM_SCALE_DIV;
+		f.water.height = _rsw.waterHeight / ROM_SCALE_DIV;
+
+		f.water.speed = _rsw.waterSpeed;
+		f.water.pitch = _rsw.waterPitch;
+		f.water.animSpeed = _rsw.waterAnimSpeed;
+
+		f.water.type = cast(ubyte)_rsw.waterType;
 	}
 
 	void processFloorObjects(ref RomFile f)
@@ -218,7 +250,7 @@ private:
 		{
 			string map;
 
-			foreach(s; (cast(string)PEfs.get(`data/fogparametertable.txt`)).splitter(`#`).map!strip)
+			foreach(s; PEfs.get(`data/fogparametertable.txt`).as!char.assumeUnique.splitter(`#`).map!strip)
 			{
 				if(s.endsWith(`.rsw`))
 				{
@@ -338,7 +370,7 @@ struct LightsCalculator
 	auto calc(ref ushort[] res)
 	{
 		// pointers to array elements
-		auto index = new ushort[] *[_indices.length];
+		auto index = new ushort[]*[_indices.length];
 
 		// sort to find max lengths
 		makeIndex!((a, b) => a.length > b.length)(_indices, index);
@@ -350,7 +382,6 @@ struct LightsCalculator
 							.map!(a => a.index)
 							.array
 							.assumeSorted;
-
 
 		foreach(sub; index.map!(a => *a))
 		{

@@ -1,172 +1,128 @@
 module perfontain.nodes.octree;
 
 import
-		std.math,
-		std.range,
-		std.stdio,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain,
 		perfontain.misc,
 		perfontain.math.frustum;
 
-enum
-{
-	DEPTH = 3,
 
-	SPLIT_X = 2,
-	SPLIT_Y = 2,
-
-	K = SPLIT_X * SPLIT_Y,
-}
-
-final class OctreeNode : Node // TODO: disallow nodes with no children
+final class OctreeNode : Node
 {
 	this(Node node)
 	{
-		// save nodes so there's a ref to each node
 		_nodes = node.childs;
+		_drawn.length = _nodes.length;
 
-		// allocate array here
-		_arr.length = (1 - K ^^ (DEPTH + 1)) / (1 - K);
+		_root.box = bbox = node.bbox;
+		_root.nodes = iota(cast(uint)_nodes.length).array;
 
-		// bbox of a node must be valid
-		create(bbox = node.bbox, DEPTH);
+		create(_root);
 	}
 
-	override void draw(in DrawInfo *di)
+	override void draw(in DrawInfo* di)
 	{
-		_di = di;
-		test(0);
 
-		foreach(n; _nodes)
-		{
-			n.flags &= ~NODE_INT_DRAWN;
-		}
+		check(_root, di);
+
+		_drawn[] = false;
 	}
 
 private:
-	void processNodes(S[] nodes, ubyte res)
+	enum DEPTH = 2;
+
+	void check(ref Tree t, in DrawInfo* di)
 	{
-		foreach(ref s; nodes)
+		if(auto res = PEscene._culler.collision(t.box))
 		{
-			auto node = s.n;
-
-			if(node.flags & NODE_INT_DRAWN)
+			if(res == F_INSIDE)
 			{
-				continue;
-			}
-
-            switch(res) {
-            case F_INTERSECTS:
-            	if(PEscene._culler.collision(node.bbox) == F_OUTSIDE)
-            	{
-					break;
-            	}
-
-				goto case;
-
-            case F_INSIDE:
-            	node.draw(_di);
-            	break;
-
-			default:
-				if(!s.inside)
-				{
-					continue;
-				}
-            }
-
-			node.flags |= NODE_INT_DRAWN;
-		}
-	}
-
-	void test(uint idx)
-	{
-		auto s = &_arr[idx];
-		auto res = PEscene._culler.collision(s.box);
-
-		if(res == F_INTERSECTS)
-		{
-			idx = idx * K + 1;
-
-			if(idx >= _arr.length)
-			{
-				processNodes(s.nodes, res);
+				draw(t.nodes, di, true);
 			}
 			else
 			{
-				foreach(c; 0..K) test(idx + c);
+				if(t.childs.length)
+				{
+					t.childs.each!((ref a) => check(a, di));
+				}
+				else
+				{
+					draw(t.nodes, di, false);
+				}
 			}
-		}
-		else
-		{
-			processNodes(s.nodes, res);
 		}
 	}
 
-	void create(ref in BBox bbox, ubyte depth, uint idx = 0)
+	void create(ref Tree t, uint depth = DEPTH)
 	{
-		{
-			auto ap = appender!(S[]);
+		/*{
+			BBox box;
+			_nodes[].indexed(t.nodes).each!(a => box += a.bbox);
 
-			foreach(n; _nodes)
+			t.box.min = t.box.min.zipMap!max(box.min);
+			t.box.max = t.box.max.zipMap!min(box.max);
+		}*/
+
+		auto box = &t.box;
+		auto center = box.center;
+
+		//writefln(`%s %s`, t.nodes.length, *box);
+
+		auto bb =
+		[
+			BBox(box.min,									Vector3(center.x, box.max.y, center.z)),
+			BBox(Vector3(center.x, box.min.y, center.z),	box.max),
+			BBox(Vector3(box.min.x, box.min.y, center.z),	Vector3(center.x, box.max.y, box.max.z)),
+			BBox(Vector3(center.x, box.min.y, box.min.z),	Vector3(box.max.x, box.max.y, center.z)),
+		];
+
+		foreach(b; bb)
+		{
+			auto e = Tree(b);
+
+			foreach(i; t.nodes)
 			{
-				if(auto res = bbox.collision(n.bbox))
+				if(b.collision(_nodes[i].bbox))
 				{
-					ap.put(S(n, res == F_INSIDE));
+					e.nodes ~= i;
 				}
 			}
 
-			auto s = &_arr[idx];
-
-			s.box = bbox;
-			s.nodes = ap.data;
-
-			if(!depth--)
+			if(auto cnt = e.nodes.length)
 			{
-				return;
+				if(depth)
+				{
+					create(e, depth - 1);
+				}
+
+				t.childs ~= e;
 			}
 		}
+	}
 
-		uint c;
-		auto d = bbox.size.xz;
-
-		d.x /= SPLIT_X;
-		d.y /= SPLIT_Y;
-
-		foreach(x; 0..SPLIT_X)
+	void draw(uint[] arr, in DrawInfo* di, bool inside)
+	{
+		foreach(idx; arr)
 		{
-			auto xp = bbox.min.x + x * d.x;
-
-			foreach(y; 0..SPLIT_Y)
+			if(!_drawn[idx] && (inside || PEscene._culler.collision(_nodes[idx].bbox)))
 			{
-				auto yp = bbox.min.z + y * d.y;
-
-				auto b = BBox(
-								Vector3(xp, bbox.min.y, yp),
-								Vector3(xp + d.x, bbox.max.y, yp + d.y)
-																		);
-
-				create(b, depth, idx * K + 1 + c++);
+				_drawn[idx] = true;
+				_nodes[idx].draw(di);
 			}
 		}
 	}
 
-	struct S
+	struct Tree
 	{
-		Node n;
-		bool inside;
-	}
-
-	struct GroupTester
-	{
-		S[] nodes;
 		BBox box;
+
+		uint[] nodes;
+		Tree[] childs;
 	}
 
-	const(DrawInfo) *_di;
+	Tree _root;
 
-	GroupTester[] _arr;
+	BitArray _drawn;
 	RCArray!Node _nodes;
 }

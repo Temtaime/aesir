@@ -11,7 +11,7 @@ import
 		std.exception,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 		perfontain.misc,
@@ -63,6 +63,6 @@ private:
 		auto str = new char[len];
 
 		glGetShaderInfoLog(id, len, null, str.ptr);
-		return cast(string)str[0..$ - 1];
+		return str[0..$ - 1].assumeUnique;
 	}
 }

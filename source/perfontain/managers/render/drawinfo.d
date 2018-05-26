@@ -11,32 +11,30 @@ enum
 
 struct DrawInfo
 {
+	Program prog;
 	MeshHolder mh;
+
 	Matrix4 matrix;
 
 	uint	lightStart,
 			lightEnd;
 
-	Color color;
+	Color color = colorWhite;
 	ushort id;
 
 	ubyte	flags,
-			blendingMode;
+			blendingMode = noBlending;
 package:
-	static cmp(bool HolderToo)(ref in DrawInfo a, ref in DrawInfo b)
+	static diff(string val, string cmp = `<`, string as = ``)
 	{
-		if((a.flags & DI_NO_DEPTH) != (b.flags & DI_NO_DEPTH))
-		{
-			return (a.flags & DI_NO_DEPTH) < (b.flags & DI_NO_DEPTH);
-		}
+		return `if(` ~ as ~ `(a.` ~ val ~ `) != ` ~ as ~ `(b.` ~ val ~ `)) return ` ~ as ~ `(a.` ~ val ~ `) ` ~ cmp ~ as ~ `(b.` ~ val ~ `);`;
+	}
 
-		static if(HolderToo)
-		{
-			if(cast(void *)a.mh != cast(void *)b.mh)
-			{
-				return cast(void *)a.mh < cast(void *)b.mh;
-			}
-		}
+	static cmp(ref in DrawInfo a, ref in DrawInfo b)
+	{
+		mixin(diff(`prog`, `<`, `cast(void*)`));
+		mixin(diff(`flags & DI_NO_DEPTH`));
+		mixin(diff(`mh`, `<`, `cast(void*)`));
 
 		return a.blendingMode < b.blendingMode;
 	}

@@ -24,9 +24,15 @@ enum : ubyte
 	LIGHTS_FULL,
 }
 
+struct WindowData
+{
+	Vector2s pos;
+}
+
 struct Settings
 {
-	@(`ubyte`) Vector2s[string] wins;
+	WindowData[string] wins;
+	SDL_Keycode[][string] hotkeys;
 
 	ubyte
 			lights = LIGHTS_GLOBAL,
@@ -40,6 +46,8 @@ struct Settings
 			fullscreen,
 			useBindless;
 }
+
+package:
 
 auto genSettings()
 {
@@ -59,7 +67,7 @@ auto genSettings()
 			s ~= `@property ` ~ n ~ `(` ~ T.stringof ~ ` v) { _st.` ~ n ~ `= v;` ~ n ~ `Change(v); }`;
 		}
 
-		s ~= `Signal!(void,` ~ T.stringof ~ `) ` ~ n ~ `Change;`;
+		s ~= `perfontain.Signal!(void,` ~ T.stringof ~ `) ` ~ n ~ `Change;`;
 	}
 
 	return s;

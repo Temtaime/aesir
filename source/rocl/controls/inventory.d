@@ -58,39 +58,33 @@ final class InventoryTab : GUIElement
 		}
 	}
 
-	void register(Item m, bool canEquip)
+	void register(Item m)
 	{
 		if(!m.equip2)
 		{
 			add(m);
 		}
 
-		if(canEquip && m.equip)
+		if(m.equip)
 		{
-			m.onEquip.permanent(a => remove(a, true));
+			m.onEquip.permanent(&remove);
 			m.onUnequip.permanent(&add);
 		}
 
-		m.onCountChanged.permanent(&recount);
-		m.onRemove.permanent(a => remove(a, false));
+		m.onRemove.permanent(&remove);
 	}
 
 private:
-	void recount(Item m)
-	{
-		_aa[m].recount(m);
-	}
-
 	void add(Item m)
 	{
 		add(_aa[m] = new ItemHolder(null, m), m.tab);
 	}
 
-	void remove(Item m, bool force)
+	void remove(Item m)
 	{
-		if(!m.equip2 || force)
+		if(auto p = m in _aa)
 		{
-			remove(_aa[m], m.tab);
+			remove(*p, m.tab);
 			_aa.remove(m);
 		}
 	}
@@ -213,7 +207,7 @@ private:
 	void onAdd(Item m)
 	{
 		m.source = ITEM_STORAGE;
-		tab.register(m, false);
+		tab.register(m);
 	}
 }
 
@@ -236,10 +230,10 @@ final class WinInventory : WinBasic
 
 		if(pos.x < 0)
 		{
-			pos = Vector2s(0, ROgui.base.size.y);
+			pos = Vector2s(0, RO.gui.base.size.y);
 		}
 
-		RO.status.items.onAdded.permanent(a => tab.register(a, true));
+		RO.status.items.onAdded.permanent(&tab.register);
 	}
 
 	InventoryTab tab;
@@ -264,17 +258,17 @@ final class ItemHolder : GUIElement
 {
 	this(GUIElement p, Item m)
 	{
-		super(p);
-		size = Vector2s(36);
+		super(p, Vector2s(36));
 
 		{
 			auto e = new ItemIcon(this, m);
 			e.pos = Vector2s(6);
 		}
 
-		recount(m);
+		_rc = m.onCountChanged.add(&recount);
 	}
 
+private:
 	void recount(Item m)
 	{
 		while(childs.length > 1)
@@ -293,22 +287,6 @@ final class ItemHolder : GUIElement
 
 		PE.gui.updateMouse;
 	}
-}
 
-final class TextTip : GUIStaticText
-{
-	this(string s)
-	{
-		super(PE.gui.root, s);
-
-		color = colorWhite;
-		flags |= WIN_TOP_MOST;
-	}
-
-	override void draw(Vector2s p) const
-	{
-		drawQuad(p + pos, size, Color(0, 0, 0, 180));
-
-		super.draw(p);
-	}
+	RC!ConnectionPoint _rc;
 }

@@ -8,8 +8,8 @@ struct RswFile
 {
 	static immutable char[4] bom = `GRSW`;
 
-	ubyte	vMajor, // TODO: VERSION CHECK
-			vMinor;
+	@(`validif`, `major && major <= 2`) ubyte major;
+	@(`validif`, `major == 1 ? minor == 9 : minor <= 1`) ubyte minor;
 
 	char[40]
 				ini,
@@ -18,15 +18,15 @@ struct RswFile
 				scr;
 
 	/// water
-	float wHeight;
-	uint wType;
+	float waterLevel;
+	@(`validif`, `waterType <= 9`) uint waterType;
 
 	float
-			wAmpl,
-			wSpeed,
-			wPitch;
+			waterHeight,
+			waterSpeed,
+			waterPitch;
 
-	uint wAnimSpeed;
+	uint waterAnimSpeed;
 
 	/// light
 	uint
@@ -112,7 +112,7 @@ struct RswSound
 			height;
 
 	float range;
-	@(`ignoreif`, `STRUCT.vMajor < 2`) float cycle; // ONLY RSW 2.+, FLOAT ???
+	@(`ignoreif`, `STRUCT.major < 2`) float cycle; // ONLY RSW 2.+, FLOAT ???
 }
 
 struct RswEffect

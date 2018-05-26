@@ -213,3 +213,36 @@ class TargetSelector : GUIElement
 		drawQuad(p + pos, size, Color(0, 0, 0, 110));
 	}
 }
+
+class BigTooltip : Tooltip
+{
+	this(string s)
+	{
+		toStaticTexts(s, Vector2s(640, -1)).joiner.each!(a => a.attach(this));
+
+		toChildSize;
+		pad(TOOLTIP_PART_SZ.x);
+
+		super();
+	}
+
+	override void draw(Vector2s p) const
+	{
+		auto n = p + pos;
+		auto t = TOOLTIP_PART_SZ;
+
+		drawQuad(n + t, size - t * 2);
+
+		drawImage(TOOLTIP_PART, n, colorWhite, t);
+		drawImage(TOOLTIP_PART, n + Vector2s(size.x - t.x, 0), colorWhite, t, DRAW_MIRROR_H);
+		drawImage(TOOLTIP_PART, n + Vector2s(0, size.y - t.x), colorWhite, t, DRAW_MIRROR_V);
+		drawImage(TOOLTIP_PART, n + size - t, colorWhite, t, DRAW_MIRROR_V | DRAW_MIRROR_H);
+
+		drawImage(TOOLTIP_SPACER, n + Vector2s(t.x, 0), colorWhite, Vector2s(size.x - t.x * 2, t.x));
+		drawImage(TOOLTIP_SPACER, n + Vector2s(0, t.x), colorWhite, Vector2s(size.y - t.x * 2, t.x), DRAW_ROTATE);
+		drawImage(TOOLTIP_SPACER, n + Vector2s(size.x - t.x, t.x), colorWhite, Vector2s(size.y - t.x * 2, t.x), DRAW_ROTATE);
+		drawImage(TOOLTIP_SPACER, n + Vector2s(t.x, size.y - t.x), colorWhite, Vector2s(size.x - t.x * 2, t.x));
+
+		super.draw(p);
+	}
+}

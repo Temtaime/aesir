@@ -33,7 +33,6 @@ import
 @property ref RO() { return Game.instance; }
 
 @property ROdb() { return RO._db; }
-@property ROgui() { return RO._gmgr; }
 @property ROent() { return RO._emgr; }
 @property ROres() { return RO._rmgr; }
 @property ROnet() { return RO._pmgr; }
@@ -80,11 +79,12 @@ final class Game
 						user = r[0],
 						pass = r[2];
 
-				ROgui.show;
+				gui.show;
 				ROnet.login(user, pass);
 			}
 			else
 			{
+				//if(std.file.exists(`tmp/map/prontera.rom`)) std.file.remove(`tmp/map/prontera.rom`);
 				mapViewer;
 			}
 
@@ -92,6 +92,7 @@ final class Game
 		}
 	}
 
+	GuiManager gui;
 	RoSettings settings;
 
 	Status status;
@@ -107,27 +108,20 @@ package:
 private:
 	void mapViewer()
 	{
-		debug
-		{
-			ROres.load(`prontera`);
-		}
-		else
-		{
-			ROres.load(`prontera`);
-		}
+		ROres.load(`prontera`);
 
-		//PE.hotkeys.add(new Hotkey({ log(`lispsm %s`, PE.shadows.lispsm ^= true); }, SDL_SCANCODE_LCTRL, SDL_SCANCODE_A));
+		//PE.hotkeys.add(Hotkey({ log(`lispsm %s`, PE.shadows.lispsm ^= true); }, SDLK_LCTRL, SDLK_a));
 		debug
 		{
-			PE.hotkeys.add(new Hotkey({ PEstate.wireframe = !PEstate.wireframe; }, SDL_SCANCODE_F11));
-			PE.hotkeys.add(new Hotkey({ PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA); }, SDL_SCANCODE_F10));
+			PE.hotkeys.add(Hotkey(null, { PEstate.wireframe = !PEstate.wireframe; return true; }, SDLK_F11));
+			PE.hotkeys.add(Hotkey(null, { PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA); return true; }, SDLK_F10));
 		}
 
 		auto p = Vector3(0, 24.810, 0);
 		PEscene.camera = new CameraFPS(p, p + Vector3(0.657, 0, -0.657));
 
 		auto w = new WinSettings(true);
-		PE.hotkeys.add(new Hotkey({ w.show(!w.visible); }, SDL_SCANCODE_F12));
+		PE.hotkeys.add(Hotkey(null, { w.show(!w.visible); return true; }, SDLK_F12));
 	}
 
 	bool initialize(uint fov)
@@ -136,7 +130,7 @@ private:
 
 		void onAspect(float aspect)
 		{
-			PE.scene.proj = Matrix4.makePerspective(aspect, fov, 10, 500);
+			PE.scene.proj = Matrix4.makePerspective(aspect, fov, 10, 1000);
 		}
 
 		PE.onAspect.permanent(&onAspect);
@@ -164,11 +158,10 @@ private:
 		_emgr.process;
 	}
 
-	mixin createCtorsDtors!(_rmgr, _db, _gmgr, _emgr, _pmgr, _npc, action, status, items, effects);
+	mixin createCtorsDtors!(_rmgr, _db, gui, _emgr, _pmgr, _npc, action, status, items, effects);
 
 	RoDb _db;
 
-	GuiManager _gmgr;
 	NpcController _npc;
 	PacketManager _pmgr;
 	EntityManager _emgr;

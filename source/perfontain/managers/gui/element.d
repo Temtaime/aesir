@@ -5,14 +5,15 @@ import
 		std.range,
 		std.stdio,
 		std.ascii,
- 		std.array,
- 		std.typecons,
- 		std.string,
- 		std.regex,
+		std.array,
+		std.traits,
+		std.typecons,
+		std.string,
+		std.regex,
 		std.encoding,
- 		std.algorithm,
+		std.algorithm,
 
- 		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 
@@ -32,7 +33,6 @@ enum : ubyte
 	WIN_MOVEABLE		= 4,
 	WIN_BACKGROUND		= 8,
 	WIN_HIDDEN			= 16,
-	WIN_CASCADE_SHOW	= 32, // TODO: GET RID
 	WIN_HAS_INPUT		= 64,
 	WIN_TOP_MOST		= 128,
 }
@@ -48,9 +48,30 @@ enum : ubyte
 	POS_CENTER,
 }
 
+// TODO: MOVE TO ANOTHER PKG
+template MakeChildRef(T, string Name, Idx...)
+{
+	mixin(`inout(T) ` ~ Name ~ `() inout
+	{
+		GUIElement e = cast()this;
+
+		foreach(i; Idx)
+		{
+			if(i >= e.childs.length)
+			{
+				return null;
+			}
+
+			e = e.childs[i];
+		}
+
+		return cast(inout(T))e;
+	}`);
+}
+
 class GUIElement : RCounted
 {
-	this(GUIElement p)
+	this(GUIElement p, Vector2s sz = Vector2s.init, ubyte f = 0, string n = null)
 	{
 		if(p)
 		{
@@ -58,17 +79,33 @@ class GUIElement : RCounted
 			parent.childs ~= this;
 		}
 
+		if(f)
+		{
+			flags = f;
+		}
+
+		if(n)
+		{
+			name = n;
+		}
+
+		if(sz.x)
+		{
+			size = sz;
+		}
+
 		if(name.length)
 		{
 			pos.x = -1;
 
-			if(auto v = name in PE.settings.wins)
+			if(auto w = name in PE.settings.wins)
 			{
-				auto u = *v + size;
+				auto v = w.pos;
+				auto u = v + size;
 
-				if(v.x >= 0 && v.y >= 0 && u.x <= PEwindow._size.x && u.y <= PEwindow._size.y)
+				if(v.x >= 0 && v.y >= 0 && u.x <= PEwindow.size.x && u.y <= PEwindow.size.y)
 				{
-					pos = *v;
+					pos = v;
 				}
 			}
 		}
@@ -78,7 +115,7 @@ class GUIElement : RCounted
 	{
 		if(name.length)
 		{
-			PE.settings.wins[name] = pos;
+			PE.settings.wins[name] = WindowData(pos);
 		}
 
 		PE.gui.onDie(this);
@@ -121,36 +158,29 @@ class GUIElement : RCounted
 final:
 	auto byHierarchy()
 	{
-		struct S
-		{
-			const empty()
-			{
-				return !_e.parent;
-			}
+		return HierarchyRange!(typeof(this))(this);
+	}
 
-			void popFront()
-			{
-				assert(!empty);
-				_e = _e.parent;
-			}
-
-			inout front()
-			{
-				assert(!empty);
-				return _e;
-			}
-
-		private:
-			GUIElement _e;
-		}
-
-		return S(this);
+	const byHierarchy()
+	{
+		return HierarchyRange!(typeof(this))(cast()this);
 	}
 
 	void toChildSize()
 	{
 		size.x = childs[].map!(a => cast(short)(a.pos.x + a.size.x)).fold!max(short(0));
 		size.y = childs[].map!(a => cast(short)(a.pos.y + a.size.y)).fold!max(short(0));
+	}
+
+	void pad(Vector2s p)
+	{
+		size += p * 2;
+		childs[].each!(a => a.pos += p);
+	}
+
+	void pad(ushort n)
+	{
+		pad(n.Vector2s);
 	}
 
 	void moveX(GUIElement e, ubyte m, int d = 0)
@@ -176,7 +206,7 @@ final:
 
 	const absPos()
 	{
-		return (cast()this).byHierarchy.fold!((a, b) => a + b.pos)(Vector2s.init); // TODO: CAST
+		return byHierarchy.fold!((a, b) => a + b.pos)(Vector2s.init);
 	}
 
 	void focus(bool b = true)
@@ -225,6 +255,20 @@ final:
 		release;
 	}
 
+	auto showOrHide()
+	{
+		if(visible)
+		{
+			show(false);
+		}
+		else
+		{
+			show;
+			focus;
+		}
+	}
+
+
 	void show(bool b = true)
 	{
 		if(!(flags & WIN_HIDDEN) == b)
@@ -232,13 +276,7 @@ final:
 			return;
 		}
 
-		onShow(b);
 		byFlag(flags, WIN_HIDDEN, !b);
-
-		if(flags & WIN_CASCADE_SHOW)
-		{
-			childs[].each!(a => a.show(b));
-		}
 	}
 
 	/// flags
@@ -284,7 +322,8 @@ protected:
 
 	const drawImage(in MeshHolder mh, uint id, Vector2s p, Color c = colorWhite, Vector2s sz = Vector2s.init, ubyte flags = 0)
 	{
-		auto d = PE.render.alloc;
+
+		DrawInfo d;
 
 		d.mh = cast()mh;
 		d.id = cast(ushort)id;
@@ -336,8 +375,10 @@ protected:
 			d.matrix *= Matrix4.translate(Vector3(p, 0));
 		}
 
-		d.blendingMode = blendingNormal;
 		d.color = c;
+		d.blendingMode = blendingNormal;
+
+		PE.render.toQueue(d);
 	}
 
 package:
@@ -345,29 +386,49 @@ package:
 	{
 		p -= pos;
 
-		if(parent && (flags & WIN_BACKGROUND || !visible || p.x < 0 || p.y < 0 || p.x >= size.x || p.y >= size.y))
+		if(visible && p.x >= 0 && p.y >= 0 && p.x < size.x && p.y < size.y)
 		{
-			return null;
-		}
-
-		foreach(c; childs[].retro)
-		{
-			if(auto r = c.winByPos(p))
+			foreach(c; childs[].retro)
 			{
-				return r;
+				if(auto r = c.winByPos(p))
+				{
+					return r;
+				}
+			}
+
+			if(!(flags & WIN_BACKGROUND))
+			{
+				return this;
 			}
 		}
 
-		if(parent)
-		{
-			return this;
-		}
-
-		//assert(this is PEgui.root);
 		return null;
 	}
 
 private:
+	struct HierarchyRange(T)
+	{
+		const empty()
+		{
+			return !_e.parent;
+		}
+
+		void popFront()
+		{
+			assert(!empty);
+			_e = _e.parent;
+		}
+
+		T front()
+		{
+			assert(!empty);
+			return _e;
+		}
+
+	private:
+		GUIElement _e;
+	}
+
 	void moveFunc(string S)(GUIElement e, ubyte q, int d)
 		{
 			auto notParent = e !is parent;

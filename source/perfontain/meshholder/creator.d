@@ -52,16 +52,17 @@ abstract class HolderCreator
 
 			foreach(ref s; m.subs)
 			{
+				assert(s.data.indices.length);
 				assert(s.data.vertices.length);
 
-				if(!(s.tex in _texIndex))
+				if(!_texs.canFind(s.tex))
 				{
-					_texIndex[s.tex] = cast(ushort)_texIndex.length;
+					_texs ~= s.tex;
 				}
 			}
 		}
 
-		assert(_texIndex.length);
+		assert(_texs.length);
 		makeData(res);
 
 		if(_type == RENDER_SCENE) with(res)
@@ -77,6 +78,28 @@ abstract class HolderCreator
 			}
 
 			res.data.minimize;
+
+			/*{
+				import utils.vertexcache, std.stdio;
+
+				auto t1 = stsvco_compute_ACMR(data.indices.ptr, cast(uint)data.indices.length, 32);
+
+				foreach(ref m; meshes)
+				{
+					auto p = &m.subs.back;
+
+					auto	a = m.subs.front.start,
+							b = p.start + p.len;
+
+
+
+					stsvco_optimize(data.indices.ptr + a, b - a, data.indices[a..b].reduce!max + 1, 32);
+				}
+
+				auto t2 = stsvco_compute_ACMR(data.indices.ptr, cast(uint)data.indices.length, 32);
+
+				writefln(`%s -> %s`, t1, t2);
+			}*/
 		}
 
 		return res;
@@ -99,5 +122,5 @@ protected:
 				_vsize;
 	}
 
-	ushort[const Image] _texIndex;
+	const(Image)[] _texs;
 }

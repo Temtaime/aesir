@@ -6,6 +6,7 @@ bin/perfontain*
 utils/deps
 utils/release-maker
 
+libs
 .dub
 
 source/perfontain/opengl/functions.d

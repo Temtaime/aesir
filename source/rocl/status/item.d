@@ -18,6 +18,7 @@ enum
 	ITEM_INVENTORY,
 	ITEM_STORAGE,
 	ITEM_SHOP,
+	ITEM_TRADING,
 }
 
 final class Item : RCounted
@@ -30,6 +31,16 @@ final class Item : RCounted
 		source = ITEM_SHOP;
 
 		price = min(p.price, p.discountPrice);
+	}
+
+	this(ref in Pk0a09 p)
+	{
+		foreach(s; AliasSeq!(`id`, `type`, `amount`, `flags`, `attr`, `refine`, `cards`))
+		{
+			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
+		}
+
+		source = ITEM_TRADING;
 	}
 
 	this(ref in PkEquipItem p)
@@ -77,6 +88,11 @@ final class Item : RCounted
 	~this()
 	{
 		onRemove(this);
+	}
+
+	const clone()
+	{
+		return new Item(this);
 	}
 
 	const drop()
@@ -138,7 +154,7 @@ final class Item : RCounted
 			[ IT_ARMOR, IT_WEAPON, IT_PETARMOR, ],
 		];
 
-		byte n = cast(byte)arr.countUntil!(a => a.canFind(type));
+		auto n = cast(byte)arr.countUntil!(a => a.canFind(type));
 		return n < 0 ? 2 : n;
 	}
 
@@ -153,17 +169,16 @@ final class Item : RCounted
 			id,
 			idx,
 			amount,
-
-			card,
-			card2,
-			card3,
-			card4,
+			trading,
 
 			bound,
 			look;
 
+	short[4] cards;
+
 	byte
 			type,
+			attr,
 			flags,
 			refine,
 			source;
@@ -174,16 +189,25 @@ final class Item : RCounted
 							onUnequip,
 							onCountChanged;
 private:
+	this(in Item m)
+	{
+		assert(!m.price);
+		assert(!m.equip2);
+		assert(!m.trading);
+
+		foreach(s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`, `price`, `bound`, `look`, `attr`, `source`))
+		{
+			mixin(s ~ `= cast(typeof(` ~ s ~ `))m.` ~ s ~ `;`);
+		}
+
+		createFrom(m);
+	}
+
 	void createFrom(T)(ref in T p)
 	{
-		foreach(s; AliasSeq!(`id`, `idx`, `type`, `flags`))
+		foreach(s; AliasSeq!(`id`, `idx`, `type`, `flags`, `cards`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}
-
-		card = p.cards.c1;
-		card2 = p.cards.c2;
-		card3 = p.cards.c3;
-		card4 = p.cards.c4;
 	}
 }

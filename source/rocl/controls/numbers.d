@@ -142,7 +142,7 @@ private:
 
 	static vm()
 	{
-		return cast(ValueManager)ROgui.values;
+		return cast(ValueManager)RO.gui.values;
 	}
 
 	const perc()

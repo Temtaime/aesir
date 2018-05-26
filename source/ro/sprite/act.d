@@ -9,7 +9,7 @@ import
 		std.string,
 		std.algorithm,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain,
 		perfontain.misc,

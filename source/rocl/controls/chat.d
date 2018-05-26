@@ -15,29 +15,40 @@ final class RoChat : GUIElement
 {
 	this(bool online = true)
 	{
-		name = `chat`;
-		flags = WIN_MOVEABLE;
-
-		super(PE.gui.root);
-
-		size.x = 670;
-
 		{
-			auto w = new ScrolledText(this, Vector2s(size.x - 8, 5), SCROLL_ARROW);
-			w.pos = Vector2s(4);
+			new ScrolledText(this, Vector2s(660, 5), SCROLL_ARROW);
+			new GUIEditText(this);
 
-			size.y = cast(ushort)(w.size.y + szY + 8);
+			edit.moveY(sc, POS_ABOVE);
+			edit.size.x =cast(ushort)(sc.size.x - CHAT_PART_SZ.x * 2);
+
+			edit.onEnter = (a)
+			{
+				if(a.length)
+				{
+					ROnet.toChat(a);
+					return true;
+				}
+				else
+				{
+					edit.enabled ^= true;
+				}
+
+				return false;
+			};
 		}
+
+		toChildSize;
+		pad(4);
+
+		super(PE.gui.root, Vector2s.init, WIN_MOVEABLE, `chat`);
 
 		if(pos.x < 0)
 		{
 			pos = parent.size - size;
 		}
 
-		//createEdit;
-		_cp = PE.onKey.add(&onKey); // TODO: FIX
-
-		_online = online;
+		edit.focus;
 	}
 
 	void add(string s, Color c = colorTransparent)
@@ -64,7 +75,7 @@ final class RoChat : GUIElement
 
 	const disabled()
 	{
-		return childs.length == 1;
+		return !edit.enabled;
 	}
 
 private:
@@ -73,62 +84,6 @@ private:
 		return CHAT_PART_SZ.y;
 	}
 
-	void onKey(uint k, bool p)
-	{
-		if(flags & WIN_HIDDEN)
-		{
-			return;
-		}
-
-		if(k == SDLK_RETURN || k == SDLK_KP_ENTER) // TODO: COMMON FUNC
-		{
-			if(!p && disabled)
-			{
-				_cp = null;
-				createEdit;
-			}
-		}
-	}
-
-	void createEdit()
-	{
-		auto e = new GUIEditText(this);
-
-		e.pos = Vector2s(7, size.y - szY + (szY - e.size.y) / 2);
-		e.size.x = cast(ushort)(size.x - e.pos.x * 2);
-
-		e.onEnter = (a)
-		{
-			if(a.length)
-			{
-				if(_online)
-				{
-					ROnet.toChat(a);
-				}
-				else
-				{
-					try ROres.load(a); catch(Exception e) e.log;
-				}
-
-				return true;
-			}
-			else
-			{
-				e.remove;
-				_cp = PE.onKey.add(&onKey);
-			}
-
-			return false;
-		};
-
-		e.focus;
-	}
-
-	auto sc()
-	{
-		return cast(ScrolledText)childs[0];
-	}
-
-	bool _online;
-	RC!ConnectionPoint _cp;
+	mixin MakeChildRef!(ScrolledText, `sc`, 0);
+	mixin MakeChildRef!(GUIEditText, `edit`, 1);
 }

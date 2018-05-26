@@ -148,6 +148,134 @@ mixin template PacketHandlers()
 		send!Pk0146(npc);
 	}
 
+	// TRADING
+	void requestTrade(uint bl)
+	{
+		send!Pk00e4(bl);
+	}
+
+	void replyTrade(ubyte r)
+	{
+		send!Pk00e6(r);
+	}
+
+	void tradeItem(ushort idx, uint cnt)
+	{
+		send!Pk00e8(idx, cnt);
+	}
+
+	void tradeAction(byte act)
+	{
+		final switch(act)
+		{
+		case -1:
+			send!Pk00ed;
+			break;
+		case 0:
+			send!Pk00eb;
+			break;
+		case 1:
+			send!Pk00ef;
+		}
+	}
+
+	private
+	{
+		void onTradeItem(Pk0a09 p)
+		{
+			if(p.id)
+			{
+				RO.gui.trading.itemsDst.add(new Item(p));
+			}
+			else
+			{
+				RO.gui.trading.zeny(p.amount);
+			}
+		}
+
+		void onTradeAdd(Pk00ea p)
+		{
+			if(!p.index)
+			{
+				return; // TODO: ZENY CHECK
+			}
+
+			if(auto e = RO.status.items.getIdx(p.index))
+			{
+				if(auto t = e.trading)
+				{
+					e.trading = 0;
+
+					if(p.result) // TODO LOG
+					{}
+					else
+					{
+						auto d = cast(short)(e.amount - t);
+
+						{
+							auto c = e.clone;
+
+							c.amount = t;
+							c.source = ITEM_TRADING;
+
+							RO.gui.trading.itemsSrc.add(c);
+						}
+
+						if(d)
+						{
+							e.reamount(d);
+							e.trading = 0;
+						}
+						else
+						{
+							RO.status.items.remove(e);
+						}
+					}
+				}
+			}
+		}
+
+		void onTradeLock(Pk00ec p)
+		{
+			RO.gui.trading.lock(!p.who);
+		}
+
+		void onTradeCancel(Pk00ee p)
+		{
+			RO.gui.removeTrading;
+		}
+
+		void onTradeDone(Pk00f0 p)
+		{
+			RO.gui.removeTrading;
+		}
+
+		void onTradeReply(Pk01f5 p)
+		{
+			if(p.result == 3)
+			{
+				RO.gui.createTrading;
+			}
+		}
+
+		void onTradeRequested(Pk01f4 p)
+		{
+			auto e = new WinInfo(format(MSG_DEAL_REQUEST, p.nick.charsToString, p.baselvl), true);
+
+			e.ok.onClick =
+			{
+				replyTrade(3);
+				e.remove;
+			};
+
+			e.cancel.onClick =
+			{
+				replyTrade(4);
+				e.remove;
+			};
+		}
+	}
+
 	/// ====================================== INCOMING ======================================
 	void onLoginOk(Pk0ac4 p)
 	{
@@ -169,69 +297,73 @@ mixin template PacketHandlers()
 
 	void onCharCreated(Pk006d p)
 	{
-		ROgui.creation.onDone(p.data);
+		RO.gui.creation.onDone(p.data);
 	}
 
 	void onCreationError(Pk006e p)
 	{
-		ROgui.creation.onError(p.code);
+		RO.gui.creation.onError(p.code);
 	}
 
 	/// ====================================== NPC SHOP ======================================
 	void onShopType(Pk00c4 p)
 	{
-		ROgui.createShop(p.shopId);
+		RO.gui.createShop(p.shopId);
 	}
 
 	void onItemsBuy(Pk00c6 p)
 	{
-		ROgui.shop.make(p.items);
+		RO.gui.shop.make(p.items);
 	}
 
 	void onItemsSell(Pk00c7 p)
 	{
-		ROgui.shop.make(p.items);
+		RO.gui.shop.make(p.items);
 	}
 
 	void onBuyResult(Pk00ca p)
 	{
-		ROgui.removeShop;
+		RO.gui.removeShop;
 	}
 
 	void onSellResult(Pk00cb p)
 	{
-		ROgui.removeShop;
+		RO.gui.removeShop;
 	}
 
 	/// ====================================== KAFRA ======================================
 	void onKafraItems(Pk0995 p)
 	{
+		RO.gui.createStore;
+
 		foreach(ref v; p.items)
 		{
-			ROgui.store.items.add(new Item(v));
+			RO.gui.store.items.add(new Item(v));
 		}
 	}
 
 	void onKafraItem(Pk0a0a p)
 	{
-		ROgui.store.items.add(new Item(p));
+		RO.gui.store.items.add(new Item(p));
 	}
 
 	void onKafraEquipItems(Pk0a10 p)
 	{
+		RO.gui.createStore;
+
 		foreach(ref v; p.items)
 		{
-			ROgui.store.items.add(new Item(v));
+			RO.gui.store.items.add(new Item(v));
 		}
 	}
 
 	void onKafraRemoved(Pk00f6 p)
 	{
-		if(auto e = ROgui.store.items.getIdx(p.index))
+		if(auto e = RO.gui.store.items.getIdx(p.index))
 		{
 			if(p.amount == e.amount)
 			{
-				ROgui.store.items.remove(e);
+				RO.gui.store.items.remove(e);
 			}
 			else
 			{
@@ -242,7 +374,7 @@ mixin template PacketHandlers()
 
 	void onKafraClose(Pk00f8 p)
 	{
-		ROgui.removeStore;
+		RO.gui.removeStore;
 	}
 
 	void onEffect(Pk01f3 p)
@@ -321,13 +453,13 @@ mixin template PacketHandlers()
 
 		switch(p.varId)
 		{
-		case SP_JOBEXP:			ROgui.base.job.value = v; break;
-		case SP_NEXTJOBEXP:		ROgui.base.job.maxValue = v; break;
+		case SP_JOBEXP:			RO.gui.base.job.value = v; break;
+		case SP_NEXTJOBEXP:		RO.gui.base.job.maxValue = v; break;
 
-		case SP_BASEEXP:		ROgui.base.base.value = v; break;
-		case SP_NEXTBASEEXP:	ROgui.base.base.maxValue = v; break;
+		case SP_BASEEXP:		RO.gui.base.base.value = v; break;
+		case SP_NEXTBASEEXP:	RO.gui.base.base.maxValue = v; break;
 
-		case SP_ZENY:			ROgui.inv.zeny = v; break;
+		case SP_ZENY:			RO.gui.inv.zeny = v; break;
 
 		default:
 			p.varId.log;
@@ -343,30 +475,30 @@ mixin template PacketHandlers()
 
 		switch(p.varId)
 		{
-		case SP_WEIGHT:		ROgui.inv.weight = i; break;
-		case SP_MAXWEIGHT:	ROgui.inv.maxWeight = i; break;
+		case SP_WEIGHT:		RO.gui.inv.weight = i; break;
+		case SP_MAXWEIGHT:	RO.gui.inv.maxWeight = i; break;
 
-		case SP_JOBLEVEL:	ROgui.base.job.lvl = v; break;
-		case SP_BASELEVEL:	ROgui.base.base.lvl = v; break;
+		case SP_JOBLEVEL:	RO.gui.base.job.lvl = v; break;
+		case SP_BASELEVEL:	RO.gui.base.base.lvl = v; break;
 
 		case SP_HP:
 			s.ent.info.hp = i;
-			ROgui.base.hp.value = i;
+			RO.gui.base.hp.value = i;
 			break;
 
 		case SP_SP:
 			s.ent.info.sp = i;
-			ROgui.base.sp.value = i;
+			RO.gui.base.sp.value = i;
 			break;
 
 		case SP_MAXHP:
 			s.ent.info.maxHp = i;
-			ROgui.base.hp.maxValue = i;
+			RO.gui.base.hp.maxValue = i;
 			break;
 
 		case SP_MAXSP:
 			s.ent.info.maxSp = i;
-			ROgui.base.sp.maxValue = i;
+			RO.gui.base.sp.maxValue = i;
 			break;
 
 		case SP_ATK1:		RO.status.bonuses[RO_ATK].base = v; break;
@@ -397,7 +529,7 @@ mixin template PacketHandlers()
 	{
 		foreach(i, ref e; p.hotkeys[].enumerate.filter!(a => !!a.value.id))
 		{
-			ROgui.hotkeys.add(e, Vector2s(i % 9, i / 9));
+			RO.gui.hotkeys.add(e, Vector2s(i % 9, i / 9));
 		}
 	}
 
@@ -513,7 +645,7 @@ mixin template PacketHandlers()
 		}
 		else
 		{
-			ROgui.makeCreation;
+			RO.gui.createCreation;
 		}
 	}
 
@@ -619,7 +751,7 @@ mixin template PacketHandlers()
 				u.id = r.skillId;
 				u.type = cast(ubyte)r.type;
 
-				ROgui.skills.add(u);
+				RO.gui.skills.add(u);
 			}
 
 			u.sp = r.spCost;
@@ -661,7 +793,7 @@ mixin template PacketHandlers()
 
 		if(p.damage)
 		{
-			ROent.doActor(p.dstId, a => ROgui.values.show(a, p.damage));
+			ROent.doActor(p.dstId, a => RO.gui.values.show(a, p.damage));
 		}
 	}
 
@@ -700,7 +832,7 @@ mixin template PacketHandlers()
 			a.ent.info.msg(s, c);
 		};
 
-		ROgui.chat.add(s, c);
+		RO.gui.chat.add(s, c);
 		ROent.doActor(p.bl, a => F(a));
 	}
 
@@ -709,7 +841,7 @@ mixin template PacketHandlers()
 		auto c = Color(0, 255, 0, 255);
 		auto s = p.message.toStr;
 
-		ROgui.chat.add(s, c);
+		RO.gui.chat.add(s, c);
 		ROent.self.ent.info.msg(s, c);
 	}
 
@@ -727,7 +859,7 @@ mixin template PacketHandlers()
 private:
 	void chat(string s, Color c)
 	{
-		ROgui.chat.add(s, c);
+		RO.gui.chat.add(s, c);
 	}
 
 	void initialize()

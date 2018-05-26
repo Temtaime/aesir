@@ -14,8 +14,8 @@ mixin template SquareImpl()
 
 	ref transpose()
 	{
-		foreach(i; IndexTuple!N)
-		foreach(j; IndexTuple!(N, i + 1))
+		static foreach(i; 0..N)
+		static foreach(j; i + 1..N)
 		{
 			swap(A[i][j], A[j][i]);
 		}
@@ -37,7 +37,7 @@ mixin template SquareImpl()
 			{
 				T ret = 0;
 
-				foreach(k; IndexTuple!N)
+				static foreach(k; 0..N)
 				{
 					ret += A[0][k] * cofactor!(0, k);
 				}
@@ -53,13 +53,15 @@ mixin template SquareImpl()
 				enum K = N - 1;
 				Matrix!(T, K) sub = void;
 
-				foreach(i; IndexTuple!K)
-				foreach(j; IndexTuple!K)
+				static foreach(i; 0..K)
+				static foreach(j; 0..K)
 				{
-					enum L = i >= I ? i + 1 : i;
-					enum P = j >= J ? j + 1 : j;
+					{
+						enum L = i >= I ? i + 1 : i;
+						enum P = j >= J ? j + 1 : j;
 
-					sub[i][j] = A[L][P];
+						sub[i][j] = A[L][P];
+					}
 				}
 
 				return sub.det;
@@ -82,8 +84,8 @@ mixin template SquareImpl()
 		{
 			auto inversed()
 			{
-				auto res = adj;
 				T det = 0;
+				auto res = adj;
 
 				foreach(i, ref v; res.A)
 				{
@@ -107,8 +109,8 @@ mixin template SquareImpl()
 				}
 				else
 				{
-					foreach(i; IndexTuple!N)
-					foreach(j; IndexTuple!N)
+					static foreach(i; 0..N)
+					static foreach(j; 0..N)
 					{
 						ret[i][j] = cofactor!(i, j);
 					}

@@ -7,11 +7,14 @@ import
 		std.traits,
 		std.string,
 		std.algorithm,
+		std.experimental.allocator,
+		std.experimental.allocator.mallocator,
 		std.experimental.allocator.gc_allocator,
+		std.experimental.allocator.building_blocks.free_tree,
 
 		core.stdc.string,
 
-		ciema,
+		stb.wrapper.image,
 
 		perfontain.opengl,
 		perfontain.config,
@@ -186,6 +189,18 @@ void byFlag(T)(ref T v, uint bit, bool st)
 
 @property
 {
+	auto toFloats(ubyte N)(in int[N] arr)
+	{
+		float[N] res;
+
+		foreach(i, ref v; res)
+		{
+			v = arr[i] / 1000f;
+		}
+
+		return res;
+	}
+
 	auto toInts(ubyte N)(in float[N] arr)
 	{
 		int[N] res;
@@ -252,8 +267,8 @@ mixin template readableToString()
 		string r;
 		alias T = typeof(this);
 
-        import std.string : format;
-        import std.traits : FunctionTypeOf, Unqual;
+		import std.string : format;
+		import std.traits : FunctionTypeOf, Unqual;
 
 		foreach(m; __traits(allMembers, T))
 		{
@@ -269,8 +284,8 @@ mixin template readableToString()
 
 mixin template createCtorsDtors(A...)
 {
-    void ctors() { foreach(ref a; A) if(!a) a = new typeof(a); }
-    void dtors() { foreach_reverse(a; A) a.destroy; }
+	void ctors() { foreach(ref a; A) if(!a) a = new typeof(a); }
+	void dtors() { foreach_reverse(a; A) a.destroy; }
 }
 
 mixin template publicProperty(T, string name, string value = null)
@@ -287,7 +302,7 @@ mixin template makeHelpers(A...)
 	{
 		string res;
 
-		foreach(i; IndexTuple!(A.length / 2))
+		static foreach(i; 0..A.length / 2)
 		{
 			auto n = A[i * 2], f = A[i * 2 + 1];
 
@@ -324,4 +339,47 @@ struct TimeMeter
 private:
 	string _msg;
 	uint _t;
+}
+
+struct ScopeArray(T)
+{
+	this(size_t len)
+	{
+		_data = alloc.allocate(len * T.sizeof).as!T;
+	}
+
+	~this()
+	{
+		alloc.deallocate(_data);
+	}
+
+	inout opSlice()
+	{
+		return _data;
+	}
+
+	ref opIndex(size_t i) inout
+	{
+		return _data[i];
+	}
+
+	inout opSlice(size_t a, size_t b)
+	{
+		return _data[a..b];
+	}
+
+	@property opDollar(size_t dim : 0)()
+	{
+		return length;
+	}
+
+	@property length()
+	{
+		return _data.length;
+	}
+
+private:
+	T[] _data;
+
+	static FreeTree!Mallocator alloc;
 }
