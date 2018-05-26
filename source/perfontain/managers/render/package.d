@@ -49,12 +49,12 @@ final class RenderManager
 private:
 	void process(alias F)()
 	{
-		DrawInfo[] index = (&_infos[0])[0.._infos.length];
+		auto index = &_infos[0];
 
-		foreach(ref v, cnt; index.group!((a, b) => F(a, b) == F(b, a)))
+		foreach(ref v, cnt; _infos[].group!((a, b) => F(a, b) == F(b, a)))
 		{
 			auto arr = index[0..cnt];
-			index = index[cnt..$];
+			index += cnt;
 
 			PEstate.depthMask = !(v.flags & DI_NO_DEPTH);
 			PEstate.blendingMode = v.blendingMode;
