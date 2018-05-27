@@ -12,7 +12,7 @@ float lkup(vec3 coord)
 	else
 		BIAS = bias
 
-	return step(coord.z - BIAS, texture2D(pe_shadow_map, coord.xy).x);
+	return step(coord.z - BIAS, texture(pe_shadow_map, coord.xy).x);
 }
 
 void calcShadows(vec4 pos, float value, inout vec3 color)

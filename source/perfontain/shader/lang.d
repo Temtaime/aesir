@@ -77,6 +77,7 @@ private:
 			}
 		}
 
+		res ~= "#extension GL_ARB_shader_image_load_store : require\n";
 		res ~= "#extension GL_ARB_shading_language_420pack : require\n";
 		res ~= "#extension GL_ARB_shader_storage_buffer_object : require\n";
 

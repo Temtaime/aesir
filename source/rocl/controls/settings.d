@@ -108,20 +108,23 @@ final class WinSettings : WinBasic
 														.uniq
 														.array;
 
-			foreach(n; maps)
+			if(maps.length)
 			{
-				arr ~= new GUIStaticText(null, n);
+				foreach(n; maps)
+				{
+					arr ~= new GUIStaticText(null, n);
+				}
+
+				auto k = arr.map!(a => a.size.x).fold!max;
+				auto e = new SelectBox(this, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), cast(short)maps.countUntil(`prontera`));
+
+				e.onChange = (a)
+				{
+					try ROres.load(maps[a]); catch(Exception e) e.log;
+				};
+
+				e.pos = Vector2s(WPOS_START, size.y - WIN_BOTTOM_SZ.y - e.size.y - 2);
 			}
-
-			auto k = arr.map!(a => a.size.x).fold!max;
-			auto e = new SelectBox(this, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), cast(short)maps.countUntil(`prontera`));
-
-			e.onChange = (a)
-			{
-				try ROres.load(maps[a]); catch(Exception e) e.log;
-			};
-
-			e.pos = Vector2s(WPOS_START, size.y - WIN_BOTTOM_SZ.y - e.size.y - 2);
 		}
 		else
 		{
