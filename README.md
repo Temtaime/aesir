@@ -16,3 +16,9 @@ Those compilers are configured to use local copy of VC++, so I think you can jus
 Open the project from sublime text and run building of dependencies: packet gen, shader gen, opengl gen.
 
 Then build the Æsir itself using first dub command.
+
+
+## Related Links
+
+- [Forums](http://aesir.perfontain.ru/forum/)
+- [Patreon](https://www.patreon.com/temtaime/posts)
