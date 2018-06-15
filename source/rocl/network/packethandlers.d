@@ -841,8 +841,12 @@ mixin template PacketHandlers()
 		auto c = Color(0, 255, 0, 255);
 		auto s = p.message.toStr;
 
-		RO.gui.chat.add(s, c);
-		ROent.self.ent.info.msg(s, c);
+		chat(s, c);
+
+		if(ROent.self)
+		{
+			ROent.self.ent.info.msg(s, c);
+		}
 	}
 
 	void onGuildChat(Pk017f p)

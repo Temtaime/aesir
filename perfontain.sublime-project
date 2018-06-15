@@ -11,14 +11,14 @@
 			"name": "dub",
 			"shell_cmd": "dub build --arch=x86_64",
 			"working_dir": "$project_path",
-			"file_regex": "^(.+?)(?:-mixin-[0-9]+)?\\(([0-9]+),[0-9]+\\)(): (.+)$",
+			"file_regex": "^(.+?)(?:-mixin-\\d+)?\\((\\d+),\\d+\\)(): (.+)$",
 
 			"variants":
 			[
 				{
 					"name": "run",
 					"working_dir": "$project_path/bin",
-					"shell_cmd": "start cmd /c \"start.bat\""
+					"shell_cmd": "start cmd /c \"viewer.bat\""
 				},
 				{
 					"name": "packet gen",

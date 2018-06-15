@@ -6,7 +6,6 @@
 	{
 		"debug":
 		{
-			"versions": [ "AE_ENCRYPTED_NET" ],
 			"buildOptions": [ "debugMode" ],
 
 			"dflags": [ "-transition=intpromote" ],
@@ -14,7 +13,6 @@
 
 		"debugWithInfo":
 		{
-			"versions": [ "AE_ENCRYPTED_NET" ],
 			"buildOptions": [ "debugMode", "debugInfo" ],
 
 			"dflags": [ "-transition=intpromote" ],
