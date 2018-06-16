@@ -83,12 +83,12 @@ final class ResourcesManager
 	void load(string name)
 	{
 		auto t = TimeMeter(`loading map %s`, name);
-		auto r = ROdb.query!string(format(`select value from map_names where id = '%s';`, name));
+		auto r = ROdb.mapName(name);
 
 		with(PE.scene)
 		{
 			scene = null;
-			scene = RomLoader(r.length ? r[0][0] : name).process(_map);
+			scene = RomLoader(r).process(_map);
 		}
 
 		RO.action.enable;

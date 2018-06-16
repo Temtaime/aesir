@@ -3,13 +3,12 @@ module ro.db;
 import
 		std.experimental.all,
 
-		etc.c.sqlite3,
 
 		perfontain,
-
 		rocl,
 
-		tt.error,
+		utils.wrapper.db,
+
 		tt.logger : log;
 
 
@@ -22,138 +21,92 @@ final class RoDb
 {
 	this()
 	{
-		string p;
+		_db = new SQLite(`:memory:`);
 
-		debug
 		{
-			p = `data/ro.db`;
-		}
-		else
-		{
-			p = tempDir ~ `/pfstempdb`;
-		}
+			auto data = PEfs.get(`data/ro.db`);
+			auto p = buildPath(tempDir, lowerHexDigits.byCodeUnit.randomSample(16).to!string);
 
-		!sqlite3_open(p.toStringz, &_db) || throwError(sqlite3_errmsg(_db).fromStringz.assumeUnique);
+			data.toFile(p);
+
+			{
+				scope e = new SQLite(p);
+				e.backup(_db);
+			}
+
+			remove(p);
+		}
 	}
 
 	~this()
 	{
-		sqlite3_close(_db);
+		_db.destroy;
 	}
 
 	auto skill(string id)
 	{
-		auto res = query!string(format(`select %s from skills where name = upper(%s);`, lang, escape(id)));
-		return res.length ? res.front[0] : `???`;
+		return _db.queryOne!string(`select coalesce((select ` ~ lang ~ ` from skills where name = upper(?)), "???");`, id);
 	}
 
 	auto skill(uint id)
 	{
-		auto res = query!string(format(`select %s from skills where id = %s;`, lang, id));
-		return res.length ? res.front[0] : `???`;
+		return _db.queryOne!string(`select coalesce((select ` ~ lang ~ ` from skills where id = ?), "???");`, id);
 	}
 
 	auto skilldesc(string id)
 	{
-		auto res = query!string(format(`select desc_%s from skills where name = upper(%s);`, lang, escape(id)));
-		return res.length ? res.front[0] : `???`;
+		return _db.queryOne!string(`select coalesce((select desc_` ~ lang ~ ` from skills where name = upper(%s)), "???");`, id);
 	}
 
 	auto itemOf(ushort id)
 	{
-		if(auto p = id in _items)
+		auto res = _db.query!(string, string)(`select ` ~ lang ~ `, res from items where id = ?;`, id);
+
+		if(res.empty)
 		{
-			return *p;
+			return new RoItemData(`???`, `사과`);
 		}
 
-		auto res = query!(string, string)(format(`select %s, res from items where id = %u;`, lang, id));
-
-		if(res.length)
-		{
-			auto d = new RoItemData(res.front.expand);
-			return _items[id] = d;
-		}
-
-		return itemOf(512);
+		return new RoItemData(res.front.expand);
 	}
 
 	auto hatOf(ushort id)
 	{
-		auto res = query!string(format(`select name from hats where id = %u;`, id));
-
-		return res.length ? res.front[0] : `고글`;
+		return _db.queryOne!string(`select coalesce((select name from hats where id = ?), "고글");`, id);
 	}
 
 	auto actorOf(ushort id)
 	{
-		auto res = query!string(format(`select name from actors where id = %u;`, id));
-
-		//res.length || throwError(`unknown actor %u`, id);
-		return res.length ? res.front[0] : `poring`;
+		return _db.queryOne!string(`select coalesce((select name from actors where id = ?), "poring");`, id);
 	}
 
-	auto hair(ushort id, bool male)
+	auto skillEffect(uint id)
 	{
-		auto r = query!ushort(format(`select %smale from hairs where id = %u;`, male ? null : `fe`, id));
-
-		if(r.length)
-		{
-			return r.front[0];
-		}
-		else
-		{
-			id != 1 || throwError(`can't find default hair`);
-
-			log.error(`bad hair id = %u`, id);
-			return hair(1, male);
-		}
+		return _db.query!uint(`select main from sk_effects join skills using(name) where id = ?;`, id).array;
 	}
 
-//private:
-	static escape(string s)
+	auto effect(uint id)
 	{
-		return format(`'%s'`, s.replace(`'`, `''`));//format(`%(%s%)`, s.sliceOne);
+		return _db.query!(string, uint)(`select name, rnd from effects where id = ?;`, id).array;
 	}
 
-	auto query(A...)(string q)
+	auto packetLens()
 	{
-		static if(A.length)
-		{
-			alias E = Tuple!A;
-			auto res = appender!(E[]); // TODO: PRECISE GC FIX
-
-			extern(C) int func(void *data, int n, char **fields, char **cols)
-			{
-				E e;
-
-				foreach(k, T; A)
-				{
-					e[k] = fields[k].fromStringz.to!T; // TODO: check if « to » always calls to idup for strings
-				}
-
-				(cast(typeof(res) *)data).put(e);
-				return 0;
-			}
-
-			auto cb = &func;
-			auto data = &res;
-		}
-		else
-		{
-			enum cb = null;
-			enum data = null;
-		}
-
-		sqlite3_exec(_db, q.toStringz, cb, data, null) == SQLITE_OK || throwError(`can't execute query: %s`, q);
-
-		static if(A.length)
-		{
-			return res.data;
-		}
+		return _db.query!(ushort, short)(`select id, len from packets;`).array.assocArray;
 	}
 
-	sqlite3 *_db;
-	RoItemData *[ushort] _items;
+	auto mapName(string n)
+	{
+		return _db.queryOne!string(`select coalesce((select value from map_names where id = e), e) from (select ? as e);`, name);
+	}
+
+	auto jobName(uint id)
+	{
+		return _db.queryOne!string(format(`select name from jobs where id = %u;`, id));
+	}
+
+private:
+	SQLite _db;
 }
 
 private:

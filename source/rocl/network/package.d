@@ -42,7 +42,7 @@ final class PacketManager
 {
 	this()
 	{
-		_lengths = ROdb.query!(ushort, short)(`select id, len from packets;`).assocArray;
+		_lengths = ROdb.packetLens;
 		_lengths.rehash;
 
 		initialize;
