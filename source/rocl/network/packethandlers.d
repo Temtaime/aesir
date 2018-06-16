@@ -832,7 +832,7 @@ mixin template PacketHandlers()
 			a.ent.info.msg(s, c);
 		};
 
-		RO.gui.chat.add(s, c);
+		chat(s, c);
 		ROent.doActor(p.bl, a => F(a));
 	}
 
@@ -841,12 +841,12 @@ mixin template PacketHandlers()
 		auto c = Color(0, 255, 0, 255);
 		auto s = p.message.toStr;
 
-		chat(s, c);
-
 		if(ROent.self)
 		{
 			ROent.self.ent.info.msg(s, c);
 		}
+
+		chat(s, c);
 	}
 
 	void onGuildChat(Pk017f p)

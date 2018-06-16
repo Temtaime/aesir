@@ -21,15 +21,7 @@ import
 final class ResourcesManager
 {
 	this()
-	{
-		debug // TODO: NAME TO PATH
-		{}
-		else
-		{
-			auto data = PEfs.get(`data/ro.db`);
-			std.file.write(tempDir ~ `/pfstempdb`, data);
-		}
-	}
+	{}
 
 	~this()
 	{

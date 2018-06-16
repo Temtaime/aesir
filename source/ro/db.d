@@ -3,7 +3,6 @@ module ro.db;
 import
 		std.experimental.all,
 
-
 		perfontain,
 		rocl,
 
@@ -25,7 +24,7 @@ final class RoDb
 
 		{
 			auto data = PEfs.get(`data/ro.db`);
-			auto p = buildPath(tempDir, lowerHexDigits.byCodeUnit.randomSample(16).to!string);
+			auto p = buildPath(tempDir, `__perfontain_db`);
 
 			data.toFile(p);
 
@@ -97,7 +96,7 @@ final class RoDb
 
 	auto mapName(string n)
 	{
-		return _db.queryOne!string(`select coalesce((select value from map_names where id = e), e) from (select ? as e);`, name);
+		return _db.queryOne!string(`select coalesce((select value from map_names where id = e), e) from (select ? as e);`, n);
 	}
 
 	auto jobName(uint id)
