@@ -138,7 +138,7 @@ void main()
 	o.writeln("import\tstd.meta,
 		std.conv,
 
-		stb.except,
+		utils.except,
 		derelict.sdl2.sdl,
 
 		perfontain.opengl;\n\n");
