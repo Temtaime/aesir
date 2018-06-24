@@ -16,7 +16,7 @@ struct ProgramCreator
 {
 	this(string n)
 	{
-		log.info2(`creating %s shader`, _name = n);
+		logger.info2(`creating %s shader`, _name = n);
 	}
 
 	void define(string s)

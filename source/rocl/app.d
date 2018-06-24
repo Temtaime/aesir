@@ -58,5 +58,5 @@ void main(string[] args)
 		PE.destroy;
 	}
 
-	log(`shutdown complete`);
+	logger(`shutdown complete`);
 }

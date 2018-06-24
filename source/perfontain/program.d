@@ -8,8 +8,8 @@ import
 		perfontain.opengl,
 		perfontain,
 
-		tt.error,
-		tt.logger : log;
+		utils.except,
+		utils.logger;
 
 
 enum
@@ -261,7 +261,7 @@ private:
 
 		if(loc < 0)
 		{
-			log.warning("can't get %s location for `%s' variable", ssb ? `SSBO` : `uniform`, name);
+			logger.warning("can't get %s location for `%s' variable", ssb ? `SSBO` : `uniform`, name);
 		}
 		else
 		{

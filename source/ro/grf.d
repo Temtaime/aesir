@@ -19,9 +19,9 @@ import
 		perfontain.misc,
 		perfontain.misc.rc,
 
-		tt.error,
-		tt.logger,
-		tt.encoding;
+		utils.except,
+		utils.logger,
+		utils.encoding;
 
 
 string charsToString(T)(in T[] str) if(T.sizeof == 1)
@@ -56,13 +56,13 @@ final class Grf : RCounted
 			}
 			catch(Exception e)
 			{
-				log.info3(`%s failed to load from cache`, _name);
+				logger.info3(`%s failed to load from cache`, _name);
 				parseHeader;
 			}
 		}
 		else
 		{
-			canWrite || throwError(`can't find file %s`, name);
+			canWrite || throwError!`can't find file %s`(name);
 			_modified = true;
 		}
 	}

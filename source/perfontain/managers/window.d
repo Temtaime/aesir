@@ -8,7 +8,7 @@ import
 		perfontain.math.matrix,
 		perfontain.opengl,
 
-		tt.error;
+		utils.except;
 
 public import
 				derelict.sdl2.sdl;
@@ -288,7 +288,7 @@ private:
 
 	bool throwSDLError(string f = __FILE__, uint l = __LINE__)
 	{
-		return throwErrorImpl(f, l, SDL_GetError().fromStringz.assumeUnique);
+		return throwError(SDL_GetError().fromStringz, f, l);
 	}
 
 	SDL_Window *_win;

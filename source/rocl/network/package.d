@@ -133,7 +133,7 @@ private:
 			{
 				version(LOG_PACKETS)
 				{
-					log.info3(`unknown packet 0x%X, %u bytes:`, _pid, _plen);
+					logger.info3(`unknown packet 0x%X, %u bytes:`, _pid, _plen);
 
 					dumpPacket(data);
 					writeln;
@@ -151,7 +151,7 @@ private:
 	{
 		disconnect;
 
-		log.info2(`connecting to %s...`, addr);
+		logger.info2(`connecting to %s...`, addr);
 		_reader.connect(addr);
 
 		_pid = 0;
@@ -163,7 +163,7 @@ private:
 	{
 		if(_reader.alive)
 		{
-			log.info2(`disconnected`);
+			logger.info2(`disconnected`);
 			_reader.close;
 		}
 	}
@@ -215,7 +215,7 @@ private:
 				name = format(`(%s)`, T.PK_NAME);
 			}
 
-			log.info(`sending packet 0x%X%s, %u bytes:`, id, name, data.length);
+			logger.info(`sending packet 0x%X%s, %u bytes:`, id, name, data.length);
 
 			static if(is(typeof(p)))
 			{
@@ -241,7 +241,7 @@ private:
 			}
 			else
 			{
-				//data.length == len - 2 || throwError(`trying to send packet 0x%X(real length %u) with wrong length(%u)`, id, len - 2, data.length);
+				//data.length == len - 2 || throwError!`trying to send packet 0x%X(real length %u) with wrong length(%u)`(id, len - 2, data.length);
 			}
 		}
 
@@ -263,7 +263,7 @@ private:
 					name = format(`(%s)`, T.PK_NAME);
 				}
 
-				log.info2(`packet 0x%X%s, %u bytes:`, _pid, name, _plen);
+				logger.info2(`packet 0x%X%s, %u bytes:`, _pid, name, _plen);
 				log("%s\n", p);
 			}
 
@@ -280,7 +280,7 @@ private:
 					name = format(`(%s)`, T.PK_NAME);
 				}
 
-				log.warning(`failed packet 0x%X%s, %u bytes:`, _pid, name, _plen);
+				logger.warning(`failed packet 0x%X%s, %u bytes:`, _pid, name, _plen);
 				dumpPacket(data);
 			}
 
@@ -292,7 +292,7 @@ private:
 	{
 		debug
 		{
-			id in _lengths || throwError(`packet 0x%X is not presented in lengths table`, id);
+			id in _lengths || throwError!`packet 0x%X is not presented in lengths table`(id);
 		}
 	}
 
@@ -309,7 +309,7 @@ private:
 				auto c = e.front;
 				e.popFront;
 
-				log(	`%(%02X %)%*s %s%s`,
+				logger(`%(%02X %)%*s %s%s`,
 											c,
 											(N - cast(int)c.length) * 3, ``,
 											c.map!(b => b.isPrintable ? char(b) : '.'),
@@ -318,7 +318,7 @@ private:
 		}
 		else
 		{
-			log("(no data)\n");
+			logger("(no data)\n");
 		}
 	}
 
@@ -331,7 +331,7 @@ private:
 				_pid = *cast(ushort *)data.ptr;
 				_plen = _lengths.get(_pid, 0);
 
-				_plen || throwError(`unknown packet 0x%X`, _pid);
+				_plen || throwError!`unknown packet 0x%X`(_pid);
 				_plen -= 2;
 			}
 			else

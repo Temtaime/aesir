@@ -15,7 +15,7 @@ final class RenderTarget : RCounted
 		glNamedFramebufferDrawBuffer(_id, GL_NONE);
 
 		auto st = glCheckNamedFramebufferStatus(_id, GL_FRAMEBUFFER);
-		st == GL_FRAMEBUFFER_COMPLETE_EXT || throwError(`FBO status is 0x%X`, st);
+		st == GL_FRAMEBUFFER_COMPLETE_EXT || throwError!`FBO status is 0x%X`(st);
 	}
 
 	~this()

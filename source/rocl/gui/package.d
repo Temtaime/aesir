@@ -3,7 +3,7 @@ module rocl.gui;
 import
 		std.experimental.all,
 
-		stb.wrapper.image,
+		stb.image,
 
 		perfontain,
 
@@ -22,7 +22,7 @@ import
 		rocl.controls.charselect,
 		rocl.controls.hotkeysettings,
 
-		tt.error;
+		utils.except;
 
 
 final class GuiManager

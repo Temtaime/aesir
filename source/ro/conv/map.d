@@ -10,7 +10,7 @@ import
 		ro.conf,
 		ro.conv,
 
-		tt.logger : log;
+		utils.logger;
 
 
 final class RomConverter : Converter
@@ -188,7 +188,7 @@ private:
 			}
 			catch(Exception e)
 			{
-				log.error(`can't convert %s: %s`, name, e.msg);
+				logger.error(`can't convert %s: %s`, name, e.msg);
 			}
 		}
 

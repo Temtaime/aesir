@@ -7,7 +7,7 @@ import
 
 		perfontain.misc,
 
-		tt.error;
+		utils.except;
 
 
 struct NetReader
@@ -128,7 +128,7 @@ struct NetReader
 
 			if(len == Socket.ERROR)
 			{
-				wouldHaveBlocked || throwError(`socket reading error: %s`, lastSocketError);
+				wouldHaveBlocked || throwError!`socket reading error: %s`(lastSocketError);
 			}
 			else
 			{
@@ -142,7 +142,7 @@ struct NetReader
 
 			if(len == Socket.ERROR)
 			{
-				wouldHaveBlocked || throwError(`socket writing error: %s`, lastSocketError);
+				wouldHaveBlocked || throwError!`socket writing error: %s`(lastSocketError);
 			}
 			else
 			{

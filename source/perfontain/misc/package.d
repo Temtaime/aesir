@@ -14,18 +14,18 @@ import
 
 		core.stdc.string,
 
-		stb.wrapper.image,
+		stb.image,
 
 		perfontain.opengl,
 		perfontain.config,
 		perfontain.math.matrix,
 
-		tt.error,
-		tt.logger : log;
+		utils.except,
+		utils.logger;
 
 public import
-				tt.misc,
-				tt.binary;
+				utils.misc,
+				utils.binary;
 
 
 alias Op(string S) = (a, b) => mixin(`a` ~ S ~ `b`);
@@ -333,7 +333,7 @@ struct TimeMeter
 
 	~this()
 	{
-		log(`%s : %u ms`, _msg, systemTick - _t);
+		logger(`%s : %u ms`, _msg, systemTick - _t);
 	}
 
 private:

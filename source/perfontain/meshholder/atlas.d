@@ -7,7 +7,7 @@ import
 		perfontain,
 
 		stb.rectpack,
-		stb.wrapper.packer;
+		stb.rectpack.binding;
 
 
 final class AtlasHolderCreator : HolderCreator
@@ -81,7 +81,7 @@ private:
 			}
 
 			sz = Vector2s(TexturePacker(data).process.expand);
-			log.info(`texture atlas usage is %.4g, size is %ux%u`, sq / float(sz.x * sz.y), sz.x, sz.y);
+			logger.info(`texture atlas usage is %.4g, size is %ux%u`, sq / float(sz.x * sz.y), sz.x, sz.y);
 		}
 
 		auto atlas = new Image(sz.x, sz.y, null);

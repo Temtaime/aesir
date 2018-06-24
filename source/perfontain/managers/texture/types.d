@@ -4,7 +4,7 @@ import
 		perfontain,
 		perfontain.opengl,
 
-		stb.wrapper.dxt;
+		stb.dxt;
 
 
 enum : ubyte

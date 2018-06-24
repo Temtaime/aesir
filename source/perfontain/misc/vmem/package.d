@@ -11,7 +11,7 @@ import
 		perfontain.misc,
 		perfontain.misc.rc,
 
-		tt.logger;
+		utils.logger;
 
 public import
 				perfontain.misc.vmem.region;

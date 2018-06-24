@@ -462,7 +462,7 @@ mixin template PacketHandlers()
 		case SP_ZENY:			RO.gui.inv.zeny = v; break;
 
 		default:
-			p.varId.log;
+			p.varId.logger;
 		}
 	}
 

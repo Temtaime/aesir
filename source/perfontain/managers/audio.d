@@ -8,7 +8,7 @@ import
 
 		perfontain,
 
-		tt.error;
+		utils.except;
 
 
 final class AudioManager
@@ -51,7 +51,7 @@ final class AudioManager
 			}
 			catch(Exception)
 			{
-				log.warning("can't find `%s' audio", name);
+				logger.warning("can't find `%s' audio", name);
 				return;
 			}
 
@@ -97,7 +97,7 @@ private:
 
 	void logMixerError()
 	{
-		log.error(`SDL mixer error: %s`, Mix_GetError().fromStringz);
+		logger.error(`SDL mixer error: %s`, Mix_GetError().fromStringz);
 	}
 
 	bool _ok;

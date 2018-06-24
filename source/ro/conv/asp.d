@@ -11,7 +11,7 @@ import
 		std.string,
 		std.algorithm,
 
-		stb.wrapper.image,
+		stb.image,
 
 		perfontain,
 
@@ -180,7 +180,7 @@ private:
 			_meshes ~= m;
 		}
 
-		fr.eventId < cast(int)_act.sounds.length || throwError(`invalid event id = %d, max is %u`, fr.eventId, _act.sounds.length);
+		fr.eventId < cast(int)_act.sounds.length || throwError!`invalid event id = %d, max is %u`(fr.eventId, _act.sounds.length);
 
 		res.event = cast(byte)max(-1, fr.eventId);
 		res.extra = fr.hasExtra ? Vector2(fr.extra.pos) * -SPRITE_PROP : Vector2(_offset ? float.init : 0);

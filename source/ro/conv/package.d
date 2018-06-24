@@ -41,7 +41,7 @@ auto convert(T)(string res, string path, bool delegate() checker = null)
 		return value;
 	}
 
-	log.info2(`converting %s...`, path);
+	logger.info2(`converting %s...`, path);
 
 	{
 		[ thisExePath, `--res`, res, `--path`, path ].spawnProcess.wait;
@@ -118,7 +118,7 @@ bool processConv(string[] args)
 	}
 	catch(Throwable e)
 	{
-		log.error(`%s`, e);
+		logger.error(`%s`, e);
 	}
 
 	return true;
@@ -156,7 +156,7 @@ bool tryLoad(T)(string path, ref T res)
 	}
 	catch(Exception e)
 	{
-		log.warning("can't load `%s', error: %s", path, e.msg);
+		logger.warning("can't load `%s', error: %s", path, e.msg);
 	}
 
 	return false;

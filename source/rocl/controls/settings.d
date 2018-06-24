@@ -120,7 +120,7 @@ final class WinSettings : WinBasic
 
 				e.onChange = (a)
 				{
-					try ROres.load(maps[a]); catch(Exception e) e.log;
+					try ROres.load(maps[a]); catch(Exception e) e.logger;
 				};
 
 				e.pos = Vector2s(WPOS_START, size.y - WIN_BOTTOM_SZ.y - e.size.y - 2);

@@ -77,10 +77,10 @@ public import
 				perfontain.filesystem,
 				perfontain.rendertarget,
 
-				stb.wrapper.image,
+				stb.image,
 
-				tt.error,
-				tt.logger;
+				utils.except,
+				utils.logger;
 
 
 alias PE = Engine.instance;
@@ -132,7 +132,7 @@ final class Engine
 		//GL_ARB_bindless_texture = false;
 		//GL_ARB_shader_draw_parameters = false;
 
-		log.info2(`[gpu info]`);
+		logger.info2(`[gpu info]`);
 
 		{
 			_glGetString = cast(typeof(_glGetString))load(`glGetString`);
@@ -145,10 +145,10 @@ final class Engine
 					renderer = glGetString(GL_RENDERER).fromStringz.idup,
 					glsl = glGetString(GL_SHADING_LANGUAGE_VERSION).fromStringz.idup;
 
-			log.info3(`opengl vendor: %s`, vendor);
-			log.info3(`opengl version: %s`, version_);
-			log.info3(`opengl renderer: %s`, renderer);
-			log.info3(`opengl sl version: %s`, glsl);
+			logger.info3(`opengl vendor: %s`, vendor);
+			logger.info3(`opengl version: %s`, version_);
+			logger.info3(`opengl renderer: %s`, renderer);
+			logger.info3(`opengl sl version: %s`, glsl);
 
 			debug
 			{}
@@ -167,11 +167,11 @@ final class Engine
 		{
 			if(mixin(s))
 			{
-				log.info(`%s : supported`, s);
+				logger.info(`%s : supported`, s);
 			}
 			else
 			{
-				log.warning(`%s : unsupported`, s);
+				logger.warning(`%s : unsupported`, s);
 			}
 		}
 
@@ -183,21 +183,21 @@ final class Engine
 
 			if(_aaLevel)
 			{
-				log.info(`anisotropy level = %ux`, _aaLevel);
+				logger.info(`anisotropy level = %ux`, _aaLevel);
 			}
 			else
 			{
-				log.error(`anisotropic filtering is not supported`);
+				logger.error(`anisotropic filtering is not supported`);
 			}
 		}
 
 		if(_msaaLevel)
 		{
-			log.info(`msaa level = %ux`, _msaaLevel);
+			logger.info(`msaa level = %ux`, _msaaLevel);
 		}
 		else
 		{
-			log.error(`msaa is not supported`);
+			logger.error(`msaa is not supported`);
 		}
 
 		_run = true;

@@ -5,8 +5,8 @@ import
 		std.algorithm,
 		std.parallelism,
 
-		stb.wrapper.dxt,
-		stb.wrapper.image,
+		stb.dxt,
+		stb.image,
 
 		perfontain;
 

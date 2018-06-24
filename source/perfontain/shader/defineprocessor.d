@@ -49,7 +49,7 @@ private:
 		}
 
 		auto r = EXGL(n.shaderSource);
-		r.successful || throwError(`shader %s - %s`, n, r.failMsg);
+		r.successful || throwError!`shader %s - %s`(n, r.failMsg);
 
 		return _shaders[n] = r.children.front.children;
 	}

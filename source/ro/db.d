@@ -6,9 +6,8 @@ import
 		perfontain,
 		rocl,
 
-		utils.wrapper.db,
-
-		tt.logger : log;
+		utils.db,
+		utils.logger;
 
 
 struct RoItemData

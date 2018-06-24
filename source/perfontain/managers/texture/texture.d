@@ -8,7 +8,7 @@ import
 		perfontain.opengl,
 		perfontain.misc.dxt,
 
-		stb.wrapper.dxt;
+		stb.dxt;
 
 public import
 				perfontain.managers.texture.types;

@@ -10,7 +10,7 @@ import
 		std.string,
 		std.algorithm,
 
-		stb.wrapper.image,
+		stb.image,
 		derelict.sdl2.sdl,
 		derelict.sdl2.ttf,
 
@@ -135,5 +135,5 @@ private:
 
 bool throwSDLTTFError(string f = __FILE__, uint l = __LINE__)
 {
-	return throwErrorImpl(f, l, `SDL TTF error: %s`, TTF_GetError().fromStringz);
+	return throwError!`SDL TTF error: %s`(f, l, TTF_GetError().fromStringz);
 }

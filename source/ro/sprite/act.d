@@ -9,7 +9,7 @@ import
 		std.string,
 		std.algorithm,
 
-		stb.wrapper.image,
+		stb.image,
 
 		perfontain,
 		perfontain.misc,
@@ -19,7 +19,7 @@ import
 		ro.sprite.spr,
 		ro.conv.asp,
 
-		tt.error;
+		utils.except;
 
 struct ActSprite
 {

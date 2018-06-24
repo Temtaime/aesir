@@ -16,7 +16,7 @@ final class HotkeyManager
 	void update(string name, SDL_Keycode[] keys...)
 	{
 		auto e = _arr.find!(a => a.name == name);
-		e.length || throwError(`trying to update unknown hotkey: %s`, name);
+		e.length || throwError!`trying to update unknown hotkey: %s`(name);
 
 		PE.settings.hotkeys[name] = e[0].keys = keys.dup;
 	}

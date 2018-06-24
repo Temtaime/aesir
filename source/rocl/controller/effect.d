@@ -51,7 +51,7 @@ final class EffectController
 			}
 			else
 			{
-				log.warning(`unknown effect %u`, id);
+				logger.warning(`unknown effect %u`, id);
 				return;
 			}
 		}
@@ -67,7 +67,7 @@ final class EffectController
 		}
 		catch(Exception e)
 		{
-			log.error(`effect %u: %s`, id, e.msg);
+			logger.error(`effect %u: %s`, id, e.msg);
 		}
 	}
 

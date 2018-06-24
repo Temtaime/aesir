@@ -4,7 +4,7 @@ import
 		std.conv,
 		std.algorithm,
 
-		tt.logger;
+		utils.logger;
 
 public import
 				perfontain.opengl.functions;
@@ -34,7 +34,7 @@ void checkError(string func, string file, uint line)
 		if(!errors.canFind(error))
 		{
 			errors ~= error;
-			log.warning(`[%s:%u]: %s - %s`, file, line, func, error);
+			logger.warning(`[%s:%u]: %s - %s`, file, line, func, error);
 		}
 
 		error = null;

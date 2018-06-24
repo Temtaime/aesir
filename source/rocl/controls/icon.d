@@ -49,7 +49,7 @@ class IconSkill : GUIElement
 		}
 		catch(Exception e)
 		{
-			log.error(`can't load an icon: %s`, e.msg);
+			logger.error(`can't load an icon: %s`, e.msg);
 		}
 
 		size = Vector2s(24);

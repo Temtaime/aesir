@@ -4,7 +4,7 @@ import
 		std.experimental.all,
 
 		perfontain.misc,
-		tt.error;
+		utils.except;
 
 
 enum
@@ -49,7 +49,7 @@ class FileSystem
 
 		Rdg dg = (data, isPath)
 		{
-			data.length || throwErrorImpl(f, l, `can't find file %s`, name);
+			data.length || throwError!`can't find file %s`(f, l, name);
 
 			if(isPath)
 			{

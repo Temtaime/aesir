@@ -10,7 +10,7 @@ import
 
 		perfontain,
 
-		stb.wrapper.dxt,
+		stb.dxt,
 
 		ro.conv,
 

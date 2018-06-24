@@ -12,7 +12,7 @@ import
 		rocl.game,
 		rocl.paths,
 
-		tt.logger : log;
+		utils.logger;
 
 
 enum : ubyte
@@ -61,7 +61,7 @@ auto loadASP(in AspLoadInfo r)
 {
 	SpriteObject res;
 
-	log.info3(`loading sprite: %s`, r);
+	logger.info3(`loading sprite: %s`, r);
 
 	string	path,
 			kpath;
@@ -139,7 +139,7 @@ auto loadASP(in AspLoadInfo r)
 		}
 		catch(Exception e)
 		{
-			log.error(e.msg);
+			logger.error(e.msg);
 		}
 	}
 

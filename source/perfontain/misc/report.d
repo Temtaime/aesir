@@ -17,8 +17,8 @@ import
 
 		perfontain.opengl,
 
-		tt.misc,
-		tt.logger;
+		utils.misc,
+		utils.logger;
 
 
 void configReport(string e, string v, string r, string g)

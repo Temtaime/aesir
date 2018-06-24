@@ -57,7 +57,7 @@ abstract class Actor : RCounted
 		if(!ROent.doActor(p.dstId, &onDir))
 		{
 			ent.dir = 0;
-			log(`no dir %s %s`, p.dstId, ROent.self.bl);
+			logger(`no dir %s %s`, p.dstId, ROent.self.bl);
 		}
 
 		ent.act(Action.attack, Action.readyFight, cast(ushort)p.srcSpeed);
