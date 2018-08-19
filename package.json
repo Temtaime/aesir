@@ -12,7 +12,7 @@
 
 	"dependencies":
 	{
-		"stb": ">=1.7.4",
+		"stb": ">=1.7.5",
 		"pegged": "~master",
 		"derelict-sdl2": ">=3.1.0-alpha.3"
 	},
