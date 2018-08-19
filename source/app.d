@@ -27,7 +27,10 @@ extern(C) __gshared
 
 void main(string[] args)
 {
-	SetConsoleOutputCP(65001);
+	version(Windows)
+	{
+		SetConsoleOutputCP(65001);
+	}
 
 	PEfs = new RoFileSystem;
 
@@ -47,7 +50,7 @@ void main(string[] args)
 		{}
 		else
 		{
-			errorReport(e);
+			//errorReport(e);
 		}
 
 		showErrorMessage(e.toString);

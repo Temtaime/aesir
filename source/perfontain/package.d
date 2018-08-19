@@ -154,7 +154,7 @@ final class Engine
 			{}
 			else
 			{
-				configReport(vendor, version_, renderer, glsl);
+				//configReport(vendor, version_, renderer, glsl);
 			}
 
 			hookGL;

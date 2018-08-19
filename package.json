@@ -4,38 +4,17 @@
 
 	"buildTypes":
 	{
-		"debug":
+		"debug-no-info":
 		{
-			"buildOptions": [ "debugMode" ],
-
-			"dflags": [ "-transition=intpromote" ],
-		},
-
-		"debugWithInfo":
-		{
-			"buildOptions": [ "debugMode", "debugInfo" ],
-
-			"dflags": [ "-transition=intpromote" ],
-		},
-
-		"release":
-		{
-			"buildOptions": [ "optimize", "releaseMode", "noBoundsCheck", "inline" ],
-
-			"dflags": [ "-transition=intpromote" ],
-			"dflags-ldc2": [ "-ffast-math", "-enable-cross-module-inlining" ],
-			"lflags-linux": [ "-s" ],
-		},
+			"buildOptions": [ "debugMode" ]
+		}
 	},
 
 	"dependencies":
 	{
-		"stb": ">=1.7.3",
+		"stb": ">=1.7.4",
 		"pegged": "~master",
-		"derelict-sdl2": ">=3.1.0-alpha.3",
-
-		"perfontain:ro": "*",
-		"perfontain:engine": "*",
+		"derelict-sdl2": ">=3.1.0-alpha.3"
 	},
 
 	"subConfigurations":
@@ -43,46 +22,15 @@
 		"derelict-sdl2": "derelict-sdl2-static"
 	},
 
-	"subPackages":
-	[
-		{
-			"name": "engine",
-			"targetPath": "libs",
-			"targetType": "library",
+	"stringImportPaths": [ "source/perfontain/shader/res" ],
+	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-linux-gnu/7.3.0/libstdc++.a" ],
 
-			"dependencies":
-			{
-				"stb": ">=1.7.3",
-				"pegged": "~master",
-				"derelict-sdl2": ">=3.1.0-alpha.3",
-			},
+	"dflags": [ "-transition=intpromote" ],
 
-			"sourcePaths": [ "source/perfontain" ],
-			"importPaths": [ "source/perfontain" ],
-			"stringImportPaths": [ "source/perfontain/shader/res" ],
-		},
+	"dflags-ldc2": [ "-ffast-math", "-enable-cross-module-inlining" ],
+	"lflags-linux-ldc2": [ "-s" ],
 
-		{
-			"name": "ro",
-			"targetPath": "libs",
-			"targetType": "library",
-
-			"dependencies":
-			{
-				"stb": ">=1.7.3",
-				"pegged": "~master",
-				"derelict-sdl2": ">=3.1.0-alpha.3",
-			},
-
-			"sourcePaths": [ "source/ro" ],
-			"importPaths": [ "source" ]
-		}
-	],
-
-	"sourcePaths": [ "source/rocl" ],
-	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-redhat-linux/6.3.1/libstdc++.a" ],
-
-	"libs-linux": [ "X11", "Xext", "Xi", "asound", "sqlite3-static" ],
+	"libs-linux": [ "X11", "Xext", "Xi", "asound" ],
 	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64" ],
 
 	"lflags-linux": [ "-Lutils/deps" ],

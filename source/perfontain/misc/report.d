@@ -21,6 +21,8 @@ import
 		utils.logger;
 
 
+version(none):
+
 void configReport(string e, string v, string r, string g)
 {
 	auto id = md5Of(e ~ v ~ r ~ g).dup;
