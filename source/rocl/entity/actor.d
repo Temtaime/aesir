@@ -63,6 +63,11 @@ abstract class Actor : RCounted
 		ent.act(Action.attack, Action.readyFight, cast(ushort)p.srcSpeed);
 	}
 
+	void move(Vector2s p, Vector2s to) // DMD BUG ?
+	{
+		ent.move(p, to);
+	}
+
 	auto opDispatch(string s, A...)(auto ref A args)
 	{
 		return mixin(`ent.` ~ s ~ `(args)`);

@@ -59,7 +59,7 @@ void main(string[] args)
 	{
 		RO.destroy;
 		PE.destroy;
-	}
 
-	logger(`shutdown complete`);
+		logger(`shutdown complete`);
+	}
 }

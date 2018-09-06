@@ -18,7 +18,7 @@
 				{
 					"name": "run",
 					"working_dir": "$project_path/bin",
-					"shell_cmd": "start cmd /c \"viewer.bat\""
+					"shell_cmd": "start cmd /c \"start.bat\""
 				},
 				{
 					"name": "packet gen",

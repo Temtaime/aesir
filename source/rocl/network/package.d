@@ -219,11 +219,11 @@ private:
 
 			static if(is(typeof(p)))
 			{
-				log(p);
+				logger(p);
 			}
 			else
 			{
-				log("(no data)\n");
+				logger("(no data)\n");
 			}
 
 			writeln;
@@ -264,7 +264,7 @@ private:
 				}
 
 				logger.info2(`packet 0x%X%s, %u bytes:`, _pid, name, _plen);
-				log("%s\n", p);
+				logger("%s\n", p);
 			}
 
 			F(p);

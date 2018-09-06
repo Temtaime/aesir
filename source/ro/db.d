@@ -53,7 +53,7 @@ final class RoDb
 
 	auto skilldesc(string id)
 	{
-		return _db.queryOne!string(`select coalesce((select desc_` ~ lang ~ ` from skills where name = upper(%s)), "???");`, id);
+		return _db.queryOne!string(`select coalesce((select desc_` ~ lang ~ ` from skills where name = upper(?)), "???");`, id);
 	}
 
 	auto itemOf(ushort id)
