@@ -79,6 +79,11 @@ class GUIElement : RCounted
 			parent.childs ~= this;
 		}
 
+		if(sz.x)
+		{
+			size = sz;
+		}
+
 		if(f)
 		{
 			flags = f;
@@ -87,15 +92,6 @@ class GUIElement : RCounted
 		if(n)
 		{
 			name = n;
-		}
-
-		if(sz.x)
-		{
-			size = sz;
-		}
-
-		if(name.length)
-		{
 			pos.x = -1;
 
 			if(auto w = name in PE.settings.wins)
@@ -183,14 +179,30 @@ final:
 		pad(n.Vector2s);
 	}
 
+	void poseBetween(GUIElement a, GUIElement b, bool resize = true)
+	{
+		if(a.pos.x == b.pos.x)
+		{
+			poseFunc(0, a, b, resize);
+		}
+		else if(a.pos.y == b.pos.y)
+		{
+			poseFunc(1, a, b, resize);
+		}
+		else
+		{
+			assert(false);
+		}
+	}
+
 	void moveX(GUIElement e, ubyte m, int d = 0)
 	{
-		moveFunc!`x`(e, m, d);
+		moveFunc(0, e, m, d);
 	}
 
 	void moveY(GUIElement e, ubyte m, int d = 0)
 	{
-		moveFunc!`y`(e, m, d);
+		moveFunc(1, e, m, d);
 	}
 
 	void move(GUIElement x, ubyte xm, int xd, GUIElement y, ubyte ym, int yd = 0)
@@ -429,51 +441,81 @@ private:
 		GUIElement _e;
 	}
 
-	void moveFunc(string S)(GUIElement e, ubyte q, int d)
+	void centrize(ubyte idx, uint zone, uint start = 0)
+	{
+		assert(size[idx] <= zone);
+
+		pos[idx] = cast(short)(start + (zone - size[idx]) / 2);
+	}
+
+	void moveFunc(ubyte idx, GUIElement e, ubyte q, int d)
+	{
+		auto notParent = !(e is parent);
+
+		final switch(q)
 		{
-			auto notParent = e !is parent;
+		case POS_MIN:
+			pos[idx] = cast(short)d;
 
-			final switch(q)
+			if(notParent)
 			{
-			case POS_MIN:
-				mixin(`pos.` ~ S ~ `= cast(short)d;`);
-
-				if(notParent)
-				{
-					mixin(`pos.` ~ S ~ `+= e.pos.` ~ S ~ `;`);
-				}
-
-				break;
-
-			case POS_MAX:
-				mixin(`pos.` ~ S ~ `= cast(short)(e.size.` ~ S ~ ` - size.` ~ S ~ ` + d);`);
-
-				if(notParent)
-				{
-					mixin(`pos.` ~ S ~ `+= e.pos.` ~ S ~ `;`);
-				}
-
-				break;
-
-			case POS_BELOW:
-				assert(notParent);
-				mixin(`pos.` ~ S ~ `= cast(short)(e.pos.` ~ S ~ ` - size.` ~ S ~ ` + d);`);
-				break;
-
-			case POS_ABOVE:
-				assert(notParent);
-				mixin(`pos.` ~ S ~ `= cast(short)(e.end.` ~ S ~ ` + d);`);
-				break;
-
-			case POS_CENTER:
-				mixin(`pos.` ~ S ~ `= cast(short)((e.size.` ~ S ~ ` - size.` ~ S ~ `) / 2 + d);`);
-
-				if(notParent)
-				{
-					mixin(`pos.` ~ S ~ `+= e.pos.` ~ S ~ `;`);
-				}
-
-				break;
+				pos[idx] += e.pos[idx];
 			}
+
+			break;
+
+		case POS_MAX:
+			pos[idx] = cast(short)(e.size[idx] - size[idx] + d);
+
+			if(notParent)
+			{
+				pos[idx] += e.pos[idx];
+			}
+
+			break;
+
+		case POS_BELOW:
+			assert(notParent);
+
+			pos[idx] = cast(short)(e.pos[idx] - size[idx] + d);
+			break;
+
+		case POS_ABOVE:
+			assert(notParent);
+
+			pos[idx] = cast(short)(e.end[idx] + d);
+			break;
+
+		case POS_CENTER:
+			centrize(idx, e.size[idx], d);
+
+			if(notParent)
+			{
+				pos[idx] += e.pos[idx];
+			}
+
+			break;
 		}
+	}
+
+	void poseFunc(ubyte idx, GUIElement a, GUIElement b, bool resize)
+	{
+		assert(a.size[idx] == b.size[idx]);
+
+		ubyte idx2 = idx ? 0 : 1;
+		auto z = b.pos[idx2] - a.end[idx2];
+
+		if(resize)
+		{
+			size[idx] = a.size[idx];
+			size[idx2] = cast(short)z;
+
+			moveFunc(idx2, a, POS_ABOVE, 0);
+		}
+		else
+		{
+			centrize(idx, a.size[idx], a.pos[idx]);
+			centrize(idx2, z, a.end[idx2]);
+		}
+	}
 }

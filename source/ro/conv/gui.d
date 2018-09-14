@@ -1,12 +1,7 @@
 module ro.conv.gui;
 
 import
-		std.conv,
-		std.range,
-		std.array,
-		std.format,
-		std.string,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain,
 
@@ -15,56 +10,6 @@ import
 		rocl.gui,
 		rocl.game;
 
-
-enum Elements =
-[
-	`WIN_TOP`,
-	`WIN_TOP_SPACER`,
-	`WIN_BOTTOM`,
-	`WIN_BOTTOM_SPACER`,
-	`WIN_PART`,
-
-	`BTN_PART`,
-	`BTN_SPACER`,
-	`BTN_HOVER_PART`,
-	`BTN_HOVER_SPACER`,
-
-	`CHECKBOX`,
-	`CHECKBOX_CHECKED`,
-
-	`SCROLL_ARROW`,
-	`SCROLL_PART`,
-	`SCROLL_SPACER`,
-
-	`SELECT_ARROW`,
-
-	`CHAT_PART`,
-	`CHAT_SPACER`,
-
-	`NPC_WIN`,
-
-	`INV_ITEM`,
-	`INV_TAB_ITEM`,
-	`INV_TAB_EQUIP`,
-	`INV_TAB_ETC`,
-
-	`TOOLTIP_PART`,
-	`TOOLTIP_SPACER`,
-];
-
-mixin(
-{
-	string r;
-
-	foreach(i, e; Elements)
-	{
-		r ~= `enum ` ~ e ~ ` = ` ~ i.to!string ~ `;`;
-		r ~= `ref ` ~ e ~ `_SZ() @property { return PE.gui.sizes[` ~ i.to!string ~ `]; }`;
-	}
-
-	return r;
-}
-());
 
 final class GuiConverter : Converter
 {
@@ -130,5 +75,5 @@ struct RogFile
 
 	HolderData data;
 
-	@(`ubyte`, `validif`, `sizes.length == ` ~ Elements.length.to!string) Vector2s[] sizes;
+	@(`ubyte`, `validif`, `sizes.length == ` ~ EnumMembers!GUI.length) Vector2s[] sizes;
 }
