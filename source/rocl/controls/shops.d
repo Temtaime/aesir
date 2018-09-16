@@ -122,7 +122,7 @@ final class WinShop : WinBasic
 			}
 		}
 
-		auto b = new Button(this, BTN_PART, Buy ? MSG_BUY : MSG_SELL);
+		auto b = new Button(this, Buy ? MSG_BUY : MSG_SELL);
 		b.move(this, POS_MAX, -4, this, POS_MAX, (b.size.y - WIN_BOTTOM_SZ.y) / 2);
 		b.onClick = &onClick;
 

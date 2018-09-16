@@ -518,4 +518,9 @@ private:
 			centrize(idx2, z, a.end[idx2]);
 		}
 	}
+
+	static sizeFor(uint idx)
+	{
+		return PE.gui.sizes[idx];
+	}
 }

@@ -192,7 +192,7 @@ final class WinStorage : WinBasic
 		}
 
 		{
-			auto b = new Button(this, BTN_PART, MSG_CLOSE);
+			auto b = new Button(this, MSG_CLOSE);
 
 			b.pos = size - Vector2s(b.size.x + 4, (WIN_BOTTOM_SZ.y + b.size.y) / 2);
 			b.onClick = () => ROnet.storeClose;

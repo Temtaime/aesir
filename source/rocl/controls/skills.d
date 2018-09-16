@@ -108,7 +108,7 @@ private:
 
 			if(s.lvl && s.type)
 			{
-				auto a = new Button(this, BTN_PART, MSG_USE);
+				auto a = new Button(this, MSG_USE);
 				a.pos = Vector2s(size.x - a.size.x - 5, size.y - a.size.y - 4);
 
 				a.onClick =
@@ -122,7 +122,7 @@ private:
 
 			if(s.upgradable)
 			{
-				auto a = new Button(this, BTN_PART, MSG_LEARN);
+				auto a = new Button(this, MSG_LEARN);
 				a.pos = Vector2s(size.x - a.size.x - 5 - x, size.y - a.size.y - 4);
 
 				a.onClick =

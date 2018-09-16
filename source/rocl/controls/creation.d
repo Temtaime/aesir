@@ -86,7 +86,7 @@ class WinCreation : WinBasic
 		}
 
 		{
-			auto b = new Button(this, BTN_PART, MSG_CREATE);
+			auto b = new Button(this, MSG_CREATE);
 
 			b.pos = Vector2s(5, size.y - b.size.y - 4);
 			b.onClick = &onCreate;
@@ -94,7 +94,7 @@ class WinCreation : WinBasic
 
 		if(ROnet.st.chars.length)
 		{
-			auto b = new Button(this, BTN_PART, MSG_CANCEL);
+			auto b = new Button(this, MSG_CANCEL);
 			b.pos = Vector2s(size.x - b.size.x - 5, size.y - b.size.y - 4);
 
 			b.onClick =

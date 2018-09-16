@@ -34,7 +34,7 @@ class WinTrading : WinBasic2
 		adjust;
 
 		{
-			new Button(bottom, BTN_PART, MSG_OK);
+			new Button(bottom, MSG_OK);
 			ok.move(bottom, POS_MIN, 5, bottom, POS_CENTER);
 
 			ok.onClick =
@@ -52,7 +52,7 @@ class WinTrading : WinBasic2
 		}
 
 		{
-			new Button(bottom, BTN_PART, MSG_TRADE);
+			new Button(bottom, MSG_TRADE);
 			trade.move(bottom, POS_CENTER, 0, bottom, POS_CENTER);
 
 			trade.onClick =
@@ -65,7 +65,7 @@ class WinTrading : WinBasic2
 		}
 
 		{
-			auto e = new Button(bottom, BTN_PART, MSG_CANCEL);
+			auto e = new Button(bottom, MSG_CANCEL);
 			e.move(bottom, POS_MAX, -5, bottom, POS_CENTER);
 
 			e.onClick =

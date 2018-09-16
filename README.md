@@ -13,7 +13,7 @@ You can grab D compiler(prefixed with dmd) from the bottom of d.acomirei.ru, but
 
 Those compilers are configured to use local copy of VC++, so I think you can just replace sc.ini(settings file) with one from official dmd distribution from dlang.org or modify it by yourself.
 
-Open the project from sublime text and run building of dependencies: packet gen, shader gen, opengl gen.
+Open the project from sublime text and run building of dependencies: packet gen, shader gen, opengl gen, gui gen.
 
 Then build the Æsir itself using first dub command.
 

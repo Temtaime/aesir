@@ -71,7 +71,7 @@ class WinCharSelect : WinBasic
 		}
 
 		{
-			auto b = new Button(this, BTN_PART, MSG_ENTER);
+			auto b = new Button(this, MSG_ENTER);
 
 			b.pos = Vector2s(4, size.y - b.size.y - 4);
 			b.onClick = &RO.action.onCharSelected;
@@ -80,7 +80,7 @@ class WinCharSelect : WinBasic
 		}
 
 		{
-			auto b = new Button(this, BTN_PART, MSG_CREATE);
+			auto b = new Button(this, MSG_CREATE);
 
 			b.pos = Vector2s(size.x - b.size.x - 4, size.y - b.size.y - 4);
 			b.onClick = &RO.action.onCharCreate;

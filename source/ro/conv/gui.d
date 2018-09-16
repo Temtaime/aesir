@@ -15,9 +15,8 @@ final class GuiConverter : Converter
 {
 	override const(void)[] process()
 	{
-		auto arr = Elements
-							.map!(a => a.toLower)
-							.map!(a => new Image(PEfs.get(`data/gui/` ~ a ~ `.png`)))
+		auto arr = GUI_STR
+							.map!(a => new Image(PEfs.get(`data/gui/` ~ a.toLower ~ `.png`)))
 							.array;
 
 		RogFile res =
@@ -34,11 +33,11 @@ private:
 	{
 		MeshInfo[] meshes;
 
-		foreach(i, ref e; Elements)
+		foreach(im; arr)
 		{
 			SubMeshInfo sm =
 			{
-				tex: arr[i]
+				tex: im
 			};
 
 			sm.data.indices = triangleOrderReversed ~ triangleOrder; // TODO: order ???
@@ -74,6 +73,5 @@ struct RogFile
 	}
 
 	HolderData data;
-
-	@(`ubyte`, `validif`, `sizes.length == ` ~ EnumMembers!GUI.length) Vector2s[] sizes;
+	@(`length`, GUI.length.to!string) Vector2s[] sizes;
 }

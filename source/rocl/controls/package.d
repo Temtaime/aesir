@@ -205,12 +205,12 @@ final class WinInfo : WinBasic2
 		adjust;
 		center;
 
-		new Button(bottom, BTN_PART, MSG_OK);
+		new Button(bottom, MSG_OK);
 		ok.moveY(bottom, POS_CENTER);
 
 		if(withCancel)
 		{
-			new Button(bottom, BTN_PART, MSG_CANCEL);
+			new Button(bottom, MSG_CANCEL);
 			cancel.move(bottom, POS_MAX, -5, bottom, POS_CENTER);
 
 			ok.moveX(cancel, POS_BELOW, -5);

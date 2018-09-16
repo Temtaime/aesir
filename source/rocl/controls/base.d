@@ -61,7 +61,7 @@ class WinBase : WinBasic
 
 			foreach(i, v; arr)
 			{
-				auto b = new Button(this, BTN_PART, v[0], PE.fonts.small);
+				auto b = new Button(this, v[0], PE.fonts.small);
 				auto d = v[1].toDelegate;
 
 				b.onClick = d;

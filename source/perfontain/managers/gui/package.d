@@ -29,6 +29,7 @@ public import
 				perfontain.managers.gui.basic,
 				perfontain.managers.gui.scroll,
 				perfontain.managers.gui.select,
+				perfontain.managers.gui.images,
 				perfontain.managers.gui.element,
 				perfontain.managers.gui.tooltip;
 

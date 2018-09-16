@@ -128,7 +128,7 @@ final class WinSettings : WinBasic
 		}
 		else
 		{
-			auto b = new Button(this, BTN_PART, MSG_HOTKEYS);
+			auto b = new Button(this, MSG_HOTKEYS);
 
 			b.move(this, POS_MAX, -5, this, POS_MAX, -3);
 			b.onClick = () => RO.gui.createHotkeySettings;

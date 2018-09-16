@@ -6,12 +6,12 @@ import
 
 final class Button : GUIElement
 {
-	this(GUIElement e, ushort id, string s, Font f = null)
+	this(GUIElement e, string s, Font f = null)
 	{
 		super(e);
 
 		auto u = f ? f : PE.fonts.base;
-		auto sz = PE.gui.sizes[_id = id];
+		auto sz = BTN_PART_SZ;
 
 		make(_mhs[0], s, u, 0);
 		make(_mhs[1], s, u, FONT_BOLD);
@@ -40,8 +40,9 @@ final class Button : GUIElement
 	override void draw(Vector2s p) const
 	{
 		auto n = p + pos;
+		auto hover = enabled && (flags & WIN_HAS_MOUSE || _pressed);
 
-		doDraw(n, enabled && (flags & WIN_HAS_MOUSE || _pressed) ? _id + 2 : _id);
+		doDraw(n, hover ? BTN_HOVER_PART : BTN_PART, hover ? BTN_HOVER_SPACER : BTN_SPACER);
 
 		{
 			auto u = &_mhs[_pressed && enabled];
@@ -66,7 +67,7 @@ private:
 		s.sz = v[1];
 	}
 
-	void doDraw(Vector2s p, uint id) const
+	void doDraw(Vector2s p, uint id, uint spacer) const
 	{
 		auto sz = PE.gui.sizes[id];
 		auto c = enabled ? colorWhite : colorGray;
@@ -78,11 +79,9 @@ private:
 		drawImage(id, p + Vector2s(size.x - sz.x, 0), c, sz, DRAW_MIRROR_H);
 
 		// spacer
-		drawImage(id + 1, p + Vector2s(sz.x, 0), c, Vector2s(size.x - sz.x * 2, sz.y), DRAW_MIRROR_H);
+		drawImage(spacer, p + Vector2s(sz.x, 0), c, Vector2s(size.x - sz.x * 2, sz.y), DRAW_MIRROR_H);
 	}
 
 	S[2] _mhs;
-
-	ushort _id;
 	bool _pressed;
 }

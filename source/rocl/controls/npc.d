@@ -79,7 +79,7 @@ class WinNpcDialog : WinNpc
 
 	auto makeButton(string s)
 	{
-		auto b = new Button(this, BTN_PART, s);
+		auto b = new Button(this, s);
 
 		b.pos = size - b.size - Vector2s(NPC_WIN_SZ.x, 6);
 		b.focus;

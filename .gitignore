@@ -11,6 +11,7 @@ libs
 source/rocl/network/packets.d
 source/perfontain/opengl/functions.d
 source/perfontain/shader/grammar.d
+source/perfontain/managers/gui/images.d
 
 utils/gui/gen*
 utils/opengl/gen*
