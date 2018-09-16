@@ -4,22 +4,22 @@ bin/data/ro.db
 bin/perfontain*
 
 utils/deps
-utils/release-maker
 
 libs
 .dub
 
+source/rocl/network/packets.d
 source/perfontain/opengl/functions.d
 source/perfontain/shader/grammar.d
-source/rocl/network/packets.d
 
+utils/gui/gen*
 utils/opengl/gen*
 utils/packets/gen*
 utils/shaders/gen*
 
-aesir.json
 start.bat
 atlas.png
+aesir.json
 dub.selections.json
 
 *.grf
