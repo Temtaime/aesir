@@ -287,7 +287,9 @@ private:
 					_moveSub.x = -1;
 				}
 
+				byFlag(_focus.flags, WIN_PRESSED, st);
 				_focus.onPress(st);
+
 				return true;
 			}
 		}
@@ -317,7 +319,10 @@ private:
 
 	void focus(GUIElement e, bool b)
 	{
-		//writefln(`%s %s`, e, b);
+		if(_focus && _focus.flags & WIN_PRESSED)
+		{
+			return;
+		}
 
 		byFlag(e.flags, WIN_FOCUSED, b);
 		e.onFocus(b);

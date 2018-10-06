@@ -34,6 +34,12 @@ final class MeshHolder : RCounted
 		RCArray!Texture texs;
 	}
 
+	const size()
+	{
+		assert(texs.length == 1);
+		return texs[0].size;
+	}
+
 private:
 	IndexVertex _iv;
 }

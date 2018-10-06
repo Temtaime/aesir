@@ -33,9 +33,9 @@ private:
 
 class GUIImage : GUIElement
 {
-	this(GUIElement parent, uint id, ubyte draw = 0, MeshHolder h = null)
+	this(GUIElement parent, uint id, ubyte mode = 0, MeshHolder h = null)
 	{
-		_draw = draw;
+		_mode = mode;
 		_id = cast(ushort)id;
 
 		if(h)
@@ -44,36 +44,36 @@ class GUIImage : GUIElement
 		}
 		else
 		{
-			size = PE.gui.sizes[_id];
+			size = sizeFor(_id);
 
-			if(draw & DRAW_ROTATE)
+			if(mode & DRAW_ROTATE)
 			{
 				swap(size.x, size.y);
 			}
 		}
 
-		super(parent);
+		super(parent, Vector2s.init, WIN_BACKGROUND);
 	}
 
 	override void draw(Vector2s p) const
 	{
-		drawImage(_holder ? _holder : PE.gui.holder, _id, p + pos, colorWhite, Vector2s.init, _draw);
+		drawImage(_holder ? _holder : PE.gui.holder, _id, p + pos, color, Vector2s.init, _mode);
 	}
 
 	override void onPress(bool b)
 	{
-		if(b && onClick)
+		if(onClick && b)
 		{
 			onClick();
 		}
 	}
 
+	auto color = colorWhite;
 	void delegate() onClick;
 protected:
-	ushort _id;
-	ubyte _draw;
-
 	RC!MeshHolder _holder;
+	ushort _id;
+	ubyte _mode;
 }
 
 final class CheckBox : GUIElement
@@ -224,7 +224,7 @@ protected:
 			auto x = size.x - 1;
 			auto v = max(float(im.w) - x, 0) / im.w;
 
-			_ob = PEobjs.makeHolder(im, v)[0];
+			_ob = PEobjs.makeHolder(im, v);
 			_w = cast(ushort)min(im.w, x);
 		}
 	}
@@ -237,29 +237,20 @@ private:
 	uint _tick;
 }
 
-class GUIStaticText : GUIElement
+class GUIStaticText : GUIImage
 {
 	this(GUIElement p, string text, ubyte font = 0, Font f = null, short maxWidth = short.max)
 	{
-		if(!f)
-		{
-			f = PE.fonts.base;
-		}
+		f = f ? f : PE.fonts.base;
 
 		auto arr = f.toLines(text, maxWidth, 1, font);
+		assert(arr.length == 1);
 
-		auto r = PEobjs.makeHolder(f.render(arr[0], font));
-		_mh = r[0];
+		auto m = PEobjs.makeHolder(f.render(arr[0], font));
 
-		super(p, r[1], WIN_BACKGROUND);
+		size = m.size;
+		color = colorBlack;
+
+		super(p, 0, 0, m);
 	}
-
-	override void draw(Vector2s p) const
-	{
-		drawImage(_mh, 0, p + pos, color);
-	}
-
-	Color color = colorBlack;
-private:
-	RC!MeshHolder _mh;
 }

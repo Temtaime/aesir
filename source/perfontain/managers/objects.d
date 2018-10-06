@@ -12,7 +12,7 @@ final class ObjectsManager
 	{
 		{
 			ubyte[4] arr = 255;
-			quad = makeHolder(new Image(1, 1, arr))[0];
+			quad = makeHolder(new Image(1, 1, arr));
 		}
 	}
 
@@ -54,10 +54,7 @@ final class ObjectsManager
 			TextureData(Vector2s(im.w, im.h), d.toByte)
 		];
 
-		return tuple(
-						makeOb(TextureInfo(TEX_RGBA, data), xs),
-						Vector2s(im.w, im.h)
-												);
+		return makeOb(TextureInfo(TEX_RGBA, data), xs);
 	}
 
 	RC!MeshHolder quad;

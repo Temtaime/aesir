@@ -6,17 +6,14 @@ import
 
 final class Button : GUIElement
 {
-	this(GUIElement e, string s, Font f = null)
+	this(GUIElement e, string s)
 	{
+		_text = s;
+
+		make(2);
+		make(0);
+
 		super(e);
-
-		auto u = f ? f : PE.fonts.base;
-		auto sz = BTN_PART_SZ;
-
-		make(_mhs[0], s, u, 0);
-		make(_mhs[1], s, u, FONT_BOLD);
-
-		size = Vector2s(_mhs[1].sz.x + sz.x * 2, sz.y);
 	}
 
 	override void onSubmit()
@@ -29,59 +26,58 @@ final class Button : GUIElement
 
 	override void onPress(bool st)
 	{
-		if(enabled && onClick && !st && flags & WIN_HAS_MOUSE)
+		if(!st && flags & WIN_HAS_MOUSE)
 		{
-			onClick();
+			onSubmit;
 		}
 
-		_pressed = st; // TODO: ADD A FLAG
+		make(st ? 2 : !!(flags & WIN_HAS_MOUSE));
 	}
 
-	override void draw(Vector2s p) const
+	override void onHover(bool st)
 	{
-		auto n = p + pos;
-		auto hover = enabled && (flags & WIN_HAS_MOUSE || _pressed);
-
-		doDraw(n, hover ? BTN_HOVER_PART : BTN_PART, hover ? BTN_HOVER_SPACER : BTN_SPACER);
-
+		if(!(flags & WIN_PRESSED))
 		{
-			auto u = &_mhs[_pressed && enabled];
-			drawImage(u.h, 0, n + (size - u.sz) / 2, colorBlack, u.sz);
+			make(st ? 1 : 0);
 		}
 	}
 
 	bool enabled = true;
 	void delegate() onClick;
 private:
-	struct S
+	void make(ubyte idx)
 	{
-		Vector2s sz;
-		RC!MeshHolder h;
+		final switch(idx)
+		{
+		case 0:
+			make(BTN_PART, BTN_SPACER, 0);
+			break;
+		case 1:
+			make(BTN_HOVER_PART, BTN_HOVER_SPACER, 0);
+			break;
+		case 2:
+			make(BTN_HOVER_PART, BTN_HOVER_SPACER, FONT_BOLD);
+		}
 	}
 
-	static make(ref S s, string t, Font f, ubyte flags = 0)
+	auto make(ushort id, ushort spacer, ubyte flags)
 	{
-		auto v = PEobjs.makeHolder(f.render(t, flags));
+		childs.clear;
 
-		s.h = v[0];
-		s.sz = v[1];
+		auto l = new GUIImage(this, id);
+		auto r = new GUIImage(this, id, DRAW_MIRROR_H);
+		auto q = new GUIImage(this, spacer);
+		auto t = new GUIStaticText(this, _text, flags);
+
+		if(!size.y)
+		{
+			size = Vector2s(size.x ? size.x : l.size.x * 2 + t.size.x, l.size.y);
+		}
+
+		r.moveX(null, POS_MAX);
+		q.poseBetween(l, r);
+		t.center;
 	}
 
-	void doDraw(Vector2s p, uint id, uint spacer) const
-	{
-		auto sz = PE.gui.sizes[id];
-		auto c = enabled ? colorWhite : colorGray;
-
-		// left
-		drawImage(id, p, c, sz);
-
-		// right
-		drawImage(id, p + Vector2s(size.x - sz.x, 0), c, sz, DRAW_MIRROR_H);
-
-		// spacer
-		drawImage(spacer, p + Vector2s(sz.x, 0), c, Vector2s(size.x - sz.x * 2, sz.y), DRAW_MIRROR_H);
-	}
-
-	S[2] _mhs;
-	bool _pressed;
+	string _text;
 }

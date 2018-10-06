@@ -29,10 +29,10 @@ enum : ubyte
 {
 	WIN_HAS_MOUSE		= 1,
 	WIN_FOCUSED			= 2,
-
 	WIN_MOVEABLE		= 4,
 	WIN_BACKGROUND		= 8,
 	WIN_HIDDEN			= 16,
+	WIN_PRESSED			= 32,
 	WIN_HAS_INPUT		= 64,
 	WIN_TOP_MOST		= 128,
 }
@@ -132,8 +132,6 @@ class GUIElement : RCounted
 		}
 	}
 
-	/// received events
-
 	bool onWheel(Vector2s)
 	{
 		return false;
@@ -160,6 +158,16 @@ final:
 	const byHierarchy()
 	{
 		return HierarchyRange!(typeof(this))(cast()this);
+	}
+
+	void bringToTop()
+	{
+		auto arr = parent.childs[];
+
+		auto idx = arr.countUntil!(a => a is this);
+		arr.remove(idx);
+
+		arr[$ - 1] = this;
 	}
 
 	void toChildSize()
@@ -233,7 +241,7 @@ final:
 
 	void center()
 	{
-		pos = (PEwindow._size - size) / 2;
+		pos = ((parent ? parent.size : PEwindow.size) - size) / 2;
 	}
 
 	void remove()
@@ -271,7 +279,7 @@ final:
 	{
 		if(visible)
 		{
-			show(false);
+			hide;
 		}
 		else
 		{
@@ -289,6 +297,11 @@ final:
 		}
 
 		byFlag(flags, WIN_HIDDEN, !b);
+	}
+
+	void hide()
+	{
+		show(false);
 	}
 
 	/// flags
@@ -320,6 +333,11 @@ protected:
 		DRAW_MIRROR_H	= 1,
 		DRAW_MIRROR_V	= 2,
 		DRAW_ROTATE		= 4,
+	}
+
+	static sizeFor(uint idx)
+	{
+		return PE.gui.sizes[idx];
 	}
 
 	const drawQuad(Vector2s p, Vector2s sz, Color c = colorWhite)
@@ -450,6 +468,7 @@ private:
 
 	void moveFunc(ubyte idx, GUIElement e, ubyte q, int d)
 	{
+		e = e ? e : parent; // TODO: REFACTOR
 		auto notParent = !(e is parent);
 
 		final switch(q)
@@ -517,10 +536,5 @@ private:
 			centrize(idx, a.size[idx], a.pos[idx]);
 			centrize(idx2, z, a.end[idx2]);
 		}
-	}
-
-	static sizeFor(uint idx)
-	{
-		return PE.gui.sizes[idx];
 	}
 }

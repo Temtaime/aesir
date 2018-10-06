@@ -28,6 +28,8 @@ class WinCreation : WinBasic
 
 		super(Vector2s(280, 140), MSG_CHAR_CREATION);
 
+		123.logger;
+
 		{
 			auto v = PE.window.size;
 			pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
