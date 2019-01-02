@@ -37,7 +37,7 @@ final class TextCaptions : GUIElement
 				{
 					super(this.outer, n);
 
-					flags &= ~WIN_BACKGROUND;
+					flags.background = false;
 				}
 
 				override void onPress(bool st)

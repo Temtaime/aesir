@@ -23,7 +23,7 @@ class StatsUpper : GUIStaticText
 	{
 		super(w, `▲`, FONT_BOLD);
 
-		flags = 0;
+		flags = WinFlags.none;
 		color = Color(30, 33, 150, 255);
 	}
 

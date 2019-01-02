@@ -17,7 +17,7 @@ class WinNpc : GUIElement
 	{
 		super(PE.gui.root);
 
-		flags = WIN_MOVEABLE;
+		flags.moveable = true;
 	}
 
 	override void draw(Vector2s p) const

@@ -49,7 +49,7 @@ final class GUIManager
 		PE.onDoubleClick.permanent(&onDoubleClick);
 
 		// root
-		root = new GUIElement(null, PE.window.size, WIN_BACKGROUND);
+		root = new GUIElement(null, PE.window.size, WinFlags.background);
 
 		// misc
 		_moveSub.x = -1;
@@ -72,7 +72,7 @@ final class GUIManager
 			auto sz = PEwindow._size;
 			auto m = Matrix4.makeOrthogonal(0, sz.x, sz.y, 0, 1, -1); // TODO: TO REASPECT
 
-			root.childs[].sort!((a, b) => (a.flags & WIN_TOP_MOST) < (b.flags & WIN_TOP_MOST), SwapStrategy.stable);
+			root.childs[].sort!((a, b) => a.flags.topMost < b.flags.topMost, SwapStrategy.stable);
 			root.draw(Vector2s.init);
 
 			PE.render.doDraw(_prog, RENDER_GUI, m, null, false);
@@ -124,12 +124,12 @@ package:
 		if(_inp)
 		{
 			_text = null;
-			_inp.flags &= ~WIN_HAS_INPUT;
+			_inp.flags.hasInput = false;
 		}
 
 		if(e)
 		{
-			e.flags |= WIN_HAS_INPUT;
+			e.flags.hasInput = true;
 			_text = new TextInput(&e.onText);
 		}
 
@@ -212,7 +212,7 @@ private:
 				{
 					if(w)
 					{
-						w.flags &= ~WIN_HAS_MOUSE;
+						w.flags.hasMouse = false;
 						w.onHover(false);
 					}
 
@@ -220,7 +220,7 @@ private:
 
 					if(_cur)
 					{
-						_cur.flags |= WIN_HAS_MOUSE;
+						_cur.flags.hasMouse = true;
 						_cur.onHover(true);
 					}
 				}
@@ -278,7 +278,7 @@ private:
 
 			if(_focus)
 			{
-				if(st && _focus.moveable)
+				if(st && _focus.flags.moveable)
 				{
 					_moveSub = PE.window.mpos - _focus.pos;
 				}
@@ -287,7 +287,7 @@ private:
 					_moveSub.x = -1;
 				}
 
-				byFlag(_focus.flags, WIN_PRESSED, st);
+				_focus.flags.pressed = st;
 				_focus.onPress(st);
 
 				return true;
@@ -319,12 +319,12 @@ private:
 
 	void focus(GUIElement e, bool b)
 	{
-		if(_focus && _focus.flags & WIN_PRESSED)
+		if(_focus && _focus.flags.pressed)
 		{
 			return;
 		}
 
-		byFlag(e.flags, WIN_FOCUSED, b);
+		e.flags.focused = b;
 		e.onFocus(b);
 	}
 

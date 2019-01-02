@@ -25,16 +25,20 @@ import
 		perfontain.signals;
 
 
-enum : ubyte
+enum WinFlags
 {
-	WIN_HAS_MOUSE		= 1,
-	WIN_FOCUSED			= 2,
-	WIN_MOVEABLE		= 4,
-	WIN_BACKGROUND		= 8,
-	WIN_HIDDEN			= 16,
-	WIN_PRESSED			= 32,
-	WIN_HAS_INPUT		= 64,
-	WIN_TOP_MOST		= 128,
+	none,
+
+	hidden			= 0x1,
+	focused			= 0x2,
+	pressed			= 0x4,
+
+	moveable		= 0x8,
+	background		= 0x10,
+	topMost			= 0x20,
+
+	hasMouse		= 0x40,
+	hasInput		= 0x80,
 }
 
 enum : ubyte
@@ -71,7 +75,7 @@ template MakeChildRef(T, string Name, Idx...)
 
 class GUIElement : RCounted
 {
-	this(GUIElement p, Vector2s sz = Vector2s.init, ubyte f = 0, string n = null)
+	this(GUIElement p, Vector2s sz = Vector2s.init, WinFlags f = WinFlags.none, string n = null)
 	{
 		if(p)
 		{
@@ -277,26 +281,20 @@ final:
 
 	auto showOrHide()
 	{
-		if(visible)
-		{
-			hide;
-		}
-		else
+		if(flags.hidden)
 		{
 			show;
 			focus;
 		}
+		else
+		{
+			hide;
+		}
 	}
 
-
-	void show(bool b = true)
+	void show(bool v = true)
 	{
-		if(!(flags & WIN_HIDDEN) == b)
-		{
-			return;
-		}
-
-		byFlag(flags, WIN_HIDDEN, !b);
+		flags.hidden = !v;
 	}
 
 	void hide()
@@ -304,16 +302,9 @@ final:
 		show(false);
 	}
 
-	/// flags
-
 	const visible()
 	{
-		return !(flags & WIN_HIDDEN);
-	}
-
-	const moveable()
-	{
-		return !!(flags & WIN_MOVEABLE);
+		return !flags.hidden;
 	}
 
 	/// member variables
@@ -326,7 +317,7 @@ final:
 	Vector2s	pos,
 				size;
 
-	ubyte flags;
+	BitFlags!WinFlags flags;
 protected:
 	enum
 	{
@@ -426,7 +417,7 @@ package:
 				}
 			}
 
-			if(!(flags & WIN_BACKGROUND))
+			if(!flags.background)
 			{
 				return this;
 			}

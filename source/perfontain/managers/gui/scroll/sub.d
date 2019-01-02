@@ -14,11 +14,11 @@ final class Subscroll : GUIElement
 		super(p);
 
 		_sc = sc;
-		flags = WIN_MOVEABLE;
+		flags.moveable = true;
 
 		// top
 		auto m = new GUIImage(this, id);
-		m.flags = WIN_BACKGROUND;
+		m.flags.background = true;
 
 		size = Vector2s(m.size.x, m.size.y * 2);
 
@@ -28,14 +28,14 @@ final class Subscroll : GUIElement
 
 			v.size.y = 0;
 			v.pos.y = m.size.y;
-			v.flags = WIN_BACKGROUND;
+			v.flags.background = true;
 		}
 
 		// bottom
 		m = new GUIImage(this, id, DRAW_MIRROR_V);
 
 		m.pos.y = m.size.y;
-		m.flags = WIN_BACKGROUND;
+		m.flags.background = true;
 	}
 
 	void height(ushort n)

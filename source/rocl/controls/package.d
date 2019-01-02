@@ -44,7 +44,7 @@ class WinBasic : GUIElement
 		super(PE.gui.root);
 
 		size = sz;
-		flags = WIN_MOVEABLE;
+		flags.moveable = true;
 
 		{
 			auto t = new GUIStaticText(this, s);
@@ -103,9 +103,9 @@ class WinBasic2 : GUIElement
 {
 	this(string s, string n = null, bool bottom = true)
 	{
-		super(PE.gui.root, Vector2s.init, WIN_MOVEABLE, n);
+		super(PE.gui.root, Vector2s.init, WinFlags.moveable, n);
 
-		new GUIElement(this, Vector2s.init, WIN_BACKGROUND);
+		new GUIElement(this, Vector2s.init, WinFlags.background);
 		top.size.y = WIN_TOP_SZ.y;
 
 		{
@@ -113,12 +113,12 @@ class WinBasic2 : GUIElement
 			e.move(top, POS_MIN, WPOS_START, top, POS_CENTER);
 		}
 
-		new GUIElement(this, Vector2s.init, WIN_BACKGROUND);
+		new GUIElement(this, Vector2s.init, WinFlags.background);
 		main.moveY(top, POS_ABOVE);
 
 		if(bottom)
 		{
-			auto e = new GUIElement(this, Vector2s.init, WIN_BACKGROUND);
+			auto e = new GUIElement(this, Vector2s.init, WinFlags.background);
 			e.size.y = WIN_BOTTOM_SZ.y;
 		}
 	}

@@ -137,7 +137,7 @@ package:
 
 		{
 			auto v = u <= 0;
-			childs[1..$].each!(a => byFlag(a.flags, WIN_HIDDEN, v));
+			childs[1..$].each!(a => a.flags.hidden = v);
 
 			if(!v)
 			{

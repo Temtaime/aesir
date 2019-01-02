@@ -52,7 +52,7 @@ class GUIImage : GUIElement
 			}
 		}
 
-		super(parent, Vector2s.init, WIN_BACKGROUND);
+		super(parent, Vector2s.init, WinFlags.background);
 	}
 
 	override void draw(Vector2s p) const
@@ -154,7 +154,7 @@ class GUIEditText : GUIElement
 			p.x += _w;
 		}
 
-		if(enabled && flags & WIN_HAS_INPUT && (PE.tick - _tick) % 1000 < 500)
+		if(enabled && flags.hasInput && (PE.tick - _tick) % 1000 < 500)
 		{
 			drawQuad(p, Vector2s(1, size.y), colorBlack);
 		}

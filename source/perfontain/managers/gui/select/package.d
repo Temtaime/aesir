@@ -43,7 +43,7 @@ class SelectableItem : GUIElement
 
 	override void draw(Vector2s p) const
 	{
-		if(_s._flags & SEL_ON_PRESS ? _s.cur == idx : flags & WIN_HAS_MOUSE)
+		if(_s._flags & SEL_ON_PRESS ? _s.cur == idx : flags.hasMouse)
 		{
 			drawQuad(p + pos, size, Color(0xa3, 0xdb, 0xfb, 0xff));
 		}
@@ -53,7 +53,7 @@ class SelectableItem : GUIElement
 
 	override void onPress(bool st)
 	{
-		if(flags & WIN_HAS_MOUSE && !st)
+		if(flags.hasMouse && !st)
 		{
 			_s.doSelect(idx);
 		}

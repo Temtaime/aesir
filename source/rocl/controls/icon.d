@@ -33,7 +33,7 @@ class IconSkill : GUIElement
 {
 	this(string res, string path)
 	{
-		super(null, Vector2s.init, WIN_BACKGROUND);
+		super(null, Vector2s.init, WinFlags.background);
 
 		try
 		{
@@ -187,7 +187,9 @@ abstract class HotkeyIcon : GUIElement
 		if(_mouse && !_e && !b)
 		{
 			_e = clone(PE.gui.root);
-			_e.flags |= WIN_BACKGROUND | WIN_TOP_MOST;
+
+			_e.flags.topMost = true;
+			_e.flags.background = true;
 		}
 
 		if(b)

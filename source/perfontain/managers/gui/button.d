@@ -26,17 +26,17 @@ final class Button : GUIElement
 
 	override void onPress(bool st)
 	{
-		if(!st && flags & WIN_HAS_MOUSE)
+		if(!st && flags.hasMouse)
 		{
 			onSubmit;
 		}
 
-		make(st ? 2 : !!(flags & WIN_HAS_MOUSE));
+		make(st ? 2 : flags.hasMouse);
 	}
 
 	override void onHover(bool st)
 	{
-		if(!(flags & WIN_PRESSED))
+		if(!flags.pressed)
 		{
 			make(st ? 1 : 0);
 		}

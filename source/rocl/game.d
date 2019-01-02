@@ -1,11 +1,7 @@
 module rocl.game;
 
 import
-		std.file,
-		std.json,
-		std.array,
-		std.getopt,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain,
 		perfontain.misc,

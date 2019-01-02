@@ -34,7 +34,7 @@ final class InventoryTab : GUIElement
 		{
 			auto im = new GUIImage(this, INV_ITEM);
 
-			im.flags = WIN_BACKGROUND;
+			im.flags.background = true;
 			im.pos = Vector2s(INV_TAB_ITEM_SZ.x, 0) + Vector2s(i * 36, j * 36) + (Vector2s(36) - im.size) / 2;
 		}
 

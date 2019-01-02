@@ -23,7 +23,7 @@ class WinHotkeys : GUIElement
 		super(PE.gui.root);
 
 		size = Vector2s(9, 4) * KS + Vector2s(SP + 10, SP);
-		flags = WIN_MOVEABLE;
+		flags.moveable = true;
 
 		if(pos.x < 0)
 		{
@@ -132,7 +132,9 @@ class WinHotkeys : GUIElement
 			ROnet.setHotkey(q.y * 9 + q.x, w.hotkey);
 		}
 
-		w.flags &= ~(WIN_TOP_MOST | WIN_BACKGROUND);
+		w.flags.topMost = false;
+		w.flags.background = false;
+
 		PE.gui.updateMouse;
 
 		foreach(e; childs[0..$ - 1])

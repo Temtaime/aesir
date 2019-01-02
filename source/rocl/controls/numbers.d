@@ -89,7 +89,7 @@ class Damage : GUIElement
 		_tp = tp;
 		_ids = n.to!string.map!(a => cast(ubyte)(a - '0')).array;
 
-		flags = WIN_BACKGROUND;
+		flags.background = true;
 	}
 
 	override void draw(Vector2s p) const
