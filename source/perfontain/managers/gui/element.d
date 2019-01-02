@@ -29,16 +29,15 @@ enum WinFlags
 {
 	none,
 
-	hidden			= 0x1,
-	focused			= 0x2,
-	pressed			= 0x4,
-
-	moveable		= 0x8,
-	background		= 0x10,
-	topMost			= 0x20,
-
-	hasMouse		= 0x40,
-	hasInput		= 0x80,
+	hidden			= 1 << 0,
+	focused			= 1 << 1,
+	pressed			= 1 << 2,
+	moveable		= 1 << 3,
+	background		= 1 << 4,
+	topMost			= 1 << 5,
+	hasMouse		= 1 << 6,
+	hasInput		= 1 << 7,
+	enabled			= 1 << 8,
 }
 
 enum : ubyte

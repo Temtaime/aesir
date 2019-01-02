@@ -13,8 +13,8 @@
 	"dependencies":
 	{
 		"stb": ">=1.7.5",
-		"pegged": "~master",
-		"derelict-sdl2": ">=3.1.0-alpha.3"
+		"pegged": ">=0.4.4",
+		"derelict-sdl2": ">=3.1.0-alpha.4"
 	},
 
 	"subConfigurations":
