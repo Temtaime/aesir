@@ -37,6 +37,7 @@ enum
 	WPOS_SPACING	= 18,
 }
 
+//deprecated
 class WinBasic : GUIElement
 {
 	this(Vector2s sz, string s, bool bottom = true)
@@ -45,6 +46,7 @@ class WinBasic : GUIElement
 
 		size = sz;
 		flags.moveable = true;
+		flags.captureFocus = true;
 
 		{
 			auto t = new GUIStaticText(this, s);
@@ -103,93 +105,67 @@ class WinBasic2 : GUIElement
 {
 	this(string s, string n = null, bool bottom = true)
 	{
-		super(PE.gui.root, Vector2s.init, Win.moveable, n);
+		super(PE.gui.root, Vector2s.init, Win.moveable | Win.captureFocus, n);
 
 		new GUIElement(this);
-		top.size.y = WIN_TOP_SZ.y;
-
-		{
-			auto e = new GUIStaticText(top, s);
-			e.move(top, POS_MIN, WPOS_START, top, POS_CENTER);
-
-			top.toChildSize;
-		}
-
-		new GUIElement(this);
-		main.moveY(top, POS_ABOVE);
+		new GUIQuad(this, colorWhite);
 
 		if(bottom)
 		{
-			auto e = new GUIElement(this);
-			e.size.y = WIN_BOTTOM_SZ.y;
+			new GUIElement(this);
 		}
+
+		_title = s;
 	}
 
 	void adjust()
 	{
-		auto sz = main.size;
-		sz.x = max(sz.x, top.size.x);
+		main.toChildSize;
+		main.pad(4);
 
-		size = Vector2s(top.size.x = sz.x, top.size.y + sz.y);
+		top.size.x = bottom.size.x = main.size.x;
+
+		{
+			make(top, WIN_TOP, WIN_TOP_SPACER);
+
+			auto e = new GUIImage(top, WIN_PART);
+			e.pos = Vector2s(4);
+
+			auto t = new GUIStaticText(top, _title);
+			t.move(POS_MIN, WPOS_START, POS_CENTER);
+		}
+
+		main.moveY(top, POS_ABOVE);
 
 		if(bottom)
 		{
-			size.y += bottom.size.y;
-
-			bottom.size.x = sz.x;
-			bottom.moveY(this, POS_MAX);
-		}
-	}
-
-	override void onResize()
-	{
-	}
-
-	override void draw(Vector2s p) const
-	{
-		auto np = p + pos;
-
-		auto
-				tp = WIN_TOP_SZ,
-				bt = WIN_BOTTOM_SZ;
-
-		// left top
-		drawImage(WIN_TOP, np, colorWhite, tp);
-
-		// right top
-		drawImage(WIN_TOP, np + Vector2s(size.x - tp.x, 0), colorWhite, tp, DRAW_MIRROR_H);
-
-		// center top
-		drawImage(WIN_TOP_SPACER, np + Vector2s(tp.x, 0), colorWhite, Vector2s(size.x - tp.x * 2, tp.y));
-
-		// addition part
-		drawImage(WIN_PART, np + Vector2s(4), colorWhite, WIN_PART_SZ);
-
-		if(bottom)
-		{
-			auto vp = np + Vector2s(0, size.y - bt.y);
-
-			// left bottom
-			drawImage(WIN_BOTTOM, vp, colorWhite, bt);
-
-			// right bottom
-			drawImage(WIN_BOTTOM, vp + Vector2s(size.x - bt.x, 0), colorWhite, bt, DRAW_MIRROR_H);
-
-			// center bottom
-			drawImage(WIN_BOTTOM_SPACER, vp + Vector2s(bt.x, 0), colorWhite, Vector2s(size.x - bt.x * 2, bt.y));
+			make(bottom, WIN_BOTTOM, WIN_BOTTOM_SPACER);
+			bottom.moveY(main, POS_ABOVE);
 		}
 
-		// center
-		drawQuad(np + Vector2s(0, tp.y), size - Vector2s(0, tp.y + (bottom ? bt.y : 0)), colorWhite);
-
-		// CHILDS
-		super.draw(p);
+		toChildSize;
 	}
 
 protected:
 	mixin MakeChildRef!(GUIElement, `top`, 0);
 	mixin MakeChildRef!(GUIElement, `main`, 1);
 	mixin MakeChildRef!(GUIElement, `bottom`, 2);
+private:
+	void make(GUIElement e, ushort id, ushort spacer)
+	{
+		e.childs.clear;
+
+		auto l = new GUIImage(e, id);
+		auto r = new GUIImage(e, id, DRAW_MIRROR_H);
+		auto q = new GUIImage(e, spacer);
+
+		r.moveX(POS_MAX);
+		q.poseBetween(l, r);
+
+		e.toChildSize;
+	}
+
+	string _title;
 }
 
 final class WinInfo : WinBasic2

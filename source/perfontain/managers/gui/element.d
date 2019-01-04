@@ -221,6 +221,27 @@ final:
 		}
 	}
 
+	void center()
+	{
+		move(POS_CENTER, 0, POS_CENTER);
+	}
+
+	void moveX(ubyte m, int d = 0)
+	{
+		moveFunc(0, parent, m, d);
+	}
+
+	void moveY(ubyte m, int d = 0)
+	{
+		moveFunc(1, parent, m, d);
+	}
+
+	void move(ubyte xm, int xd, ubyte ym, int yd = 0)
+	{
+		moveX(xm, xd);
+		moveY(ym, yd);
+	}
+
 	void moveX(GUIElement e, ubyte m, int d = 0)
 	{
 		moveFunc(0, e, m, d);
@@ -255,11 +276,6 @@ final:
 	void input(bool b = true)
 	{
 		PE.gui.doInput(b ? this : null);
-	}
-
-	void center()
-	{
-		pos = ((parent ? parent.size : PEwindow.size) - size) / 2;
 	}
 
 	void remove()
@@ -334,7 +350,7 @@ final:
 	Vector2s	pos,
 				size;
 
-	BitFlags!(Win, Yes.unsafe) flags;
+	BitFlags!Win flags;
 protected:
 	enum
 	{
@@ -490,7 +506,7 @@ private:
 
 	void moveFunc(ubyte idx, GUIElement e, ubyte q, int d)
 	{
-		e = e ? e : parent; // TODO: REFACTOR
+		assert(e);
 		auto notParent = !(e is parent);
 
 		final switch(q)

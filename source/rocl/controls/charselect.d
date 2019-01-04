@@ -17,13 +17,11 @@ import
 
 final:
 
-class WinCharSelect : WinBasic
+class WinCharSelect : WinBasic2
 {
 	this(in PkCharData *c)
 	{
-		name = `char_select`;
-
-		super(Vector2s(340, 200), MSG_CHAR_SELECT);
+		super(MSG_CHAR_SELECT, `char_select`);
 
 		{
 			auto v = PE.window.size;
@@ -45,44 +43,44 @@ class WinCharSelect : WinBasic
 		}
 
 		stat(`Name`, c.name.charsToString);
-		stat(`Job`, `???`);
-		stat(`Lv.`, c.baseLvl);
-		stat(`EXP`, c.baseExp);
-		stat(`HP`, c.hp);
-		stat(`SP`, c.sp);
-
 		stat(`STR`, c.str);
+
+		stat(`Job`, `???`);
 		stat(`AGI`, c.agi);
+
+		stat(`Lv.`, c.baseLvl);
 		stat(`VIT`, c.vit);
+
+		stat(`EXP`, c.baseExp);
 		stat(`INT`, c.int_);
+
+		stat(`HP`, c.hp);
 		stat(`DEX`, c.dex);
+
+		stat(`SP`, c.sp);
 		stat(`LUK`, c.luk);
 
-		foreach(i, s; stats)
 		{
-			auto w = new StatInfo(this, s.front, s.back);
-
-			w.pos = Vector2s(20, 30 + (w.size.y + 2) * (i % 6));
-
-			if(i >= 6)
-			{
-				w.pos.x += w.size.x + 2;
-			}
+			auto t = new Table(main, 2);
+			stats.each!(a => t.add(new StatInfo(null, a.front, a.back)));
+			t.adjust;
 		}
 
-		{
-			auto b = new Button(this, MSG_ENTER);
+		adjust;
 
-			b.pos = Vector2s(4, size.y - b.size.y - 4);
+		{
+			auto b = new Button(bottom, MSG_ENTER);
+
+			b.move(POS_MIN, 4, POS_CENTER);
 			b.onClick = &RO.action.onCharSelected;
 
 			b.focus;
 		}
 
 		{
-			auto b = new Button(this, MSG_CREATE);
+			auto b = new Button(bottom, MSG_CREATE);
 
-			b.pos = Vector2s(size.x - b.size.x - 4, size.y - b.size.y - 4);
+			b.move(POS_MAX, -4, POS_CENTER);
 			b.onClick = &RO.action.onCharCreate;
 		}
 	}
@@ -90,30 +88,27 @@ class WinCharSelect : WinBasic
 
 class StatInfo : GUIElement
 {
-	this(WinCharSelect w, string name, string value)
+	this(GUIElement p, string name, string value)
 	{
-		super(w);
+		super(p, Vector2s(155, PE.fonts.base.height));
 
-		size = Vector2s(155, PE.fonts.base.height);
+		{
+			auto q = new GUIQuad(this, Color(200, 200, 230, 200));
+			q.size = Vector2s(48, size.y);
+
+			q = new GUIQuad(this, Color(240, 240, 240, 200));
+			q.size = Vector2s(size.x - 48, size.y);
+			q.moveX(POS_MAX);
+		}
 
 		{
 			auto e = new GUIStaticText(this, name, FONT_BOLD);
 			e.pos.x = 3;
-		}
 
-		{
-			auto e = new GUIStaticText(this, value);
+			e = new GUIStaticText(this, value);
 			e.pos.x = 51;
 		}
-	}
 
-	override void draw(Vector2s p) const
-	{
-		auto np = p + pos;
-
-		drawQuad(np, Vector2s(48, size.y), Color(200, 200, 230, 200));
-		drawQuad(np + Vector2s(48, 0), Vector2s(size.x - 48, size.y), Color(240, 240, 240, 200));
-
-		super.draw(p);
+		pad(1);
 	}
 }

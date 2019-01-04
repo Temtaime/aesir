@@ -8,7 +8,7 @@ final class Button : GUIElement
 {
 	this(GUIElement e, string s, void delegate() f = null)
 	{
-		super(e, Vector2s.init, Win.enabled, s);
+		super(e, Vector2s.init, Win.enabled | Win.captureFocus, s);
 
 		make(2);
 		make(0);
@@ -78,7 +78,7 @@ private:
 			size = Vector2s(size.x ? size.x : l.size.x * 2 + t.size.x, l.size.y);
 		}
 
-		r.moveX(null, POS_MAX);
+		r.moveX(POS_MAX);
 		q.poseBetween(l, r);
 		t.center;
 	}
