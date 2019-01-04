@@ -103,22 +103,24 @@ class WinBasic2 : GUIElement
 {
 	this(string s, string n = null, bool bottom = true)
 	{
-		super(PE.gui.root, Vector2s.init, WinFlags.moveable, n);
+		super(PE.gui.root, Vector2s.init, Win.moveable, n);
 
-		new GUIElement(this, Vector2s.init, WinFlags.background);
+		new GUIElement(this);
 		top.size.y = WIN_TOP_SZ.y;
 
 		{
 			auto e = new GUIStaticText(top, s);
 			e.move(top, POS_MIN, WPOS_START, top, POS_CENTER);
+
+			top.toChildSize;
 		}
 
-		new GUIElement(this, Vector2s.init, WinFlags.background);
+		new GUIElement(this);
 		main.moveY(top, POS_ABOVE);
 
 		if(bottom)
 		{
-			auto e = new GUIElement(this, Vector2s.init, WinFlags.background);
+			auto e = new GUIElement(this);
 			e.size.y = WIN_BOTTOM_SZ.y;
 		}
 	}
@@ -126,9 +128,9 @@ class WinBasic2 : GUIElement
 	void adjust()
 	{
 		auto sz = main.size;
+		sz.x = max(sz.x, top.size.x);
 
-		top.size.x = sz.x;
-		size = Vector2s(sz.x, top.size.y + sz.y);
+		size = Vector2s(top.size.x = sz.x, top.size.y + sz.y);
 
 		if(bottom)
 		{
@@ -137,6 +139,10 @@ class WinBasic2 : GUIElement
 			bottom.size.x = sz.x;
 			bottom.moveY(this, POS_MAX);
 		}
+	}
+
+	override void onResize()
+	{
 	}
 
 	override void draw(Vector2s p) const

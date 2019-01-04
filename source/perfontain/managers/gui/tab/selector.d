@@ -37,7 +37,7 @@ final class TextCaptions : GUIElement
 				{
 					super(this.outer, n);
 
-					flags.background = false;
+					flags.captureFocus = true;
 				}
 
 				override void onPress(bool st)

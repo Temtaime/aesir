@@ -9,7 +9,7 @@ class Tooltip : GUIElement
 {
 	this()
 	{
-		super(PE.gui.root, Vector2s.init, WinFlags.topMost | WinFlags.background);
+		super(PE.gui.root, Vector2s.init, Win.topMost);
 
 		{
 			if(_cur)

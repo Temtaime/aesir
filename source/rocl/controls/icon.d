@@ -33,7 +33,7 @@ class IconSkill : GUIElement
 {
 	this(string res, string path)
 	{
-		super(null, Vector2s.init, WinFlags.background);
+		super(null);
 
 		try
 		{
@@ -189,7 +189,7 @@ abstract class HotkeyIcon : GUIElement
 			_e = clone(PE.gui.root);
 
 			_e.flags.topMost = true;
-			_e.flags.background = true;
+			//_e.flags.background = true;
 		}
 
 		if(b)

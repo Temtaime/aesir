@@ -17,7 +17,7 @@ abstract class TabsWindow : GUIElement
 
 		foreach(_; 0..n)
 		{
-			new GUIElement(this, Vector2s.init, WinFlags.hidden);
+			new GUIElement(this, Vector2s.init, Win.hidden);
 		}
 	}
 
@@ -63,7 +63,7 @@ final class TabWindow : GUIElement // TODO: MIGRATE
 				size = im.size;
 			}
 
-			im.flags.background = true;
+			//im.flags.background = true;
 		}
 
 		{

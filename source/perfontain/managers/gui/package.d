@@ -49,7 +49,7 @@ final class GUIManager
 		PE.onDoubleClick.permanent(&onDoubleClick);
 
 		// root
-		root = new GUIElement(null, PE.window.size, WinFlags.background);
+		root = new GUIElement(null, PE.window.size);
 
 		// misc
 		_moveSub.x = -1;

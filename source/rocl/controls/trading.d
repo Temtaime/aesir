@@ -46,7 +46,7 @@ class WinTrading : WinBasic2
 					ROnet.tradeItem(0, v);
 				}
 
-				ok.enabled = false;
+				ok.flags.enabled = false;
 				ROnet.tradeAction(0);
 			};
 		}
@@ -58,10 +58,10 @@ class WinTrading : WinBasic2
 			trade.onClick =
 			{
 				ROnet.tradeAction(1);
-				trade.enabled = false;
+				trade.flags.enabled = false;
 			};
 
-			trade.enabled = false;
+			trade.flags.enabled = false;
 		}
 
 		{
@@ -71,7 +71,7 @@ class WinTrading : WinBasic2
 			e.onClick =
 			{
 				ROnet.tradeAction(-1);
-				e.enabled = false;
+				e.flags.enabled = false;
 			};
 		}
 
@@ -90,7 +90,7 @@ class WinTrading : WinBasic2
 
 		if(src.locked && dst.locked)
 		{
-			trade.enabled = true;
+			trade.flags.enabled = true;
 		}
 	}
 

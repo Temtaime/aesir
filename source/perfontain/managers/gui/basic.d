@@ -31,6 +31,37 @@ private:
 	Color _c;
 }
 
+class Table : GUIElement
+{
+	this(GUIElement p, ushort cols)
+	{
+		super(p);
+		_cols = cols;
+	}
+
+	void add(GUIElement e)
+	{
+		e.attach(this);
+	}
+
+	void adjust()
+	{
+		toChildSize;
+
+		foreach(i, c; childs)
+		{
+			c.size = size;
+			c.pos = Vector2s(i % _cols * size.x, i / _cols * size.y);
+			c.onResize;
+		}
+
+		size = childs.back.end;
+	}
+
+private:
+	ushort _cols;
+}
+
 class GUIImage : GUIElement
 {
 	this(GUIElement parent, uint id, ubyte mode = 0, MeshHolder h = null)
@@ -52,7 +83,7 @@ class GUIImage : GUIElement
 			}
 		}
 
-		super(parent, Vector2s.init, WinFlags.background);
+		super(parent);
 	}
 
 	override void draw(Vector2s p) const

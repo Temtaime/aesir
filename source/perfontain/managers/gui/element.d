@@ -25,7 +25,7 @@ import
 		perfontain.signals;
 
 
-enum WinFlags
+enum Win
 {
 	none,
 
@@ -33,7 +33,7 @@ enum WinFlags
 	focused			= 1 << 1,
 	pressed			= 1 << 2,
 	moveable		= 1 << 3,
-	background		= 1 << 4,
+	captureFocus	= 1 << 4,
 	topMost			= 1 << 5,
 	hasMouse		= 1 << 6,
 	hasInput		= 1 << 7,
@@ -74,12 +74,11 @@ template MakeChildRef(T, string Name, Idx...)
 
 class GUIElement : RCounted
 {
-	this(GUIElement p, Vector2s sz = Vector2s.init, WinFlags f = WinFlags.none, string n = null)
+	this(GUIElement p, Vector2s sz = Vector2s.init, Win f = Win.none, string n = null)
 	{
 		if(p)
 		{
-			parent = p;
-			parent.childs ~= this;
+			attach(p);
 		}
 
 		if(sz.x)
@@ -95,7 +94,7 @@ class GUIElement : RCounted
 		if(n)
 		{
 			name = n;
-			pos.x = -1;
+			/*pos.x = -1;
 
 			if(auto w = name in PE.settings.wins)
 			{
@@ -106,16 +105,16 @@ class GUIElement : RCounted
 				{
 					pos = v;
 				}
-			}
+			}*/
 		}
 	}
 
 	~this()
 	{
-		if(name.length)
+		/*if(name.length)
 		{
 			PE.settings.wins[name] = WindowData(pos);
-		}
+		}*/
 
 		PE.gui.onDie(this);
 	}
@@ -141,6 +140,7 @@ class GUIElement : RCounted
 	}
 
 	void onMove() {}
+	void onResize() {}
 
 	void onShow(bool) {}
 	void onFocus(bool) {}
@@ -177,6 +177,21 @@ final:
 	{
 		size.x = childs[].map!(a => cast(short)(a.pos.x + a.size.x)).fold!max(short(0));
 		size.y = childs[].map!(a => cast(short)(a.pos.y + a.size.y)).fold!max(short(0));
+
+		/*foreach(c; childs[].filter!(a => a.flags & Win.parentSize))
+		{
+			if(c.flags.parentWidth)
+			{
+				c.size.x = size.x;
+			}
+
+			if(c.flags.parentHeight)
+			{
+				c.size.y = size.y;
+			}
+
+			c.onResize;
+		}*/
 	}
 
 	void pad(Vector2s p)
@@ -306,7 +321,10 @@ final:
 		return !flags.hidden;
 	}
 
-	/// member variables
+	override string toString() const
+	{
+		return typeid(this).toString ~ (name ? '(' ~ name ~ ')' : null);
+	}
 
 	string name;
 
@@ -316,7 +334,7 @@ final:
 	Vector2s	pos,
 				size;
 
-	BitFlags!WinFlags flags;
+	BitFlags!(Win, Yes.unsafe) flags;
 protected:
 	enum
 	{
@@ -379,15 +397,29 @@ protected:
 
 			debug
 			{
-				if(size.x)
+				auto arr = byHierarchy.array.retro;
+
+				foreach(i, e; arr.enumerate)
 				{
-					auto
-							q = p - absPos,
-							z = q + v;
+					if(e.pos.x < 0 || e.pos.y < 0)
+					{
+						logger.error(`negative position: %(%s -> %)`, arr.take(i + 1));
+						break;
+					}
 
-					//writefln(`%s %s %s %s %s`, q, z, pos, size, absPos);
+					if(i && (e.pos.x + e.size.x > arr[i - 1].size.x || e.pos.y + e.size.y > arr[i - 1].size.y))
+					{
+						logger.error(`out of parent: %(%s -> %)`, arr.take(i + 1));
+						break;
+					}
+				}
 
-					assert(!parent || q.x >= 0 && q.y >= 0 && z.x <= size.x && z.y <= size.y, format(`%s + %s > %s`, q, v, size));
+				auto	q = p - absPos,
+						z = q + v;
+
+				if(q.x < 0 || q.y < 0 || z.x > size.x || z.y > size.y)
+				{
+					logger.error(`drawing out of rect: %(%s -> %)`, arr);
 				}
 			}
 
@@ -416,7 +448,7 @@ package:
 				}
 			}
 
-			if(!flags.background)
+			if(flags.captureFocus)
 			{
 				return this;
 			}

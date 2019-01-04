@@ -453,14 +453,14 @@ mixin template PacketHandlers()
 
 		switch(p.varId)
 		{
-		case SP_JOBEXP:			RO.gui.base.job.value = v; break;
+		/*case SP_JOBEXP:			RO.gui.base.job.value = v; break;
 		case SP_NEXTJOBEXP:		RO.gui.base.job.maxValue = v; break;
 
 		case SP_BASEEXP:		RO.gui.base.base.value = v; break;
 		case SP_NEXTBASEEXP:	RO.gui.base.base.maxValue = v; break;
 
 		case SP_ZENY:			RO.gui.inv.zeny = v; break;
-
+*/
 		default:
 			p.varId.logger;
 		}
@@ -478,7 +478,7 @@ mixin template PacketHandlers()
 		case SP_WEIGHT:		RO.gui.inv.weight = i; break;
 		case SP_MAXWEIGHT:	RO.gui.inv.maxWeight = i; break;
 
-		case SP_JOBLEVEL:	RO.gui.base.job.lvl = v; break;
+		/*case SP_JOBLEVEL:	RO.gui.base.job.lvl = v; break;
 		case SP_BASELEVEL:	RO.gui.base.base.lvl = v; break;
 
 		case SP_HP:
@@ -499,7 +499,7 @@ mixin template PacketHandlers()
 		case SP_MAXSP:
 			s.ent.info.maxSp = i;
 			RO.gui.base.sp.maxValue = i;
-			break;
+			break;*/
 
 		case SP_ATK1:		RO.status.bonuses[RO_ATK].base = v; break;
 		case SP_ATK2:		RO.status.bonuses[RO_ATK].base2 = v; break;

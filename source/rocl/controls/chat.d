@@ -41,7 +41,7 @@ final class RoChat : GUIElement
 		toChildSize;
 		pad(4);
 
-		super(PE.gui.root, Vector2s.init, WinFlags.moveable, `chat`);
+		super(PE.gui.root, Vector2s.init, Win.moveable, `chat`);
 
 		if(pos.x < 0)
 		{

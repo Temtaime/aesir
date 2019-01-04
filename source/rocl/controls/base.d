@@ -33,14 +33,12 @@ import
 
 final:
 
-class WinBase : WinBasic
+class WinBase : WinBasic2
 {
 	this()
 	{
 		{
-			name = `base`;
-
-			super(Vector2s(220, 108), MSG_CHARACTER, false); // TODO: FIX ROent.self.cleanName
+			super(MSG_CHARACTER, `base`); // TODO: FIX ROent.self.cleanName
 
 			if(pos.x < 0)
 			{
@@ -57,30 +55,18 @@ class WinBase : WinBasic
 				tuple(MSG_OPTS, () => RO.gui.settings.showOrHide),
 			];
 
-			Button e;
+			auto e = new Table(main, 1);
 
-			foreach(i, v; arr)
-			{
-				auto b = new Button(this, v[0]);//, PE.fonts.small);
-				auto d = v[1].toDelegate;
-
-				b.onClick = d;
-				b.pos = Vector2s(size.x - b.size.x - 3, WIN_TOP_SZ.y + i * (b.size.y + 2) + 2);
-
-				if(!e || e.size.x < b.size.x)
-				{
-					e = b;
-				}
-			}
-
-			foreach(v; childs[$ - arr.length..$])
-			{
-				v.pos.x = e.pos.x;
-				v.size.x = e.size.x;
-			}
+			arr.each!(a => e.add(new Button(null, a[0], a[1].toDelegate)));
+			e.adjust;
 		}
 
-		auto z = 6;
+		main.toChildSize;
+		main.pad(4);
+
+		adjust;
+
+		/*auto z = 6;
 
 		{
 			auto
@@ -116,15 +102,15 @@ class WinBase : WinBasic
 
 			base.pos = pos + Vector2s(x, 0);
 			job.pos = base.pos + Vector2s(0, base.size.y);
-		}
+		}*/
 	}
 
-	PercMeter
+	/*PercMeter
 				hp,
 				sp;
 
 	LevelMeter	base,
-				job;
+				job;*/
 }
 
 class PercMeter : GUIElement

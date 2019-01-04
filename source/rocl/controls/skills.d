@@ -205,7 +205,7 @@ class TargetSelector : GUIElement
 		super(PE.gui.root);
 
 		size = parent.size;
-		flags = WinFlags.topMost | WinFlags.background;
+		flags = Win.topMost;
 	}
 
 	override void draw(Vector2s p) const

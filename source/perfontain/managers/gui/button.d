@@ -6,19 +6,19 @@ import
 
 final class Button : GUIElement
 {
-	this(GUIElement e, string s)
+	this(GUIElement e, string s, void delegate() f = null)
 	{
-		_text = s;
+		super(e, Vector2s.init, Win.enabled, s);
 
 		make(2);
 		make(0);
 
-		super(e);
+		onClick = f;
 	}
 
 	override void onSubmit()
 	{
-		if(enabled && onClick)
+		if(flags.enabled && onClick)
 		{
 			onClick();
 		}
@@ -42,7 +42,11 @@ final class Button : GUIElement
 		}
 	}
 
-	bool enabled = true;
+	override void onResize()
+	{
+		make(0);
+	}
+
 	void delegate() onClick;
 private:
 	void make(ubyte idx)
@@ -67,7 +71,7 @@ private:
 		auto l = new GUIImage(this, id);
 		auto r = new GUIImage(this, id, DRAW_MIRROR_H);
 		auto q = new GUIImage(this, spacer);
-		auto t = new GUIStaticText(this, _text, flags);
+		auto t = new GUIStaticText(this, name, flags);
 
 		if(!size.y)
 		{
@@ -78,6 +82,4 @@ private:
 		q.poseBetween(l, r);
 		t.center;
 	}
-
-	string _text;
 }

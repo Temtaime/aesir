@@ -18,7 +18,7 @@ final class Subscroll : GUIElement
 
 		// top
 		auto m = new GUIImage(this, id);
-		m.flags.background = true;
+		//m.flags.background = true;
 
 		size = Vector2s(m.size.x, m.size.y * 2);
 
@@ -28,14 +28,14 @@ final class Subscroll : GUIElement
 
 			v.size.y = 0;
 			v.pos.y = m.size.y;
-			v.flags.background = true;
+			//v.flags.background = true;
 		}
 
 		// bottom
 		m = new GUIImage(this, id, DRAW_MIRROR_V);
 
 		m.pos.y = m.size.y;
-		m.flags.background = true;
+		//m.flags.background = true;
 	}
 
 	void height(ushort n)

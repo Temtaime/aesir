@@ -133,7 +133,7 @@ class WinHotkeys : GUIElement
 		}
 
 		w.flags.topMost = false;
-		w.flags.background = false;
+		w.flags.captureFocus = true;
 
 		PE.gui.updateMouse;
 
