@@ -31,7 +31,7 @@ final class RoChat : GUIElement
 				}
 				else
 				{
-					edit.enabled ^= true;
+					edit.flags.enabled = disabled;
 				}
 
 				return false;
@@ -75,7 +75,7 @@ final class RoChat : GUIElement
 
 	const disabled()
 	{
-		return !edit.enabled;
+		return !edit.flags.enabled;
 	}
 
 private:

@@ -57,9 +57,6 @@ class WinHotkeySettings : WinBasic2
 			e.adjust;
 		}
 
-		main.toChildSize;
-		main.pad(10);
-
 		adjust;
 
 		{

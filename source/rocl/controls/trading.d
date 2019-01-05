@@ -27,10 +27,6 @@ class WinTrading : WinBasic2
 		new TradingPart(main);
 
 		dst.moveX(src, POS_ABOVE);
-
-		main.toChildSize;
-		main.pad(2);
-
 		adjust;
 
 		{

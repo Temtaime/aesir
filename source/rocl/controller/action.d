@@ -64,15 +64,13 @@ final class ActionController
 			{
 				_tip.childs.clear;
 
-				auto o = new GUIStaticText(_tip, c.cleanName, FONT_OUTLINED);
-				o.color = colorWhite;
+				auto e = new GUIStaticText(_tip, c.cleanName, FONT_OUTLINED);
+				e.color = colorWhite;
 
-				{
-					auto u = new GUIStaticText(_tip, c.cleanName);
-					u.pos = Vector2s(2);
-				}
+				e = new GUIStaticText(_tip, c.cleanName);
+				e.pos = Vector2s(2);
 
-				_tip.size = o.size;
+				_tip.toChildSize;
 			}
 
 			_tip.pos = Vector2s(pos.x - _tip.size.x / 2, pos.y);

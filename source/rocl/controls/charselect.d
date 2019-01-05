@@ -28,39 +28,39 @@ class WinCharSelect : WinBasic2
 			pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
 		}
 
-		string[2][] stats;
-
-		void stat(T)(string name, T v)
 		{
-			auto s = v.to!string;
+			string[2][] stats;
 
-			static if(is(T : int))
+			void stat(T)(string name, T v)
 			{
-				s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
+				auto s = v.to!string;
+
+				static if(isIntegral!T)
+				{
+					s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
+				}
+
+				stats ~= [ name, s ];
 			}
 
-			stats ~= [ name, s ];
-		}
+			stat(`Name`, c.name.charsToString);
+			stat(`STR`, c.str);
 
-		stat(`Name`, c.name.charsToString);
-		stat(`STR`, c.str);
+			stat(`Job`, `???`);
+			stat(`AGI`, c.agi);
 
-		stat(`Job`, `???`);
-		stat(`AGI`, c.agi);
+			stat(`Lv.`, c.baseLvl);
+			stat(`VIT`, c.vit);
 
-		stat(`Lv.`, c.baseLvl);
-		stat(`VIT`, c.vit);
+			stat(`EXP`, c.baseExp);
+			stat(`INT`, c.int_);
 
-		stat(`EXP`, c.baseExp);
-		stat(`INT`, c.int_);
+			stat(`HP`, c.hp);
+			stat(`DEX`, c.dex);
 
-		stat(`HP`, c.hp);
-		stat(`DEX`, c.dex);
+			stat(`SP`, c.sp);
+			stat(`LUK`, c.luk);
 
-		stat(`SP`, c.sp);
-		stat(`LUK`, c.luk);
-
-		{
 			auto t = new Table(main, 2);
 			stats.each!(a => t.add(new StatInfo(null, a.front, a.back)));
 			t.adjust;
@@ -69,19 +69,15 @@ class WinCharSelect : WinBasic2
 		adjust;
 
 		{
-			auto b = new Button(bottom, MSG_ENTER);
+			auto b = new Button(bottom, MSG_ENTER, &RO.action.onCharSelected);
 
 			b.move(POS_MIN, 4, POS_CENTER);
-			b.onClick = &RO.action.onCharSelected;
-
 			b.focus;
 		}
 
 		{
-			auto b = new Button(bottom, MSG_CREATE);
-
+			auto b = new Button(bottom, MSG_CREATE, &RO.action.onCharCreate);
 			b.move(POS_MAX, -4, POS_CENTER);
-			b.onClick = &RO.action.onCharCreate;
 		}
 	}
 }

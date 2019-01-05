@@ -169,9 +169,7 @@ class GUIEditText : GUIElement
 {
 	this(GUIElement e)
 	{
-		super(e);
-
-		size.y = PE.fonts.base.height;
+		super(e, Vector2s(0, PE.fonts.base.height), Win.enabled);
 	}
 
 	override void draw(Vector2s p) const
@@ -185,7 +183,7 @@ class GUIEditText : GUIElement
 			p.x += _w;
 		}
 
-		if(enabled && flags.hasInput && (PE.tick - _tick) % 1000 < 500)
+		if(flags.enabled && flags.hasInput && (PE.tick - _tick) % 1000 < 500)
 		{
 			drawQuad(p, Vector2s(1, size.y), colorBlack);
 		}
@@ -202,7 +200,7 @@ class GUIEditText : GUIElement
 
 	override void onKey(uint k, bool st)
 	{
-		if(enabled && k == SDLK_BACKSPACE && st && _text.length)
+		if(flags.enabled && k == SDLK_BACKSPACE && st && _text.length)
 		{
 			_text.popBack;
 			update;
@@ -211,7 +209,7 @@ class GUIEditText : GUIElement
 
 	override void onText(string s)
 	{
-		if(enabled && (!onChar || onChar(s)))
+		if(flags.enabled && (!onChar || onChar(s)))
 		{
 			_text ~= s;
 			update;
@@ -229,10 +227,7 @@ class GUIEditText : GUIElement
 		update;
 	}
 
-	bool enabled = true;
-
-	bool delegate(string)
-							onChar,
+	bool delegate(string)	onChar,
 							onEnter;
 protected:
 	override void onFocus(bool b)

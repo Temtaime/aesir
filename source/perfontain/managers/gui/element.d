@@ -342,15 +342,20 @@ final:
 		return typeid(this).toString ~ (name ? '(' ~ name ~ ')' : null);
 	}
 
+	const dumpPath()
+	{
+		return format(`%(%s -> %)`, byHierarchy.array.retro);
+	}
+
 	string name;
 
 	GUIElement parent;
 	RCArray!GUIElement childs;
 
+	BitFlags!Win flags;
+
 	Vector2s	pos,
 				size;
-
-	BitFlags!Win flags;
 protected:
 	enum
 	{
@@ -374,31 +379,33 @@ protected:
 		drawImage(PE.gui.holder, id, p, c, sz, flags);
 	}
 
-	const drawImage(in MeshHolder mh, uint id, Vector2s p, Color c = colorWhite, Vector2s sz = Vector2s.init, ubyte flags = 0)
+	const drawImage(in MeshHolder mh, uint id, Vector2s p, Color c = colorWhite, Vector2s sz = Vector2s.init, ubyte mode = 0)
 	{
-
 		DrawInfo d;
 
 		d.mh = cast()mh;
 		d.id = cast(ushort)id;
+
+		d.color = c;
 		d.flags = DI_NO_DEPTH;
+		d.blendingMode = blendingNormal;
 
 		{
 			Vector2s v = sz.x ? sz : size;
 
-			if(flags & (DRAW_MIRROR_H | DRAW_MIRROR_V | DRAW_ROTATE))
+			if(mode)
 			{
-				auto u = Vector2(0.5);
+				auto u = Vector3(0.5, 0.5, 0);
 
-				d.matrix *= Matrix4.translate(Vector3(-u, 0));
+				d.matrix *= Matrix4.translate(-u);
 
 				d.matrix *= Matrix4.scale(Vector3(
-													flags & DRAW_MIRROR_H ? -1 : 1,
-													flags & DRAW_MIRROR_V ? -1 : 1,
+													mode & DRAW_MIRROR_H ? -1 : 1,
+													mode & DRAW_MIRROR_V ? -1 : 1,
 													1
 																					));
 
-				if(flags & DRAW_ROTATE)
+				if(mode & DRAW_ROTATE)
 				{
 					if(sz.x)
 					{
@@ -408,24 +415,25 @@ protected:
 					d.matrix *= Matrix4.rotate(Vector3(0, 0, 90 * TO_RAD));
 				}
 
-				d.matrix *= Matrix4.translate(Vector3(u, 0));
+				d.matrix *= Matrix4.translate(u);
 			}
+
+			d.matrix *=	Matrix4.scale(Vector3(v, 0));
+			d.matrix *= Matrix4.translate(Vector3(p, 0));
 
 			debug
 			{
-				auto arr = byHierarchy.array.retro;
-
-				foreach(i, e; arr.enumerate)
+				foreach(e; byHierarchy.array.retro)
 				{
 					if(e.pos.x < 0 || e.pos.y < 0)
 					{
-						logger.error(`negative position: %(%s -> %)`, arr.take(i + 1));
+						logger.error(`negative position: %s`, e.dumpPath);
 						break;
 					}
 
-					if(i && (e.pos.x + e.size.x > arr[i - 1].size.x || e.pos.y + e.size.y > arr[i - 1].size.y))
+					if(e.end.x > e.parent.size.x || e.end.y > e.parent.size.y)
 					{
-						logger.error(`out of parent: %(%s -> %)`, arr.take(i + 1));
+						logger.error(`out of parent: %s`, e.dumpPath);
 						break;
 					}
 				}
@@ -435,16 +443,10 @@ protected:
 
 				if(q.x < 0 || q.y < 0 || z.x > size.x || z.y > size.y)
 				{
-					logger.error(`drawing out of rect: %(%s -> %)`, arr);
+					logger.error(`drawing out of rect: %s`, dumpPath);
 				}
 			}
-
-			d.matrix *=	Matrix4.scale(Vector3(v, 0));
-			d.matrix *= Matrix4.translate(Vector3(p, 0));
 		}
-
-		d.color = c;
-		d.blendingMode = blendingNormal;
 
 		PE.render.toQueue(d);
 	}

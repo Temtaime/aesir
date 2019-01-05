@@ -61,9 +61,6 @@ class WinBase : WinBasic2
 			e.adjust;
 		}
 
-		main.toChildSize;
-		main.pad(4);
-
 		adjust;
 
 		/*auto z = 6;

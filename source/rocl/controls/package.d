@@ -181,9 +181,6 @@ final class WinInfo : WinBasic2
 			e.add(s);
 		}
 
-		main.toChildSize;
-		main.pad(5);
-
 		adjust;
 		center;
 
