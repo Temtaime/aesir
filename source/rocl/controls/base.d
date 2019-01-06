@@ -46,6 +46,33 @@ class WinBase : WinBasic2
 			}
 		}
 
+		auto w1 = new GUIElement(main);
+		auto w2 = new GUIElement(main);
+
+		{
+			auto hp = new InfoMeter(w1, `HP`);
+			auto sp = new InfoMeter(w1, `SP`);
+
+			sp.moveY(hp, POS_ABOVE);
+			w1.toChildSize;
+
+			hp.moveX(POS_MAX);
+			sp.moveX(POS_MAX);
+		}
+
+		w2.moveY(w1, POS_ABOVE);
+
+		{
+			auto bl = new InfoMeter(w2, MSG_BASE_LVL);
+			auto jl = new InfoMeter(w2, MSG_JOB_LVL);
+
+			jl.moveY(bl, POS_ABOVE);
+			w2.toChildSize;
+
+			bl.moveX(POS_MAX);
+			jl.moveX(POS_MAX);
+		}
+
 		{
 			auto arr =
 			[
@@ -59,13 +86,11 @@ class WinBase : WinBasic2
 
 			arr.each!(a => e.add(new Button(null, a[0], a[1].toDelegate)));
 			e.adjust;
+
+			e.moveX(w2, POS_ABOVE, 4);
 		}
 
-		adjust;
-
-		/*auto z = 6;
-
-		{
+		/*{
 			auto
 					u = new GUIStaticText(this, `HP`),
 					v = new GUIStaticText(this, `SP`);
@@ -81,12 +106,21 @@ class WinBase : WinBasic2
 
 			hp.pos = pos + Vector2s(x, 0);
 			sp.pos = hp.pos + Vector2s(0, hp.size.y + 4);
-		}
+		}*/
+
+
+
+
+		adjust;
+
+		/*auto z = 6;
+
+
 
 		{
 			auto
-					u = new GUIStaticText(this, MSG_BASE_LVL),
-					v = new GUIStaticText(this, MSG_JOB_LVL);
+					u = new GUIStaticText(this, ),
+					v = new GUIStaticText(this, );
 
 			auto x = max(u.size.x, v.size.x) + 2;
 			auto pos = Vector2s(z, sp.pos.y + sp.size.y + 4);
@@ -110,127 +144,72 @@ class WinBase : WinBasic2
 				job;*/
 }
 
-class PercMeter : GUIElement
+class InfoMeter : GUIElement
 {
-	this(GUIElement e)
-	{
-		super(e);
-
-		auto b = new Meter(this);
-
-		with(PE.fonts)
-		{
-			auto x = base.widthOf(`100%`);
-			size = Vector2s(b.size.x + x, max(small.height + b.size.y, base.height));
-		}
-
-		b.onUpdate = &onUpdate;
-	}
-
-	@property value(uint v) { meter.value = v; }
-	@property maxValue(uint v) { meter.maxValue = v; }
-private:
-	@property meter()
-	{
-		return cast(Meter)childs.front;
-	}
-
-	void onUpdate()
-	{
-		while(childs.length > 1)
-		{
-			childs.popBack;
-		}
-
-		auto x = meter.size.x;
-
-		auto
-				u = meter.value,
-				v = meter.maxValue;
-
-		auto e = new GUIStaticText(this, format(`%u / %u`, u, v), 0, PE.fonts.small);
-		e.pos = Vector2s((x - e.size.x) / 2, size.y - e.size.y);
-
-		e = new GUIStaticText(this, format(`%u%%`, v ? u * 100 / v : 0));
-		e.pos = Vector2s(x + 2, (size.y - e.size.y) / 2);
-	}
-}
-
-class LevelMeter : GUIElement
-{
-	this(GUIElement e)
-	{
-		super(e);
-
-		auto b = new Meter(this, true);
-
-		with(PE.fonts)
-		{
-			auto x = base.widthOf(`999`);
-
-			size = Vector2s(b.size.x + x, base.height);
-		}
-
-		b.pos = Vector2s(0, (size.y - b.size.y) / 2);
-		b.onUpdate = &onUpdate;
-	}
-
-	@property value(uint v) { meter.value = v; }
-	@property maxValue(uint v) { meter.maxValue = v; }
-
-	@property lvl(uint v)
-	{
-		while(childs.length > 1)
-		{
-			childs.popBack;
-		}
-
-		auto e = new GUIStaticText(this, v.to!string);
-		e.pos.x = cast(short)(size.x - e.size.x);
-	}
-
-private:
-	@property meter()
-	{
-		return cast(Meter)childs.front;
-	}
-
-	void onUpdate() {} // TODO: GET RID
-}
-
-class Meter : GUIElement
-{
-	this(GUIElement p, bool tip = false)
+	this(GUIElement p, string s)
 	{
 		super(p);
 
-		_tip = tip;
-		size = Vector2s(80, 5);
-	}
+		auto e = new GUIStaticText(this, s);
 
-	override void draw(Vector2s p) const
-	{
-		if(maxValue)
+		new class GUIQuad
 		{
-			if(auto n = size.x * value / maxValue)
+			this()
 			{
-				drawQuad(p + pos, Vector2s(min(size.x, n), size.y), Color(120, 225, 80, 255));
-			}
-		}
-	}
+				super(this.outer, Color(200, 200, 200, 255));
 
-	override void onHover(bool st)
-	{
-		if(_tip && st)
+				flags.captureFocus = true;
+			}
+
+			override void onHover(bool st)
+			{
+				if(st)
+				{
+					new TextTooltip(format(`%u / %u`, value, maxValue));
+				}
+			}
+		};
+
+		bg.size = BAR_SIZE + Vector2s(2);
+		bg.moveX(e, POS_ABOVE, 4);
+
+		new GUIQuad(this, Color(120, 225, 80, 255));
+		proc.move(bg, POS_MIN, 1, bg, POS_MIN, 1);
+
 		{
-			new TextTooltip(format(`%s / %s`, price(value), price(maxValue)));
+			auto r = new GUIElement(this, Vector2s(0, PE.fonts.small.height));
+			r.moveY(bg, POS_ABOVE);
 		}
+
+		toChildSize;
+		onUpdate;
+
+		e.moveY(POS_CENTER);
 	}
 
 	mixin StatusValue!(uint, `value`, onUpdate);
 	mixin StatusValue!(uint, `maxValue`, onUpdate);
-
-	void delegate() onUpdate;
 private:
-	bool _tip;
+	enum BAR_SIZE = Vector2s(80, 5);
+
+	mixin MakeChildRef!(GUIQuad, `bg`, 1);
+	mixin MakeChildRef!(GUIQuad, `proc`, 2);
+
+	void onUpdate()
+	{
+		if(auto n = maxValue ? ulong(BAR_SIZE.x) * min(value, maxValue) / maxValue : 0)
+		{
+			proc.flags.hidden = false;
+			proc.size = Vector2s(n, BAR_SIZE.y);
+		}
+		else
+		{
+			proc.flags.hidden = true;
+		}
+
+		childs.popBack;
+
+		auto e = new GUIStaticText(this, format(`%s / %s`, price(value), price(maxValue)), 0, PE.fonts.small);
+		e.move(bg, POS_CENTER, 0, bg, POS_ABOVE);
+	}
 }

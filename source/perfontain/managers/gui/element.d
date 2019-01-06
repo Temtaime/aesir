@@ -81,7 +81,7 @@ class GUIElement : RCounted
 			attach(p);
 		}
 
-		if(sz.x)
+		if(sz.x || sz.y)
 		{
 			size = sz;
 		}
