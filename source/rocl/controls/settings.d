@@ -82,7 +82,7 @@ final class WinSettings : WinBasic
 				}
 				else
 				{
-					auto e = new CheckBox(this, CHECKBOX, CHECKBOX_SZ, mixin(c.var));
+					auto e = new CheckBox(this, mixin(c.var));
 				}
 
 				e.onChange = (a)

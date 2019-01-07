@@ -344,7 +344,8 @@ final:
 
 	const dumpPath()
 	{
-		return format(`%(%s -> %)`, byHierarchy.array.retro);
+		auto h = byHierarchy;
+		return h.empty ? toString : format(`%(%s -> %)`, h.array.retro);
 	}
 
 	string name;

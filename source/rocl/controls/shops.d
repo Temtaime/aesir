@@ -198,7 +198,7 @@ final class ShopRow : GUIElement
 		item = m;
 		size = Vector2s(w, 36);
 
-		check = new CheckBox(this, CHECKBOX, CHECKBOX_SZ);
+		check = new CheckBox(this);
 
 		{
 			check.move(this, POS_MIN, 4, this, POS_CENTER);

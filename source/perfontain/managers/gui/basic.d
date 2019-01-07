@@ -64,8 +64,10 @@ private:
 
 class GUIImage : GUIElement
 {
-	this(GUIElement parent, uint id, ubyte mode = 0, MeshHolder h = null)
+	this(GUIElement p, uint id, ubyte mode = 0, MeshHolder h = null)
 	{
+		super(p);
+
 		_mode = mode;
 		_id = cast(ushort)id;
 
@@ -82,8 +84,6 @@ class GUIImage : GUIElement
 				swap(size.x, size.y);
 			}
 		}
-
-		super(parent);
 	}
 
 	override void draw(Vector2s p) const
@@ -107,21 +107,14 @@ protected:
 	ubyte _mode;
 }
 
-final class CheckBox : GUIElement
+final class CheckBox : GUIImage
 {
-	this(GUIElement p, ushort id, Vector2s sz, bool ch = false)
+	this(GUIElement p, bool ch = false)
 	{
-		super(p);
+		super(p, ch ? CHECKBOX_CHECKED : CHECKBOX);
 
-		_id = id;
-
-		size = sz;
 		checked = ch;
-	}
-
-	override void draw(Vector2s p) const
-	{
-		drawImage(_id + checked, p + pos);
+		flags.captureFocus = true;
 	}
 
 	bool checked;
@@ -137,11 +130,10 @@ protected:
 			{
 				onChange(checked);
 			}
+
+			_id = checked ? CHECKBOX_CHECKED : CHECKBOX;
 		}
 	}
-
-private:
-	ushort _id;
 }
 
 class Underlined : GUIElement

@@ -98,8 +98,9 @@ struct Items
 
 struct Param(T)
 {
-	mixin StatusValue!(T, `value`, onUpdate);
 	Signal!(void, T) onChange;
+
+	mixin StatusValue!(T, `value`, onUpdate);
 private:
 	void onUpdate()
 	{
