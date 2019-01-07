@@ -40,6 +40,20 @@ final class Status
 	Skill[] skills;
 
 	Items items;
+
+	// rest
+	Param!uint	hp,
+				sp,
+				maxHp,
+				maxSp,
+
+				bexp,
+				jexp,
+				bnextExp,
+				jnextExp;
+
+	Param!ushort	blvl,
+					jlvl;
 }
 
 struct Items
@@ -80,6 +94,17 @@ struct Items
 
 	RCArray!Item arr;
 	Signal!(void, Item) onAdded;
+}
+
+struct Param(T)
+{
+	mixin StatusValue!(T, `value`, onUpdate);
+	Signal!(void, T) onChange;
+private:
+	void onUpdate()
+	{
+		onChange(value);
+	}
 }
 
 struct Stat

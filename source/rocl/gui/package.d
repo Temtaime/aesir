@@ -60,8 +60,8 @@ final class GuiManager
 
 			with(ROnet.st.curChar)
 			{
-				//base.job.lvl = jobLvl;
-				//base.base.lvl = baseLvl;
+				RO.status.jlvl.value = cast(short)jobLvl; // TODO: WTF int
+				RO.status.blvl.value = baseLvl;
 
 				inv.zeny = zeny;
 			}

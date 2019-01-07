@@ -53,6 +53,12 @@ class WinBase : WinBasic2
 			auto hp = new InfoMeter(w1, `HP`);
 			auto sp = new InfoMeter(w1, `SP`);
 
+			RO.status.hp.onChange.permanent(a => hp.value = a);
+			RO.status.maxHp.onChange.permanent(a => hp.maxValue = a);
+
+			RO.status.sp.onChange.permanent(a => sp.value = a);
+			RO.status.maxSp.onChange.permanent(a => sp.maxValue = a);
+
 			sp.moveY(hp, POS_ABOVE);
 			w1.toChildSize;
 
@@ -63,14 +69,22 @@ class WinBase : WinBasic2
 		w2.moveY(w1, POS_ABOVE);
 
 		{
-			auto bl = new InfoMeter(w2, MSG_BASE_LVL);
-			auto jl = new InfoMeter(w2, MSG_JOB_LVL);
+			auto base = new InfoMeter(w2, MSG_BASE_LVL);
+			auto job = new InfoMeter(w2, MSG_JOB_LVL);
 
-			jl.moveY(bl, POS_ABOVE);
+			RO.status.blvl.onChange.permanent(a => base.misc = a);
+			RO.status.bexp.onChange.permanent(a => base.value = a);
+			RO.status.bnextExp.onChange.permanent(a => base.maxValue = a);
+
+			RO.status.jlvl.onChange.permanent(a => job.misc = a);
+			RO.status.jexp.onChange.permanent(a => job.value = a);
+			RO.status.jnextExp.onChange.permanent(a => job.maxValue = a);
+
+			job.moveY(base, POS_ABOVE);
 			w2.toChildSize;
 
-			bl.moveX(POS_MAX);
-			jl.moveX(POS_MAX);
+			base.moveX(POS_MAX);
+			job.moveX(POS_MAX);
 		}
 
 		{
@@ -90,58 +104,8 @@ class WinBase : WinBasic2
 			e.moveX(w2, POS_ABOVE, 4);
 		}
 
-		/*{
-			auto
-					u = new GUIStaticText(this, `HP`),
-					v = new GUIStaticText(this, `SP`);
-
-			auto x = max(u.size.x, v.size.x) + 2;
-			auto pos = Vector2s(z, WIN_TOP_SZ.y + z);
-
-			hp = new PercMeter(this);
-			sp = new PercMeter(this);
-
-			u.pos = pos + Vector2s(0, (hp.size.y - u.size.y) / 2);
-			v.pos = pos + Vector2s(0, hp.size.y + 4);
-
-			hp.pos = pos + Vector2s(x, 0);
-			sp.pos = hp.pos + Vector2s(0, hp.size.y + 4);
-		}*/
-
-
-
-
 		adjust;
-
-		/*auto z = 6;
-
-
-
-		{
-			auto
-					u = new GUIStaticText(this, ),
-					v = new GUIStaticText(this, );
-
-			auto x = max(u.size.x, v.size.x) + 2;
-			auto pos = Vector2s(z, sp.pos.y + sp.size.y + 4);
-
-			base = new LevelMeter(this);
-			job = new LevelMeter(this);
-
-			u.pos = pos;
-			v.pos = pos + Vector2s(0, base.size.y);
-
-			base.pos = pos + Vector2s(x, 0);
-			job.pos = base.pos + Vector2s(0, base.size.y);
-		}*/
 	}
-
-	/*PercMeter
-				hp,
-				sp;
-
-	LevelMeter	base,
-				job;*/
 }
 
 class InfoMeter : GUIElement
@@ -187,6 +151,7 @@ class InfoMeter : GUIElement
 		e.moveY(POS_CENTER);
 	}
 
+	mixin StatusValue!(uint, `misc`, onUpdate);
 	mixin StatusValue!(uint, `value`, onUpdate);
 	mixin StatusValue!(uint, `maxValue`, onUpdate);
 private:
@@ -209,7 +174,7 @@ private:
 
 		childs.popBack;
 
-		auto e = new GUIStaticText(this, format(`%s / %s`, price(value), price(maxValue)), 0, PE.fonts.small);
+		auto e = new GUIStaticText(this, misc ? misc.to!string : format(`%s / %s`, price(value), price(maxValue)), 0, PE.fonts.small);
 		e.move(bg, POS_CENTER, 0, bg, POS_ABOVE);
 	}
 }
