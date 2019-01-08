@@ -44,18 +44,44 @@ class Table : GUIElement
 		e.attach(this);
 	}
 
-	void adjust()
+	void adjust(ushort pad = 0)
 	{
-		toChildSize;
+		RCArray!GUIElement	cs = childs,
+							arr = _cols.iota.map!(_ => new GUIElement(null)).array;
 
-		foreach(i, c; childs)
+		foreach(i, c; cs)
 		{
-			c.size = size;
-			c.pos = Vector2s(i % _cols * size.x, i / _cols * size.y);
-			c.onResize;
+			c.attach(arr[i % _cols]);
 		}
 
-		size = childs.back.end;
+		{
+			ushort sy;
+
+			foreach(i, c; arr)
+			{
+				c.toChildSize;
+
+				if(i)
+				{
+					c.moveX(arr[i - 1], POS_ABOVE, pad);
+				}
+
+				sy = max(sy, c.size.y);
+			}
+
+			arr.each!(a => a.size.y = cast(ushort)(sy + pad));
+		}
+
+		foreach(uint i, c; cs)
+		{
+			auto r = arr[i % _cols];
+			auto e = new GUIElement(this, r.size);
+
+			e.move(r, POS_MIN, 0, this, POS_MIN, i / _cols * e.size.y);
+			c.attach(e);
+		}
+
+		toChildSize;
 	}
 
 private:

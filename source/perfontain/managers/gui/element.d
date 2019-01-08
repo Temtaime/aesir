@@ -194,6 +194,12 @@ final:
 		}*/
 	}
 
+	void toParentSize()
+	{
+		size = parent.size;
+		onResize;
+	}
+
 	void pad(Vector2s p)
 	{
 		size += p * 2;

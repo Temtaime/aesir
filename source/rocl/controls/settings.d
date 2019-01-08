@@ -16,13 +16,11 @@ import
 		rocl.controls;
 
 
-final class WinSettings : WinBasic
+final class WinSettings : WinBasic2
 {
 	this(bool viewer = false)
 	{
-		name = `settings`;
-
-		super(Vector2s(300, 250), MSG_SETTINGS);
+		super(MSG_SETTINGS, `settings`);
 
 		if(pos.x < 0)
 		{
@@ -31,8 +29,7 @@ final class WinSettings : WinBasic
 
 		struct S
 		{
-			string
-					caption,
+			string	caption,
 					var;
 
 			string[] values;
@@ -53,21 +50,14 @@ final class WinSettings : WinBasic
 			S(`MSG_VSYNC`, `PE.settings.vsync`),
 		];
 
-		ushort w;
-		auto sp = 22;
-
-		foreach(i, c; aliasSeqOf!Arr)
-		{
-			auto e = new GUIStaticText(this, mixin(c.caption));
-			e.pos = Vector2s(WPOS_START, (i + 1) * sp + (sp - e.size.y) / 2);
-
-			w = max(w, e.size.x);
-		}
+		auto t = new Table(main, 2);
 
 		foreach(i, c; aliasSeqOf!Arr)
 		{
 			if(mixin(c.cond))
 			{
+				t.add(new GUIStaticText(null, mixin(c.caption)));
+
 				static if(c.values)
 				{
 					GUIElement[] arr;
@@ -78,11 +68,11 @@ final class WinSettings : WinBasic
 					}
 
 					auto k = arr.map!(a => a.size.x).fold!max;
-					auto e = new SelectBox(this, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), mixin(c.var));
+					auto e = new SelectBox(null, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), mixin(c.var));
 				}
 				else
 				{
-					auto e = new CheckBox(this, mixin(c.var));
+					auto e = new CheckBox(null, mixin(c.var));
 				}
 
 				e.onChange = (a)
@@ -90,9 +80,13 @@ final class WinSettings : WinBasic
 					mixin(c.var ~ `= cast(typeof( ` ~ c.var ~ `))a;`);
 				};
 
-				e.pos = Vector2s(WPOS_START + w + 5, (i + 1) * sp + (sp - e.size.y + 1) / 2);
+				t.add(e);
 			}
 		}
+
+		t.adjust(2);
+		t.childs.each!(a => a.childs[0].moveY(POS_CENTER));
+		adjust;
 
 		if(viewer)
 		{
@@ -116,22 +110,20 @@ final class WinSettings : WinBasic
 				}
 
 				auto k = arr.map!(a => a.size.x).fold!max;
-				auto e = new SelectBox(this, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), cast(short)maps.countUntil(`prontera`));
+				auto e = new SelectBox(bottom, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), cast(short)maps.countUntil(`prontera`));
 
 				e.onChange = (a)
 				{
 					try ROres.load(maps[a]); catch(Exception e) e.logger;
 				};
 
-				e.pos = Vector2s(WPOS_START, size.y - WIN_BOTTOM_SZ.y - e.size.y - 2);
+				e.move(POS_MIN, 4, POS_CENTER);
 			}
 		}
 		else
 		{
-			auto b = new Button(this, MSG_HOTKEYS);
-
-			b.move(this, POS_MAX, -5, this, POS_MAX, -3);
-			b.onClick = () => RO.gui.createHotkeySettings;
+			auto e = new Button(bottom, MSG_HOTKEYS, () => RO.gui.createHotkeySettings); // TODO: DELEGATE
+			e.move(POS_MIN, 4, POS_CENTER);
 		}
 	}
 }

@@ -62,8 +62,9 @@ class WinCharSelect : WinBasic2
 			stat(`LUK`, c.luk);
 
 			auto t = new Table(main, 2);
+
 			stats.each!(a => t.add(new StatInfo(null, a.front, a.back)));
-			t.adjust;
+			t.adjust(2);
 		}
 
 		adjust;
@@ -104,7 +105,5 @@ class StatInfo : GUIElement
 			e = new GUIStaticText(this, value);
 			e.pos.x = 51;
 		}
-
-		pad(1);
 	}
 }

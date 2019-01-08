@@ -96,12 +96,14 @@ class WinBase : WinBasic2
 				tuple(MSG_OPTS, () => RO.gui.settings.showOrHide),
 			];
 
-			auto e = new Table(main, 1);
+			auto t = new Table(main, 1);
 
-			arr.each!(a => e.add(new Button(null, a[0], a[1].toDelegate)));
-			e.adjust;
+			arr.each!(a => t.add(new Button(null, a[0], a[1].toDelegate)));
 
-			e.moveX(w2, POS_ABOVE, 4);
+			t.adjust;
+			t.childs.each!(a => a.childs[0].toParentSize);
+
+			t.moveX(w2, POS_ABOVE, 4);
 		}
 
 		adjust;
