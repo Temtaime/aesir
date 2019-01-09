@@ -81,7 +81,7 @@ private:
 				tmp[0..64][] = PE.shadows.matrix.toByte;
 			}
 
-			foreach(uint i, ref n; nodes)
+			foreach(i, ref n; nodes)
 			{
 				auto sub = tmp[start + i * len..$][0..len].toByte;
 
@@ -97,9 +97,10 @@ private:
 			uint k;
 			auto tmp = ScopeArray!ubyte(subs * 16);
 
-			foreach(uint i, ref n; nodes)
+			foreach(i, ref n; nodes)
 			{
 				auto m = &n.mh;
+				auto r = cast(uint)i;
 
 				foreach(ref sm; m.meshes[n.id].subs)
 				{
@@ -109,7 +110,7 @@ private:
 					PE.textures.use(tex);
 
 					tmp[k..k + 8][] = h.toByte;
-					tmp[k + 8..k + 12][] = i.toByte;
+					tmp[k + 8..k + 12][] = r.toByte;
 					tmp[k + 12..k + 16][] = 0;
 
 					k += 16;

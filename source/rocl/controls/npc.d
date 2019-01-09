@@ -111,13 +111,13 @@ class WinNpcSelect : WinNpc
 				auto ds = new DialogSelector;
 				auto ew = w.elemWidth;
 
-				foreach(uint i, s; arr)
+				foreach(i, s; arr)
 				{
 					foreach(ts; toStaticTexts(s, Vector2s(ew, -1)))
 					{
 						auto e = new SelectableItem(null, ds);
 
-						e.idx = i + 1;
+						e.idx = cast(uint)i + 1;
 						e.size = Vector2s(ew, PE.fonts.base.height);
 
 						alias dg = (a)

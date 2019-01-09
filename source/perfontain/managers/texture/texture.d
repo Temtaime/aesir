@@ -146,12 +146,12 @@ private:
 
 		if(t <= TEX_DXT_5)
 		{
-			foreach(uint i, ref m; levels)
+			foreach(i, ref m; levels)
 			{
 				assert(m.data.ptr);
 				assert(m.data.length == dxtTextureSize(m.sz.x, m.sz.y, type == TEX_DXT_5));
 
-				glCompressedTextureSubImage2D(id, i, 0, 0, m.sz.x, m.sz.y, ts[0], cast(uint)m.data.length, m.data.ptr);
+				glCompressedTextureSubImage2D(id, cast(uint)i, 0, 0, m.sz.x, m.sz.y, ts[0], cast(uint)m.data.length, m.data.ptr);
 			}
 		}
 		else

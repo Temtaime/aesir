@@ -69,15 +69,15 @@ class Table : GUIElement
 				sy = max(sy, c.size.y);
 			}
 
-			arr.each!(a => a.size.y = cast(ushort)(sy + pad));
+			arr.each!(a => a.size.y = sy);
 		}
 
-		foreach(uint i, c; cs)
+		foreach(i, c; cs)
 		{
 			auto r = arr[i % _cols];
 			auto e = new GUIElement(this, r.size);
 
-			e.move(r, POS_MIN, 0, this, POS_MIN, i / _cols * e.size.y);
+			e.move(r, POS_MIN, 0, this, POS_MIN, cast(uint)i / _cols * (e.size.y + pad));
 			c.attach(e);
 		}
 

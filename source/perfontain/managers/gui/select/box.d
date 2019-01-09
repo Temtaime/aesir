@@ -151,12 +151,12 @@ class SelectPopup : GUIElement
 		s.pos.x = 1;
 		auto ps = new PopupSelector(this);
 
-		foreach(uint i, c; arr)
+		foreach(i, c; arr)
 		{
 			auto v = allocateRC!SelectableItem(null, ps);
 
 			v.size = Vector2s(b.elemWidth, c.size.y);
-			v.idx = i;
+			v.idx = cast(uint)i;
 			v.childs ~= c;
 
 			s.add(v, true);

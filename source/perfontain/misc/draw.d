@@ -54,9 +54,9 @@ final class DrawAllocator : RCounted
 		}
 		else
 		{
-			foreach(uint i, ref n; nodes)
+			foreach(i, ref n; nodes)
 			{
-				pg.send(`pe_object_id`, i);
+				pg.send(`pe_object_id`, cast(uint)i);
 
 				auto mh = n.mh;
 				auto sm = mh.meshes[n.id].subs.ptr;

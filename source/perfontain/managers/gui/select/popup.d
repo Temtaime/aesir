@@ -36,7 +36,7 @@ abstract class PopupSelect : GUIElement
 				}
 			};
 
-			foreach(uint i, c; arr)
+			foreach(i, c; arr)
 			{
 				auto v = allocateRC!SelectableItem(this, sc);
 
@@ -47,7 +47,7 @@ abstract class PopupSelect : GUIElement
 					e.childs ~= c;
 				}
 
-				v.idx = i;
+				v.idx = cast(uint)i;
 				v.size = Vector2s(size.x, c.size.y);
 
 				v.pos.y = cast(short)(i * sz.y);

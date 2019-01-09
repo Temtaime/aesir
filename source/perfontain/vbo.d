@@ -66,10 +66,12 @@ final class VertexBuffer : RCounted
 
 		auto arr = renderLoc[_type];
 
-		foreach(uint i, v; arr)
+		foreach(i, v; arr)
 		{
-			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, v, GL_FLOAT, false, size, cast(const void *)ptr);
+			auto r = cast(uint)i;
+
+			glEnableVertexAttribArray(r);
+			glVertexAttribPointer(r, v, GL_FLOAT, false, size, cast(void*)ptr);
 
 			ptr += v * 4;
 		}

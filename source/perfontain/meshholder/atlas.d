@@ -71,9 +71,10 @@ private:
 			uint sq;
 			auto func = rgb ? (int a) => cast(ushort)a : (int a) => alignTo(cast(ushort)a, 4);
 
-			foreach(uint i, ref s; data)
+			foreach(i, ref s; data)
 			{
-				s.id = i;
+				s.id = cast(uint)i;
+
 				s.w = func(_texs[i].w + ATLAS_PAD * 2);
 				s.h = func(_texs[i].h + ATLAS_PAD * 2);
 

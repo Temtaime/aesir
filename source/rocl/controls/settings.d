@@ -114,7 +114,14 @@ final class WinSettings : WinBasic2
 
 				e.onChange = (a)
 				{
-					try ROres.load(maps[a]); catch(Exception e) e.logger;
+					try
+					{
+						ROres.load(maps[a]);
+					}
+					catch(Exception e)
+					{
+						e.logger;
+					}
 				};
 
 				e.move(POS_MIN, 4, POS_CENTER);
