@@ -265,13 +265,13 @@ mixin template PacketHandlers()
 			e.ok.onClick =
 			{
 				replyTrade(3);
-				e.remove;
+				e.deattach;
 			};
 
 			e.cancel.onClick =
 			{
 				replyTrade(4);
-				e.remove;
+				e.deattach;
 			};
 		}
 	}

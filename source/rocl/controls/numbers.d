@@ -59,7 +59,7 @@ private:
 
 		auto f =
 		{
-			e.remove;
+			e.deattach;
 		};
 
 		return PE.timers.add(f, t, TM_ONCE);

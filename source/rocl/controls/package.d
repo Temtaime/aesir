@@ -196,7 +196,7 @@ final class WinInfo : WinBasic2
 		}
 		else
 		{
-			ok.onClick = { remove; };
+			ok.onClick = { deattach; };
 			ok.moveX(bottom, POS_MAX, -5);
 		}
 

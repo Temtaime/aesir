@@ -141,7 +141,7 @@ class WinHotkeys : GUIElement
 		{
 			if(e.pos == w.pos)
 			{
-				e.remove;
+				e.deattach;
 				break;
 			}
 		}

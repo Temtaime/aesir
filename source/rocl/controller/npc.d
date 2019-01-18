@@ -49,7 +49,7 @@ final class NpcController
 		{
 			if(_select)
 			{
-				remove;
+				deattach;
 			}
 			else
 			{
@@ -58,7 +58,7 @@ final class NpcController
 				b.onClick =
 				{
 					ROnet.npcClose(_npc);
-					remove;
+					deattach;
 				};
 			}
 		}
@@ -71,7 +71,7 @@ final class NpcController
 		w.onSelect = (idx)
 		{
 			ROnet.npcSelect(_npc, idx);
-			w.remove;
+			w.deattach;
 		};
 
 		_select = true;
@@ -88,11 +88,11 @@ private:
 		return _win;
 	}
 
-	void remove()
+	void deattach()
 	{
 		assert(_win);
 
-		_win.remove;
+		_win.deattach;
 
 		_npc = 0;
 		_win = null;

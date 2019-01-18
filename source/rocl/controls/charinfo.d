@@ -20,7 +20,7 @@ final class CharInfo : RCounted
 	{
 		if(_hp)
 		{
-			_hp.remove;
+			_hp.deattach;
 		}
 
 		removeMsg;
@@ -129,7 +129,7 @@ private:
 	{
 		if(_castTimer)
 		{
-			_cast.remove;
+			_cast.deattach;
 			_cast = null;
 
 			_castTimer.removed = true;
@@ -141,7 +141,7 @@ private:
 	{
 		if(_msgTimer)
 		{
-			_msg.remove;
+			_msg.deattach;
 			_msg = null;
 
 			_msgTimer.removed = true;

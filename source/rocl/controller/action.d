@@ -77,7 +77,7 @@ final class ActionController
 		}
 		else if(_tip)
 		{
-			_tip.remove;
+			_tip.deattach;
 			_tip = null;
 		}
 	}

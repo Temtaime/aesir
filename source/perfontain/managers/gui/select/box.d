@@ -189,19 +189,21 @@ class SelectPopup : GUIElement
 		super.draw(p);
 	}
 
-	override void onFocus(bool b)
+	override void onFocus(bool v)
 	{
-		if(!b)
+		if(!v)
 		{
 			deattach;
 		}
 	}
 
-	void toPos(int idx)
+	void toPos(short idx)
 	{
-		(cast(Scrolled)childs.front).toPos(cast(ushort)idx);
+		scroll.toPos(idx);
 	}
 
 private:
+	mixin MakeChildRef!(Scrolled, `scroll`, 0);
+
 	SelectBox _b;
 }

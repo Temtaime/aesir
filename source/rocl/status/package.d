@@ -147,7 +147,7 @@ final class Skiller : RCounted
 	{
 		if(_bg)
 		{
-			_bg.remove;
+			_bg.deattach;
 		}
 	}
 

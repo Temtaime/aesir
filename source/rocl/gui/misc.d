@@ -77,7 +77,7 @@ mixin template MakeWindow(T, string Name)
 	{
 		if(_` ~ Name ~ `)
 		{
-			_` ~ Name ~ `.remove;
+			_` ~ Name ~ `.deattach;
 		}
 
 		_` ~ Name ~ ` = new T(args);
@@ -87,7 +87,7 @@ mixin template MakeWindow(T, string Name)
 	{
 		if(_` ~ Name ~ `)
 		{
-			_` ~ Name ~ `.remove;
+			_` ~ Name ~ `.deattach;
 			_` ~ Name ~ ` = null;
 		}
 	}

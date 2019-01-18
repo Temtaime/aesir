@@ -12,13 +12,21 @@ class Tooltip : GUIElement
 		super(PE.gui.root, Vector2s.init, Win.topMost);
 
 		_mv = PE.onMove.add(_ => move);
-		_cs = PE.gui.onCurrentChanged.add(_ => remove);
+		_cs = PE.gui.onCurrentChanged.add(_ => deattach);
 	}
 
 protected:
 	void move()
 	{
-		pos = PE.window.mpos + Vector2s(4, -size.y - 4);
+		pos = PE.window.mpos;
+
+		auto d = Vector2s(4, -size.y - 4);
+
+		foreach(i; 0..2)
+		{
+			auto r = pos[i] + d[i];
+			pos[i] += r >= 0 && r + size[i] <= parent.size[i] ? d[i] : -d[i];
+		}
 	}
 
 private:

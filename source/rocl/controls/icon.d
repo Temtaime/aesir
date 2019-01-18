@@ -84,7 +84,7 @@ abstract class HotkeyIcon : GUIElement
 	{
 		if(_e)
 		{
-			_e.remove;
+			_e.deattach;
 		}
 	}
 
@@ -166,7 +166,7 @@ abstract class HotkeyIcon : GUIElement
 								if(auto p = cast(WinHotkeys)parent)
 								{
 									ROnet.setHotkey(p.posToId(pos), PkHotkey.init);
-									remove;
+									deattach;
 								}
 
 								return;
@@ -178,7 +178,7 @@ abstract class HotkeyIcon : GUIElement
 				}
 			}
 
-			u.remove;
+			u.deattach;
 		}
 	}
 
@@ -277,7 +277,7 @@ final class ItemIcon : HotkeyIcon
 
 		m = t;
 
-		_rm = m.onRemove.add(_ => remove);
+		_rm = m.onRemove.add(_ => deattach);
 		_rc = m.onCountChanged.add(_ => tooltip);
 	}
 

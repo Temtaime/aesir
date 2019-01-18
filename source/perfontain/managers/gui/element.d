@@ -283,11 +283,6 @@ final:
 		PE.gui.doInput(b ? this : null);
 	}
 
-	void remove()
-	{
-		deattach;
-	}
-
 	void add(GUIElement[] arr)
 	{
 		arr.each!(a => a.attach(this));
