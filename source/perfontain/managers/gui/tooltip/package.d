@@ -4,7 +4,6 @@ import
 		perfontain;
 
 
-
 class Tooltip : GUIElement
 {
 	this()
@@ -16,16 +15,28 @@ class Tooltip : GUIElement
 	}
 
 protected:
+	enum D = 4;
+
 	void move()
 	{
 		pos = PE.window.mpos;
 
-		auto d = Vector2s(4, -size.y - 4);
-
-		foreach(i; 0..2)
+		if(pos.x + D + size.x > parent.size.x)
 		{
-			auto r = pos[i] + d[i];
-			pos[i] += r >= 0 && r + size[i] <= parent.size[i] ? d[i] : -d[i];
+			pos.x -= D + size.x;
+		}
+		else
+		{
+			pos.x += D;
+		}
+
+		if(pos.y - D - size.y < 0)
+		{
+			pos.y += D;
+		}
+		else
+		{
+			pos.y -= D + size.y;
 		}
 	}
 
@@ -41,17 +52,15 @@ class TextTooltip : Tooltip
 	this(string s)
 	{
 		super();
-		new GUIStaticText(this, s).color = colorWhite;
+
+		auto q = new GUIQuad(this, Color(0, 0, 0, 180));
+		auto e = new GUIStaticText(this, s);
+
+		q.size = e.size + Vector2s(8, 0);
+		e.color = colorWhite;
+		e.moveX(q, POS_CENTER);
 
 		toChildSize;
-		pad(Vector2s(4, 0));
-
 		move;
-	}
-
-	override void draw(Vector2s p) const
-	{
-		drawQuad(p + pos, size, Color(0, 0, 0, 180));
-		super.draw(p);
 	}
 }

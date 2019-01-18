@@ -15,7 +15,7 @@ extern(C) __gshared
 {
 	bool rt_cmdline_enabled = false;
 	bool rt_envvars_enabled = false;
-	string[] rt_options = [ `scanDataSeg=precise` ];
+	string[] rt_options = [ `scanDataSeg=precise`, `gcopt=cleanup:finalize` ]; // gc:precise
 
 	export
 	{

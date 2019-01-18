@@ -290,7 +290,7 @@ class GUIStaticText : GUIImage
 
 		auto m = PEobjs.makeHolder(f.render(arr[0], font));
 
-		size = m.size;
+		size = Vector2s(m.size.x, f.height);
 		color = colorBlack;
 
 		super(p, 0, 0, m);
