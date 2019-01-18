@@ -94,10 +94,7 @@ final class Program : RCounted
 
 		debug
 		{
-			if(!s)
-			{
-				return;
-			}
+			if(!s) return;
 		}
 
 		static if(is(T : int))

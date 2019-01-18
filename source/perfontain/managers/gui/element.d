@@ -115,7 +115,6 @@ class GUIElement : RCounted
 		{
 			PE.settings.wins[name] = WindowData(pos);
 		}*/
-
 		PE.gui.onDie(this);
 	}
 
@@ -287,6 +286,22 @@ final:
 	void remove()
 	{
 		deattach;
+	}
+
+	void add(GUIElement[] arr)
+	{
+		arr.each!(a => a.attach(this));
+	}
+
+	void removeChilds()
+	{
+		while(childs.length)
+		{
+			auto c = childs.front;
+
+			assert(c.parent is this);
+			c.deattach;
+		}
 	}
 
 	void deattach()

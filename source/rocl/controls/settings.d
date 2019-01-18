@@ -67,8 +67,7 @@ final class WinSettings : WinBasic2
 						arr ~= new GUIStaticText(null, mixin(u));
 					}
 
-					auto k = arr.map!(a => a.size.x).fold!max;
-					auto e = new SelectBox(null, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), mixin(c.var));
+					auto e = new SelectBox(null, arr, mixin(c.var));
 				}
 				else
 				{
@@ -109,8 +108,7 @@ final class WinSettings : WinBasic2
 					arr ~= new GUIStaticText(null, n);
 				}
 
-				auto k = arr.map!(a => a.size.x).fold!max;
-				auto e = new SelectBox(bottom, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), cast(short)maps.countUntil(`prontera`));
+				auto e = new SelectBox(bottom, arr, cast(short)maps.countUntil(`prontera`));
 
 				e.onChange = (a)
 				{

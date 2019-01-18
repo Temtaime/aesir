@@ -115,7 +115,7 @@ class TradingPart : GUIElement
 	{
 		super(p);
 
-		new Scrolled(this, Vector2s(220, 36), 4, SCROLL_ARROW);
+		new Scrolled(this, Vector2s(220, 36), 4);
 
 		{
 			auto e = new GUIElement(this);

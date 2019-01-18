@@ -16,7 +16,7 @@ final class ScrolledText : GUIElement
 	{
 		super(p);
 
-		size = new Scrolled(this, Vector2s(sz.x, PE.fonts.base.height), sz.y, id).size;
+		size = new Scrolled(this, Vector2s(sz.x, PE.fonts.base.height), sz.y).size;
 	}
 
 	void clear()

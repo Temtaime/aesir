@@ -11,48 +11,18 @@ class Tooltip : GUIElement
 	{
 		super(PE.gui.root, Vector2s.init, Win.topMost);
 
-		{
-			if(_cur)
-			{
-				_cur.remove;
-			}
-
-			_cur = this;
-		}
-
 		_mv = PE.onMove.add(_ => move);
 		_cs = PE.gui.onCurrentChanged.add(_ => remove);
-
-		move;
 	}
 
-	~this()
+protected:
+	void move()
 	{
-		_cur = null;
+		pos = PE.window.mpos + Vector2s(4, -size.y - 4);
 	}
 
 private:
-	void move()
-	{
-		pos = PE.window.mpos;
-		pos.x += 4;
-
-		auto y = cast(short)(pos.y - size.y - 4);
-
-		if(size.y > parent.size.y || y < 0)
-		{
-			pos.y += 4;
-		}
-		else
-		{
-			pos.y = y;
-		}
-	}
-
-	__gshared Tooltip _cur;
-
-	RC!ConnectionPoint
-						_mv,
+	RC!ConnectionPoint	_mv,
 						_cs;
 }
 
@@ -62,12 +32,13 @@ class TextTooltip : Tooltip
 {
 	this(string s)
 	{
+		super();
 		new GUIStaticText(this, s).color = colorWhite;
 
 		toChildSize;
 		pad(Vector2s(4, 0));
 
-		super();
+		move;
 	}
 
 	override void draw(Vector2s p) const

@@ -73,9 +73,7 @@ final class WinShop : WinBasic
 				arr ~= new GUIStaticText(null, u);
 			}
 
-			auto k = arr.map!(a => a.size.x).fold!max;
-
-			_se = new SelectBox(this, arr, SELECT_ARROW, SCROLL_ARROW, cast(ushort)(k + 25), 0);
+			_se = new SelectBox(this, arr, 0);
 			_se.move(this, POS_MIN, 4, this, POS_MAX, (_se.size.y - WIN_BOTTOM_SZ.y) / 2);
 
 			_se.onChange = &retype;
@@ -95,7 +93,7 @@ final class WinShop : WinBasic
 
 		{
 			auto ty = WIN_TOP_SZ.y;
-			_sc = new Scrolled(this, Vector2s(size.x - 4, 36), cast(ushort)(size.y - ty - WIN_BOTTOM_SZ.y - 4) / 36, SCROLL_ARROW);
+			_sc = new Scrolled(this, Vector2s(size.x - 4, 36), cast(ushort)(size.y - ty - WIN_BOTTOM_SZ.y - 4) / 36);
 
 			_sc.pos = Vector2s(2, ty + 2);
 

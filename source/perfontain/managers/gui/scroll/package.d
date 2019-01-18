@@ -19,7 +19,7 @@ public import
 
 final class Scrolled : GUIElement
 {
-	this(GUIElement parent, Vector2s sz, ushort n, ushort id)
+	this(GUIElement parent, Vector2s sz, ushort n)
 	{
 		super(parent);
 
@@ -33,7 +33,7 @@ final class Scrolled : GUIElement
 
 		// arrow up
 		{
-			auto up = new GUIImage(this, id);
+			auto up = new GUIImage(this, SCROLL_ARROW);
 
 			sz = up.size;
 			p = size - sz;
@@ -51,7 +51,7 @@ final class Scrolled : GUIElement
 
 		// arrow down
 		{
-			auto down = new GUIImage(this, id, DRAW_MIRROR_V);
+			auto down = new GUIImage(this, SCROLL_ARROW, DRAW_MIRROR_V);
 			down.pos = p;
 
 			down.onClick =
@@ -68,7 +68,7 @@ final class Scrolled : GUIElement
 			sp.pos = Vector2s(p.x, sz.y);
 			sp.size = Vector2s(sz.x, p.y - sz.y);
 
-			new Subscroll(sp, this, id + 1);
+			new Subscroll(sp, this, SCROLL_PART);
 		}
 
 		_n = n;

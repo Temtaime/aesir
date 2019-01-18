@@ -48,7 +48,7 @@ final class InventoryTab : GUIElement
 
 			foreach(i; 0..3)
 			{
-				new Scrolled(n.tabs[i], Vector2s(n.tab.size.x, 36), sz.y, SCROLL_ARROW);
+				new Scrolled(n.tabs[i], Vector2s(n.tab.size.x, 36), sz.y);
 			}
 
 			if(!m)

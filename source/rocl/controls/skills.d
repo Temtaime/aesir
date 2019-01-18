@@ -45,7 +45,7 @@ class WinSkills : WinBasic
 			}
 		}
 
-		_sc = new Scrolled(this, Vector2s(280, 36), 4, SCROLL_ARROW);
+		_sc = new Scrolled(this, Vector2s(280, 36), 4);
 		_sc.pos = Vector2s(10, 20);
 
 		_ss = new SkillSelector;

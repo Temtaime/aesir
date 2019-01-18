@@ -49,8 +49,7 @@ final class DrawAllocator : RCounted
 			}
 
 			assert(k == submeshes);
-
-			glMultiDrawElements(GL_TRIANGLES, counts[].ptr, GL_UNSIGNED_INT, cast(void **)starts[].ptr, submeshes);
+			glMultiDrawElements(GL_TRIANGLES, counts[].ptr, GL_UNSIGNED_INT, cast(void**)starts[].ptr, submeshes);
 		}
 		else
 		{
@@ -63,7 +62,7 @@ final class DrawAllocator : RCounted
 
 				_drawnTriangles += sm.len / 3;
 
-				glDrawElements(GL_TRIANGLES, sm.len, GL_UNSIGNED_INT, cast(void *)(mh.reg.index.start + sm.start * 4));
+				glDrawElements(GL_TRIANGLES, sm.len, GL_UNSIGNED_INT, cast(void*)(mh.reg.index.start + sm.start * 4));
 			}
 		}
 	}

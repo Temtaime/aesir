@@ -13,30 +13,36 @@ final:
 
 class SelectBox : GUIElement
 {
-	this(GUIElement p, GUIElement[] arr, ushort id, ushort sid, ushort w, short idx = -1)
+	this(GUIElement p, GUIElement[] arr, short idx = -1)
 	{
 		assert(arr.length);
 
-		_sid = sid;
+		super(p);
 		_arr = arr;
 
-		size = Vector2s(w, arr[0].size.y + 2);
+		new GUIImage(this, SELECT_ARROW);
+		arrow.onClick = &doPopup;
 
 		{
-			auto i = new GUIImage(this, id);
+			auto e = new GUIElement(this);
 
-			i.onClick = &doPopup;
-			i.pos = Vector2s(size.x - i.size.x - 2, (size.y - i.size.y - 1) / 2);
+			e.add(arr);
+			e.toChildSize;
+
+			toChildSize;
+			arrow.move(e, POS_ABOVE, 1, this, POS_CENTER);
+			toChildSize;
+
+			e.removeChilds;
+			e.deattach;
 		}
 
-		arr.each!(a => a.pos.x = 1);
+		pad(1);
 
 		if(idx >= 0)
 		{
 			select(idx);
 		}
-
-		super(p);
 	}
 
 	~this()
@@ -45,6 +51,11 @@ class SelectBox : GUIElement
 		{
 			_pop.deattach;
 		}
+	}
+
+	override void onResize()
+	{
+		arrow.moveX(POS_MAX, -1);
 	}
 
 	override void draw(Vector2s p) const
@@ -56,10 +67,8 @@ class SelectBox : GUIElement
 		drawQuad(n + Vector2s(1, size.y - 1), Vector2s(size.x - 1, 1), borderColor);
 		drawQuad(n + Vector2s(size.x - 1, 1), Vector2s(1, size.y - 2), borderColor);
 
-		auto w = childs.front;
-
-		drawQuad(n + Vector2s(w.pos.x - 2, 1), Vector2s(1, size.y - 2), borderColor);
-		drawQuad(n + Vector2s(w.pos.x, 2), Vector2s(w.size.x, size.y - 4), borderColor);
+		drawQuad(n + Vector2s(arrow.pos.x - 1, 1), Vector2s(1, size.y - 2), borderColor);
+		drawQuad(n + Vector2s(arrow.pos.x, 1), Vector2s(arrow.size.x, size.y - 2), Color(200, 200, 200, 128));
 
 		super.draw(p);
 	}
@@ -67,10 +76,11 @@ class SelectBox : GUIElement
 	void delegate(short) onChange;
 private:
 	mixin publicProperty!(short, `idx`, `-1`);
+	mixin MakeChildRef!(GUIImage, `arrow`, 0);
 
 	const elemWidth()
 	{
-		return cast(ushort)(childs[0].pos.x - 3); // TODO: REWRITE ?
+		return cast(ushort)(arrow.pos.x - 2);
 	}
 
 	void select(ushort idx)
@@ -83,7 +93,9 @@ private:
 		auto e = new GUIElement(this);
 
 		e.pos = Vector2s(1);
-		e.childs ~= _arr[_idx = idx];
+		e.size = Vector2s(elemWidth, size.y - 2);
+
+		_arr[_idx = idx].attach(e);
 	}
 
 	void doPopup()
@@ -104,9 +116,7 @@ private:
 		_pop.pos = absPos + Vector2s(0, size.y);
 	}
 
-	ushort _sid;
 	RCArray!GUIElement _arr;
-
 	RC!SelectPopup _pop;
 }
 
@@ -146,7 +156,7 @@ class SelectPopup : GUIElement
 		super(null);
 
 		auto arr = b._arr[];
-		auto s = new Scrolled(this, Vector2s(b.size.x - 3, b.size.y - 2), cast(ushort)min(arr.length, 4), b._sid);
+		auto s = new Scrolled(this, Vector2s(b.size.x - 3, b.size.y - 2), cast(ushort)min(arr.length, 4));
 
 		s.pos.x = 1;
 		auto ps = new PopupSelector(this);
