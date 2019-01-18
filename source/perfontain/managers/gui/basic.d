@@ -16,19 +16,17 @@ class GUIQuad : GUIElement
 	this(GUIElement p, Color c)
 	{
 		super(p);
-
-		_c = c;
+		color = c;
 	}
 
 	override void draw(Vector2s p) const
 	{
-		drawQuad(p + pos, size, _c);
+		drawQuad(p + pos, size, color);
 
 		super.draw(p);
 	}
 
-private:
-	Color _c;
+	Color color;
 }
 
 class Table : GUIElement
