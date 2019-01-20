@@ -108,7 +108,7 @@ class WinNpcSelect : WinNpc
 			size.y = cast(short)(w.size.y + NPC_WIN_SZ.y * 2);
 
 			{
-				auto ds = new DialogSelector;
+				/*auto ds = new DialogSelector;
 				auto ew = w.elemWidth;
 
 				foreach(i, s; arr)
@@ -129,7 +129,7 @@ class WinNpcSelect : WinNpc
 						ts.each!dg;
 						w.add(e, true);
 					}
-				}
+				}*/
 			}
 		}
 
@@ -140,11 +140,11 @@ class WinNpcSelect : WinNpc
 
 	void delegate(ubyte) onSelect;
 private:
-	class DialogSelector : Selector
+	/*class DialogSelector : Selector
 	{
 		override void select(int idx)
 		{
 			onSelect(cast(ubyte)idx);
 		}
-	}
+	}*/
 }

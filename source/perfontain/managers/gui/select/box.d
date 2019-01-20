@@ -1,8 +1,7 @@
 module perfontain.managers.gui.select.box;
 
 import
-		std.array,
-		std.algorithm,
+		std.experimental.all,
 
 		perfontain;
 
@@ -13,31 +12,22 @@ final:
 
 class SelectBox : GUIElement
 {
-	this(GUIElement p, GUIElement[] arr, short idx = -1)
+	this(GUIElement p, GUIElement[] arr, int idx = -1)
 	{
 		assert(arr.length);
-
-		super(p);
-		_arr = arr;
+		super(p, arr.calcSize);
 
 		new GUIImage(this, SELECT_ARROW);
-		arrow.onClick = &doPopup;
+		new GUIElement(this, size).pos = 1.Vector2s;
 
-		{
-			auto e = new GUIElement(this);
+		arrow.action(&popup);
+		arrow.move(POS_MIN, size.x + 1, POS_CENTER);
 
-			e.add(arr);
-			e.toChildSize;
-
-			toChildSize;
-			arrow.move(e, POS_ABOVE, 1, this, POS_CENTER);
-			toChildSize;
-
-			e.removeChilds;
-			e.deattach;
-		}
-
+		toChildSize;
 		pad(1);
+
+		_arr = arr;
+		_index = idx;
 
 		if(idx >= 0)
 		{
@@ -73,107 +63,88 @@ class SelectBox : GUIElement
 		super.draw(p);
 	}
 
-	void delegate(short) onChange;
+	@property elements()
+	{
+		return _arr[];
+	}
+
+	void delegate(int) onChange;
 private:
-	mixin publicProperty!(short, `idx`, `-1`);
+	mixin publicProperty!(int, `index`);
 	mixin MakeChildRef!(GUIImage, `arrow`, 0);
 
-	const elemWidth()
+	const elemSize()
 	{
-		return cast(ushort)(arrow.pos.x - 2);
+		return Vector2s(arrow.pos.x - 2, size.y - 2);
 	}
 
-	void select(ushort idx)
+	void select(int idx)
 	{
-		if(_idx >= 0)
+		if(_index >= 0)
 		{
-			childs.popBack;
+			_arr[_index].deattach;
 		}
 
-		auto e = new GUIElement(this);
+		if(_pop)
+		{
+			_pop = null;
+			_arr.each!(a => a.deattach);
+		}
 
-		e.pos = Vector2s(1);
-		e.size = Vector2s(elemWidth, size.y - 2);
+		if(idx >= 0)
+		{
+			_arr[idx].attach(childs.back);
+		}
 
-		_arr[_idx = idx].attach(e);
+		_index = idx;
 	}
 
-	void doPopup()
+	void popup()
 	{
-		if(!_pop)
-		{
-			_pop = new SelectPopup(this);
-		}
-
-		if(_idx >= 0)
-		{
-			_pop.toPos(_idx);
-		}
-
-		_pop.attach(PE.gui.root);
-
-		_pop.focus;
-		_pop.pos = absPos + Vector2s(0, size.y);
+		assert(!_pop);
+		_pop = new SelectPopup(this);
 	}
 
+	SelectPopup _pop;
 	RCArray!GUIElement _arr;
-	RC!SelectPopup _pop;
 }
 
 private:
 
-class PopupSelector : Selector
+class SelectPopup : Selector
 {
-	this(SelectPopup p)
+	this(SelectBox box)
 	{
-		_p = p;
-	}
+		super(PE.gui.root);
 
-	override void select(int idx)
-	{
-		with(_p)
-		{
-			auto v = cast(ushort)idx;
-			_b.select(v);
+		_box = box;
+		_idx = box.index;
 
-			if(auto f = _b.onChange)
-			{
-				f(v);
-			}
-
-			focus(false);
-		}
-	}
-
-private:
-	SelectPopup _p;
-}
-
-class SelectPopup : GUIElement
-{
-	this(SelectBox b)
-	{
-		super(null);
-
-		auto arr = b._arr[];
-		auto s = new Scrolled(this, Vector2s(b.size.x - 3, b.size.y - 2), cast(ushort)min(arr.length, 4));
+		box.select(-1);
+		auto s = new Scrolled(this, box.elemSize, cast(ushort)min(box.elements.length, 8));
 
 		s.pos.x = 1;
-		auto ps = new PopupSelector(this);
 
-		foreach(i, c; arr)
+		foreach(i, c; box.elements)
 		{
-			auto v = allocateRC!SelectableItem(null, ps);
+			auto v = allocateRC!Selectable(null);
 
-			v.size = Vector2s(b.elemWidth, c.size.y);
-			v.idx = cast(uint)i;
-			v.childs ~= c;
+			v.size = box.elemSize;
+			v.idx = cast(int)i;
+			c.attach(v);
 
 			s.add(v, true);
 		}
 
-		_b = b;
-		size = Vector2s(b.size.x, s.size.y + 1);
+		pos = Vector2s(box.absPos.x, box.absEnd.y);
+		size = Vector2s(s.size.x + 2, s.size.y + 1);
+
+		focus;
+	}
+
+	~this()
+	{
+		_box.select(_idx);
 	}
 
 	override void draw(Vector2s p) const
@@ -197,13 +168,21 @@ class SelectPopup : GUIElement
 		}
 	}
 
-	void toPos(short idx)
+	override void select(int idx)
 	{
-		scroll.toPos(idx);
+		_idx = idx;
+
+		if(_box.onChange)
+		{
+			_box.onChange(idx);
+		}
+
+		deattach;
 	}
 
 private:
 	mixin MakeChildRef!(Scrolled, `scroll`, 0);
 
-	SelectBox _b;
+	int _idx;
+	SelectBox _box;
 }

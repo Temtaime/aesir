@@ -141,7 +141,7 @@ final class WinShop : WinBasic
 	}
 
 private:
-	void retype(short n)
+	void retype(int n)
 	{
 		ROnet.shopType(_id, cast(ubyte)n);
 	}
@@ -153,7 +153,7 @@ private:
 
 	const buying()
 	{
-		return !_se.idx;
+		return !_se.index;
 	}
 
 	void onClick()

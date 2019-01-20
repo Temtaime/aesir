@@ -180,15 +180,8 @@ class ValueSelector : GUIElement
 
 		size.x = cast(short)(u2.end.x + 5);
 
-		u1.onClick =
-		{
-			update(-1);
-		};
-
-		u2.onClick =
-		{
-			update(1);
-		};
+		u1.action(() => update(-1));
+		u2.action(() => update(1));
 
 		_max = m;
 		value = 1;

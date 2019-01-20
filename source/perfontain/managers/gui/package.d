@@ -26,6 +26,7 @@ import
 public import
 				perfontain.managers.gui.tab,
 				perfontain.managers.gui.text,
+				perfontain.managers.gui.misc,
 				perfontain.managers.gui.basic,
 				perfontain.managers.gui.scroll,
 				perfontain.managers.gui.select,
@@ -136,14 +137,15 @@ package:
 		_inp = e;
 	}
 
-	void doFocus(GUIElement e)
+	void doFocus(GUIElement e) // TODO: ELEMENT REMOVES PARENT OR CHILD ???
 	{
 		if(_focus is e)
 		{
 			return;
 		}
 
-		GUIElement[16] o, n;
+		GUIElement[16]	o,
+						n;
 
 		if(_focus)
 		{
@@ -163,19 +165,12 @@ package:
 		so.reverse();
 		sn.reverse();
 
-		auto v = commonPrefix!((a, b) => a is b)(so, sn).count;
-
 		if(sn.length)
 		{
-			auto w = sn[0];
-
-			with(root)
-			{
-				auto arr = childs[];
-
-				swap(arr.find!(a => a is w)[0], arr.back);
-			}
+			sn[0].bringToTop;
 		}
+
+		auto v = commonPrefix!((a, b) => a is b)(so, sn).count;
 
 		so[v..$].retro.each!(a => focus(a, false));
 		sn[v..$].each!(a => focus(a, true));
@@ -319,10 +314,10 @@ private:
 
 	void focus(GUIElement e, bool b)
 	{
-		if(_focus && _focus.flags.pressed)
+		/*if(_focus && _focus.flags.pressed)
 		{
 			return;
-		}
+		}*/
 
 		e.flags.focused = b;
 		e.onFocus(b);

@@ -39,12 +39,7 @@ final class Scrolled : GUIElement
 			p = size - sz;
 
 			up.pos.x = p.x;
-
-			up.onClick =
-			{
-				_idx--;
-				update;
-			};
+			up.action({ _idx--; update; });
 		}
 
 		container.size = Vector2s(p.x, size.y);
@@ -52,13 +47,9 @@ final class Scrolled : GUIElement
 		// arrow down
 		{
 			auto down = new GUIImage(this, SCROLL_ARROW, DRAW_MIRROR_V);
-			down.pos = p;
 
-			down.onClick =
-			{
-				_idx++;
-				update;
-			};
+			down.pos = p;
+			down.action({ _idx++; update; });
 		}
 
 		// scroll holder

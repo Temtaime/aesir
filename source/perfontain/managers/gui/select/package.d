@@ -1,6 +1,8 @@
 module perfontain.managers.gui.select;
 
 import
+		std.experimental.all,
+
 		perfontain;
 
 public import
@@ -8,42 +10,36 @@ public import
 				perfontain.managers.gui.select.popup;
 
 
-enum : ubyte
+class Selector : GUIElement
 {
-	SEL_ON_PRESS = 1,
-}
-
-class Selector
-{
-	this(ubyte flags = 0)
+	this(GUIElement p, bool followMouse = true)
 	{
-		_flags = flags;
+		super(p);
+		_followMouse = followMouse;
 	}
 
 	void select(int) {}
 private:
-	mixin publicProperty!(int, `cur`, `-1`);
+	mixin publicProperty!(int, `selected`, `-1`);
 
-	void doSelect(int v)
+	void doSelect(int idx)
 	{
-		select(_cur = v);
+		select(_selected = idx);
 	}
 
-	ubyte _flags;
+	bool _followMouse;
 }
 
-class SelectableItem : GUIElement
+class Selectable : GUIElement
 {
-	this(GUIElement p, Selector s)
+	this(Selector p)
 	{
-		_s = s;
-
-		super(p);
+		super(p, Vector2s.init, Win.captureFocus);
 	}
 
 	override void draw(Vector2s p) const
 	{
-		if(_s._flags & SEL_ON_PRESS ? _s.cur == idx : flags.hasMouse)
+		if(selector._followMouse ? flags.hasMouse : selector._selected == idx)
 		{
 			drawQuad(p + pos, size, Color(0xa3, 0xdb, 0xfb, 0xff));
 		}
@@ -51,15 +47,18 @@ class SelectableItem : GUIElement
 		super.draw(p);
 	}
 
-	override void onPress(bool st)
+	override void onPress(bool v)
 	{
-		if(flags.hasMouse && !st)
+		if(flags.hasMouse && !v)
 		{
-			_s.doSelect(idx);
+			selector.doSelect(idx);
 		}
 	}
 
 	int idx;
 private:
-	Selector _s;
+	inout selector()
+	{
+		return cast(Selector)byHierarchy.find!(a => cast(Selector)a).front;
+	}
 }

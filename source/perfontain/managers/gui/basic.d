@@ -110,23 +110,30 @@ class GUIImage : GUIElement
 		}
 	}
 
+	void action(void delegate() dg)
+	{
+		_dg = dg;
+		flags.captureFocus = !!dg;
+	}
+
 	override void draw(Vector2s p) const
 	{
 		drawImage(_holder ? _holder : PE.gui.holder, _id, p + pos, color, Vector2s.init, _mode);
 	}
 
-	override void onPress(bool b)
+	override void onPress(bool v)
 	{
-		if(onClick && b)
+		if(_dg && v)
 		{
-			onClick();
+			_dg();
 		}
 	}
 
 	auto color = colorWhite;
-	void delegate() onClick;
 protected:
+	void delegate() _dg;
 	RC!MeshHolder _holder;
+
 	ushort _id;
 	ubyte _mode;
 }

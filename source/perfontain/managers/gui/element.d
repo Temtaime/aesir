@@ -1,17 +1,7 @@
 module perfontain.managers.gui.element;
 
 import
-		std.utf,
-		std.range,
-		std.stdio,
-		std.ascii,
-		std.array,
-		std.traits,
-		std.typecons,
-		std.string,
-		std.regex,
-		std.encoding,
-		std.algorithm,
+		std.experimental.all,
 
 		stb.image,
 
@@ -49,27 +39,6 @@ enum : ubyte
 	POS_ABOVE,
 
 	POS_CENTER,
-}
-
-// TODO: MOVE TO ANOTHER PKG
-template MakeChildRef(T, string Name, Idx...)
-{
-	mixin(`inout(T) ` ~ Name ~ `() inout
-	{
-		GUIElement e = cast()this;
-
-		foreach(i; Idx)
-		{
-			if(i >= e.childs.length)
-			{
-				return null;
-			}
-
-			e = e.childs[i];
-		}
-
-		return cast(inout(T))e;
-	}`);
 }
 
 class GUIElement : RCounted
@@ -165,17 +134,12 @@ final:
 	void bringToTop()
 	{
 		auto arr = parent.childs[];
-
-		auto idx = arr.countUntil!(a => a is this);
-		arr.remove(idx);
-
-		arr[$ - 1] = this;
+		swap(arr.find!(a => a is this)[0], arr.back);
 	}
 
 	void toChildSize()
 	{
-		size.x = childs[].map!(a => cast(short)(a.pos.x + a.size.x)).fold!max(short(0));
-		size.y = childs[].map!(a => cast(short)(a.pos.y + a.size.y)).fold!max(short(0));
+		size = childs[].calcSize;
 
 		/*foreach(c; childs[].filter!(a => a.flags & Win.parentSize))
 		{
@@ -273,6 +237,11 @@ final:
 		return byHierarchy.fold!((a, b) => a + b.pos)(Vector2s.init);
 	}
 
+	const absEnd()
+	{
+		return absPos + size;
+	}
+
 	void focus(bool b = true)
 	{
 		PE.gui.doFocus(b ? this : null);
@@ -283,10 +252,10 @@ final:
 		PE.gui.doInput(b ? this : null);
 	}
 
-	void add(GUIElement[] arr)
+	/*void add(GUIElement[] arr)
 	{
 		arr.each!(a => a.attach(this));
-	}
+	}*/
 
 	void removeChilds()
 	{

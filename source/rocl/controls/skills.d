@@ -65,7 +65,7 @@ class WinSkills : WinBasic
 
 		_sc.rows[idx] = e;
 
-		if(e.idx == _ss.cur)
+		if(e.idx == _ss.selected)
 		{
 			onSkill(idx);
 			PE.gui.updateMouse;
@@ -85,7 +85,7 @@ private:
 	{
 		this()
 		{
-			super(SEL_ON_PRESS);
+			super(null, false);
 		}
 
 		override void select(int idx)
@@ -137,11 +137,11 @@ private:
 	SkillSelector _ss;
 }
 
-class SkillItem : SelectableItem
+class SkillItem : Selectable
 {
 	this(GUIElement p, Selector s, in Skill sk, ushort w)
 	{
-		super(p, s);
+		super(s);
 
 		{
 			auto e = new SkillIcon(this, sk);

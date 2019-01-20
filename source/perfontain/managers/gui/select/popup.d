@@ -27,7 +27,7 @@ abstract class PopupSelect : GUIElement
 		size = Vector2s(sz.x + 4, sz.y * arr.length);
 
 		{
-			auto sc = new class Selector
+			/*auto sc = new class Selector
 			{
 				override void select(int idx)
 				{
@@ -51,7 +51,7 @@ abstract class PopupSelect : GUIElement
 				v.size = Vector2s(size.x, c.size.y);
 
 				v.pos.y = cast(short)(i * sz.y);
-			}
+			}*/
 		}
 
 		focus;
