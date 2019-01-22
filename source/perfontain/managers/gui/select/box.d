@@ -27,7 +27,7 @@ class SelectBox : GUIElement
 		pad(1);
 
 		_arr = arr;
-		_index = idx;
+		_selected = idx;
 
 		if(idx >= 0)
 		{
@@ -70,7 +70,7 @@ class SelectBox : GUIElement
 
 	void delegate(int) onChange;
 private:
-	mixin publicProperty!(int, `index`);
+	mixin publicProperty!(int, `selected`);
 	mixin MakeChildRef!(GUIImage, `arrow`, 0);
 
 	const elemSize()
@@ -80,9 +80,9 @@ private:
 
 	void select(int idx)
 	{
-		if(_index >= 0)
+		if(_selected >= 0)
 		{
-			_arr[_index].deattach;
+			_arr[_selected].deattach;
 		}
 
 		if(_pop)
@@ -96,7 +96,7 @@ private:
 			_arr[idx].attach(childs.back);
 		}
 
-		_index = idx;
+		_selected = idx;
 	}
 
 	void popup()
@@ -118,46 +118,42 @@ class SelectPopup : Selector
 		super(PE.gui.root);
 
 		_box = box;
-		_idx = box.index;
+		_idx = box.selected;
 
 		box.select(-1);
-		auto s = new Scrolled(this, box.elemSize, cast(ushort)min(box.elements.length, 8));
 
-		s.pos.x = 1;
+		auto q = new GUIQuad(this, colorWhite);
+		auto s = new Scrolled(this, box.elemSize, cast(ushort)min(box.elements.length, 8));
 
 		foreach(i, c; box.elements)
 		{
-			auto v = allocateRC!Selectable(null);
+			auto v = allocateRC!Selectable(null, cast(int)i);
 
 			v.size = box.elemSize;
-			v.idx = cast(int)i;
 			c.attach(v);
 
 			s.add(v, true);
 		}
 
-		pos = Vector2s(box.absPos.x, box.absEnd.y);
-		size = Vector2s(s.size.x + 2, s.size.y + 1);
+		size = q.size = Vector2s(box.size.x - 2, s.size.y);
+		s.onResize;
 
+		if(box.absEnd.y + size.y > parent.size.y)
+		{
+			pos = Vector2s(box.absPos.x, box.absPos.y - size.y + 1);
+		}
+		else
+		{
+			pos = Vector2s(box.absPos.x, box.absEnd.y - 1);
+		}
+
+		pos.x += 1;
 		focus;
 	}
 
 	~this()
 	{
 		_box.select(_idx);
-	}
-
-	override void draw(Vector2s p) const
-	{
-		auto n = p + pos;
-
-		drawQuad(n, Vector2s(1, size.y), borderColor);
-		drawQuad(n + Vector2s(1, size.y - 1), Vector2s(size.x - 1, 1), borderColor);
-		drawQuad(n + Vector2s(size.x - 1, 0), Vector2s(1, size.y - 1), borderColor);
-
-		drawQuad(n + Vector2s(1, 0), Vector2s(size.x - 2, size.y - 1));
-
-		super.draw(p);
 	}
 
 	override void onFocus(bool v)

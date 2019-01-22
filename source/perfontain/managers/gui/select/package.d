@@ -32,9 +32,11 @@ private:
 
 class Selectable : GUIElement
 {
-	this(Selector p)
+	this(Selector p, int n = 0)
 	{
 		super(p, Vector2s.init, Win.captureFocus);
+
+		idx = n;
 	}
 
 	override void draw(Vector2s p) const

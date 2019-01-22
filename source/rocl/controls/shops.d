@@ -153,7 +153,7 @@ private:
 
 	const buying()
 	{
-		return !_se.index;
+		return !_se.selected;
 	}
 
 	void onClick()
