@@ -96,8 +96,8 @@ class WinTrading : WinBasic2
 private:
 	void add(Scrolled sc, Item m)
 	{
-		auto e = new EquipSlot(null, m, sc.elemWidth);
-		sc.add(e, true);
+		//auto e = new EquipSlot(null, m, sc.elemWidth);
+		//sc.add(e, true);
 	}
 
 	mixin MakeChildRef!(TradingPart, `src`, 1, 0);
@@ -115,7 +115,7 @@ class TradingPart : GUIElement
 	{
 		super(p);
 
-		new Scrolled(this, Vector2s(220, 36), 4);
+		//new Scrolled(this, Vector2s(220, 36), 4);
 
 		{
 			auto e = new GUIElement(this);

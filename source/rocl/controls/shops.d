@@ -91,7 +91,7 @@ final class WinShop : WinBasic
 			childs.popBack;
 		}
 
-		{
+		/*{
 			auto ty = WIN_TOP_SZ.y;
 			_sc = new Scrolled(this, Vector2s(size.x - 4, 36), cast(ushort)(size.y - ty - WIN_BOTTOM_SZ.y - 4) / 36);
 
@@ -116,9 +116,9 @@ final class WinShop : WinBasic
 
 			foreach(i; items.length.iota)
 			{
-				_sc.add(new ShopRow(this, arr[i], ps[i], priceW, _sc.elemWidth), true);
+				//_sc.add(new ShopRow(this, arr[i], ps[i], priceW, _sc.elemWidth), true);
 			}
-		}
+		}*/
 
 		auto b = new Button(this, Buy ? MSG_BUY : MSG_SELL);
 		b.move(this, POS_MAX, -4, this, POS_MAX, (b.size.y - WIN_BOTTOM_SZ.y) / 2);
@@ -146,9 +146,9 @@ private:
 		ROnet.shopType(_id, cast(ubyte)n);
 	}
 
-	auto items()
+	ShopRow[] items()
 	{
-		return _sc.rows[].map!(a => cast(ShopRow)a).filter!(a => !!a.num.value);
+		return null; //_sc.rows[].map!(a => cast(ShopRow)a).filter!(a => !!a.num.value);
 	}
 
 	const buying()

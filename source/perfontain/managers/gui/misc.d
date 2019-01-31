@@ -26,13 +26,13 @@ template MakeChildRef(T, string Name, Idx...)
 	}`);
 }
 
-auto calcSize(in GUIElement[] arr, bool withPos = true)
+auto calcSize(R)(auto ref R r, bool withPos = true)
 {
 	Vector2s res;
 
 	foreach(i; 0..2)
 	{
-		res[i] = cast(short)arr.map!(a => withPos ? a.end[i] : a.size[i]).fold!max(0);
+		res[i] = cast(short)r.map!(a => withPos ? a.end[i] : a.size[i]).fold!max(0);
 	}
 
 	return res;

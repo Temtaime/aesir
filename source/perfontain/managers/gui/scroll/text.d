@@ -16,17 +16,17 @@ final class ScrolledText : GUIElement
 	{
 		super(p);
 
-		size = new Scrolled(this, Vector2s(sz.x, PE.fonts.base.height), sz.y).size;
+		//size = new Scrolled(this, Vector2s(sz.x, PE.fonts.base.height), sz.y).size;
 	}
 
 	void clear()
 	{
-		sc.clear;
+		//sc.clear;
 	}
 
 	void add(string s, Color c = colorTransparent)
 	{
-		PE.fonts.base.toLines(colorSplit(s, c), sc.container.size.x).each!(a => add(a));
+		//PE.fonts.base.toLines(colorSplit(s, c), sc.container.size.x).each!(a => add(a));
 	}
 
 	bool autoBottom = true;
@@ -53,11 +53,11 @@ private:
 			//e.flags = WIN_CASCADE_SHOW;
 		}
 
-		sc.add(e, true, autoBottom);
+		//sc.add(e, true, autoBottom);
 	}
 
-	inout sc()
+	/*inout sc()
 	{
 		return cast(Scrolled)childs[0];
-	}
+	}*/
 }

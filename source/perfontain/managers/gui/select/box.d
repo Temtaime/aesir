@@ -123,19 +123,21 @@ class SelectPopup : Selector
 		box.select(-1);
 
 		auto q = new GUIQuad(this, colorWhite);
-		auto s = new Scrolled(this, box.elemSize, cast(ushort)min(box.elements.length, 8));
+		auto s = new Scrolled(this, Vector2s(1, min(8, box.elements.length)), box.elemSize.y);
 
 		foreach(i, c; box.elements)
 		{
-			auto v = allocateRC!Selectable(null, cast(int)i);
+			auto v = new Selectable(null, cast(int)i);
 
 			v.size = box.elemSize;
 			c.attach(v);
 
-			s.add(v, true);
+			s.add(v);
 		}
 
 		size = q.size = Vector2s(box.size.x - 2, s.size.y);
+
+		s.size.x = size.x;
 		s.onResize;
 
 		if(box.absEnd.y + size.y > parent.size.y)

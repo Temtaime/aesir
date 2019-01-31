@@ -19,181 +19,46 @@ public import
 
 final class Scrolled : GUIElement
 {
-	this(GUIElement parent, Vector2s sz, ushort n)
+	this(GUIElement parent, Vector2s sz, ushort h)
 	{
-		super(parent);
+		super(parent, Vector2s(0, sz.y * h));
 
-		sz.y *= n;
-		size = sz;
+		new Table(this, sz);
+		new Scrollbar(this);
 
-		// container
-		new GUIElement(this);
 
-		Vector2s p;
-
-		// arrow up
-		{
-			auto up = new GUIImage(this, SCROLL_ARROW);
-
-			sz = up.size;
-			p = size - sz;
-
-			up.pos.x = p.x;
-			up.action({ _idx--; update; });
-		}
-
-		container.size = Vector2s(p.x, size.y);
-
-		// arrow down
-		{
-			auto down = new GUIImage(this, SCROLL_ARROW, DRAW_MIRROR_V);
-
-			down.pos = p;
-			down.action({ _idx++; update; });
-		}
-
-		// scroll holder
-		{
-			auto sp = new GUIElement(this);
-
-			sp.pos = Vector2s(p.x, sz.y);
-			sp.size = Vector2s(sz.x, p.y - sz.y);
-
-			new Subscroll(sp, this, SCROLL_PART);
-		}
-
-		_n = n;
-		update;
+		toChildSize;
 	}
 
-	void clear()
+	override void onResize()
 	{
-		_arr.clear;
-		update;
+		bar.moveX(POS_MAX);
 	}
 
-	void remove(GUIElement e)
+	void add(GUIElement e)
 	{
-		_arr.remove(e);
-		update;
+		table.add(e);
 	}
 
-	ref rows()
+private:
+	mixin MakeChildRef!(Table, `table`, 0);
+	mixin MakeChildRef!(Scrollbar, `bar`, 1);
+}
+
+class Scrollbar : GUIElement
+{
+	this(Scrolled s)
 	{
-		return _arr;
-	}
-
-	void add(GUIElement e, bool reparent = false, bool toBottom = false)
-	{
-		if(reparent)
-		{
-			e.parent = container;
-		}
-
-		toBottom &= (_idx == maxIndex);
-		_arr ~= e;
-
-		if(toBottom)
-		{
-			_idx = maxIndex;
-		}
-
-		update;
-	}
-
-	void toPos(ushort p)
-	{
-		_idx = p;
-		update;
-	}
-
-	override bool onWheel(Vector2s p)
-	{
-		_idx -= p.y;
-		update;
-
-		return true;
-	}
-
-	const elemWidth()
-	{
-		return container.size.x;
-	}
-
-package:
-	void update()
-	{
-		auto u = maxIndex;
-		_idx = max(min(_idx, u), 0);
+		super(s);
 
 		{
-			auto v = u <= 0;
-			childs[1..$].each!(a => a.flags.hidden = v);
-
-			if(!v)
-			{
-				scroll.height = cast(ushort)(holderHeight * _n / cnt);
-				scroll.update;
-			}
+			auto e = new GUIImage(this, SCROLL_ARROW);
+			size = Vector2s(e.size.x, s.size.y);
 		}
 
-		showElements;
-	}
-
-	void showElements()
-	{
-		container.childs.clear;
-
-		ushort p;
-		auto e = min(_idx + _n, cnt);
-
-		_arr[0.._idx]	.each!(a => a.show(false));
-		_arr[e..$]		.each!(a => a.show(false));
-
-		auto sub = _arr[_idx..e];
-
-		foreach(c; sub)
 		{
-			c.show;
-			c.pos.y = p;
-
-			p += elemHeight;
-			container.childs ~= c;
+			auto e = new GUIImage(this, SCROLL_ARROW, DRAW_MIRROR_V);
+			e.moveY(POS_MAX);
 		}
 	}
-
-	auto maxIndex()
-	{
-		return cnt - _n;
-	}
-
-	auto holderHeight()
-	{
-		return childs.back.size.y;
-	}
-
-	auto cnt()
-	{
-		return cast(int)_arr.length;
-	}
-
-	auto scroll()
-	{
-		return cast(Subscroll)childs.back.childs.front;
-	}
-
-	inout container()
-	{
-		return childs.front;
-	}
-
-	auto elemHeight()
-	{
-		return cast(ushort)(size.y / _n);
-	}
-
-	int _idx;
-	ushort _n;
-
-	RCArray!GUIElement _arr;
 }

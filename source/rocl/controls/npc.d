@@ -102,10 +102,10 @@ class WinNpcSelect : WinNpc
 
 		{
 			auto h = PE.fonts.base.height;
-			auto w = new Scrolled(this, Vector2s(size.x - NPC_WIN_SZ.x * 2, h), 4);
+			/*auto w = new Scrolled(this, Vector2s(size.x - NPC_WIN_SZ.x * 2, h), 4);
 
 			w.pos = NPC_WIN_SZ;
-			size.y = cast(short)(w.size.y + NPC_WIN_SZ.y * 2);
+			size.y = cast(short)(w.size.y + NPC_WIN_SZ.y * 2);*/
 
 			{
 				/*auto ds = new DialogSelector;

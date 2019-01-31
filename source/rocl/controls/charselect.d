@@ -61,10 +61,9 @@ class WinCharSelect : WinBasic2
 			stat(`SP`, c.sp);
 			stat(`LUK`, c.luk);
 
-			auto t = new Table(main, 2);
+			auto t = new Table(main, Vector2s(2, 0), 2);
 
 			stats.each!(a => t.add(new StatInfo(null, a.front, a.back)));
-			t.adjust(2);
 		}
 
 		adjust;

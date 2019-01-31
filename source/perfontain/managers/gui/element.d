@@ -257,11 +257,16 @@ final:
 		arr.each!(a => a.attach(this));
 	}*/
 
+	inout firstParent(T)()
+	{
+		return cast(T)byHierarchy.find!(a => cast(T)a).front;
+	}
+
 	void removeChilds()
 	{
 		while(childs.length)
 		{
-			auto c = childs.front;
+			auto c = childs.back;
 
 			assert(c.parent is this);
 			c.deattach;

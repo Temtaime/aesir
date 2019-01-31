@@ -57,21 +57,21 @@ final class Subscroll : GUIElement
 				u = pos.y,
 				v = size.y;
 
-		with(_sc)
+		/*with(_sc)
 		{
 			auto r = holderHeight - v;
 			assert(u <= r);
 
 			_idx = maxIndex * u / r;
 			showElements;
-		}
+		}*/
 
 		//update;
 	}
 
 	void update()
 	{
-		pos.y = cast(short)(_sc._idx * (_sc.holderHeight - size.y) / _sc.maxIndex);
+		//pos.y = cast(short)(_sc._idx * (_sc.holderHeight - size.y) / _sc.maxIndex);
 	}
 
 private:

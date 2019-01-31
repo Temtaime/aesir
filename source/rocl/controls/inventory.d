@@ -48,7 +48,7 @@ final class InventoryTab : GUIElement
 
 			foreach(i; 0..3)
 			{
-				new Scrolled(n.tabs[i], Vector2s(n.tab.size.x, 36), sz.y);
+				//new Scrolled(n.tabs[i], Vector2s(n.tab.size.x, 36), sz.y);
 			}
 
 			if(!m)
@@ -94,7 +94,7 @@ private:
 		auto sc = scOf(tab);
 		auto e = m.parent;
 
-		if(e is sc.rows.back)
+		/*if(e is sc.rows.back)
 		{
 			if(e.childs.length == 1)
 			{
@@ -129,12 +129,12 @@ private:
 
 			remove(m, tab);
 			arr.each!(a => add(a, tab));
-		}
+		}*/
 	}
 
 	void add(ItemHolder m, ubyte tab)
 	{
-		GUIElement c;
+		/*GUIElement c;
 
 		{
 			auto sc = scOf(tab);
@@ -147,7 +147,7 @@ private:
 					c = new GUIElement(null);
 					c.size = Vector2s(36 * 7, 36);
 
-					sc.add(c, true);
+					//sc.add(c, true);
 				}
 			}
 		}
@@ -155,7 +155,7 @@ private:
 		m.parent = c;
 		m.pos = Vector2s(c.childs.length * 36, 0);
 
-		c.childs ~= m;
+		c.childs ~= m;*/
 	}
 
 	auto scOf(ubyte idx)

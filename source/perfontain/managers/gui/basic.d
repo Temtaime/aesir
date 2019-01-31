@@ -31,59 +31,74 @@ class GUIQuad : GUIElement
 
 class Table : GUIElement
 {
-	this(GUIElement p, ushort cols)
+	this(GUIElement p, Vector2s sz, ushort pad = 0)
 	{
 		super(p);
-		_cols = cols;
+
+		_sz = sz;
+		_pad = pad;
 	}
 
 	void add(GUIElement e)
 	{
-		e.attach(this);
+		_elems ~= e;
+		update;
 	}
 
-	void adjust(ushort pad = 0)
+	void remove(GUIElement e)
 	{
-		RCArray!GUIElement	cs = childs,
-							arr = _cols.iota.map!(_ => new GUIElement(null)).array;
+		_elems.remove(e);
+		update;
+	}
 
-		foreach(i, c; cs)
+	void pose(uint n)
+	{
+		_pos = n;
+		update;
+	}
+
+private:
+	void update()
+	{
+		_elems.each!(a => a.deattach);
+		childs.clear;
+
+		auto sizes = _sz.x
+							.iota
+							.map!(a => _elems[].drop(a).stride(_sz.x).calcSize)
+							.array;
+
+		auto xoff = _sz.x
+							.iota
+							.map!(a => sizes[0..a].map!(b => b.x).sum + a * _pad)
+							.array;
+
+		auto sy = sizes
+						.map!(a => a.y)
+						.fold!max;
+
+		auto arr = _elems[_pos * _sz.x..$][0.._sz.y ? min($, _sz.x * _sz.y) : $];
+
+		foreach(i, c; arr)
 		{
-			c.attach(arr[i % _cols]);
-		}
+			auto	x = i % _sz.x,
+					y = i / _sz.x;
 
-		{
-			ushort sy;
+			auto e = new GUIElement(this, Vector2s(sizes[x].x, sy));
 
-			foreach(i, c; arr)
-			{
-				c.toChildSize;
-
-				if(i)
-				{
-					c.moveX(arr[i - 1], POS_ABOVE, pad);
-				}
-
-				sy = max(sy, c.size.y);
-			}
-
-			arr.each!(a => a.size.y = sy);
-		}
-
-		foreach(i, c; cs)
-		{
-			auto r = arr[i % _cols];
-			auto e = new GUIElement(this, r.size);
-
-			e.move(r, POS_MIN, 0, this, POS_MIN, cast(uint)i / _cols * (e.size.y + pad));
+			e.pos = Vector2s(xoff[x], (e.size.y + _pad) * y);
 			c.attach(e);
 		}
 
 		toChildSize;
 	}
 
-private:
-	ushort _cols;
+	mixin publicProperty!(uint, `pos`);
+
+	RCArray!GUIElement _elems;
+
+	Vector2s _sz;
+	ushort _pad;
 }
 
 class GUIImage : GUIElement

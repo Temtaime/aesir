@@ -50,7 +50,7 @@ final class WinSettings : WinBasic2
 			S(`MSG_VSYNC`, `PE.settings.vsync`),
 		];
 
-		auto t = new Table(main, 2);
+		auto t = new Table(main, Vector2s(2, 0), 2);
 
 		foreach(i, c; aliasSeqOf!Arr)
 		{
@@ -83,7 +83,6 @@ final class WinSettings : WinBasic2
 			}
 		}
 
-		t.adjust(2);
 		t.childs.each!(a => a.childs[0].moveY(POS_CENTER));
 		adjust;
 

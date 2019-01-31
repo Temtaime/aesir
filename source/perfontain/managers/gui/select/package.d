@@ -41,7 +41,9 @@ class Selectable : GUIElement
 
 	override void draw(Vector2s p) const
 	{
-		if(selector._followMouse ? flags.hasMouse : selector._selected == idx)
+		auto s = selector;
+
+		if(s._followMouse ? flags.hasMouse : s.selected == idx)
 		{
 			drawQuad(p + pos, size, Color(0xa3, 0xdb, 0xfb, 0xff));
 		}
@@ -61,6 +63,6 @@ class Selectable : GUIElement
 private:
 	inout selector()
 	{
-		return cast(Selector)byHierarchy.find!(a => cast(Selector)a).front;
+		return firstParent!Selector;
 	}
 }

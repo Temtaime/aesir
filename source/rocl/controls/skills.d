@@ -45,15 +45,15 @@ class WinSkills : WinBasic
 			}
 		}
 
-		_sc = new Scrolled(this, Vector2s(280, 36), 4);
-		_sc.pos = Vector2s(10, 20);
+		/*_sc = new Scrolled(this, Vector2s(280, 36), 4);
+		_sc.pos = Vector2s(10, 20);*/
 
 		_ss = new SkillSelector;
 	}
 
 	void update(Skill s) // TODO: REMAKE THIS SHIT
 	{
-		auto idx = s.idx;
+		/*auto idx = s.idx;
 		auto r = cast(SkillItem)_sc.rows[idx];
 
 		auto e = new SkillItem(r.parent, _ss, s, r.size.x);
@@ -69,15 +69,15 @@ class WinSkills : WinBasic
 		{
 			onSkill(idx);
 			PE.gui.updateMouse;
-		}
+		}*/
 	}
 
 	void add(Skill s)
 	{
-		auto e = new SkillItem(null, _ss, s, _sc.elemWidth);
-		e.idx = cast(uint)_sc.rows.length;
+		/*auto e = new SkillItem(null, _ss, s, _sc.elemWidth);
+		e.idx = cast(uint)_sc.rows.length;*/
 
-		_sc.add(e, true);
+		//_sc.add(e, true);
 	}
 
 private:
