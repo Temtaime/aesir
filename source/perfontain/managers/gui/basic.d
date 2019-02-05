@@ -148,7 +148,7 @@ class GUIImage : GUIElement
 		drawImage(_holder ? _holder : PE.gui.holder, _id, p + pos, color, Vector2s.init, _mode);
 	}
 
-	override void onPress(bool v)
+	override void onPress(Vector2s, bool v)
 	{
 		if(_dg && v)
 		{
@@ -178,7 +178,7 @@ final class CheckBox : GUIImage
 	bool checked;
 	void delegate(bool) onChange;
 protected:
-	override void onPress(bool st)
+	override void onPress(Vector2s, bool st)
 	{
 		if(st)
 		{

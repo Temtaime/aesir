@@ -88,7 +88,7 @@ abstract class HotkeyIcon : GUIElement
 		}
 	}
 
-	override void onPress(bool b)
+	override void onPress(Vector2s, bool b)
 	{
 		_mouse = b;
 

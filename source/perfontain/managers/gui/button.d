@@ -24,7 +24,7 @@ final class Button : GUIElement
 		}
 	}
 
-	override void onPress(bool st)
+	override void onPress(Vector2s, bool st)
 	{
 		if(!st && flags.hasMouse)
 		{

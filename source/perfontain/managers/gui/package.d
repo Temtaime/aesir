@@ -264,7 +264,7 @@ private:
 				}
 
 				_focus.flags.pressed = st;
-				_focus.onPress(st);
+				_focus.onPress(PE.window.mpos - _focus.absPos, st);
 
 				return true;
 			}

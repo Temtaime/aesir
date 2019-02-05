@@ -51,7 +51,7 @@ class Selectable : GUIElement
 		super.draw(p);
 	}
 
-	override void onPress(bool v)
+	override void onPress(Vector2s, bool v)
 	{
 		if(flags.hasMouse && !v)
 		{

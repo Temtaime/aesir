@@ -33,13 +33,11 @@ class Scrollbar : GUIElement
 				new Scrollpart(this);
 			}
 
-			override void onPress(bool v)
+			override void onPress(Vector2s p, bool v)
 			{
 				if(v)
 				{
-					auto p = PE.window.mpos.y - absPos.y;
-
-					part.pos.y = cast(short)clamp(p - part.size.y / 2, 0, size.y - part.size.y);
+					part.pos.y = cast(short)clamp(p.y - part.size.y / 2, 0, size.y - part.size.y);
 					part.onMoved;
 				}
 			}

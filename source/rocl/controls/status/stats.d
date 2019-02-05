@@ -27,7 +27,7 @@ class StatsUpper : GUIStaticText
 		color = Color(30, 33, 150, 255);
 	}
 
-	override void onPress(bool)
+	override void onPress(Vector2s, bool)
 	{
 		auto idx = cast(int)RO.gui
 									.status

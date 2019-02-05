@@ -113,7 +113,7 @@ class GUIElement : RCounted
 	void onShow(bool) {}
 	void onFocus(bool) {}
 	void onHover(bool) {}
-	void onPress(bool) {}
+	void onPress(Vector2s, bool) {}
 	void onDoubleClick() {}
 
 	void onSubmit() {}

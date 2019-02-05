@@ -13,7 +13,7 @@ class TabSelector : GUIElement
 		super(p);
 	}
 
-	override void onPress(bool st)
+	override void onPress(Vector2s, bool st)
 	{
 		if(st)
 		{
@@ -40,7 +40,7 @@ final class TextCaptions : GUIElement
 					flags.captureFocus = true;
 				}
 
-				override void onPress(bool st)
+				override void onPress(Vector2s, bool st)
 				{
 					if(st)
 					{
