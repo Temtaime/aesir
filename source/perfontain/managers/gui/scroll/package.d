@@ -1,23 +1,18 @@
 module perfontain.managers.gui.scroll;
 
 import
-		std.utf,
-		std.conv,
-		std.regex,
-		std.stdio,
-		std.range,
 		std.algorithm,
 
-		core.bitop,
-
 		perfontain,
-		perfontain.managers.gui.scroll.sub;
+		perfontain.managers.gui.scroll.bar;
 
 public import
 				perfontain.managers.gui.scroll.text;
 
 
-final class Scrolled : GUIElement
+final:
+
+class Scrolled : GUIElement
 {
 	this(GUIElement parent, Vector2s sz, ushort h)
 	{
@@ -26,39 +21,46 @@ final class Scrolled : GUIElement
 		new Table(this, sz);
 		new Scrollbar(this);
 
-
-		toChildSize;
+		size.x = sbar.size.x;
+		onCountChanged.permanent({ sbar.show(table.maxIndex > 0); });
 	}
 
 	override void onResize()
 	{
-		bar.moveX(POS_MAX);
+		sbar.moveX(POS_MAX);
+	}
+
+	override bool onWheel(Vector2s v)
+	{
+		pose(clamp!int(table.pos - v.y, 0, table.maxIndex));
+		return true;
 	}
 
 	void add(GUIElement e)
 	{
 		table.add(e);
+
+		size.x = max(size.x, cast(short)(table.size.x + sbar.size.x));
+		onResize;
+
+		onCountChanged();
 	}
 
-private:
-	mixin MakeChildRef!(Table, `table`, 0);
-	mixin MakeChildRef!(Scrollbar, `bar`, 1);
-}
-
-class Scrollbar : GUIElement
-{
-	this(Scrolled s)
+	void remove(GUIElement e)
 	{
-		super(s);
-
-		{
-			auto e = new GUIImage(this, SCROLL_ARROW);
-			size = Vector2s(e.size.x, s.size.y);
-		}
-
-		{
-			auto e = new GUIImage(this, SCROLL_ARROW, DRAW_MIRROR_V);
-			e.moveY(POS_MAX);
-		}
+		table.remove(e);
+		onCountChanged();
 	}
+
+	void pose(uint n)
+	{
+		table.pose(n);
+		onPosChanged(n);
+	}
+
+	Signal!void onCountChanged;
+	Signal!(void, uint) onPosChanged;
+package:
+	mixin MakeChildRef!(Table, `table`, 0);
+	mixin MakeChildRef!(Scrollbar, `sbar`, 1);
 }

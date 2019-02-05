@@ -198,14 +198,14 @@ abstract class HotkeyIcon : GUIElement
 		}
 	}
 
-	override void onMove()
+	override void onMoved()
 	{
 		if(_e)
 		{
 			_e.pos = PE.window.mpos - _e.size / 2;
 		}
 
-		parent.onMove;
+		parent.onMoved;
 	}
 
 	override void onDoubleClick()

@@ -58,7 +58,7 @@ class WinHotkeys : GUIElement
 		super.draw(p);
 	}
 
-	override void onMove()
+	override void onMoved()
 	{
 		auto p = PE.window.mpos - pos - Vector2s(SP);
 

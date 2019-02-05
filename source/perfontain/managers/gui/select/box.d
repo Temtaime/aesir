@@ -39,7 +39,7 @@ class SelectBox : GUIElement
 	{
 		if(_pop)
 		{
-			_pop.deattach;
+			_pop._box = null;
 		}
 	}
 
@@ -155,7 +155,10 @@ class SelectPopup : Selector
 
 	~this()
 	{
-		_box.select(_idx);
+		if(_box)
+		{
+			_box.select(_idx);
+		}
 	}
 
 	override void onFocus(bool v)

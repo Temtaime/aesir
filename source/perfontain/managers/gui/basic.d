@@ -47,7 +47,10 @@ class Table : GUIElement
 
 	void remove(GUIElement e)
 	{
+		e.deattach;
 		_elems.remove(e);
+
+		_pos = min(_pos, maxIndex);
 		update;
 	}
 
@@ -55,6 +58,16 @@ class Table : GUIElement
 	{
 		_pos = n;
 		update;
+	}
+
+	const rows()
+	{
+		return (cast(uint)_elems.length + _sz.x - 1) / _sz.x;
+	}
+
+	const maxIndex()
+	{
+		return uint(max(0, int(rows) - _sz.y));
 	}
 
 private:
@@ -94,10 +107,9 @@ private:
 	}
 
 	mixin publicProperty!(uint, `pos`);
+	mixin publicProperty!(Vector2s, `sz`);
 
 	RCArray!GUIElement _elems;
-
-	Vector2s _sz;
 	ushort _pad;
 }
 

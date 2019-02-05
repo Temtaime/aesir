@@ -39,21 +39,15 @@ final class GUIManager
 {
 	this()
 	{
-		// shaders
 		_prog = ProgramCreator(`gui`).create;
 
-		// events
 		PE.onMove.permanent(&onMove);
 		PE.onWheel.permanent(&onWheel);
 		PE.onButton.permanent(&onButton);
 		PE.onKey.permanent(&onKey);
 		PE.onDoubleClick.permanent(&onDoubleClick);
 
-		// root
 		root = new GUIElement(null, PE.window.size);
-
-		// misc
-		_moveSub.x = -1;
 	}
 
 	@property current()
@@ -179,57 +173,47 @@ package:
 private:
 	void onMove(Vector2s p)
 	{
-		if(root)
+		if(_moveSub.x >= 0)
 		{
-			if(_moveSub.x >= 0)
+			p -= _moveSub;
+
+			with(_cur.parent)
 			{
-				p -= _moveSub;
+				p = p.zipMap!((a, b) => clamp(a, short.init, b))(size - _cur.size);
 
-				with(_cur.parent)
+				if(_cur.pos != p)
 				{
-					p = p.zipMap!((a, b) => clamp(a, short(0), b))(size - _cur.size);
-
-					if(_cur.pos != p)
-					{
-						_cur.pos = p;
-						_cur.onMove;
-					}
-				}
-
-				return;
-			}
-
-			{
-				auto w = _cur;
-				_cur = root.winByPos(PE.window.mpos);
-
-				if(_cur !is w)
-				{
-					if(w)
-					{
-						w.flags.hasMouse = false;
-						w.onHover(false);
-					}
-
-					onCurrentChanged(_cur); // TODO: PLACE
-
-					if(_cur)
-					{
-						_cur.flags.hasMouse = true;
-						_cur.onHover(true);
-					}
-				}
-
-				if(_cur)
-				{
-					_cur.onMove;
+					_cur.pos = p;
+					_cur.onMoved;
 				}
 			}
 
-			if(_focus && PE.window.mouse & MOUSE_LEFT)
+			return;
+		}
+
+		auto prev = _cur;
+		_cur = root.winByPos(PE.window.mpos);
+
+		if(_cur !is prev)
+		{
+			if(prev)
 			{
-				_focus.onMove;
+				prev.flags.hasMouse = false;
+				prev.onHover(false);
 			}
+
+			onCurrentChanged(_cur);
+
+			if(_cur)
+			{
+				_cur.flags.hasMouse = true;
+				_cur.onHover(true);
+			}
+		}
+
+		if(_cur)
+		{
+			_cur.onMove(PE.window.mpos - _cur.absPos);
 		}
 	}
 
@@ -250,13 +234,10 @@ private:
 
 	bool onDoubleClick(ubyte k)
 	{
-		if(k == MOUSE_LEFT)
+		if(k == MOUSE_LEFT && _cur)
 		{
-			if(_cur)
-			{
-				_cur.onDoubleClick;
-				return true;
-			}
+			_cur.onDoubleClick;
+			return true;
 		}
 
 		return false;
@@ -314,11 +295,6 @@ private:
 
 	void focus(GUIElement e, bool b)
 	{
-		/*if(_focus && _focus.flags.pressed)
-		{
-			return;
-		}*/
-
 		e.flags.focused = b;
 		e.onFocus(b);
 	}
@@ -331,5 +307,5 @@ private:
 				_inp,
 				_focus;
 
-	Vector2s _moveSub;
+	Vector2s _moveSub = -1.Vector2s;
 }

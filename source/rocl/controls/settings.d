@@ -84,6 +84,14 @@ final class WinSettings : WinBasic2
 		}
 
 		t.childs.each!(a => a.childs[0].moveY(POS_CENTER));
+
+		{
+			auto arr = t.childs[].map!(a => a.childs.front).filter!(a => cast(SelectBox)a);
+			auto w = arr.calcSize(false).x;
+
+			arr.each!((a) { a.size.x = w; a.onResize; });
+		}
+
 		adjust;
 
 		if(viewer)

@@ -107,9 +107,9 @@ class GUIElement : RCounted
 		return false;
 	}
 
-	void onMove() {}
+	void onMove(Vector2s) {}
+	void onMoved() {}
 	void onResize() {}
-
 	void onShow(bool) {}
 	void onFocus(bool) {}
 	void onHover(bool) {}
@@ -414,6 +414,11 @@ protected:
 
 			debug
 			{
+				if(!v.x || !v.y)
+				{
+					logger.error(`drawing with zero size: %s`, dumpPath);
+				}
+
 				foreach(e; byHierarchy.array.retro)
 				{
 					if(e.pos.x < 0 || e.pos.y < 0)
