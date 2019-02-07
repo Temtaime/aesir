@@ -30,14 +30,12 @@ import
 
 final:
 
-class WinSkills : WinBasic
+class WinSkills : WinBasic2
 {
 	this()
 	{
 		{
-			name = `skills`;
-
-			super(Vector2s(300, 200), MSG_SKILLS);
+			super(MSG_SKILLS, `skills`);
 
 			if(pos.x < 0)
 			{

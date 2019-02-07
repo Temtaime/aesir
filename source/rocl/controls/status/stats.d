@@ -42,8 +42,10 @@ class StatsUpper : GUIStaticText
 
 class StatsSlot : GUIElement
 {
-	this(GUIElement win, ushort w, string name, ushort value, ushort bonus, ushort cost)
+	this(GUIElement p, ushort w, string name, ushort value, ushort bonus, ushort cost)
 	{
+		super(p);
+
 		auto sw = PE.fonts.base.widthOf(`_`, FONT_BOLD);
 
 		{
@@ -72,8 +74,6 @@ class StatsSlot : GUIElement
 				e.pos = Vector2s(size.x - sw - e.size.x, 0);
 			}
 		}
-
-		super(win);
 	}
 
 	override void draw(Vector2s p) const
@@ -88,9 +88,9 @@ class StatsSlot : GUIElement
 
 class StatsView : GUIElement
 {
-	this(GUIElement win, ushort w)
+	this(GUIElement p, ushort w)
 	{
-		super(win);
+		super(p);
 
 		foreach(i, s; Stats)
 		{

@@ -18,9 +18,9 @@ final:
 
 class BonusesSlot : GUIElement
 {
-	this(GUIElement win, ushort w, string name, ushort value, ushort value2)
+	this(GUIElement p, ushort w, string name, ushort value, ushort value2)
 	{
-		super(win);
+		super(p);
 
 		{
 			auto e = new GUIStaticText(this, name, FONT_BOLD);
@@ -49,8 +49,10 @@ class BonusesSlot : GUIElement
 
 class BonusesView : GUIElement
 {
-	this(GUIElement win, ushort w)
+	this(GUIElement p, ushort w)
 	{
+		super(p);
+
 		size.x = w;
 
 		foreach(i, s; Bonuses)
@@ -62,8 +64,6 @@ class BonusesView : GUIElement
 		}
 
 		size.y = cast(ushort)(childs.back.size.y * 4);
-
-		super(win);
 	}
 
 	void update(ref in Bonus b)

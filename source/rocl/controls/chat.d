@@ -15,6 +15,8 @@ final class RoChat : GUIElement
 {
 	this(bool online = true)
 	{
+		super(PE.gui.root, Vector2s.init, Win.moveable, `chat`);
+
 		{
 			new ScrolledText(this, Vector2s(660, 5), SCROLL_ARROW);
 			new GUIEditText(this);
@@ -41,13 +43,7 @@ final class RoChat : GUIElement
 		toChildSize;
 		pad(4);
 
-		super(PE.gui.root, Vector2s.init, Win.moveable, `chat`);
-
-		if(pos.x < 0)
-		{
-			pos = parent.size - size;
-		}
-
+		tryPose;
 		edit.focus;
 	}
 

@@ -15,9 +15,9 @@ class CastBar : GUIQuad
 		_dur = dur;
 		_tick = PE.tick;
 
-		size = Vector2s(60, 6);
-
 		super(PE.gui.root, Color(0, 0, 0, 255));
+
+		size = Vector2s(60, 6);
 	}
 
 	override void draw(Vector2s p) const
@@ -43,9 +43,7 @@ class HpBar : GUIElement
 {
 	this()
 	{
-		size = Vector2s(60, 9);
-
-		super(PE.gui.root);
+		super(PE.gui.root, Vector2s(60, 9));
 	}
 
 	override void draw(Vector2s p) const

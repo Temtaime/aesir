@@ -18,9 +18,7 @@ class WinHotkeys : GUIElement
 {
 	this()
 	{
-		name = `hotkeys`;
-
-		super(PE.gui.root);
+		super(PE.gui.root, Vector2s.init, Win.none, `hotkeys`);
 
 		size = Vector2s(9, 4) * KS + Vector2s(SP + 10, SP);
 		flags.moveable = true;

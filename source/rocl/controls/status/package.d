@@ -25,10 +25,12 @@ import
 		rocl.network.packets;
 
 
-final class WinStatus : WinBasic
+final class WinStatus : WinBasic2
 {
 	this()
 	{
+		super(MSG_EQUIPMENT, `status`);
+
 		ushort
 				y,
 				w = 360;
@@ -55,10 +57,6 @@ final class WinStatus : WinBasic
 		y += stats.size.y;
 
 		{
-			name = `status`;
-
-			super(Vector2s(w + 20, y + 36), MSG_EQUIPMENT);
-
 			if(pos.x < 0)
 			{
 				pos.x = cast(ushort)((PE.window.size.x - size.x) / 2);
