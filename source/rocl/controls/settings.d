@@ -138,4 +138,9 @@ final class WinSettings : WinBasic2
 			e.move(POS_MIN, 4, POS_CENTER);
 		}
 	}
+
+	override void poseDefault()
+	{
+		center;
+	}
 }

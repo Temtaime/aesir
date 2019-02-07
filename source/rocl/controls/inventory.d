@@ -211,11 +211,11 @@ private:
 	}
 }
 
-final class WinInventory : WinBasic
+final class WinInventory : WinBasic2
 {
 	this()
 	{
-		name = `inventory`;
+		super(MSG_INVENTORY, `inventory`);
 
 		auto sz = Vector2s(7, 2);
 
@@ -224,8 +224,6 @@ final class WinInventory : WinBasic
 			tab.pos = Vector2s(2) + Vector2s(0, WIN_TOP_SZ.y);
 
 			sz = tab.pos + tab.size + Vector2s(0, WIN_BOTTOM_SZ.y) + Vector2s(2) + Vector2s(0, sz.y <= 2 ? -10 : 0);
-
-			super(sz, MSG_INVENTORY);
 		}
 
 		if(pos.x < 0)

@@ -51,8 +51,8 @@ class CameraFPS : CameraBase
 		_pos = p;
 		_dir = t - p;
 
-		_tp = PE.onTickDiff.add(&onTick);
 		_tb = PE.onButton.add(&onButton);
+		_tp = PE.onTickDelta.add(&onTick);
 
 		recalcRes;
 	}

@@ -50,40 +50,22 @@ class GUIElement : RCounted
 			attach(p);
 		}
 
-		if(sz.x || sz.y)
-		{
-			size = sz;
-		}
+		assert(!flags);
+		assert(!name.length);
+		assert(!size.x && !size.y);
 
-		if(f)
-		{
-			flags = f;
-		}
-
-		if(n)
-		{
-			name = n;
-			/*pos.x = -1;
-
-			if(auto w = name in PE.settings.wins)
-			{
-				auto v = w.pos;
-				auto u = v + size;
-
-				if(v.x >= 0 && v.y >= 0 && u.x <= PEwindow.size.x && u.y <= PEwindow.size.y)
-				{
-					pos = v;
-				}
-			}*/
-		}
+		name = n;
+		size = sz;
+		flags = f;
 	}
 
 	~this()
 	{
-		/*if(name.length)
+		if(parent is PE.gui.root && name.length)
 		{
 			PE.settings.wins[name] = WindowData(pos);
-		}*/
+		}
+
 		PE.gui.onDie(this);
 	}
 
@@ -100,6 +82,28 @@ class GUIElement : RCounted
 
 			e.draw(p);
 		}
+	}
+
+	void tryPose()
+	{
+		assert(parent is PE.gui.root && name.length);
+
+		if(auto w = name in PE.settings.wins)
+		{
+			pos = w.pos;
+
+			if(end.x <= parent.size.x && end.y <= parent.size.y)
+			{
+				return;
+			}
+		}
+
+		poseDefault;
+	}
+
+	void poseDefault()
+	{
+		pos = Vector2s.init;
 	}
 
 	bool onWheel(Vector2s)
@@ -242,14 +246,14 @@ final:
 		return absPos + size;
 	}
 
-	void focus(bool b = true)
+	void focus(bool v = true)
 	{
-		PE.gui.doFocus(b ? this : null);
+		PE.gui.doFocus(v ? this : null);
 	}
 
-	void input(bool b = true)
+	void input(bool v = true)
 	{
-		PE.gui.doInput(b ? this : null);
+		PE.gui.doInput(v ? this : null);
 	}
 
 	/*void add(GUIElement[] arr)

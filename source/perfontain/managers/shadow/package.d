@@ -11,8 +11,8 @@ final class ShadowManager
 {
 	this()
 	{
-		PE.onAspect.permanent(_ => onUpdate);
-		PE.settings.shadowsChange.permanent(_ => onUpdate);
+		PE.onResize.permanent(_ => update);
+		PE.settings.shadowsChange.permanent(_ => update);
 
 		_bias = Matrix4.scale(VEC3_2) * Matrix4.translate(VEC3_2);
 	}
@@ -82,7 +82,7 @@ private:
 		return PE.settings.shadows;
 	}
 
-	void onUpdate()
+	void update()
 	{
 		if(level)
 		{

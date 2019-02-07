@@ -97,6 +97,8 @@ class WindowManager
 		}
 
 		SDL_StopTextInput();
+		SDL_SetWindowMinimumSize(_win, 640, 480);
+
 		onVSync(PE.settings.vsync);
 
 		PE.settings.vsyncChange.permanent(&onVSync);
@@ -157,7 +159,7 @@ package(perfontain):
 
 	void processEvents()
 	{
-		SDL_Event evt = void;
+		SDL_Event evt;
 
 		while(SDL_PollEvent(&evt))
 		{
@@ -200,8 +202,7 @@ package(perfontain):
 				switch(evt.window.event)
 				{
 				case SDL_WINDOWEVENT_FOCUS_GAINED:
-					_active = true;
-					_skip = true;
+					_active = _skip = true;
 					break;
 
 				case SDL_WINDOWEVENT_FOCUS_LOST:
@@ -209,8 +210,7 @@ package(perfontain):
 					break;
 
 				case SDL_WINDOWEVENT_RESIZED:
-					_size = Vector2s(evt.window.data1, evt.window.data2);
-					PE.triggerAspect;
+					PE.onResize(_size = Vector2s(evt.window.data1, evt.window.data2));
 					break;
 
 				default:

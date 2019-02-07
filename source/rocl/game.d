@@ -124,12 +124,12 @@ private:
 	{
 		auto t = TimeMeter(`main window creation`);
 
-		void onAspect(float aspect)
+		void onResize(Vector2s sz)
 		{
-			PE.scene.proj = Matrix4.makePerspective(aspect, fov, 10, 1000);
+			PE.scene.proj = Matrix4.makePerspective(float(sz.x) / sz.y, fov, 10, 1000);
 		}
 
-		PE.onAspect.permanent(&onAspect);
+		PE.onResize.permanent(&onResize);
 
 		try
 		{

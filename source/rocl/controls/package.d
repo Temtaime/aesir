@@ -144,6 +144,7 @@ class WinBasic2 : GUIElement
 		}
 
 		toChildSize;
+		tryPose;
 	}
 
 protected:

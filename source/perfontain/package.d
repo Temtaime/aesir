@@ -203,7 +203,7 @@ final class Engine
 		_run = true;
 
 		ctors;
-		triggerAspect;
+		onResize(PE.window.size);
 
 		settings.disableUnsupported;
 	}
@@ -240,17 +240,15 @@ final class Engine
 
 	FileSystem fs;
 
-	// signals
-	Signal!(void, float) onAspect;
-
 	Signal!(void, Vector2s) onMove;
 	Signal!(void, Vector2s) onMoveDelta;
 
-	Signal!(void, uint) onTickDiff;
+	Signal!(void, uint) onTickDelta;
+	Signal!(void, Vector2s) onResize;
 
-	Signal!(bool, ubyte, bool) onButton;
-	Signal!(bool, ubyte) onDoubleClick;
 	Signal!(bool, Vector2s) onWheel;
+	Signal!(bool, ubyte) onDoubleClick;
+	Signal!(bool, ubyte, bool) onButton;
 
 	Signal!(bool, SDL_Keycode, bool) onKey;
 package:
@@ -260,11 +258,6 @@ package:
 
 	mixin publicProperty!(uint, `tick`);
 	mixin publicProperty!(uint, `fpsCount`);
-
-	void triggerAspect()
-	{
-		onAspect(float(window._size.x) / window._size.y);
-	}
 
 	bool processWork()
 	{
@@ -277,7 +270,7 @@ package:
 
 		if(_diff)
 		{
-			onTickDiff(_diff);
+			onTickDelta(_diff);
 		}
 
 		window.processEvents;

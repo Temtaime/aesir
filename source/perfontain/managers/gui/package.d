@@ -41,10 +41,11 @@ final class GUIManager
 	{
 		_prog = ProgramCreator(`gui`).create;
 
+		PE.onKey.permanent(&onKey);
 		PE.onMove.permanent(&onMove);
 		PE.onWheel.permanent(&onWheel);
 		PE.onButton.permanent(&onButton);
-		PE.onKey.permanent(&onKey);
+		PE.onResize.permanent(&onResize);
 		PE.onDoubleClick.permanent(&onDoubleClick);
 
 		root = new GUIElement(null, PE.window.size);
@@ -62,16 +63,12 @@ final class GUIManager
 
 	void draw()
 	{
-		if(root)
-		{
-			auto sz = PEwindow._size;
-			auto m = Matrix4.makeOrthogonal(0, sz.x, sz.y, 0, 1, -1); // TODO: TO REASPECT
+		alias F = (a, b) => a.flags.topMost < b.flags.topMost;
 
-			root.childs[].sort!((a, b) => a.flags.topMost < b.flags.topMost, SwapStrategy.stable);
-			root.draw(Vector2s.init);
+		root.childs[].sort!(F, SwapStrategy.stable);
+		root.draw(Vector2s.init);
 
-			PE.render.doDraw(_prog, RENDER_GUI, m, null, false);
-		}
+		PE.render.doDraw(_prog, RENDER_GUI, _proj, null, false);
 	}
 
 	Signal!(void, GUIElement) onCurrentChanged;
@@ -287,10 +284,25 @@ private:
 		{
 			_inp.focus;
 			_inp.onKey(k, st);
+
 			return true;
 		}
 
 		return false;
+	}
+
+	void onResize(Vector2s sz)
+	{
+		root.size = sz;
+		_proj = Matrix4.makeOrthogonal(0, sz.x, sz.y, 0, 1, -1);
+
+		foreach(c; root.childs)
+		{
+			if(c.end.x > sz.x || c.end.y > sz.y)
+			{
+				c.poseDefault;
+			}
+		}
 	}
 
 	void focus(GUIElement e, bool b)
@@ -307,5 +319,6 @@ private:
 				_inp,
 				_focus;
 
+	Matrix4 _proj;
 	Vector2s _moveSub = -1.Vector2s;
 }
