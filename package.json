@@ -25,10 +25,10 @@
 	"stringImportPaths": [ "source/perfontain/shader/res" ],
 	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-linux-gnu/7.3.0/libstdc++.a" ],
 
-	"dflags": [ "-transition=intpromote" ],
+	"dflags-dmd": [ "-preview=intpromote" ],
 
-	"dflags-ldc2": [ "-ffast-math", "-enable-cross-module-inlining" ],
-	"lflags-linux-ldc2": [ "-s" ],
+	"dflags-ldc": [ "-ffast-math", "-enable-cross-module-inlining", "-transition=intpromote" ],
+	"lflags-linux-ldc": [ "-s" ],
 
 	"libs-linux": [ "X11", "Xext", "Xi", "asound" ],
 	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64" ],

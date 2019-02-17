@@ -42,11 +42,7 @@ class WinBasic : GUIElement
 {
 	this(Vector2s sz, string s, bool bottom = true)
 	{
-		super(PE.gui.root);
-
-		size = sz;
-		flags.moveable = true;
-		flags.captureFocus = true;
+		super(PE.gui.root, size, Win.moveable | Win.captureFocus);
 
 		{
 			auto t = new GUIStaticText(this, s);
