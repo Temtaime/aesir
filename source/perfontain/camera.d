@@ -92,7 +92,7 @@ package:
 	void onMove(Vector2s d)
 	{
 		auto pitch = Quaternion.fromAxis(AXIS_Y ^ _dir, d.y * rotateSpeed * TO_RAD);
-		auto heading = Quaternion.fromAxis(AXIS_Y, -d.x * rotateSpeed * TO_RAD);
+		auto heading = Quaternion.fromAxis(AXIS_Y, d.x * rotateSpeed * -TO_RAD);
 
 		_dir *= heading * pitch;
 

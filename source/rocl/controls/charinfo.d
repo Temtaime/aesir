@@ -107,7 +107,7 @@ final class CharInfo : RCounted
 
 			if(_hp)
 			{
-				_hp.pos = pos + Vector2s(-_hp.size.x / 2, _hp.size.y);
+				_hp.pos = pos + Vector2s(_hp.size.x / -2, _hp.size.y);
 			}
 		}
 	}

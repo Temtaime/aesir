@@ -159,7 +159,7 @@ struct SubMeshData
 
 			if(valueEqual(calcNormal(a.p, b.p, c.p).length, 0)) // TODO: FIX ???
 			{
-				indices.removeStable(i, i + 1, i + 2);
+				indices = indices.remove(i, i + 1, i + 2);
 				//triangleArea(a.p, b.p, c.p).writeln;
 			}
 			else

@@ -58,14 +58,14 @@ alias Op(string S) = (a, b) => mixin(`a` ~ S ~ `b`);
 auto packModes(ubyte src, ubyte dst)
 {
 	assert(src < 16 && dst < 16);
+
 	return cast(ubyte)(dst << 4 | src);
 }
 
 auto unpackModes(ubyte mode)
 {
-	ubyte[2] res;
-	res.front = mode & 0xF;
-	res.back = mode >> 4;
+	ubyte[2] res = [ mode & 0xF, mode >> 4 ];
+
 	return res;
 }
 
@@ -78,16 +78,6 @@ auto makeAligned(void[] b, ubyte a)
 {
 	auto k = cast(size_t)b.ptr;
 	return b[alignTo(k, a) - k..$];
-}
-
-auto removeUnstable(T, A...)(ref T[] arr, A args)
-{
-	arr = arr.remove!(SwapStrategy.unstable)(args);
-}
-
-auto removeStable(T, A...)(ref T[] arr, A args)
-{
-	arr = arr.remove(args);
 }
 
 auto sliceOne(T)(ref T t)
@@ -115,10 +105,6 @@ void eachGroup(alias F, T)(T[] arr, void delegate(T[]) dg)
 	}
 }
 
-/*auto as(T, E)(E *arr, size_t len)
-{
-	return (cast(T *)arr)[0..len];
-}*/
 auto constAway(T)(in T[] arr)
 {
 	return arr.as!T;
@@ -138,9 +124,9 @@ auto createArray(T, A...)(uint len, A args)
 
 ubyte direction(Vector2 v, bool inv = false)
 {
-	auto k = cast(ubyte)((atan2(v.normalize.x, v.y) * TO_DEG - 22.5 + 360) / 45);
+	auto k = cast(int)((atan2(v.normalize.x, v.y) * TO_DEG + 360 - 22.5) / 45);
 
-	return (inv ? cast(ubyte)(k + 5) : ~k) & 7;
+	return (inv ? k + 5 : ~k) & 7;
 }
 
 auto makeIndices(uint cnt)
@@ -169,17 +155,6 @@ bool set(T)(ref T var, T new_)
 	}
 
 	return false;
-}
-
-void setBit(T)(ref T var, T bit, bool b)
-{
-	if(b)	var |=	bit;
-	else	var &=	~bit;
-}
-
-auto setFlag(string f, string b, uint bit)
-{
-	return format(`%1$s = %1$s ^ ((-typeof(%1$s)(%2$s) ^ %1$s) & %3$s);`, f, b, bit);
 }
 
 void byFlag(T)(ref T v, uint bit, bool st)
