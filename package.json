@@ -23,14 +23,13 @@
 	},
 
 	"stringImportPaths": [ "source/perfontain/shader/res" ],
-	"sourceFiles-linux": [ "/usr/lib/gcc/x86_64-linux-gnu/7.3.0/libstdc++.a" ],
 
-	"dflags-ldc": [ "-ffast-math", "-enable-cross-module-inlining" ],
-	"lflags-linux-ldc": [ "-s" ],
-
-	"libs-linux": [ "X11", "Xext", "Xi", "asound" ],
 	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64" ],
 
-	"lflags-linux": [ "-Lutils/deps" ],
+	"dflags-ldc": [ "-ffast-math", "-enable-cross-module-inlining" ],
+
+	"libs-linux": [ "X11", "Xext", "Xi", "asound", "stdc++" ],
+	"lflags-linux": [ "-Lutils/deps", "-s" ],
+
 	"lflags-windows": [ "/LIBPATH:utils/deps" ],
 }

@@ -46,6 +46,7 @@ alias Op(string S) = (a, b) => mixin(`a` ~ S ~ `b`);
 		GL_ONE_MINUS_DST_COLOR,
 		GL_SRC_ALPHA_SATURATE,
 	],
+
 	modes2 =
 	[
 		GL_CONSTANT_COLOR,
@@ -114,7 +115,10 @@ auto createArray(T, A...)(uint len, A args)
 {
 	static if(args.length)
 	{
-		return generate!(() => createArray!T(args)).take(len).array;
+		return len
+					.iota
+					.map!(_ => createArray!T(args))
+					.array;
 	}
 	else
 	{
