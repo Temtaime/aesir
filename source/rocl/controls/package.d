@@ -172,7 +172,7 @@ final class WinInfo : WinBasic2
 		super(MSG_INFO);
 
 		{
-			auto e = new ScrolledText(main, Vector2s(280, 4), SCROLL_ARROW);
+			auto e = new ScrolledText(main, Vector2s(280, 4));
 
 			e.autoBottom = false;
 			e.add(s);

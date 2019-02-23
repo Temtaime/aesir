@@ -73,6 +73,8 @@ final class GuiManager
 			status.show(false);
 			skills.show(false);
 
+			hotkeys.show(false);
+
 			//chat.focus; // TODO: MAKE ONSUBMIT RETURN BOOL AND SEARCH FOR INPUT WINDOW
 
 			PE.scene.camera = new CameraRO(Vector3(0));

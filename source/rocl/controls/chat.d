@@ -18,7 +18,7 @@ final class RoChat : GUIElement
 		super(PE.gui.root, Vector2s.init, Win.moveable, `chat`);
 
 		{
-			new ScrolledText(this, Vector2s(660, 5), SCROLL_ARROW);
+			new ScrolledText(this, Vector2s(660, 5));
 			new GUIEditText(this);
 
 			edit.moveY(sc, POS_ABOVE);

@@ -12,11 +12,14 @@ import
 
 final class ScrolledText : GUIElement
 {
-	this(GUIElement p, Vector2s sz, ushort id)
+	this(GUIElement p, Vector2s sz)
 	{
-		super(p);
+		super(p, Vector2s(sz.x, font.height * sz.y));
 
-		//size = new Scrolled(this, Vector2s(sz.x, PE.fonts.base.height), sz.y).size;
+		new Scrolled(this, Vector2s(1, sz.y), font.height);
+
+		sc.size.x = size.x;
+		sc.onResize;
 	}
 
 	void clear()
@@ -26,11 +29,15 @@ final class ScrolledText : GUIElement
 
 	void add(string s, Color c = colorTransparent)
 	{
-		//PE.fonts.base.toLines(colorSplit(s, c), sc.container.size.x).each!(a => add(a));
+		font
+			.toLines(colorSplit(s, c), sc.width)
+			.each!(a => add(a));
 	}
 
 	bool autoBottom = true;
 private:
+	mixin MakeChildRef!(Scrolled, `sc`, 0);
+
 	void add(GUIElement e, CharColor[] arr)
 	{
 		auto t = new GUIStaticText(e, arr.map!(a => a.c).array.toUTF8);
@@ -53,11 +60,15 @@ private:
 			//e.flags = WIN_CASCADE_SHOW;
 		}
 
-		//sc.add(e, true, autoBottom);
+		sc.add(e);
+
+		if(autoBottom)
+		{
+		}
 	}
 
-	/*inout sc()
+	static font()
 	{
-		return cast(Scrolled)childs[0];
-	}*/
+		return PE.fonts.base;
+	}
 }

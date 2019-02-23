@@ -70,7 +70,7 @@ class WinNpcDialog : WinNpc
 		{
 			auto sz = size - NPC_WIN_SZ * 2 - Vector2s(0, BTN_PART_SZ.y + 6);
 
-			new ScrolledText(this, Vector2s(sz.x, sz.y / PE.fonts.base.height), SCROLL_ARROW);
+			new ScrolledText(this, Vector2s(sz.x, sz.y / PE.fonts.base.height));
 
 			text.pos = NPC_WIN_SZ;
 			text.autoBottom = false;

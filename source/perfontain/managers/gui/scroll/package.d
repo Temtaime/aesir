@@ -58,6 +58,11 @@ class Scrolled : GUIElement
 		onPosChanged(n);
 	}
 
+	const width()
+	{
+		return cast(ushort)(size.x - sbar.size.x);
+	}
+
 	Signal!void onCountChanged;
 	Signal!(void, uint) onPosChanged;
 package:

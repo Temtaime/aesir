@@ -75,10 +75,8 @@ class GUIElement : RCounted
 
 		foreach(e; childs[].filter!(a => a.visible))
 		{
-			auto u = e.pos + e.size;
-
-			//assert(u.x <= size.x);
-			//assert(u.y <= size.y);
+			//assert(u.end.x <= size.x);
+			//assert(u.end.y <= size.y);
 
 			e.draw(p);
 		}
