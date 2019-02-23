@@ -72,7 +72,10 @@ private:
 
 	void pose(uint n)
 	{
-		pos.y = cast(short)(spacer * n / sc.table.maxIndex);
+		if(auto r = sc.table.maxIndex)
+		{
+			pos.y = cast(short)(spacer * n / r);
+		}
 	}
 
 	void update()

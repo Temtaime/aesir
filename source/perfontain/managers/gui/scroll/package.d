@@ -36,6 +36,11 @@ class Scrolled : GUIElement
 		return true;
 	}
 
+	void clear()
+	{
+		//childs[0] = new Table(this, table.sz);
+	}
+
 	void add(GUIElement e)
 	{
 		table.add(e);
@@ -61,6 +66,16 @@ class Scrolled : GUIElement
 	const width()
 	{
 		return cast(ushort)(size.x - sbar.size.x);
+	}
+
+	const maxIndex()
+	{
+		return table.maxIndex;
+	}
+
+	inout elements()
+	{
+		return table.elements;
 	}
 
 	Signal!void onCountChanged;

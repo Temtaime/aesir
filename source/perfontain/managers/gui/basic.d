@@ -70,15 +70,20 @@ class Table : GUIElement
 		return uint(max(0, int(rows) - _sz.y));
 	}
 
+	inout elements()
+	{
+		return _elems[];
+	}
+
 private:
 	void update()
 	{
-		_elems.each!(a => a.deattach);
+		elements.each!(a => a.deattach);
 		childs.clear;
 
 		auto sizes = _sz.x
 							.iota
-							.map!(a => _elems[].drop(a).stride(_sz.x).calcSize)
+							.map!(a => elements.drop(a).stride(_sz.x).calcSize)
 							.array;
 
 		auto xoff = _sz.x
