@@ -72,10 +72,7 @@ private:
 
 	void pose(uint n)
 	{
-		if(auto r = sc.table.maxIndex)
-		{
-			pos.y = cast(short)(spacer * n / r);
-		}
+		pos.y = cast(short)(spacer * n / sc.table.maxIndex);
 	}
 
 	void update()
@@ -86,12 +83,7 @@ private:
 		auto down = new GUIImage(this, SCROLL_PART, DRAW_MIRROR_V);
 
 		auto t = sc.table;
-		auto h = parent.size.y - up.size.y * 2;
-
-		if(t.maxIndex)
-		{
-			h = h * t.sz.y / t.rows;
-		}
+		auto h = (parent.size.y - up.size.y * 2) * t.sz.y / t.rows;
 
 		if(h)
 		{

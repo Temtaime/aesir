@@ -75,11 +75,6 @@ final class RoChat : GUIElement
 	}
 
 private:
-	static szY()
-	{
-		return CHAT_PART_SZ.y;
-	}
-
 	mixin MakeChildRef!(ScrolledText, `sc`, 1);
 	mixin MakeChildRef!(GUIEditText, `edit`, 5);
 }

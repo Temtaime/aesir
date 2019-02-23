@@ -19,15 +19,17 @@ class Scrolled : GUIElement
 		super(parent, Vector2s(0, sz.y * h));
 
 		new Table(this, sz);
-		new Scrollbar(this);
 
-		size.x = sbar.size.x;
-		onCountChanged.permanent({ sbar.show(table.maxIndex > 0); });
+		size.x = SCROLL_ARROW_SZ.x;
+		onCountChanged.permanent(&makeBar);
 	}
 
 	override void onResize()
 	{
-		sbar.moveX(POS_MAX);
+		if(sbar)
+		{
+			sbar.moveX(POS_MAX);
+		}
 	}
 
 	override bool onWheel(Vector2s v)
@@ -45,7 +47,7 @@ class Scrolled : GUIElement
 	{
 		table.add(e);
 
-		size.x = max(size.x, cast(short)(table.size.x + sbar.size.x));
+		size.x = max(size.x, cast(short)(table.size.x + SCROLL_ARROW_SZ.x));
 		onResize;
 
 		onCountChanged();
@@ -65,7 +67,7 @@ class Scrolled : GUIElement
 
 	const width()
 	{
-		return cast(ushort)(size.x - sbar.size.x);
+		return cast(ushort)(size.x - SCROLL_ARROW_SZ.x);
 	}
 
 	const maxIndex()
@@ -83,4 +85,20 @@ class Scrolled : GUIElement
 package:
 	mixin MakeChildRef!(Table, `table`, 0);
 	mixin MakeChildRef!(Scrollbar, `sbar`, 1);
+private:
+	void makeBar()
+	{
+		if(table.maxIndex)
+		{
+			if(!sbar)
+			{
+				new Scrollbar(this);
+				onResize;
+			}
+		}
+		else if(sbar)
+		{
+			sbar.deattach;
+		}
+	}
 }
