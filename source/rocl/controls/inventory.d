@@ -77,7 +77,7 @@ final class InventoryTab : GUIElement
 private:
 	void add(Item m)
 	{
-		add(_aa[m] = new ItemHolder(null, m), m.tab);
+		//add(_aa[m] = new ItemHolder(null, m), m.tab);
 	}
 
 	void remove(Item m)
@@ -211,6 +211,41 @@ private:
 	}
 }
 
+/*final class TabSelector : GUIElement
+{
+	this(GUIElement p, string[] arr)
+	{
+		super(p);
+
+		_texs = arr.map!(a => new GUIStaticText(null, a)).array;
+
+	}
+
+private:
+	GUIStaticText[] _texs;
+}*/
+
+class InventoryTab2 : GUIElement
+{
+	this(GUIElement p, Vector2s sz)
+	{
+		super(p);
+
+		new Scrolled(this, sz, 36);
+		sc.size.x += 36 * sz.x;
+
+		toChildSize;
+	}
+
+	void add(Item m)
+	{
+		sc.add(new ItemHolder(m));
+	}
+
+private:
+	mixin MakeChildRef!(Scrolled, `sc`, 0);
+}
+
 final class WinInventory : WinBasic2
 {
 	this()
@@ -218,6 +253,40 @@ final class WinInventory : WinBasic2
 		super(MSG_INVENTORY, `inventory`);
 
 		auto sz = Vector2s(7, 2);
+
+		{
+			auto msgs =
+			[
+				MSG_ITM,
+				MSG_EQP,
+				MSG_ETC
+			];
+
+			auto e = new TextTabs(main, msgs);
+
+			foreach(i, u; e.tabs)
+			{
+				new InventoryTab2(u, sz);
+			}
+
+			foreach(i; 0..sz.x)
+			foreach(j; 0..sz.y)
+			{
+				auto im = new GUIImage(main, INV_ITEM);
+
+				im.pos = Vector2s(i, j) * 36 + (Vector2s(36) - im.size) / 2;
+				im.pos += e.tabs[0].pos;
+			}
+
+			e.adjust;
+			e.bringToTop;
+
+			RO.status.items.onAdded.permanent(a => (cast(InventoryTab2)e.tabs[0].childs[0]).add(a));
+		}
+
+		adjust;
+
+		/*auto sz = Vector2s(7, 2);
 
 		{
 			tab = new InventoryTab(this, sz);
@@ -231,10 +300,10 @@ final class WinInventory : WinBasic2
 			pos = Vector2s(0, RO.gui.base.size.y);
 		}
 
-		RO.status.items.onAdded.permanent(&tab.register);
+		RO.status.items.onAdded.permanent(&tab.register);*/
 	}
 
-	InventoryTab tab;
+	//InventoryTab tab;
 
 	mixin StatusValue!(uint, `zeny`, onUpdate);
 	mixin StatusValue!(uint, `weight`, onUpdate);
@@ -242,25 +311,25 @@ final class WinInventory : WinBasic2
 private:
 	void onUpdate()
 	{
-		if(childs.length > 2)
+		/*if(childs.length > 2)
 		{
 			childs.popBack;
 		}
 
 		auto e = new GUIStaticText(this, format(`%s Ƶ, %s: %u / %u`, price(zeny), MSG_WEIGHT, weight, maxWeight));
-		e.pos = Vector2s(tab.pos.x + INV_TAB_ITEM_SZ.x, size.y - (WIN_BOTTOM_SZ.y + e.size.y) / 2);
+		e.pos = Vector2s(tab.pos.x + INV_TAB_ITEM_SZ.x, size.y - (WIN_BOTTOM_SZ.y + e.size.y) / 2);*/
 	}
 }
 
 final class ItemHolder : GUIElement
 {
-	this(GUIElement p, Item m)
+	this(Item m)
 	{
-		super(p, Vector2s(36));
+		super(null, 36.Vector2s);
 
 		{
 			auto e = new ItemIcon(this, m);
-			e.pos = Vector2s(6);
+			e.center;
 		}
 
 		_rc = m.onCountChanged.add(&recount);
@@ -276,7 +345,12 @@ private:
 
 		if(m.amount > 1)
 		{
-			auto im = new GUIStaticText(this, m.amount.to!string, 0, PE.fonts.small);
+			FontInfo fi =
+			{
+				font: PE.fonts.small
+			};
+
+			auto im = new GUIStaticText(this, m.amount.to!string, fi);
 			im.pos = Vector2s(30) - im.size / 2;
 
 			im.pos.x = cast(short)min(im.pos.x, size.x - im.size.x); // TODO: REMAKE ?

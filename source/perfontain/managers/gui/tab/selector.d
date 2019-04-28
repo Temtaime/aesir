@@ -37,6 +37,7 @@ final class TextCaptions : GUIElement
 				{
 					super(this.outer, n);
 
+					color = colorGray;
 					flags.captureFocus = true;
 				}
 
@@ -54,8 +55,6 @@ final class TextCaptions : GUIElement
 
 		foreach(i, e; ts)
 		{
-			e.color = colorGray;
-
 			if(i)
 			{
 				e.moveX(ts[i - 1], POS_ABOVE, 5);

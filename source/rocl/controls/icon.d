@@ -31,9 +31,9 @@ import
 
 class IconSkill : GUIElement
 {
-	this(string res, string path)
+	this(GUIElement p, string res, string path)
 	{
-		super(null);
+		super(p, 24.Vector2s);
 
 		try
 		{
@@ -42,42 +42,27 @@ class IconSkill : GUIElement
 			TextureInfo tex =
 			{
 				TEX_DXT_5,
-				[ TextureData(Vector2s(24), data.data) ]
+				[ TextureData(size, data.data) ]
 			};
 
-			_mh = PEobjs.makeOb(tex);
+			auto e = new GUIImage(this, 0, 0, PEobjs.makeOb(tex));
+			e.size = size;
 		}
 		catch(Exception e)
 		{
 			logger.error(`can't load an icon: %s`, e.msg);
 		}
-
-		size = Vector2s(24);
 	}
-
-	override void draw(Vector2s p) const
-	{
-		if(_mh)
-		{
-			drawImage(_mh, 0, p + pos, color);
-		}
-
-		super.draw(p);
-	}
-
-	Color color = colorWhite;
-private:
-	RC!MeshHolder _mh;
 }
 
 abstract class HotkeyIcon : GUIElement
 {
 	this(GUIElement w, string res, string path)
 	{
-		super(w);
+		super(w, Vector2s.init, Win.captureFocus);
 
-		childs ~= new IconSkill(res, path);
-		size = childs.front.size;
+		new IconSkill(this, res, path);
+		toChildSize;
 	}
 
 	~this()

@@ -313,25 +313,35 @@ protected:
 	string _text;
 private:
 	RC!MeshHolder _ob;
-
-	ushort _w;
 	uint _tick;
+	ushort _w;
 }
 
 class GUIStaticText : GUIImage
 {
-	this(GUIElement p, string text, ubyte font = 0, Font f = null, short maxWidth = short.max)
+	this(GUIElement p, string text, FontInfo fi = FontInfo.init, ubyte mode = 0)
 	{
-		f = f ? f : PE.fonts.base;
+		//super(p);
+		auto e = fi.font ? fi.font : PE.fonts.base;
 
-		auto arr = f.toLines(text, maxWidth, 1, font);
+		auto arr = e.toLines(text, fi.maxWidth, 1, fi.flags);
 		assert(arr.length == 1);
 
-		auto m = PEobjs.makeHolder(f.render(arr[0], font));
+		auto m = PEobjs.makeHolder(e.render(arr[0], fi.flags));
 
-		super(p, 0, 0, m);
+		super(p, 0, mode, m);
+		//new GUIImage(this, 0, mode, m).size = m.size;
 
-		size = Vector2s(m.size.x, f.height);
 		color = colorBlack;
+		size = Vector2s(m.size.x, e.height);
 	}
+
+	//auto color = colorBlack;
+}
+
+struct FontInfo // TODO: REPLACE OTHER USAGES
+{
+	Font font;
+	short maxWidth = short.max;
+	ubyte flags;
 }

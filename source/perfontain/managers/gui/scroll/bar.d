@@ -83,11 +83,11 @@ private:
 		auto down = new GUIImage(this, SCROLL_PART, DRAW_MIRROR_V);
 
 		auto t = sc.table;
-		auto h = (parent.size.y - up.size.y * 2) * t.sz.y / t.rows;
 
-		if(h)
+		if(auto h = (parent.size.y - up.size.y * 2) * t.sz.y / t.rows)
 		{
 			auto e = new GUIImage(this, SCROLL_SPACER);
+
 			e.size.y = cast(short)h;
 			e.moveY(up, POS_ABOVE);
 		}

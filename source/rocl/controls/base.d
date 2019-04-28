@@ -174,7 +174,12 @@ private:
 
 		childs.popBack;
 
-		auto e = new GUIStaticText(this, misc ? misc.to!string : format(`%s / %s`, price(value), price(maxValue)), 0, PE.fonts.small);
+		FontInfo fi =
+		{
+			font: PE.fonts.small
+		};
+
+		auto e = new GUIStaticText(this, misc ? misc.to!string : format(`%s / %s`, price(value), price(maxValue)), fi);
 		e.move(bg, POS_CENTER, 0, bg, POS_ABOVE);
 	}
 }

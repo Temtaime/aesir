@@ -23,7 +23,12 @@ class BonusesSlot : GUIElement
 		super(p);
 
 		{
-			auto e = new GUIStaticText(this, name, FONT_BOLD);
+			FontInfo fi =
+			{
+				flags: FONT_BOLD
+			};
+
+			auto e = new GUIStaticText(this, name, fi);
 
 			e.color = Color(30, 33, 150, 255);
 

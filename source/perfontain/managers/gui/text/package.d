@@ -39,39 +39,35 @@ auto colorSplit(string s, Color c = colorTransparent)
 	return arr;
 }
 
-auto toStaticTexts(string s, Vector2s sz, Color c = colorTransparent, Font f = null, ubyte flags = 0)
+auto toStaticTexts(string s, short height, Color c = colorTransparent, FontInfo fi = FontInfo.init)
 {
-	return toStaticTexts(colorSplit(s, c), sz, f, flags);
+	return toStaticTexts(colorSplit(s, c), height, fi);
 }
 
-auto toStaticTexts(CharColor[] arr, Vector2s sz, Font f = null, ubyte flags = 0)
+auto toStaticTexts(CharColor[] arr, short height, FontInfo fi = FontInfo.init)
 {
-	if(!f)
-	{
-		f = PE.fonts.base;
-	}
-
 	Vector2s pos;
 	GUIStaticText[][] res;
 
-	void add(CharColor[] arr)
+	void add(CharColor[] arr) // TODO: SCROLLED TEXT
 	{
-		auto t = new GUIStaticText(null, arr.map!(a => a.c).array.toUTF8, flags, f);
-
+		auto t = new GUIStaticText(null, arr.map!(a => a.c).array.toUTF8);
 		t.pos = pos;
-		t.color = arr[0].col;
+		t.color = arr[0].color;
 
 		res.back ~= t;
 		pos.x += t.size.x;
 	}
 
-	foreach(r; f.toLines(arr, sz.x, sz.y, flags))
+	auto f = fi.font ? fi.font : PE.fonts.base;
+
+	foreach(r; f.toLines(arr, fi.maxWidth, height, fi.flags))
 	{
 		res.length++;
 
 		if(r.length)
 		{
-			eachGroup!((a, b) => a.col != b.col)(r, &add);
+			eachGroup!((a, b) => a.color != b.color)(r, &add);
 			pos.x = 0;
 		}
 

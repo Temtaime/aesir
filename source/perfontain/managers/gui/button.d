@@ -71,7 +71,11 @@ private:
 		auto l = new GUIImage(this, id);
 		auto r = new GUIImage(this, id, DRAW_MIRROR_H);
 		auto q = new GUIImage(this, spacer);
-		auto t = new GUIStaticText(this, name, flags);
+
+		FontInfo fi;
+		fi.flags = flags;
+
+		auto t = new GUIStaticText(this, name, fi);
 
 		if(!size.y)
 		{

@@ -26,6 +26,7 @@
 
 	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64" ],
 
+	"dflags": [ "-preview=intpromote" ],
 	"dflags-ldc": [ "-ffast-math", "-enable-cross-module-inlining" ],
 
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "stdc++" ],

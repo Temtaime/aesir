@@ -24,7 +24,7 @@ final class NpcController
 		if(_clear)
 		{
 			_clear = false;
-			win.text.clear;
+			//win.text.clear;
 		}
 
 		win.text.add(s);

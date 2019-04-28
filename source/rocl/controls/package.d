@@ -99,7 +99,7 @@ private:
 
 class WinBasic2 : GUIElement
 {
-	this(string s, string n = null, bool bottom = true)
+	this(string s, string n, bool bottom = true)
 	{
 		super(PE.gui.root, Vector2s.init, Win.moveable | Win.captureFocus, n);
 
@@ -169,7 +169,7 @@ final class WinInfo : WinBasic2
 {
 	this(string s, bool withCancel = false)
 	{
-		super(MSG_INFO);
+		super(MSG_INFO, `info`);
 
 		{
 			auto e = new ScrolledText(main, Vector2s(280, 4));

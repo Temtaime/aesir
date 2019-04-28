@@ -64,7 +64,12 @@ final class ActionController
 			{
 				_tip.childs.clear;
 
-				auto e = new GUIStaticText(_tip, c.cleanName, FONT_OUTLINED);
+				FontInfo fi =
+				{
+					flags: FONT_OUTLINED
+				};
+
+				auto e = new GUIStaticText(_tip, c.cleanName, fi);
 				e.color = colorWhite;
 
 				e = new GUIStaticText(_tip, c.cleanName);

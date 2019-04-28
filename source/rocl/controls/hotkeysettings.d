@@ -17,10 +17,17 @@ class WinHotkeySettings : WinBasic2
 {
 	this()
 	{
-		super(MSG_HOTKEY_SETTINGS);
+		super(MSG_HOTKEY_SETTINGS, `hotkeys`);
 
 		{
-			auto e = new TextTabs(main, [ MSG_SKILLS ~ ` 1-2`, MSG_SKILLS ~ ` 3-4`, MSG_INTERFACE ]);
+			auto msgs =
+			[
+				MSG_SKILLS ~ ` 1-2`,
+				MSG_SKILLS ~ ` 3-4`,
+				MSG_INTERFACE
+			];
+
+			auto e = new TextTabs(main, msgs);
 
 			foreach(i, u; e.tabs)
 			{
@@ -189,7 +196,12 @@ private:
 	{
 		und.childs.clear;
 
-		auto e = new GUIStaticText(und, s, 0, null, und.size.x);
+		FontInfo fi =
+		{
+			maxWidth: und.size.x
+		};
+
+		auto e = new GUIStaticText(und, s, fi);
 		e.moveX(und, POS_CENTER);
 	}
 

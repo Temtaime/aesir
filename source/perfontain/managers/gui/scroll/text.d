@@ -22,10 +22,10 @@ final class ScrolledText : GUIElement
 		sc.onResize;
 	}
 
-	void clear()
+	/*void clear()
 	{
 		sc.clear;
-	}
+	}*/
 
 	void add(string s, Color c = colorTransparent)
 	{
@@ -38,23 +38,23 @@ final class ScrolledText : GUIElement
 private:
 	mixin MakeChildRef!(Scrolled, `sc`, 0);
 
-	void add(GUIElement e, CharColor[] arr)
-	{
-		auto t = new GUIStaticText(e, arr.map!(a => a.c).array.toUTF8);
-
-		t.color = arr[0].col;
-		t.pos.x = e.size.x;
-
-		e.size.x += t.size.x;
-	}
-
 	void add(CharColor[] line)
 	{
 		auto e = new GUIElement(null);
 
+		void cb(CharColor[] arr)
+		{
+			auto t = new GUIStaticText(e, arr.map!(a => a.c).array.toUTF8);
+
+			t.pos.x = e.size.x;
+			t.color = arr[0].color;
+
+			e.size.x += t.size.x;
+		}
+
 		if(line.length)
 		{
-			eachGroup!((a, b) => a.col != b.col)(line, (CharColor[] a) => add(e, a));
+			eachGroup!((a, b) => a.color != b.color)(line, &cb);
 
 			e.size.y = e.childs[0].size.y;
 		}

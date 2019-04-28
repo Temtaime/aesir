@@ -98,7 +98,12 @@ class StatInfo : GUIElement
 		}
 
 		{
-			auto e = new GUIStaticText(this, name, FONT_BOLD);
+			FontInfo fi =
+			{
+				flags: FONT_BOLD
+			};
+
+			auto e = new GUIStaticText(this, name, fi);
 			e.pos.x = 3;
 
 			e = new GUIStaticText(this, value);

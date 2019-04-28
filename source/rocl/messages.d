@@ -109,5 +109,8 @@ enum MESSAGES =
 	[ `WIN_SETTINGS`, `Settings window`, `Окно настроек` ],
 	[ `WIN_INVENTORY`, `Inventory window`, `Окно инвентаря` ],
 
+	[ `ITM`, `Item`, `Предм.` ],
+	[ `ETC`, `Etc`, `Проч.` ],
+
 	//[ ``, ``, `` ],
 ];

@@ -6,13 +6,15 @@ import
 		std.range,
 		std.algorithm,
 
-		stb.image;
+		stb.image,
+
+		perfontain;
 
 
 struct CharColor
 {
 	dchar c;
-	Color col;
+	Color color;
 }
 
 package:
@@ -57,7 +59,7 @@ struct LineSplitter
 					auto w = words.front;
 					auto firstWord = n == _width;
 
-					auto u = firstWord ? w : CharColor(' ', w[0].col) ~ w;
+					auto u = firstWord ? w : CharColor(' ', w[0].color) ~ w;
 					auto len = size(u);
 
 					if(n >= len)
@@ -81,7 +83,7 @@ struct LineSplitter
 										res.back ~= u[0..k];
 									}
 
-									res.back ~= CONT.map!(a => CharColor(a, w[0].col)).array;
+									res.back ~= CONT.map!(a => CharColor(a, w[0].color)).array;
 									break lines;
 								}
 							}
@@ -107,7 +109,7 @@ struct LineSplitter
 
 							if(end)
 							{
-								res.back ~= CONT.map!(a => CharColor(a, w[0].col)).array;
+								res.back ~= CONT.map!(a => CharColor(a, w[0].color)).array;
 								break lines;
 							}
 							else
@@ -119,7 +121,7 @@ struct LineSplitter
 						}
 						else if(end)
 						{
-							res.back ~= CONT.map!(a => CharColor(a, w[0].col)).array;
+							res.back ~= CONT.map!(a => CharColor(a, w[0].color)).array;
 							break lines;
 						}
 

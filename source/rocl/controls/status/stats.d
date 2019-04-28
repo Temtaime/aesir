@@ -21,7 +21,12 @@ class StatsUpper : GUIStaticText
 {
 	this(GUIElement w)
 	{
-		super(w, `▲`, FONT_BOLD);
+		FontInfo fi =
+		{
+			flags: FONT_BOLD
+		};
+
+		super(w, `▲`, fi);
 
 		flags = Win.none;
 		color = Color(30, 33, 150, 255);
@@ -46,10 +51,15 @@ class StatsSlot : GUIElement
 	{
 		super(p);
 
+		FontInfo fi =
+		{
+			flags: FONT_BOLD
+		};
+
 		auto sw = PE.fonts.base.widthOf(`_`, FONT_BOLD);
 
 		{
-			auto e = new GUIStaticText(this, name, FONT_BOLD);
+			auto e = new GUIStaticText(this, name, fi);
 			e.color = Color(30, 33, 150, 255);
 
 			size = Vector2s(w, e.size.y + 1);

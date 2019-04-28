@@ -216,7 +216,12 @@ class BigTooltip : Tooltip
 {
 	this(string s)
 	{
-		toStaticTexts(s, Vector2s(640, -1)).joiner.each!(a => a.attach(this));
+		FontInfo fi =
+		{
+			maxWidth: 640
+		};
+
+		toStaticTexts(s, -1, colorBlack, fi).joiner.each!(a => a.attach(this));
 
 		toChildSize;
 		pad(TOOLTIP_PART_SZ.x);

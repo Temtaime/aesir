@@ -16,11 +16,10 @@ class Scrolled : GUIElement
 {
 	this(GUIElement parent, Vector2s sz, ushort h)
 	{
-		super(parent, Vector2s(0, sz.y * h));
+		super(parent, Vector2s(SCROLL_ARROW_SZ.x, sz.y * h));
 
 		new Table(this, sz);
 
-		size.x = SCROLL_ARROW_SZ.x;
 		onCountChanged.permanent(&makeBar);
 	}
 
@@ -38,10 +37,10 @@ class Scrolled : GUIElement
 		return true;
 	}
 
-	void clear()
+	/*void clear()
 	{
 		//childs[0] = new Table(this, table.sz);
-	}
+	}*/
 
 	void add(GUIElement e)
 	{
