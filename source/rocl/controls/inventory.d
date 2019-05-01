@@ -37,27 +37,28 @@ final class InventoryTab : GUIElement
 				MSG_ETC
 			];
 
-			new TextTabs(this, msgs);
+			auto e = new TextTabs(this, msgs);
 
-			foreach(u; tt.tabs)
+			foreach(u; e.tabs)
 			{
 				auto sc = new Scrolled(u, sz, 36);
 				sc.size.x += 36 * sz.x;
 			}
 
-			tt.adjust;
+			e.adjust;
+
+			foreach(i; 0..sz.x)
+			foreach(j; 0..sz.y)
+			{
+				auto im = new GUIImage(this, INV_ITEM);
+
+				im.pos = e.tabs[0].pos;
+				im.pos += Vector2s(i, j) * 36 + (Vector2s(36) - im.size) / 2;
+			}
+
+			e.bringToTop;
 		}
 
-		foreach(i; 0..sz.x)
-		foreach(j; 0..sz.y)
-		{
-			auto im = new GUIImage(this, INV_ITEM);
-
-			im.pos = tt.tabs[0].pos;
-			im.pos += Vector2s(i, j) * 36 + (Vector2s(36) - im.size) / 2;
-		}
-
-		tt.bringToTop;
 		toChildSize;
 	}
 
@@ -80,7 +81,8 @@ final class InventoryTab : GUIElement
 private:
 	auto scOf(ubyte tab)
 	{
-		return cast(Scrolled)tt.tabs[tab].childs[0];
+		auto e = cast(TextTabs)childs.back;
+		return cast(Scrolled)e.tabs[tab].childs[0];
 	}
 
 	void add(Item m)
@@ -98,7 +100,6 @@ private:
 	}
 
 	ItemHolder[Item] _aa;
-	mixin MakeChildRef!(TextTabs, `tt`, 0);
 }
 
 final class WinStorage : WinBasic2
@@ -107,7 +108,7 @@ final class WinStorage : WinBasic2
 	{
 		super(MSG_STORAGE, `storage`);
 
-		auto tab = new InventoryTab(main, Vector2s(7, 4));
+		auto e = new InventoryTab(main, Vector2s(7, 4));
 		adjust;
 
 		{
@@ -117,7 +118,7 @@ final class WinStorage : WinBasic2
 			b.onClick = () => ROnet.storeClose;
 		}
 
-		items.onAdded.permanent(&tab.register);
+		items.onAdded.permanent(&e.register);
 	}
 
 	Items items;
@@ -129,25 +130,27 @@ final class WinInventory : WinBasic2
 	{
 		super(MSG_INVENTORY, `inventory`);
 
-		new InventoryTab(main, Vector2s(7, 2));
-		adjust;
+		{
+			auto e = new InventoryTab(main, Vector2s(7, 2));
+			adjust;
 
-		RO.status.items.onAdded.permanent(&tab.register);
+			RO.status.items.onAdded.permanent(&e.register);
+		}
+
+		update;
 	}
 
-	mixin StatusValue!(uint, `zeny`, onUpdate);
-	mixin StatusValue!(uint, `weight`, onUpdate);
-	mixin StatusValue!(uint, `maxWeight`, onUpdate);
+	mixin StatusValue!(uint, `zeny`, update);
+	mixin StatusValue!(uint, `weight`, update);
+	mixin StatusValue!(uint, `maxWeight`, update);
 private:
-	void onUpdate()
+	void update()
 	{
 		bottom.childs.clear;
 
 		auto e = new GUIStaticText(bottom, format(`%s Ƶ, %s: %u / %u`, price(zeny), MSG_WEIGHT, weight, maxWeight));
 		e.move(POS_MIN, 5, POS_CENTER);
 	}
-
-	mixin MakeChildRef!(InventoryTab, `tab`, 0);
 }
 
 final class ItemHolder : GUIElement

@@ -14,12 +14,14 @@ template MakeChildRef(T, string Name, Idx...)
 
 		foreach(i; Idx)
 		{
-			if(i >= e.childs.length)
+			auto k = i < 0 ? e.childs.length + i : i;
+
+			if(k >= e.childs.length)
 			{
 				return null;
 			}
 
-			e = e.childs[i];
+			e = e.childs[k];
 		}
 
 		return cast(inout(T))e;

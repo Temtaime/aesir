@@ -99,17 +99,13 @@ private:
 
 class WinBasic2 : GUIElement
 {
-	this(string s, string n, bool bottom = true)
+	this(string s, string n)
 	{
 		super(PE.gui.root, Vector2s.init, Win.moveable | Win.captureFocus, n);
 
 		new GUIElement(this);
 		new GUIQuad(this, colorWhite);
-
-		if(bottom)
-		{
-			new GUIElement(this);
-		}
+		new GUIElement(this);
 
 		_title = s;
 	}
@@ -119,34 +115,39 @@ class WinBasic2 : GUIElement
 		main.toChildSize;
 		main.pad(4);
 
-		top.size.x = bottom.size.x = main.size.x;
+		auto	bt = childs[0],
+				bb = childs[2];
+
+		bt.size.x = bb.size.x = main.size.x;
 
 		{
-			make(top, WIN_TOP, WIN_TOP_SPACER);
+			make(bt, WIN_TOP, WIN_TOP_SPACER);
 
-			auto e = new GUIImage(top, WIN_PART);
+			auto e = new GUIImage(bt, WIN_PART);
 			e.pos = Vector2s(4);
 
-			auto t = new GUIStaticText(top, _title);
+			auto t = new GUIStaticText(bt, _title);
 			t.move(POS_MIN, WPOS_START, POS_CENTER);
 		}
 
-		main.moveY(top, POS_ABOVE);
+		main.moveY(bt, POS_ABOVE);
 
-		if(bottom)
 		{
-			make(bottom, WIN_BOTTOM, WIN_BOTTOM_SPACER);
-			bottom.moveY(main, POS_ABOVE);
+			make(bb, WIN_BOTTOM, WIN_BOTTOM_SPACER);
+			bb.moveY(main, POS_ABOVE);
 		}
+
+		new GUIElement(bt, bt.size);
+		new GUIElement(bb, bb.size);
 
 		toChildSize;
 		tryPose;
 	}
 
 protected:
-	mixin MakeChildRef!(GUIElement, `top`, 0);
+	mixin MakeChildRef!(GUIElement, `top`, 0, -1);
 	mixin MakeChildRef!(GUIElement, `main`, 1);
-	mixin MakeChildRef!(GUIElement, `bottom`, 2);
+	mixin MakeChildRef!(GUIElement, `bottom`, 2, -1);
 private:
 	void make(GUIElement e, ushort id, ushort spacer)
 	{
