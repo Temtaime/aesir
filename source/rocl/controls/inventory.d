@@ -164,6 +164,7 @@ final class ItemHolder : GUIElement
 			e.center;
 		}
 
+		recount(m);
 		_rc = m.onCountChanged.add(&recount);
 	}
 

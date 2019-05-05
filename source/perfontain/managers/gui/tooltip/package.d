@@ -8,6 +8,11 @@ class Tooltip : GUIElement
 {
 	this()
 	{
+		if(auto arr = PE.gui.root.find!Tooltip)
+		{
+			arr[0].deattach;
+		}
+
 		super(PE.gui.root, Vector2s.init, Win.topMost);
 
 		_mv = PE.onMove.add(_ => move);

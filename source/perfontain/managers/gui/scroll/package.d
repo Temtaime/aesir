@@ -16,7 +16,7 @@ class Scrolled : GUIElement
 {
 	this(GUIElement parent, Vector2s sz, ushort h)
 	{
-		super(parent, Vector2s(SCROLL_ARROW_SZ.x, sz.y * h));
+		super(parent, Vector2s(SCROLL_ARROW_SZ.x, sz.y * h), Win.captureFocus);
 
 		new Table(this, sz);
 

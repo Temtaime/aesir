@@ -20,15 +20,11 @@ import
 
 final:
 
-class WinCreation : WinBasic
+class WinCreation : WinBasic2
 {
 	this()
 	{
-		//name = `char_creation`;
-
-		super(Vector2s(280, 140), MSG_CHAR_CREATION);
-
-		123.logger;
+		super(MSG_CHAR_CREATION, `creation`);
 
 		{
 			auto v = PE.window.size;

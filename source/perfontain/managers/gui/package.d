@@ -170,7 +170,34 @@ package:
 private:
 	void onMove(Vector2s p)
 	{
-		if(_moveSub.x >= 0)
+		if(_moveSub.x < 0)
+		{
+			auto prev = _cur;
+			_cur = root.winByPos(PE.window.mpos);
+
+			if(_cur !is prev)
+			{
+				if(prev)
+				{
+					prev.flags.hasMouse = false;
+					prev.onHover(false);
+				}
+
+				onCurrentChanged(_cur);
+
+				if(_cur)
+				{
+					_cur.flags.hasMouse = true;
+					_cur.onHover(true);
+				}
+			}
+
+			if(_cur)
+			{
+				_cur.onMove(PE.window.mpos - _cur.absPos);
+			}
+		}
+		else
 		{
 			p -= _moveSub;
 
@@ -184,33 +211,6 @@ private:
 					_cur.onMoved;
 				}
 			}
-
-			return;
-		}
-
-		auto prev = _cur;
-		_cur = root.winByPos(PE.window.mpos);
-
-		if(_cur !is prev)
-		{
-			if(prev)
-			{
-				prev.flags.hasMouse = false;
-				prev.onHover(false);
-			}
-
-			onCurrentChanged(_cur);
-
-			if(_cur)
-			{
-				_cur.flags.hasMouse = true;
-				_cur.onHover(true);
-			}
-		}
-
-		if(_cur)
-		{
-			_cur.onMove(PE.window.mpos - _cur.absPos);
 		}
 	}
 

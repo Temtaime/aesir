@@ -264,6 +264,11 @@ final:
 		return cast(T)byHierarchy.find!(a => cast(T)a).front;
 	}
 
+	auto find(T)()
+	{
+		return childs[].filter!(a => cast(T)a).array;
+	}
+
 	void removeChilds()
 	{
 		while(childs.length)

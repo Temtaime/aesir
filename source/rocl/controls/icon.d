@@ -268,8 +268,7 @@ final class ItemIcon : HotkeyIcon
 
 	override void tooltip()
 	{
-		auto s = format(`%s%s`, m.data.name, m.amount > 1 ? format(` : %u %s`, m.amount, MSG_PCS) : null);
-		new TextTooltip(s);
+		new TextTooltip(format(`%s : %u %s`, m.data.name, m.amount, MSG_PCS));
 	}
 
 	override PkHotkey hotkey()
