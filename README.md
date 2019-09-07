@@ -22,4 +22,3 @@ Then build the Æsir itself using first dub command.
 
 - [Forums](http://aesir.perfontain.ru/forum/)
 - [Patreon](https://www.patreon.com/temtaime/posts)
-
