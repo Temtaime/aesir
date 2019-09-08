@@ -1,5 +1,5 @@
 import
-		std.experimental.all;
+		std;
 
 
 void main()
