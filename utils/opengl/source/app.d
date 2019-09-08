@@ -32,7 +32,7 @@ void main()
 
 	if(file.exists)
 	{
-		remove(file);
+		file.remove;
 	}
 
 	auto aa =
