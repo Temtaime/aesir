@@ -13,18 +13,14 @@ void main()
 								.stripExtension
 								.toUpper)
 					.array
-					.sort();
+					.sort;
 
 	auto conv = format("enum\n{\n%-(\t%s,\n%)\n}\n\n", arr);
-
 
 	conv ~= format("enum GUI = [ %-(%s, %) ];\n\n", arr);
 	conv ~= format("enum GUI_STR = [ %-(`%s`%|, %) ];\n\n", arr);
 
-	foreach(s; arr)
-	{
-		conv ~= format("@property %1$s_SZ() { return PE.gui.sizes[%1$s]; }\n", s);
-	}
+	arr.each!(a => conv ~= format("@property %1$s_SZ() { return PE.gui.sizes[%1$s]; }\n", a));
 
-	std.file.write(`../../source/perfontain/managers/gui/images.d`, "module perfontain.managers.gui.images;\n\nimport\n\t\tperfontain;\n\n\n" ~ conv);
+	toFile("module perfontain.managers.gui.images;\n\nimport\n\t\tperfontain;\n\n\n" ~ conv, `../../source/perfontain/managers/gui/images.d`);
 }
