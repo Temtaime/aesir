@@ -224,7 +224,7 @@ class GUIEditText : GUIElement
 {
 	this(GUIElement e)
 	{
-		super(e, Vector2s(0, PE.fonts.base.height), Win.enabled);
+		super(e, Vector2s(0, PE.fonts.base.height), Win.enabled | Win.captureFocus);
 	}
 
 	override void draw(Vector2s p) const

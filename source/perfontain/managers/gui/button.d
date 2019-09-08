@@ -26,12 +26,12 @@ final class Button : GUIElement
 
 	override void onPress(Vector2s, bool st)
 	{
+		make(st ? 2 : flags.hasMouse);
+
 		if(!st && flags.hasMouse)
 		{
 			onSubmit;
 		}
-
-		make(st ? 2 : flags.hasMouse);
 	}
 
 	override void onHover(bool st)
@@ -72,8 +72,10 @@ private:
 		auto r = new GUIImage(this, id, DRAW_MIRROR_H);
 		auto q = new GUIImage(this, spacer);
 
-		FontInfo fi;
-		fi.flags = flags;
+		FontInfo fi =
+		{
+			flags: flags
+		};
 
 		auto t = new GUIStaticText(this, name, fi);
 

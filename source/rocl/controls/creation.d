@@ -26,6 +26,32 @@ class WinCreation : WinBasic2
 	{
 		super(MSG_CHAR_CREATION, `creation`);
 
+		auto e = new Table(main, Vector2s(2, 3), 4);
+
+		{
+			e.add(new GUIStaticText(null, MSG_CHAR_NAME));
+
+			auto u = new Underlined(null);
+
+			_name = new GUIEditText(u);
+			_name.size.x = 80;
+
+			u.update;
+			e.add(u);
+		}
+
+
+
+		/*e.add(new GUIStaticText(null, MSG_HAIR_STYLE));
+		e.add(new GUIEditText(null));
+
+		e.add(new GUIStaticText(null, MSG_HAIR_COLOR));
+		e.add(new GUIEditText(null));*/
+
+		adjust;
+
+		/*
+
 		{
 			auto v = PE.window.size;
 			pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
@@ -102,7 +128,7 @@ class WinCreation : WinBasic2
 			};
 		}
 
-		create(false);
+		create(false);*/
 	}
 
 	void onDone(ref PkCharData p)
@@ -123,7 +149,7 @@ class WinCreation : WinBasic2
 private:
 	void create(bool remove)
 	{
-		import rocl.entity.misc;
+		/*import rocl.entity.misc;
 
 		auto n = cast(uint)ROnet.st.chars.length;
 
@@ -140,77 +166,20 @@ private:
 		`?`.copy(c.name[]);
 
 		auto e = ROent.createChar(&c, n, ROnet.st.gender);
-		e.fix(Vector2s(259 + n * 2, 190).PosDir);
+		e.fix(Vector2s(259 + n * 2, 190).PosDir);*/
 	}
 
 	void onCreate()
 	{
-		ROnet.createChar(_name.value, _color.value, _style.value);
+		//ROnet.createChar(_name.value, _color.value, _style.value);
 	}
 
 	GUIEditText _name;
 
-	ValueSelector
+	SelectBox	_style,
+				_color;
+
+	/*ValueSelector
 					_style,
-					_color;
-}
-
-private:
-
-class ValueSelector : GUIElement
-{
-	this(GUIElement p, ushort w, ubyte m)
-	{
-		super(p);
-
-		size = Vector2s(w + SCROLL_ARROW_SZ.y * 2 + 10, max(PE.fonts.base.height, SCROLL_ARROW_SZ.x));
-
-		auto u1 = new GUIImage(this, SCROLL_ARROW, DRAW_ROTATE | DRAW_MIRROR_V);
-		u1.move(this, POS_MIN, 5, this, POS_CENTER, 0);
-
-		auto t = new GUIStaticText(this, 1.to!string);
-		t.move(this, POS_CENTER, 0, this, POS_CENTER, 0);
-
-		auto u2 = new GUIImage(this, SCROLL_ARROW, DRAW_ROTATE);
-		u2.move(this, POS_MAX, -5, this, POS_CENTER, 0);
-
-		size.x = cast(short)(u2.end.x + 5);
-
-		u1.action(() => update(-1));
-		u2.action(() => update(1));
-
-		_max = m;
-		value = 1;
-	}
-
-	override void draw(Vector2s p) const
-	{
-		drawQuad(p + pos, size, Color(240, 240, 240, 200));
-
-		super.draw(p);
-	}
-
-	ubyte value;
-
-	void delegate() onChange;
-private:
-	void update(byte d)
-	{
-		auto n = cast(byte)(value + d);
-
-		if(n >= 1 && n <= _max)
-		{
-			value = n;
-			auto e = new GUIStaticText(null, value.to!string);
-
-			e.parent = this;
-			e.move(this, POS_CENTER, 0, this, POS_CENTER, 0);
-
-			childs[childs.length - 2] = e;
-
-			onChange();
-		}
-	}
-
-	ubyte _max;
+					_color;*/
 }
