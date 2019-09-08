@@ -32,7 +32,7 @@ void main()
 
 	if(file.exists)
 	{
-		std.file.remove(file);
+		remove(file);
 	}
 
 	auto aa =
