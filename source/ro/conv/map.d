@@ -1,7 +1,7 @@
 module ro.conv.map;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 

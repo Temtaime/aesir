@@ -1,7 +1,7 @@
 module ro.conv.gui;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 

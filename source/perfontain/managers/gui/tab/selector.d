@@ -1,7 +1,7 @@
 module perfontain.managers.gui.tab.selector;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain;
 

@@ -1,7 +1,7 @@
 module ro.db;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 		rocl,

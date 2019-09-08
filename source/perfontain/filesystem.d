@@ -1,7 +1,7 @@
 module perfontain.filesystem;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain.misc,
 		utils.except;

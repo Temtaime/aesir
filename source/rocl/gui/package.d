@@ -1,7 +1,7 @@
 module rocl.gui;
 
 import
-		std.experimental.all,
+		std,
 
 		stb.image,
 

@@ -1,7 +1,7 @@
 module perfontain.managers.render;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 		perfontain.opengl,

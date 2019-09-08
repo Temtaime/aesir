@@ -1,7 +1,7 @@
 module rocl.loaders.asp;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 		perfontain.nodes.sprite,

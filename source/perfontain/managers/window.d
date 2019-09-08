@@ -1,7 +1,7 @@
 module perfontain.managers.window;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain.misc,
 		perfontain,

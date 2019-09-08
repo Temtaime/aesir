@@ -1,7 +1,7 @@
 module rocl.game;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 		perfontain.misc,

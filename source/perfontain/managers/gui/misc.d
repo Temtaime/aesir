@@ -1,7 +1,7 @@
 module perfontain.managers.gui.misc;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain;
 

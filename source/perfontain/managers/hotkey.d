@@ -1,7 +1,7 @@
 module perfontain.managers.hotkey;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain;
 

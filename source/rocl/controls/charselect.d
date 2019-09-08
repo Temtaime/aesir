@@ -1,7 +1,7 @@
 module rocl.controls.charselect;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 		perfontain.opengl,

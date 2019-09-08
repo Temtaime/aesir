@@ -1,7 +1,7 @@
 module perfontain.program;
 
 import
-		std.experimental.all,
+		std,
 
 		core.bitop,
 

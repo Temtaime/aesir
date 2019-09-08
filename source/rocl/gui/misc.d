@@ -1,7 +1,7 @@
 module rocl.gui.misc;
 
 import
-		std.experimental.all,
+		std,
 		perfontain,
 		rocl;
 
@@ -71,7 +71,8 @@ void registerHotkeys()
 
 mixin template MakeWindow(T, string Name)
 {
-	enum N = std.ascii.toUpper(Name[0]) ~ Name[1..$];
+	import std.ascii : toUpper;
+	enum N = toUpper(Name[0]) ~ Name[1..$];
 
 	mixin(`auto create` ~ N ~ `(A...)(A args)
 	{

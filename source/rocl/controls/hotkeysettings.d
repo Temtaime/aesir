@@ -1,7 +1,7 @@
 module rocl.controls.hotkeysettings;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 

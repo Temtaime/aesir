@@ -1,7 +1,7 @@
 module perfontain.managers.gui.element;
 
 import
-		std.experimental.all,
+		std,
 
 		stb.image,
 

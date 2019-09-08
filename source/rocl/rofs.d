@@ -1,7 +1,7 @@
 module rocl.rofs;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 

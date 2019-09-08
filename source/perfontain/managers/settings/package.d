@@ -1,7 +1,7 @@
 module perfontain.managers.settings;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain,
 		perfontain.opengl,
@@ -36,7 +36,7 @@ final class SettingsManager
 
 		static foreach(s; [ `fog`, `vsync`, `msaa`, `fullscreen`, `useBindless` ])
 		{
-			collectException(mixin(`_st.` ~ s) = j[s].type == JSON_TYPE.TRUE);
+			collectException(mixin(`_st.` ~ s) = j[s].type == JSONType.true_);
 		}
 
 		try

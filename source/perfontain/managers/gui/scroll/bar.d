@@ -1,7 +1,7 @@
 module perfontain.managers.gui.scroll.bar;
 
 import
-		std.experimental.all,
+		std,
 
 		perfontain;
 

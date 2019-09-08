@@ -1,7 +1,7 @@
 module rocl.misc;
 
 import
-		std.experimental.all;
+		std;
 
 
 auto toStr(in ubyte[] arr)
