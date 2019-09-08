@@ -1,4 +1,4 @@
-import std.experimental.all;
+import std;
 
 
 auto extensionsUsed =
