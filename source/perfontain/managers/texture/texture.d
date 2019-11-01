@@ -95,6 +95,8 @@ final class Texture : RCounted
 		{
 			glMakeTextureHandleNonResidentARB(_handle);
 		}
+
+		//assert(isResident == b);
 	}
 
 	const bind(ubyte idx)
