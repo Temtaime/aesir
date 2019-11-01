@@ -129,9 +129,6 @@ final class Engine
 		window = new WindowManager;
 		window.create(title);
 
-		//GL_ARB_bindless_texture = false;
-		//GL_ARB_shader_draw_parameters = false;
-
 		logger.info2(`[gpu info]`);
 
 		{
@@ -159,6 +156,9 @@ final class Engine
 
 			hookGL;
 		}
+
+		//GL_ARB_bindless_texture = false;
+		//GL_ARB_shader_draw_parameters = false;
 
 		// can't use bindless without draw parameters
 		GL_ARB_bindless_texture &= GL_ARB_shader_draw_parameters;
