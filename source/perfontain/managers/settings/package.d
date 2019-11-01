@@ -77,21 +77,10 @@ private:
 			j[s] = mixin(`_st.` ~ s);
 		}
 
-		{
-			JSONValue[string] arr;
-
-			foreach(s, w; _st.wins)
-			{
-				JSONValue u;
-
-				u[`x`] = w.pos.x;
-				u[`y`] = w.pos.y;
-
-				arr[s] = u;
-			}
-
-			j[`wins`] = arr;
-		}
+		j[`wins`] = _st.wins
+							.byKeyValue
+							.map!(a => tuple(a.key, [ `x` : a.value.pos.x, `y`: a.value.pos.y ].JSONValue))
+							.assocArray;
 
 		PEfs.put(SETTINGS_FILE, j.toJSON);
 	}
