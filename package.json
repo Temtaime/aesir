@@ -32,5 +32,5 @@
 	"libs-linux": [ "X11", "Xext", "Xi", "asound", "stdc++" ],
 	"lflags-linux": [ "-Lutils/deps", "-s" ],
 
-	"lflags-windows": [ "/LIBPATH:utils/deps" ],
+	"lflags-windows": [ "/LIBPATH:utils/deps", "/manifest:embed" ],
 }

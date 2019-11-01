@@ -71,6 +71,8 @@ final class Program : RCounted
 
 		foreach(u; _unis.values.filter!(a => a && a.idx >= 0))
 		{
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, u.idx, 0);
+
 			u.data = null;
 			btr(&_ssbo, u.idx);
 		}
@@ -137,11 +139,11 @@ final class Program : RCounted
 			}
 
 			s.data.realloc(cast(uint)data.length, data.ptr);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, s.idx, s.data.id);
 
 			if(b)
 			{
 				glShaderStorageBlockBinding(_id, s.loc, s.idx);
-				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, s.idx, s.data.id);
 			}
 		}
 	}
@@ -241,7 +243,7 @@ private:
 
 	static bind(uint id)
 	{
-		if(set(PEstate._prog, id))
+		//if(set(PEstate._prog, id))
 		{
 			glUseProgram(id);
 		}
