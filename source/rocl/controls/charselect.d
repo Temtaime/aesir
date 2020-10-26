@@ -1,31 +1,19 @@
 module rocl.controls.charselect;
 
-import
-		std,
-
-		perfontain,
-		perfontain.opengl,
-
-		ro.grf,
-		ro.conv.gui,
-
-		rocl,
-		rocl.game,
-		rocl.controls,
-		rocl.network.packets;
-
+import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
+	rocl.game, rocl.controls, rocl.network.packets;
 
 final:
 
-class WinCharSelect : WinBasic2
+class WinCharSelect : GUIWindow
 {
-	this(in PkCharData *c)
+	this(in PkCharData* c)
 	{
-		super(MSG_CHAR_SELECT, `char_select`);
+		super(MSG_CHAR_SELECT, Vector2s(400));
 
 		{
-			auto v = PE.window.size;
-			pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
+			//auto v = PE.window.size;
+			//pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
 		}
 
 		{
@@ -35,12 +23,12 @@ class WinCharSelect : WinBasic2
 			{
 				auto s = v.to!string;
 
-				static if(isIntegral!T)
+				static if (isIntegral!T)
 				{
 					s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
 				}
 
-				stats ~= [ name, s ];
+				stats ~= [name, s];
 			}
 
 			stat(`Name`, c.name.charsToString);
@@ -61,24 +49,19 @@ class WinCharSelect : WinBasic2
 			stat(`SP`, c.sp);
 			stat(`LUK`, c.luk);
 
-			auto t = new Table(main, Vector2s(2, 0), 2);
+			addLayout(new DynamicRowLayout(4));
 
-			stats.each!(a => t.add(new StatInfo(null, a.front, a.back)));
+			foreach (s; stats)
+			{
+				new GUIStaticText(curLayout, s.front);
+				new GUIStaticText(curLayout, s.back);
+			}
 		}
 
-		adjust;
+		addLayout(new DynamicRowLayout(2));
 
-		{
-			auto b = new Button(bottom, MSG_ENTER, &RO.action.onCharSelected);
-
-			b.move(POS_MIN, 4, POS_CENTER);
-			b.focus;
-		}
-
-		{
-			auto b = new Button(bottom, MSG_CREATE, &RO.action.onCharCreate);
-			b.move(POS_MAX, -4, POS_CENTER);
-		}
+		new Button(curLayout, MSG_ENTER, &RO.action.onCharSelected);
+		new Button(curLayout, MSG_CREATE, &RO.action.onCharCreate);
 	}
 }
 
@@ -86,28 +69,25 @@ class StatInfo : GUIElement
 {
 	this(GUIElement p, string name, string value)
 	{
-		super(p, Vector2s(155, PE.fonts.base.height));
+		// super(p, Vector2s(155, PE.fonts.base.height));
 
-		{
-			auto q = new GUIQuad(this, Color(200, 200, 230, 200));
-			q.size = Vector2s(48, size.y);
+		// {
+		// 	auto q = new GUIQuad(this, Color(200, 200, 230, 200));
+		// 	q.size = Vector2s(48, size.y);
 
-			q = new GUIQuad(this, Color(240, 240, 240, 200));
-			q.size = Vector2s(size.x - 48, size.y);
-			q.moveX(POS_MAX);
-		}
+		// 	q = new GUIQuad(this, Color(240, 240, 240, 200));
+		// 	q.size = Vector2s(size.x - 48, size.y);
+		// 	q.moveX(POS_MAX);
+		// }
 
-		{
-			FontInfo fi =
-			{
-				flags: FONT_BOLD
-			};
+		// {
+		// 	FontInfo fi = {flags: FONT_BOLD};
 
-			auto e = new GUIStaticText(this, name, fi);
-			e.pos.x = 3;
+		// 	auto e = new GUIStaticText(this, name, fi);
+		// 	e.pos.x = 3;
 
-			e = new GUIStaticText(this, value);
-			e.pos.x = 51;
-		}
+		// 	e = new GUIStaticText(this, value);
+		// 	e.pos.x = 51;
+		// }
 	}
 }

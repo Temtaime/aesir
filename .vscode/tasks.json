@@ -1,0 +1,51 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dub",
+			"run": false,
+			"compiler": "dmd",
+			"archType": "x86_64",
+			"buildType": "debug",
+			"configuration": "application",
+			"_generated": true,
+			"problemMatcher": [
+				"$dmd"
+			],
+			"presentation": {
+				"clear": true,
+				"showReuseMessage": false
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "Build debug"
+		},
+		{
+			"label": "Run",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"command": "start cmd /c \"dub build -a x86_64 -b debug-no-info && cd bin && start.bat & pause\"",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"presentation": {
+				"showReuseMessage": false
+			},
+			"windows": {
+				"options": {
+					"shell": {
+						"executable": "cmd.exe",
+						"args": [
+							"/c"
+						]
+					}
+				}
+			},
+		}
+	]
+}

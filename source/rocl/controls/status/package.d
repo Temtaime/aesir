@@ -25,46 +25,46 @@ import
 		rocl.network.packets;
 
 
-final class WinStatus : WinBasic2
-{
-	this()
-	{
-		super(MSG_EQUIPMENT, `status`);
+// final class WinStatus : WinBasic2
+// {
+// 	this()
+// 	{
+// 		super(MSG_EQUIPMENT, `status`);
 
-		ushort
-				y,
-				w = 360;
+// 		ushort
+// 				y,
+// 				w = 360;
 
-		{
-			equip = new EquipView(this, w);
-			equip.pos = Vector2s(10, 20);
+// 		{
+// 			equip = new EquipView(this, w);
+// 			equip.pos = Vector2s(10, 20);
 
-			y += equip.pos.y + equip.size.y + 10;
-		}
+// 			y += equip.pos.y + equip.size.y + 10;
+// 		}
 
-		{
-			stats = new StatsView(this, 130);
-			stats.pos = Vector2s(10, y);
-		}
+// 		{
+// 			stats = new StatsView(this, 130);
+// 			stats.pos = Vector2s(10, y);
+// 		}
 
-		{
-			auto x = cast(ushort)(20 + stats.size.x);
+// 		{
+// 			auto x = cast(ushort)(20 + stats.size.x);
 
-			bonuses = new BonusesView(this, cast(ushort)(w - x + 10));
-			bonuses.pos = Vector2s(x, y);
-		}
+// 			bonuses = new BonusesView(this, cast(ushort)(w - x + 10));
+// 			bonuses.pos = Vector2s(x, y);
+// 		}
 
-		y += stats.size.y;
+// 		y += stats.size.y;
 
-		{
-			if(pos.x < 0)
-			{
-				pos.x = cast(ushort)((PE.window.size.x - size.x) / 2);
-			}
-		}
-	}
+// 		{
+// 			if(pos.x < 0)
+// 			{
+// 				pos.x = cast(ushort)((PE.window.size.x - size.x) / 2);
+// 			}
+// 		}
+// 	}
 
-	StatsView stats;
-	EquipView equip;
-	BonusesView bonuses;
-}
+// 	StatsView stats;
+// 	EquipView equip;
+// 	BonusesView bonuses;
+// }

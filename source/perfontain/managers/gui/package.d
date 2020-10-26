@@ -1,39 +1,26 @@
 module perfontain.managers.gui;
 
+import std.utf, std.range, std.stdio, std.ascii, std.array, std.string,
+	std.regex, std.encoding, std.algorithm, stb.image, perfontain,
 
-import
-		std.utf,
-		std.range,
-		std.stdio,
-		std.ascii,
-		std.array,
-		std.string,
-		std.regex,
-		std.encoding,
-		std.algorithm,
+	perfontain.misc, perfontain.misc.dxt, perfontain.misc.draw,
 
-		stb.image,
+	perfontain.opengl, perfontain.signals;
 
-		perfontain,
+public import nuklear, perfontain.managers.gui.tab, perfontain.managers.gui.text,
+	perfontain.managers.gui.misc, perfontain.managers.gui.basic,
+	perfontain.managers.gui.scroll, perfontain.managers.gui.select,
+	perfontain.managers.gui.images, perfontain.managers.gui.element,
+	perfontain.managers.gui.tooltip, perfontain.managers.gui.layout,
+	perfontain.managers.gui.window, perfontain.managers.gui.style;
 
-		perfontain.misc,
-		perfontain.misc.dxt,
-		perfontain.misc.draw,
-
-		perfontain.opengl,
-		perfontain.signals;
-
-public import
-				perfontain.managers.gui.tab,
-				perfontain.managers.gui.text,
-				perfontain.managers.gui.misc,
-				perfontain.managers.gui.basic,
-				perfontain.managers.gui.scroll,
-				perfontain.managers.gui.select,
-				perfontain.managers.gui.images,
-				perfontain.managers.gui.element,
-				perfontain.managers.gui.tooltip;
-
+mixin template Nuklear()
+{
+	protected static ctx()
+	{
+		return PE.gui.ctx;
+	}
+}
 
 final class GUIManager
 {
@@ -41,283 +28,280 @@ final class GUIManager
 	{
 		_prog = ProgramCreator(`gui`).create;
 
-		PE.onKey.permanent(&onKey);
-		PE.onMove.permanent(&onMove);
-		PE.onWheel.permanent(&onWheel);
-		PE.onButton.permanent(&onButton);
+		bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
+
+		{
+			nk_font_atlas_init_default(atlas = new nk_font_atlas);
+			nk_font_atlas_begin(atlas);
+
+			auto size = 16;
+			auto conf = nk_font_config_(size);
+
+			static const nk_rune[] nk_font_japanese_glyph_ranges = [
+				0x0020, 0x00FF, 0x2200, 0x22FF, // Mathematical Operators
+				0x3000, 0x303F, // CJK Symbols and Punctuation
+				//0x1F600, 0x1F64F, // emoji
+
+				0x0400, 0x052F, // cyrrilic
+				0x2DE0, 0x2DFF, 0xA640, 0xA69F, 0
+			];
+
+			conf.range = nk_font_cyrillic_glyph_ranges(); // nk_font_japanese_glyph_ranges.ptr;
+
+			//conf.pixel_snap = 1;
+			conf.oversample_v = 1;
+			conf.oversample_h = 1;
+
+			auto data = PE.fs.get("data/font/notosans-regular.ttf");
+
+			auto font = nk_font_atlas_add_from_memory(atlas, data.ptr, data.length, size, &conf);
+
+			int w, h;
+			auto image = nk_font_atlas_bake(atlas, &w, &h, NK_FONT_ATLAS_RGBA32);
+
+			auto td = TextureData(Vector2s(w, h), image[0 .. w * h * 4].toByte);
+			auto ti = TextureInfo(TEX_RGBA, td.sliceOne);
+
+			new Image(w, h, td.data).saveToFile(`res.png`);
+
+			ftex = new Texture(ti);
+			nk_font_atlas_end(atlas, nk_handle_ptr(cast(void*) ftex), &null_);
+
+			/*if (atlas.default_font)
+					nk_style_set_font(_nk, &atlas.default_font.handle);
+					else
+						nk_style_set_font(_nk, &font.handle);*/
+
+			nk_init_default(_nk = new nk_context, &font.handle);
+			_nk.style.window.min_row_height_padding = 2;
+
+			nk_buffer_init_default(&cmds);
+		}
+
 		PE.onResize.permanent(&onResize);
-		PE.onDoubleClick.permanent(&onDoubleClick);
-
-		root = new GUIElement(null, PE.window.size);
 	}
 
-	@property current()
-	{
-		return _cur;
-	}
+	nk_font_atlas* atlas;
+	nk_colorf bg;
+	nk_buffer cmds;
+	nk_context* _nk;
 
-	void updateMouse()
+	RC!Texture ftex;
+
+	auto ctx()
 	{
-		onMove(PE.window.mpos);
+		return _nk;
 	}
 
 	void draw()
 	{
-		alias F = (a, b) => a.flags.topMost < b.flags.topMost;
+		//alias F = (a, b) => a.flags.topMost < b.flags.topMost;
 
-		root.childs[].sort!(F, SwapStrategy.stable);
-		root.draw(Vector2s.init);
+		//root.childs[].sort!(F, SwapStrategy.stable);
+		//root.draw(Vector2s.init);
 
-		PE.render.doDraw(_prog, RENDER_GUI, _proj, null, false);
+		//overview(_nk);
+		_windows.each!(a => a.draw);
+
+		nk_buffer vbuf;
+		nk_buffer ebuf;
+
+		{
+			nk_convert_config config;
+			const(nk_draw_vertex_layout_element)[] vertex_layout = [
+				{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, 0},
+				{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, 8},
+				{NK_VERTEX_COLOR, NK_FORMAT_R32G32B32A32_FLOAT, 16},
+				NK_VERTEX_LAYOUT_END
+			];
+			import core.stdc.string;
+
+			memset(&config, 0, config.sizeof);
+			config.vertex_layout = vertex_layout.ptr;
+			config.vertex_size = 32;
+			config.vertex_alignment = 1;
+			config.null_ = null_;
+			config.circle_segment_count = 22;
+			config.curve_segment_count = 22;
+			config.arc_segment_count = 22;
+			config.global_alpha = 1.0f;
+			config.shape_AA = NK_ANTI_ALIASING_ON;
+			config.line_AA = NK_ANTI_ALIASING_ON;
+
+			nk_buffer_init_default(&vbuf);
+			nk_buffer_init_default(&ebuf);
+			nk_convert(_nk, &cmds, &vbuf, &ebuf, &config);
+		}
+
+		drawPopups;
+
+		auto elements = nk_buffer_memory(&ebuf)[0 .. ebuf.needed].as!uint;
+
+		if (elements.length)
+		{
+			auto vertices = nk_buffer_memory(&vbuf)[0 .. vbuf.needed].as!float;
+			draw(SubMeshData(elements, vertices.toByte));
+		}
+
+		nk_clear(_nk);
+
+		nk_buffer_clear(&cmds);
+		nk_buffer_free(&vbuf);
+		nk_buffer_free(&ebuf);
 	}
+
+	void addPopup(PopupText pt)
+	{
+		_texts ~= pt;
+	}
+
+	nk_draw_null_texture null_;
 
 	Signal!(void, GUIElement) onCurrentChanged;
 
-	RC!GUIElement root;
 	RC!MeshHolder holder;
 
 	Vector2s[] sizes;
 package:
-	void onDie(GUIElement e)
+	void add(GUIWindow w)
 	{
-		if(_cur is e)
-		{
-			_cur.onHover(false);
-			onCurrentChanged(_cur = null);
-		}
-
-		if(_focus)
-		{
-			auto v = _focus.byHierarchy;
-
-			while(!v.empty)
-			{
-				auto u = v.front;
-				v.popFront;
-
-				if(u is e)
-				{
-					e.onFocus(false);
-					_focus = v.empty ? null : v.front;
-					break;
-				}
-			}
-		}
-
-		if(_inp is e)
-		{
-			_inp = null;
-			_text = null;
-		}
+		_windows ~= w;
 	}
 
-	void doInput(GUIElement e)
+	void remove(GUIWindow w)
 	{
-		if(_inp)
-		{
-			_text = null;
-			_inp.flags.hasInput = false;
-		}
-
-		if(e)
-		{
-			e.flags.hasInput = true;
-			_text = new TextInput(&e.onText);
-		}
-
-		_inp = e;
-	}
-
-	void doFocus(GUIElement e) // TODO: ELEMENT REMOVES PARENT OR CHILD ???
-	{
-		if(_focus is e)
-		{
-			return;
-		}
-
-		GUIElement[16]	o,
-						n;
-
-		if(_focus)
-		{
-			_focus.byHierarchy.enumerate.each!(a => o[a.index] = a.value);
-		}
-
-		if(e)
-		{
-			e.byHierarchy.enumerate.each!(a => n[a.index] = a.value);
-		}
-
-		_focus = e;
-
-		auto so = o[0..o[].countUntil(null)];
-		auto sn = n[0..n[].countUntil(null)];
-
-		so.reverse();
-		sn.reverse();
-
-		if(sn.length)
-		{
-			sn[0].bringToTop;
-		}
-
-		auto v = commonPrefix!((a, b) => a is b)(so, sn).count;
-
-		so[v..$].retro.each!(a => focus(a, false));
-		sn[v..$].each!(a => focus(a, true));
+		_windows.remove(w);
 	}
 
 private:
-	void onMove(Vector2s p)
-	{
-		if(_moveSub.x < 0)
-		{
-			auto prev = _cur;
-			_cur = root.winByPos(PE.window.mpos);
+	RCArray!GUIWindow _windows;
 
-			if(_cur !is prev)
+	PopupText[] _texts;
+
+	void draw(SubMeshData data)
+	{
+		auto mh = asRC(new MeshHolder(RENDER_GUI, data));
+		//mh.texs = (cast(Texture) ftex).sliceOne;
+
+		{
+			uint offset;
+			short n;
+			glDisable(GL_CULL_FACE);
+
+			for (auto cmd = nk__draw_begin(_nk, &cmds); (cmd); (cmd) = nk__draw_next(cmd,
+					&cmds, _nk))
 			{
-				if(prev)
+				if (!cmd.elem_count)
+					continue;
+
+				//writefln(`%s`, cmd.elem_count);
+
 				{
-					prev.flags.hasMouse = false;
-					prev.onHover(false);
+					auto tex = cmd.texture.ptr;
+					auto idx = mh.texs[].countUntil!(a => cast(void*) a is tex);
+
+					if (idx < 0)
+					{
+						mh.texs ~= cast(Texture) tex;
+						idx = mh.texs[].length - 1;
+					}
+
+					mh.meshes ~= HolderMesh([
+							HolderSubMesh(cmd.elem_count, offset, cast(ushort) idx)
+							]);
 				}
 
-				onCurrentChanged(_cur);
+				DrawInfo d;
 
-				if(_cur)
-				{
-					_cur.flags.hasMouse = true;
-					_cur.onHover(true);
-				}
+				d.mh = mh;
+
+				d.id = n++;
+				d.flags = DI_NO_DEPTH;
+				d.blendingMode = blendingNormal;
+				d.scissor = Vector4s(cmd.clip_rect.x,
+						(PE.window.size.y - (cmd.clip_rect.y + cmd.clip_rect.h)),
+						(cmd.clip_rect.w), (cmd.clip_rect.h));
+
+				d.scissor.z += d.scissor.x;
+				d.scissor.w += d.scissor.y;
+
+				PE.render.toQueue(d);
+				/* glBindTexture(GL_TEXTURE_2D, cast(GLuint)cmd.texture.id);
+		glScissor(cast(GLint)(cmd.clip_rect.x * scale.x),
+		cast(GLint)((height - cast(GLint)(cmd.clip_rect.y + cmd.clip_rect.h)) * scale.y),
+		cast(GLint)(cmd.clip_rect.w * scale.x),
+		cast(GLint)(cmd.clip_rect.h * scale.y));
+		glDrawElements(GL_TRIANGLES, cast(GLsizei)cmd.elem_count, GL_UNSIGNED_INT, offset);*/
+				offset += cmd.elem_count;
 			}
 
-			if(_cur)
-			{
-				_cur.onMove(PE.window.mpos - _cur.absPos);
-			}
 		}
-		else
-		{
-			p -= _moveSub;
 
-			with(_cur.parent)
-			{
-				p = p.zipMap!((a, b) => clamp(a, short.init, b))(size - _cur.size);
-
-				if(_cur.pos != p)
-				{
-					_cur.pos = p;
-					_cur.onMoved;
-				}
-			}
-		}
+		PE.render.doDraw(_prog, RENDER_GUI, _proj, null, false);
+		glEnable(GL_CULL_FACE);
 	}
 
-	bool onWheel(Vector2s p)
+	void drawPopups()
 	{
-		if(_cur)
+		foreach (pt; _texts)
 		{
-			if(_cur.byHierarchy.any!(a => a.onWheel(p)))
+			auto s = pt.msg;
+			assert(s.length);
+
+			auto f = ctx.style.font;
+			auto w = f.width(cast() f.userdata, f.height, s.ptr, cast(uint) s.length);
+
+			pt.pos.x -= cast(short) w / 2;
+			pt.pos.y -= cast(short) f.height / 2;
+
+			if (pt.fill)
 			{
-				updateMouse;
+				auto r = nk_rect_(pt.pos.x - 2, pt.pos.y, w + 4, f.height);
+				nk_draw_list_fill_rect(&ctx.draw_list, r, nk_rgba(0, 0, 0, 128), 0);
 			}
 
-			return true;
+			auto c = nk_rgb(255, 255, 255);
+			auto r = nk_rect_(pt.pos.x, pt.pos.y, w, f.height);
+
+			foreach (x; -1 .. 2)
+				foreach (y; -1 .. 2)
+					if (x || y)
+						nk_draw_list_add_text(&ctx.draw_list, f,
+								nk_rect(r.x + x, r.y + y, r.w, r.h), s.ptr,
+								cast(uint) s.length, f.height, nk_rgb(0, 0, 0));
+
+			nk_draw_list_add_text(&ctx.draw_list, f, r, s.ptr, cast(uint) s.length, f.height, c);
 		}
 
-		return false;
+		_texts = null;
 	}
 
-	bool onDoubleClick(ubyte k)
-	{
-		if(k == MOUSE_LEFT && _cur)
-		{
-			_cur.onDoubleClick;
-			return true;
-		}
-
-		return false;
-	}
-
-	bool onButton(ubyte k, bool st) // TODO: FIX PRESS EVENT ON NON FOCUSED WINDOWS
-	{
-		if(k == MOUSE_LEFT)
-		{
-			if(st)
-			{
-				doFocus(_cur);
-			}
-
-			if(_focus)
-			{
-				if(st && _focus.flags.moveable)
-				{
-					_moveSub = PE.window.mpos - _focus.pos;
-				}
-				else
-				{
-					_moveSub.x = -1;
-				}
-
-				_focus.flags.pressed = st;
-				_focus.onPress(PE.window.mpos - _focus.absPos, st);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	bool onKey(SDL_Keycode k, bool st)
-	{
-		if(k == SDLK_RETURN || k == SDLK_KP_ENTER)
-		{
-			if(!st && _focus)
-			{
-				_focus.onSubmit;
-				return true;
-			}
-		}
-		else if(_inp)
-		{
-			_inp.focus;
-			_inp.onKey(k, st);
-
-			return true;
-		}
-
-		return false;
-	}
+private:
 
 	void onResize(Vector2s sz)
 	{
-		root.size = sz;
-		_proj = Matrix4.makeOrthogonal(0, sz.x, sz.y, 0, 1, -1);
+		//root.size = sz;
 
-		foreach(c; root.childs)
-		{
-			if(c.end.x > sz.x || c.end.y > sz.y)
-			{
-				c.poseDefault;
-			}
-		}
-	}
+		float[4][4] ortho = [
+			[2.0f, 0.0f, 0.0f, 0.0f], [0.0f, -2.0f, 0.0f, 0.0f],
+			[0.0f, 0.0f, -1.0f, 0.0f], [-1.0f, 1.0f, 0.0f, 1.0f],
+		];
+		ortho[0][0] /= sz.x;
+		ortho[1][1] /= sz.y;
 
-	void focus(GUIElement e, bool b)
-	{
-		e.flags.focused = b;
-		e.onFocus(b);
+		_proj.A[] = ortho[];
+
+		// foreach (c; root.childs)
+		// {
+		// 	if (c.end.x > sz.x || c.end.y > sz.y)
+		// 	{
+		// 		c.poseDefault;
+		// 	}
+		// }
 	}
 
 	RC!Program _prog;
 	RC!TextInput _text;
-
-	GUIElement
-				_cur,
-				_inp,
-				_focus;
 
 	Matrix4 _proj;
 	Vector2s _moveSub = -1.Vector2s;

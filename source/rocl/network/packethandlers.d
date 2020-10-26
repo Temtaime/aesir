@@ -30,17 +30,14 @@ mixin template PacketHandlers()
 
 	void createChar(string name, ubyte color, ubyte style)
 	{
-		auto slot = ushort.max
-								.iota
-								.filter!(a => !st.chars.canFind!(b => b.slot == a))
-								.front;
+		auto slot = ushort.max.iota.filter!(a => !st.chars.canFind!(b => b.slot == a)).front;
 
 		send!Pk0a39(name, slot, color, style, 0, 0, st.gender);
 	}
 
 	void setHotkey(uint idx, in PkHotkey h)
 	{
-		send!Pk02ba(cast(ushort)idx, h);
+		send!Pk02ba(cast(ushort) idx, h);
 	}
 
 	void pickUp(uint id)
@@ -166,7 +163,7 @@ mixin template PacketHandlers()
 
 	void tradeAction(byte act)
 	{
-		final switch(act)
+		final switch (act)
 		{
 		case -1:
 			send!Pk00ed;
@@ -183,31 +180,32 @@ mixin template PacketHandlers()
 	{
 		void onTradeItem(Pk0a09 p)
 		{
-			if(p.id)
+			if (p.id)
 			{
-				RO.gui.trading.itemsDst.add(new Item(p));
+				//RO.gui.trading.itemsDst.add(new Item(p));
 			}
 			else
 			{
-				RO.gui.trading.zeny(p.amount);
+				//RO.gui.trading.zeny(p.amount);
 			}
 		}
 
 		void onTradeAdd(Pk00ea p)
 		{
-			if(!p.index)
+			if (!p.index)
 			{
 				return; // TODO: ZENY CHECK
 			}
 
-			if(auto e = RO.status.items.getIdx(p.index))
+			if (auto e = RO.status.items.getIdx(p.index))
 			{
-				if(auto t = e.trading)
+				if (auto t = e.trading)
 				{
 					e.trading = 0;
 
-					if(p.result) // TODO LOG
-					{}
+					if (p.result) // TODO LOG
+					{
+					}
 					else
 					{
 						auto d = cast(short)(e.amount - t);
@@ -218,17 +216,17 @@ mixin template PacketHandlers()
 							c.amount = t;
 							c.source = ITEM_TRADING;
 
-							RO.gui.trading.itemsSrc.add(c);
+							//RO.gui.trading.itemsSrc.add(c);
 						}
 
-						if(d)
+						if (d)
 						{
 							e.reamount(d);
 							e.trading = 0;
 						}
 						else
 						{
-							RO.status.items.remove(e);
+							//RO.status.items.remove(e);
 						}
 					}
 				}
@@ -237,49 +235,49 @@ mixin template PacketHandlers()
 
 		void onTradeLock(Pk00ec p)
 		{
-			RO.gui.trading.lock(!p.who);
+			//RO.gui.trading.lock(!p.who);
 		}
 
 		void onTradeCancel(Pk00ee p)
 		{
-			RO.gui.removeTrading;
+			//RO.gui.removeTrading;
 		}
 
 		void onTradeDone(Pk00f0 p)
 		{
-			RO.gui.removeTrading;
+			//RO.gui.removeTrading;
 		}
 
 		void onTradeReply(Pk01f5 p)
 		{
-			if(p.result == 3)
+			if (p.result == 3)
 			{
-				RO.gui.createTrading;
+				//RO.gui.createTrading;
 			}
 		}
 
 		void onTradeRequested(Pk01f4 p)
 		{
-			auto e = new WinInfo(format(MSG_DEAL_REQUEST, p.nick.charsToString, p.baselvl), true);
+			// auto e = new WinInfo(format(MSG_DEAL_REQUEST, p.nick.charsToString, p.baselvl), true);
 
-			e.ok.onClick =
-			{
-				replyTrade(3);
-				e.deattach;
-			};
+			// e.ok.onClick =
+			// {
+			// 	replyTrade(3);
+			// 	e.deattach;
+			// };
 
-			e.cancel.onClick =
-			{
-				replyTrade(4);
-				e.deattach;
-			};
+			// e.cancel.onClick =
+			// {
+			// 	replyTrade(4);
+			// 	e.deattach;
+			// };
 		}
 	}
 
 	/// ====================================== INCOMING ======================================
 	void onLoginOk(Pk0ac4 p)
 	{
-		foreach(ref s; p.servers)
+		foreach (ref s; p.servers)
 		{
 			auto addr = new InternetAddress(s.ip.bswap, s.port);
 			auto name = s.name.charsToString;
@@ -297,84 +295,84 @@ mixin template PacketHandlers()
 
 	void onCharCreated(Pk006d p)
 	{
-		RO.gui.creation.onDone(p.data);
+		//RO.gui.creation.onDone(p.data);
 	}
 
 	void onCreationError(Pk006e p)
 	{
-		RO.gui.creation.onError(p.code);
+		//RO.gui.creation.onError(p.code);
 	}
 
 	/// ====================================== NPC SHOP ======================================
 	void onShopType(Pk00c4 p)
 	{
-		RO.gui.createShop(p.shopId);
+		//RO.gui.createShop(p.shopId);
 	}
 
 	void onItemsBuy(Pk00c6 p)
 	{
-		RO.gui.shop.make(p.items);
+		//RO.gui.shop.make(p.items);
 	}
 
 	void onItemsSell(Pk00c7 p)
 	{
-		RO.gui.shop.make(p.items);
+		//RO.gui.shop.make(p.items);
 	}
 
 	void onBuyResult(Pk00ca p)
 	{
-		RO.gui.removeShop;
+		//RO.gui.removeShop;
 	}
 
 	void onSellResult(Pk00cb p)
 	{
-		RO.gui.removeShop;
+		//RO.gui.removeShop;
 	}
 
 	/// ====================================== KAFRA ======================================
 	void onKafraItems(Pk0995 p)
 	{
-		RO.gui.createStore;
+		//RO.gui.createStore;
 
-		foreach(ref v; p.items)
+		foreach (ref v; p.items)
 		{
-			RO.gui.store.items.add(new Item(v));
+			//RO.gui.store.items.add(new Item(v));
 		}
 	}
 
 	void onKafraItem(Pk0a0a p)
 	{
-		RO.gui.store.items.add(new Item(p));
+		//RO.gui.store.items.add(new Item(p));
 	}
 
 	void onKafraEquipItems(Pk0a10 p)
 	{
-		RO.gui.createStore;
+		//RO.gui.createStore;
 
-		foreach(ref v; p.items)
+		foreach (ref v; p.items)
 		{
-			RO.gui.store.items.add(new Item(v));
+			//RO.gui.store.items.add(new Item(v));
 		}
 	}
 
 	void onKafraRemoved(Pk00f6 p)
 	{
-		if(auto e = RO.gui.store.items.getIdx(p.index))
-		{
-			if(p.amount == e.amount)
-			{
-				RO.gui.store.items.remove(e);
-			}
-			else
-			{
-				e.reamount(cast(ushort)(e.amount - p.amount));
-			}
-		}
+		// if (auto e = RO.gui.store.items.getIdx(p.index))
+		// {
+		// 	if (p.amount == e.amount)
+		// 	{
+		// 		//RO.gui.store.items.remove(e);
+		// 	}
+		// 	else
+		// 	{
+		// 		e.reamount(cast(ushort)(e.amount - p.amount));
+		// 	}
+		// }
 	}
 
 	void onKafraClose(Pk00f8 p)
 	{
-		RO.gui.removeStore;
+		//RO.gui.removeStore;
 	}
 
 	void onEffect(Pk01f3 p)
@@ -389,9 +387,9 @@ mixin template PacketHandlers()
 
 	void onItemDelete(Pk07fa p)
 	{
-		if(auto e = RO.status.items.getIdx(p.index))
+		if (auto e = RO.status.items.getIdx(p.index))
 		{
-			if(p.amount == e.amount)
+			if (p.amount == e.amount)
 			{
 				RO.status.items.remove(e);
 			}
@@ -404,11 +402,11 @@ mixin template PacketHandlers()
 
 	void onItemDropAck(Pk00af p)
 	{
-		if(p.amount)
+		if (p.amount)
 		{
-			if(auto e = RO.status.items.getIdx(p.index))
+			if (auto e = RO.status.items.getIdx(p.index))
 			{
-				if(p.amount == e.amount)
+				if (p.amount == e.amount)
 				{
 					RO.status.items.remove(e);
 				}
@@ -427,8 +425,7 @@ mixin template PacketHandlers()
 
 	void onCasting(Pk07fb p)
 	{
-		alias F = (a)
-		{
+		alias F = (a) {
 			a.ent.info.doCast(p.delaytime, p.srcId != p.dstId);
 			a.ent.info.msg(ROdb.skill(p.skillId) ~ ` !!`);
 		};
@@ -438,11 +435,7 @@ mixin template PacketHandlers()
 
 	void onPartyHp(Pk080e p)
 	{
-		alias F = (a)
-		{
-			a.ent.info.hp = p.hp;
-			a.ent.info.maxHp = p.maxHp;
-		};
+		alias F = (a) { a.ent.info.hp = p.hp; a.ent.info.maxHp = p.maxHp; };
 
 		ROent.doActor(p.accountId, a => F(a));
 	}
@@ -451,15 +444,25 @@ mixin template PacketHandlers()
 	{
 		auto v = p.value;
 
-		switch(p.varId)
+		switch (p.varId)
 		{
-		case SP_JOBEXP:			RO.status.jexp.value = v; break;
-		case SP_NEXTJOBEXP:		RO.status.jnextExp.value = v; break;
+		case SP_JOBEXP:
+			RO.status.jexp.value = v;
+			break;
+		case SP_NEXTJOBEXP:
+			RO.status.jnextExp.value = v;
+			break;
 
-		case SP_BASEEXP:		RO.status.bexp.value = v; break;
-		case SP_NEXTBASEEXP:	RO.status.bnextExp.value = v; break;
+		case SP_BASEEXP:
+			RO.status.bexp.value = v;
+			break;
+		case SP_NEXTBASEEXP:
+			RO.status.bnextExp.value = v;
+			break;
 
-		case SP_ZENY:			RO.gui.inv.zeny = v; break;
+		case SP_ZENY:
+			//RO.gui.inv.zeny = v;
+			break;
 
 		default:
 			p.varId.logger;
@@ -468,18 +471,26 @@ mixin template PacketHandlers()
 
 	void onParChange(Pk00b0 p)
 	{
-		auto i = cast(int)p.value;
-		auto v = cast(short)p.value;
+		auto i = cast(int) p.value;
+		auto v = cast(short) p.value;
 
 		Actor s = ROent.self;
 
-		switch(p.varId)
+		switch (p.varId)
 		{
-		case SP_WEIGHT:		RO.gui.inv.weight = i; break;
-		case SP_MAXWEIGHT:	RO.gui.inv.maxWeight = i; break;
+		case SP_WEIGHT:
+			//RO.gui.inv.weight = i;
+			break;
+		case SP_MAXWEIGHT:
+			//RO.gui.inv.maxWeight = i;
+			break;
 
-		case SP_JOBLEVEL:	RO.status.jlvl.value = v; break;
-		case SP_BASELEVEL:	RO.status.blvl.value = v; break;
+		case SP_JOBLEVEL:
+			RO.status.jlvl.value = v;
+			break;
+		case SP_BASELEVEL:
+			RO.status.blvl.value = v;
+			break;
 
 		case SP_HP:
 			s.ent.info.hp = i;
@@ -501,25 +512,51 @@ mixin template PacketHandlers()
 			RO.status.maxSp.value = i;
 			break;
 
-		case SP_ATK1:		RO.status.bonuses[RO_ATK].base = v; break;
-		case SP_ATK2:		RO.status.bonuses[RO_ATK].base2 = v; break;
+		case SP_ATK1:
+			RO.status.bonuses[RO_ATK].base = v;
+			break;
+		case SP_ATK2:
+			RO.status.bonuses[RO_ATK].base2 = v;
+			break;
 
-		case SP_MATK1:		RO.status.bonuses[RO_MATK].base = v; break;
-		case SP_MATK2:		RO.status.bonuses[RO_MATK].base2 = v; break;
+		case SP_MATK1:
+			RO.status.bonuses[RO_MATK].base = v;
+			break;
+		case SP_MATK2:
+			RO.status.bonuses[RO_MATK].base2 = v;
+			break;
 
-		case SP_HIT:		RO.status.bonuses[RO_HIT].base = v; break;
-		case SP_CRITICAL:	RO.status.bonuses[RO_CRIT].base = v; break;
+		case SP_HIT:
+			RO.status.bonuses[RO_HIT].base = v;
+			break;
+		case SP_CRITICAL:
+			RO.status.bonuses[RO_CRIT].base = v;
+			break;
 
-		case SP_DEF1:		RO.status.bonuses[RO_DEF].base = v; break;
-		case SP_DEF2:		RO.status.bonuses[RO_DEF].base2 = v; break;
+		case SP_DEF1:
+			RO.status.bonuses[RO_DEF].base = v;
+			break;
+		case SP_DEF2:
+			RO.status.bonuses[RO_DEF].base2 = v;
+			break;
 
-		case SP_MDEF1:		RO.status.bonuses[RO_MDEF].base = v; break;
-		case SP_MDEF2:		RO.status.bonuses[RO_MDEF].base2 = v; break;
+		case SP_MDEF1:
+			RO.status.bonuses[RO_MDEF].base = v;
+			break;
+		case SP_MDEF2:
+			RO.status.bonuses[RO_MDEF].base2 = v;
+			break;
 
-		case SP_FLEE1:		RO.status.bonuses[RO_FLEE].base = v; break;
-		case SP_FLEE2:		RO.status.bonuses[RO_FLEE].base2 = v; break;
+		case SP_FLEE1:
+			RO.status.bonuses[RO_FLEE].base = v;
+			break;
+		case SP_FLEE2:
+			RO.status.bonuses[RO_FLEE].base2 = v;
+			break;
 
-		case SP_ASPD:		RO.status.bonuses[RO_ASPD].base = v; break;
+		case SP_ASPD:
+			RO.status.bonuses[RO_ASPD].base = v;
+			break;
 
 		default:
 		}
@@ -527,7 +564,7 @@ mixin template PacketHandlers()
 
 	void onHotkeys(Pk0a00 p)
 	{
-		foreach(i, ref e; p.hotkeys[].enumerate.filter!(a => !!a.value.id))
+		foreach (i, ref e; p.hotkeys[].enumerate.filter!(a => !!a.value.id))
 		{
 			RO.gui.hotkeys.add(e, Vector2s(i % 9, i / 9));
 		}
@@ -535,14 +572,14 @@ mixin template PacketHandlers()
 
 	void onSpriteChange(Pk01d7 p)
 	{
-		ROent.doActor(p.id, a => a.changeLook(p.type, cast(ushort)p.value));
+		ROent.doActor(p.id, a => a.changeLook(p.type, cast(ushort) p.value));
 	}
 
 	void onPickUp(Pk0a37 p)
 	{
-		if(!p.result)
+		if (!p.result)
 		{
-			if(auto e = RO.status.items.getIdx(p.idx))
+			if (auto e = RO.status.items.getIdx(p.idx))
 			{
 				e.reamount(cast(ushort)(e.amount + p.amount));
 			}
@@ -555,11 +592,11 @@ mixin template PacketHandlers()
 
 	void onItemUsed(Pk01c8 p)
 	{
-		if(p.result && p.id == ROent.self.bl)
+		if (p.result && p.id == ROent.self.bl)
 		{
-			if(auto e = RO.status.items.getIdx(p.index))
+			if (auto e = RO.status.items.getIdx(p.index))
 			{
-				if(p.amount)
+				if (p.amount)
 				{
 					e.reamount(p.amount);
 				}
@@ -573,9 +610,9 @@ mixin template PacketHandlers()
 
 	void onEquip(Pk0999 p)
 	{
-		if(!p.result)
+		if (!p.result)
 		{
-			if(auto e = RO.status.items.getIdx(p.index))
+			if (auto e = RO.status.items.getIdx(p.index))
 			{
 				e.doEquip(p.equipLocation);
 			}
@@ -584,9 +621,9 @@ mixin template PacketHandlers()
 
 	void onUnequip(Pk099a p)
 	{
-		if(!p.result)
+		if (!p.result)
 		{
-			if(auto e = RO.status.items.getIdx(p.index))
+			if (auto e = RO.status.items.getIdx(p.index))
 			{
 				e.doEquip(0);
 			}
@@ -595,7 +632,7 @@ mixin template PacketHandlers()
 
 	void onStatsNeed(Pk00be p)
 	{
-		if(p.statusId >= SP_USTR && p.statusId <= SP_ULUK)
+		if (p.statusId >= SP_USTR && p.statusId <= SP_ULUK)
 		{
 			RO.status.stats[p.statusId - SP_USTR].needs = p.value;
 		}
@@ -603,19 +640,19 @@ mixin template PacketHandlers()
 
 	void onStatChange(Pk0141 p)
 	{
-		if(p.statusId >= SP_STR && p.statusId <= SP_LUK)
+		if (p.statusId >= SP_STR && p.statusId <= SP_LUK)
 		{
-			with(RO.status.stats[p.statusId - SP_STR])
+			with (RO.status.stats[p.statusId - SP_STR])
 			{
-				base = cast(ubyte)p.baseStatus;
-				bonus = cast(ubyte)p.plusStatus;
+				base = cast(ubyte) p.baseStatus;
+				bonus = cast(ubyte) p.plusStatus;
 			}
 		}
 	}
 
 	void onStatsChange(Pk00bd p)
 	{
-		with(RO.status)
+		with (RO.status)
 		{
 			stats[RO_STR].needs = p.needStr;
 			stats[RO_AGI].needs = p.needAgi;
@@ -630,22 +667,22 @@ mixin template PacketHandlers()
 	{
 		ROres.load(`amatsu`);
 
-		foreach_reverse(i, ref c; p.chars)
+		foreach_reverse (i, ref c; p.chars)
 		{
-			auto e = ROent.createChar(&c, cast(uint)i, st.gender);
+			auto e = ROent.createChar(&c, cast(uint) i, st.gender);
 
 			e.fix(Vector2s(259 + i * 2, 190).PosDir);
 		}
 
 		st.chars = p.chars;
 
-		if(p.chars.length)
+		if (p.chars.length)
 		{
 			RO.action.charSelect(0);
 		}
 		else
 		{
-			RO.gui.createCreation;
+			//RO.gui.createCreation;
 		}
 	}
 
@@ -664,7 +701,7 @@ mixin template PacketHandlers()
 		connect(new InternetAddress(p.ip.bswap, p.port));
 		uint tick = PE.tick;
 
-		version(AE_ENCRYPTED_NET)
+		version (AE_ENCRYPTED_NET)
 		{
 			auto arr = tick.toByte;
 			arr[0] = cast(ubyte)~(arr[1] ^ 0xEB);
@@ -675,7 +712,7 @@ mixin template PacketHandlers()
 
 	void onMapStart(Pk0283 p)
 	{
-		version(AE_ENCRYPTED_NET)
+		version (AE_ENCRYPTED_NET)
 		{
 			_flags |= M_ENC_KEY;
 		}
@@ -707,12 +744,12 @@ mixin template PacketHandlers()
 
 	void onMove(Pk0086 p)
 	{
-		ROent.doActor(p.id, a => a.move(p.walkData.toVec[0..2]));
+		ROent.doActor(p.id, a => a.move(p.walkData.toVec[0 .. 2]));
 	}
 
 	void onMoveSelf(Pk0087 p)
 	{
-		ROent.self.move(p.walkData.toVec[0..2]);
+		ROent.self.move(p.walkData.toVec[0 .. 2]);
 	}
 
 	void onVanish(Pk0080 p)
@@ -722,7 +759,7 @@ mixin template PacketHandlers()
 
 	void onItems(Pk0991 p)
 	{
-		foreach(ref r; p.items)
+		foreach (ref r; p.items)
 		{
 			RO.status.items.add(new Item(r));
 		}
@@ -730,7 +767,7 @@ mixin template PacketHandlers()
 
 	void onEqupItems(Pk0a0d p)
 	{
-		foreach(ref r; p.items)
+		foreach (ref r; p.items)
 		{
 			RO.status.items.add(new Item(r));
 		}
@@ -738,25 +775,25 @@ mixin template PacketHandlers()
 
 	void onSkills(Pk010f p)
 	{
-		foreach(ref r; p.skills)
+		foreach (ref r; p.skills)
 		{
 			auto s = RO.status.skillOf(r.skillId);
 			auto u = s ? s : new Skill;
 
-			if(!s)
+			if (!s)
 			{
 				RO.status.skills ~= u;
 
 				u.name = r.skillName[].toStr.toLower;
 				u.id = r.skillId;
-				u.type = cast(ubyte)r.type;
+				u.type = cast(ubyte) r.type;
 
-				RO.gui.skills.add(u);
+				//RO.gui.skills.add(u);
 			}
 
 			u.sp = r.spCost;
-			u.lvl = cast(ubyte)r.level;
-			u.range = cast(ubyte)r.attackRange;
+			u.lvl = cast(ubyte) r.level;
+			u.range = cast(ubyte) r.attackRange;
 			u.upgradable = !!r.upgradable;
 		}
 	}
@@ -777,7 +814,8 @@ mixin template PacketHandlers()
 	}
 
 	void onSkillEntry(Pk09ca p)
-	{}
+	{
+	}
 
 	void onGroundSkill(Pk0117 p)
 	{
@@ -785,13 +823,14 @@ mixin template PacketHandlers()
 	}
 
 	void onMsgState(Pk0983 p)
-	{}
+	{
+	}
 
 	void onAttack(Pk08c8 p)
 	{
 		ROent.doActor(p.srcId, a => a.doAttack(p));
 
-		if(p.damage)
+		if (p.damage)
 		{
 			ROent.doActor(p.dstId, a => RO.gui.values.show(a, p.damage));
 		}
@@ -827,10 +866,7 @@ mixin template PacketHandlers()
 		auto c = Color(0, 255, 0, 255);
 		auto s = p.text.toStr;
 
-		alias F = (a)
-		{
-			a.ent.info.msg(s, c);
-		};
+		alias F = (a) { a.ent.info.msg(s, c); };
 
 		chat(s, c);
 		ROent.doActor(p.bl, a => F(a));
@@ -841,7 +877,7 @@ mixin template PacketHandlers()
 		auto c = Color(0, 255, 0, 255);
 		auto s = p.message.toStr;
 
-		if(ROent.self)
+		if (ROent.self)
 		{
 			ROent.self.ent.info.msg(s, c);
 		}
@@ -868,9 +904,9 @@ private:
 
 	void initialize()
 	{
-		foreach(m; __traits(allMembers, typeof(this)))
+		foreach (m; __traits(allMembers, typeof(this)))
 		{
-			static if(m.startsWith(`on`))
+			static if (m.startsWith(`on`))
 			{
 				alias F = AliasSeq!(__traits(getMember, this, m));
 				alias T = Parameters!F[0];

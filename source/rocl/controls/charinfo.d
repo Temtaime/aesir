@@ -18,10 +18,10 @@ final class CharInfo : RCounted
 
 	~this()
 	{
-		if(_hp)
-		{
-			_hp.deattach;
-		}
+		// if(_hp)
+		// {
+		// 	_hp.deattach;
+		// }
 
 		removeMsg;
 		removeCast;
@@ -29,12 +29,12 @@ final class CharInfo : RCounted
 
 	void damageSkill(uint num)
 	{
-		if(_skTimer && !_skTimer.removed)
-		{
-			_skTimer.exec;
-		}
+		// if(_skTimer && !_skTimer.removed)
+		// {
+		// 	_skTimer.exec;
+		// }
 
-		_skTimer = RO.gui.values.show(_ent.pos, num);
+		// _skTimer = RO.gui.values.show(_ent.pos, num);
 	}
 
 	void doCast(uint dur, bool enemy)
@@ -55,25 +55,25 @@ final class CharInfo : RCounted
 
 	void msg(string s, Color c = colorWhite)
 	{
-		removeMsg;
+		// removeMsg;
 
-		{
-			_msg = new GUIQuad(PE.gui.root, Color(0, 0, 0, 110));
+		// {
+		// 	_msg = new GUIQuad(PE.gui.root, Color(0, 0, 0, 110));
 
-			{
-				auto e = new GUIStaticText(_msg, s);
+		// 	{
+		// 		auto e = new GUIStaticText(_msg, s);
 
-				e.color = c;
-				e.pos = Vector2s(5, 2);
+		// 		e.color = c;
+		// 		e.pos = Vector2s(5, 2);
 
-				_msg.size = e.size + Vector2s(10, 4);
-			}
+		// 		_msg.size = e.size + Vector2s(10, 4);
+		// 	}
 
-			update;
-		}
+		// 	update;
+		// }
 
-		removeMsg;
-		_msgTimer = PE.timers.add(&removeMsg, 5_000, TM_ONCE);
+		// removeMsg;
+		// _msgTimer = PE.timers.add(&removeMsg, 5_000, TM_ONCE);
 	}
 
 	void update()
@@ -129,8 +129,8 @@ private:
 	{
 		if(_castTimer)
 		{
-			_cast.deattach;
-			_cast = null;
+			// _cast.deattach;
+			// _cast = null;
 
 			_castTimer.removed = true;
 			_castTimer = null;
@@ -141,7 +141,7 @@ private:
 	{
 		if(_msgTimer)
 		{
-			_msg.deattach;
+			//_msg.deattach;
 			_msg = null;
 
 			_msgTimer.removed = true;

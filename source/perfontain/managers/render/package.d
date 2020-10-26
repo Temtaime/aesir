@@ -163,6 +163,11 @@ private:
 			add(di.color.toVec);
 		}
 
+		if(flags & PROG_DATA_SCISSOR)
+		{
+			add(di.scissor.Vector4i);
+		}
+
 		if(flags & PROG_DATA_LIGHTS)
 		{
 			add(di.lightStart);

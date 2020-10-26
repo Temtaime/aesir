@@ -15,6 +15,7 @@ struct DrawInfo
 	MeshHolder mh;
 
 	Matrix4 matrix;
+	Vector4s scissor;
 
 	uint	lightStart,
 			lightEnd;

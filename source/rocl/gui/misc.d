@@ -1,95 +1,93 @@
 module rocl.gui.misc;
 
-import
-		std,
-		perfontain,
-		rocl;
-
+import std, perfontain, rocl, rocl.paths, ro.conv, ro.conv.item;
 
 void registerHotkeys()
 {
-	foreach(i; 0..36)
+	foreach (i; 0 .. 36)
 	{
-		auto dg =
-		{
+		auto dg = {
 			uint idx = i, k;
 
-			if(idx > 8)
+			if (idx > 8)
 			{
 				auto n = idx - 9;
 				auto hotkeys = `qwertyuioasdfghjklzxcvbnm`;
 
-				k = n >= hotkeys.length
-										? [ SDLK_COMMA, /*SDLK_PERIOD*/46 ][n - hotkeys.length]
-										: SDLK_a + hotkeys[n] - 'a';
+				k = n >= hotkeys.length ? [
+					SDLK_COMMA, /*SDLK_PERIOD*/ 46
+				][n - hotkeys.length] : SDLK_a + hotkeys[n] - 'a';
 			}
 			else
 			{
 				k = SDLK_F1 + idx;
 			}
 
-			auto f =
-			{
-				if(RO.gui.chat.disabled)
-				{
-					auto e = RO
-								.gui
-								.hotkeys
-								.childs[]
-								.map!(a => cast(HotkeyIcon)a)
-								.find!(a => RO.gui.hotkeys.posToId(a.pos) == idx);
+			auto f = {
+				// if(RO.gui.chat.disabled)
+				// {
+				// 	auto e = RO
+				// 				.gui
+				// 				.hotkeys
+				// 				.childs[]
+				// 				.map!(a => cast(HotkeyIcon)a)
+				// 				.find!(a => RO.gui.hotkeys.posToId(a.pos) == idx);
 
-					if(e.length)
-					{
-						e[0].use;
-						return true;
-					}
-				}
+				// 	if(e.length)
+				// 	{
+				// 		e[0].use;
+				// 		return true;
+				// 	}
+				// }
 
 				return false;
 			};
 
-			PE.hotkeys.add(Hotkey(format(`hk_%u`, idx), f, cast(SDL_Keycode)k));
+			//PE.hotkeys.add(Hotkey(format(`hk_%u`, idx), f, cast(SDL_Keycode)k));
 		};
 
 		dg();
 	}
 
-	auto acts =
-	[
-		tuple(`hk_equip`, { RO.gui.status.showOrHide; return true; }, SDLK_e),
-		tuple(`hk_skills`, { RO.gui.skills.showOrHide; return true; }, SDLK_s),
-		tuple(`hk_settings`, { RO.gui.settings.showOrHide; return true; }, SDLK_o),
-		tuple(`hk_inventory`, { RO.gui.inv.showOrHide; return true; }, SDLK_i),
-	];
+	// auto acts =
+	// [
+	// 	tuple(`hk_equip`, { RO.gui.status.showOrHide; return true; }, SDLK_e),
+	// 	tuple(`hk_skills`, { RO.gui.skills.showOrHide; return true; }, SDLK_s),
+	// 	tuple(`hk_settings`, { RO.gui.settings.showOrHide; return true; }, SDLK_o),
+	// 	tuple(`hk_inventory`, { RO.gui.inv.showOrHide; return true; }, SDLK_i),
+	// ];
 
-	foreach(e; acts)
-	{
-		PE.hotkeys.add(Hotkey(e[0], e[1].toDelegate, SDLK_LALT, e[2]));
-	}
+	// foreach(e; acts)
+	// {
+	// 	PE.hotkeys.add(Hotkey(e[0], e[1].toDelegate, SDLK_LALT, e[2]));
+	// }
 }
 
 mixin template MakeWindow(T, string Name)
 {
 	import std.ascii : toUpper;
-	enum N = toUpper(Name[0]) ~ Name[1..$];
+
+	enum N = toUpper(Name[0]) ~ Name[1 .. $];
 
 	mixin(`auto create` ~ N ~ `(A...)(A args)
 	{
 		if(_` ~ Name ~ `)
 		{
-			_` ~ Name ~ `.deattach;
+			//_` ~ Name ~ `.deattach;
 		}
 
-		_` ~ Name ~ ` = new T(args);
+		_` ~ Name
+			~ ` = new T(args);
+		_` ~ Name ~ `.show;
 	}
 
 	void remove` ~ N ~ `()
 	{
 		if(_` ~ Name ~ `)
 		{
-			_` ~ Name ~ `.deattach;
-			_` ~ Name ~ ` = null;
+			_` ~ Name ~ `.remove;
+			_` ~ Name
+			~ ` = null;
 		}
 	}
 
@@ -99,4 +97,12 @@ mixin template MakeWindow(T, string Name)
 	}
 
 	private T _` ~ Name ~ `;`);
+}
+
+auto makeIconTex(string res)
+{
+	auto data = convert!RoItem(res, itemPath(res));
+
+	TextureInfo ti = {TEX_DXT_5, [TextureData(24.Vector2s, data.data)]};
+	return new Texture(ti);
 }

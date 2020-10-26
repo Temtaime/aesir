@@ -18,61 +18,61 @@ final class NpcController
 {
 	void mes(string s, uint npc)
 	{
-		_npc = npc;
-		_select = false;
+		// _npc = npc;
+		// _select = false;
 
-		if(_clear)
-		{
-			_clear = false;
-			//win.text.clear;
-		}
+		// if(_clear)
+		// {
+		// 	_clear = false;
+		// 	//win.text.clear;
+		// }
 
-		win.text.add(s);
+		// win.text.add(s);
 	}
 
 	void next()
 	{
-		auto b = win.makeButton(MSG_NEXT);
+		// auto b = win.makeButton(MSG_NEXT);
 
-		b.onClick =
-		{
-			ROnet.npcNext(_npc);
+		// b.onClick =
+		// {
+		// 	ROnet.npcNext(_npc);
 
-			_clear = true;
-			win.childs.popBack;
-		};
+		// 	_clear = true;
+		// 	win.childs.popBack;
+		// };
 	}
 
 	void close()
 	{
-		if(_npc)
-		{
-			if(_select)
-			{
-				deattach;
-			}
-			else
-			{
-				auto b = win.makeButton(MSG_CLOSE);
+		// if(_npc)
+		// {
+		// 	if(_select)
+		// 	{
+		// 		deattach;
+		// 	}
+		// 	else
+		// 	{
+		// 		auto b = win.makeButton(MSG_CLOSE);
 
-				b.onClick =
-				{
-					ROnet.npcClose(_npc);
-					deattach;
-				};
-			}
-		}
+		// 		b.onClick =
+		// 		{
+		// 			ROnet.npcClose(_npc);
+		// 			deattach;
+		// 		};
+		// 	}
+		// }
 	}
 
 	void select(string s)
 	{
 		auto w = new WinNpcSelect(win, s.stripRight(':').split(':'));
 
-		w.onSelect = (idx)
-		{
-			ROnet.npcSelect(_npc, idx);
-			w.deattach;
-		};
+		// w.onSelect = (idx)
+		// {
+		// 	ROnet.npcSelect(_npc, idx);
+		// 	w.deattach;
+		// };
 
 		_select = true;
 	}
@@ -92,7 +92,7 @@ private:
 	{
 		assert(_win);
 
-		_win.deattach;
+		//_win.deattach;
 
 		_npc = 0;
 		_win = null;

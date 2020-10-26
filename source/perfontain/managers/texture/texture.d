@@ -143,7 +143,6 @@ private:
 		}
 
 		auto ts = textureTypes[t];
-
 		glTextureStorage2D(id, cast(uint)levels.length, ts[0], size.x, size.y);
 
 		if(t <= TEX_DXT_5)

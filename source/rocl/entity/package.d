@@ -7,6 +7,7 @@ import
 		std.algorithm,
 
 		perfontain,
+		perfontain.math,
 		perfontain.nodes.sprite,
 
 		ro.grf,
@@ -38,28 +39,33 @@ final class EntityManager
 
 	void process()
 	{
-		auto old = cur;
+		float p;
+		cur = null;
 
+		foreach(a; _actors)
 		{
-			float p;
-			cur = null;
+			a.process;
+			auto r = a.mouseLen;
 
-			foreach(a; _actors)
+			if(r != 0 && (r < p || !cur))
 			{
-				a.process;
-				auto r = a.mouseLen;
-
-				if(r != 0 && (r < p || !cur))
-				{
-					p = r;
-					cur = a;
-				}
+				p = r;
+				cur = a;
 			}
 		}
 
-		if(old ! is cur)
+		if(cur)
 		{
-			RO.action.makeTip(cur, true);
+			auto z = cur.ent.bbox * PE.scene.viewProject;
+			auto pos = project(z.min + Vector3(z.size.x / 2, 0, 0), PE.window.size).xy.Vector2s;
+
+			PopupText pt =
+			{
+				pos: pos,
+				msg: cur.cleanName
+			};
+
+			PE.gui.addPopup(pt);
 		}
 	}
 

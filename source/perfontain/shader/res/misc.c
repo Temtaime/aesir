@@ -3,15 +3,14 @@ PASS_DATA
 	{
 		PASS_NORMALS
 			vec3 norm;
-
 		SHADOWS_ENABLED
 			vec4 shadowPos;
-
 		LIGHTING_FULL
 			vec4 pos;
-
 		BINDLESS_TEXTURE
 			flat uvec2 tex;
+		TRANS_GUI
+			vec4 color;
 		vec2 texCoord;
 
 		PASS_DRAW_ID
@@ -35,6 +34,8 @@ DECL_TRANS
 			mat4 normal;
 		TRANS_COLOR
 			vec4 color;
+		TRANS_GUI
+			ivec4 scissor;
 
 		LIGHTING_FULL
 			int lightStart, lightEnd;

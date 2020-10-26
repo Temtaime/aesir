@@ -1,227 +1,231 @@
-module rocl.controls.hotkeysettings;
+ module rocl.controls.hotkeysettings;
 
-import
-		std,
+// import
+// 		std,
 
-		perfontain,
+// 		perfontain,
 
-		ro.conv.gui,
+// 		ro.conv.gui,
 
-		rocl,
-		rocl.game;
+// 		rocl,
+// 		rocl.game;
 
 
-final:
+// final:
 
-class WinHotkeySettings : WinBasic2
-{
-	this()
-	{
-		super(MSG_HOTKEY_SETTINGS, `hotkeys`);
+// class WinHotkeySettings : WinBasic2
+// {
+// 	this()
+// 	{
+// 		// super(MSG_HOTKEY_SETTINGS, `hotkeys`);
 
-		{
-			auto msgs =
-			[
-				MSG_SKILLS ~ ` 1-2`,
-				MSG_SKILLS ~ ` 3-4`,
-				MSG_INTERFACE
-			];
+// 		// {
+// 		// 	auto msgs =
+// 		// 	[
+// 		// 		MSG_SKILLS ~ ` 1-2`,
+// 		// 		MSG_SKILLS ~ ` 3-4`,
+// 		// 		MSG_INTERFACE
+// 		// 	];
 
-			auto e = new TextTabs(main, msgs);
+// 		// 	auto e = new TextTabs(main, msgs);
 
-			foreach(i, u; e.tabs)
-			{
-				if(i < 2)
-				{
-					foreach(k; 0..18)
-					{
-						auto n = format(`hk_%u`, i * 18 + k);
-						auto r = new HotkeySelector(u, n, format(`Hotkey %u-%u`, i * 2 + k / 9 + 1, k % 9 + 1));
+// 		// 	foreach(i, u; e.tabs)
+// 		// 	{
+// 		// 		if(i < 2)
+// 		// 		{
+// 		// 			foreach(k; 0..18)
+// 		// 			{
+// 		// 				auto n = format(`hk_%u`, i * 18 + k);
+// 		// 				auto r = new HotkeySelector(u, n, format(`Hotkey %u-%u`, i * 2 + k / 9 + 1, k % 9 + 1));
 
-						r.pos = Vector2s(k >= 9 ? r.size.x + 10 : 0, r.size.y * (k % 9) + 4);
-					}
-				}
-				else
-				{
-					auto acts =
-					[
-						tuple(MSG_WIN_EQUIP, `hk_equip`),
-						tuple(MSG_WIN_SKILLS, `hk_skills`),
-						tuple(MSG_WIN_SETTINGS, `hk_settings`),
-						tuple(MSG_WIN_INVENTORY, `hk_inventory`),
-					];
+// 		// 				r.pos = Vector2s(k >= 9 ? r.size.x + 10 : 0, r.size.y * (k % 9) + 4);
+// 		// 			}
+// 		// 		}
+// 		// 		else
+// 		// 		{
+// 		// 			auto acts =
+// 		// 			[
+// 		// 				tuple(MSG_WIN_EQUIP, `hk_equip`),
+// 		// 				tuple(MSG_WIN_SKILLS, `hk_skills`),
+// 		// 				tuple(MSG_WIN_SETTINGS, `hk_settings`),
+// 		// 				tuple(MSG_WIN_INVENTORY, `hk_inventory`),
+// 		// 			];
 
-					auto x = acts.map!(a => cast(short)PE.fonts.base.widthOf(a[0])).reduce!max;
+// 		// 			auto x = acts.map!(a => cast(short)PE.fonts.base.widthOf(a[0])).reduce!max;
 
-					foreach(k, act; acts)
-					{
-						auto r = new HotkeySelector(u, act[1], act[0], x);
-						r.pos = Vector2s(0, r.size.y * k + 4);
-					}
-				}
-			}
+// 		// 			foreach(k, act; acts)
+// 		// 			{
+// 		// 				auto r = new HotkeySelector(u, act[1], act[0], x);
+// 		// 				r.pos = Vector2s(0, r.size.y * k + 4);
+// 		// 			}
+// 		// 		}
+// 		// 	}
 
-			e.adjust;
-		}
+// 		// 	e.adjust;
+// 		// }
 
-		adjust;
+// 		// adjust;
 
-		{
-			auto b = new Button(this, MSG_OK);
+// 		// {
+// 		// 	auto b = new Button(this, MSG_OK);
 
-			b.move(this, POS_MAX, -5, bottom, POS_CENTER);
-			b.onClick = &RO.gui.removeHotkeySettings;
-		}
+// 		// 	b.move(this, POS_MAX, -5, bottom, POS_CENTER);
+// 		// 	b.onClick = &RO.gui.removeHotkeySettings;
+// 		// }
 
-		center;
-	}
+// 		// center;
+// 	}
 
-	~this()
-	{
-		childs.clear;
-	}
-}
+// 	~this()
+// 	{
+// 		//childs.clear;
+// 	}
+// }
 
-class HotkeySelector : GUIElement
-{
-	this(GUIElement p, string n, string text, short x = -1)
-	{
-		super(p);
+// class HotkeySelector : GUIElement
+// {
+// 	this()
+// 	{
 
-		{
-			auto t = new GUIStaticText(this, text);
+// 	}
+// // 	this(GUIElement p, string n, string text, short x = -1)
+// // 	{
+// // 		// super(p);
 
-			new class Underlined
-			{
-				this()
-				{
-					super(this.outer);
-				}
+// // 		// {
+// // 		// 	auto t = new GUIStaticText(this, text);
 
-				override void onFocus(bool st)
-				{
-					if(st)
-					{
-						record(true);
-					}
-				}
+// // 		// 	new class Underlined
+// // 		// 	{
+// // 		// 		this()
+// // 		// 		{
+// // 		// 			super(this.outer);
+// // 		// 		}
 
-				override void draw(Vector2s p) const
-				{
-					if(_cp)
-					{
-						drawQuad(p + pos, size - Vector2s(0, 1), colorGray);
-					}
+// // 		// 		override void onFocus(bool st)
+// // 		// 		{
+// // 		// 			if(st)
+// // 		// 			{
+// // 		// 				record(true);
+// // 		// 			}
+// // 		// 		}
 
-					super.draw(p);
-				}
-			};
+// // 		// 		/*override void draw(Vector2s p) const
+// // 		// 		{
+// // 		// 			if(_cp)
+// // 		// 			{
+// // 		// 				drawQuad(p + pos, size - Vector2s(0, 1), colorGray);
+// // 		// 			}
 
-			und.size = Vector2s(120, PE.fonts.base.height + 1);
+// // 		// 			super.draw(p);
+// // 		// 		}*/
+// // 		// 	};
 
-			if(x < 0)
-			{
-				und.moveX(t, POS_ABOVE, 4);
-			}
-			else
-			{
-				und.pos.x = x;
-			}
-		}
+// // 		// 	und.size = Vector2s(120, PE.fonts.base.height + 1);
 
-		{
-			_name = n;
+// // 		// 	if(x < 0)
+// // 		// 	{
+// // 		// 		und.moveX(t, POS_ABOVE, 4);
+// // 		// 	}
+// // 		// 	else
+// // 		// 	{
+// // 		// 		und.pos.x = x;
+// // 		// 	}
+// // 		// }
 
-			if(auto arr = n in PE.settings.hotkeys)
-			{
-				_keys = *arr;
-			}
-		}
+// // 		// {
+// // 		// 	_name = n;
 
-		toChildSize;
-		makeText;
-	}
+// // 		// 	if(auto arr = n in PE.settings.hotkeys)
+// // 		// 	{
+// // 		// 		_keys = *arr;
+// // 		// 	}
+// // 		// }
 
-	~this()
-	{
-		PE.settings.hotkeys[_name] = _keys;
-	}
+// // 		// toChildSize;
+// // 		// makeText;
+// // 	}
 
-private:
-	mixin MakeChildRef!(Underlined, `und`, 1);
+// // 	~this()
+// // 	{
+// // 		PE.settings.hotkeys[_name] = _keys;
+// // 	}
 
-	void record(bool st)
-	{
-		if(st)
-		{
-			_keys = null;
-			_cp = PE.onKey.add(&processKey);
+// // private:
+// // 	//mixin MakeChildRef!(Underlined, `und`, 1);
 
-			makeText(`?`);
-		}
-		else
-		{
-			_cp = null;
+// // 	void record(bool st)
+// // 	{
+// // 		if(st)
+// // 		{
+// // 			_keys = null;
+// // 			_cp = PE.onKey.add(&processKey);
 
-			if(!_keys.length)
-			{
-				makeText;
-			}
+// // 			makeText(`?`);
+// // 		}
+// // 		else
+// // 		{
+// // 			_cp = null;
 
-			PE.hotkeys.update(_name, _keys);
-		}
-	}
+// // 			if(!_keys.length)
+// // 			{
+// // 				makeText;
+// // 			}
 
-	bool processKey(SDL_Keycode k, bool st)
-	{
-		if(st && k != SDLK_ESCAPE && _keys.all!(a => specials.canFind(a)))
-		{
-			_keys ~= k;
-			makeText();
-		}
-		else
-		{
-			record(false);
-		}
+// // 			PE.hotkeys.update(_name, _keys);
+// // 		}
+// // 	}
 
-		return true;
-	}
+// // 	bool processKey(SDL_Keycode k, bool st)
+// // 	{
+// // 		if(st && k != SDLK_ESCAPE && _keys.all!(a => specials.canFind(a)))
+// // 		{
+// // 			_keys ~= k;
+// // 			makeText();
+// // 		}
+// // 		else
+// // 		{
+// // 			record(false);
+// // 		}
 
-	void makeText()
-	{
-		makeText(_keys ? _keys.map!(a => nameOf(a)).join(`+`) : `none`);
-	}
+// // 		return true;
+// // 	}
 
-	void makeText(string s)
-	{
-		und.childs.clear;
+// // 	void makeText()
+// // 	{
+// // 		makeText(_keys ? _keys.map!(a => nameOf(a)).join(`+`) : `none`);
+// // 	}
 
-		FontInfo fi =
-		{
-			maxWidth: und.size.x
-		};
+// // 	void makeText(string s)
+// // 	{
+// // 		und.childs.clear;
 
-		auto e = new GUIStaticText(und, s, fi);
-		e.moveX(und, POS_CENTER);
-	}
+// // 		FontInfo fi =
+// // 		{
+// // 			maxWidth: und.size.x
+// // 		};
 
-	static nameOf(SDL_Keycode k)
-	{
-		return SDL_GetKeyName(k).fromStringz.assumeUnique;
-	}
+// // 		auto e = new GUIStaticText(und, s, fi);
+// // 		e.moveX(und, POS_CENTER);
+// // 	}
 
-	static immutable specials =
-	[
-		SDLK_LALT,
-		SDLK_LCTRL,
-		SDLK_LSHIFT,
+// // 	static nameOf(SDL_Keycode k)
+// // 	{
+// // 		return SDL_GetKeyName(k).fromStringz.assumeUnique;
+// // 	}
 
-		SDLK_RALT,
-		SDLK_RCTRL,
-		SDLK_RSHIFT,
-	];
+// // 	static immutable specials =
+// // 	[
+// // 		SDLK_LALT,
+// // 		SDLK_LCTRL,
+// // 		SDLK_LSHIFT,
 
-	SDL_Keycode[] _keys;
-	const string _name;
-	RC!ConnectionPoint _cp;
-}
+// // 		SDLK_RALT,
+// // 		SDLK_RCTRL,
+// // 		SDLK_RSHIFT,
+// // 	];
+
+// // 	SDL_Keycode[] _keys;
+// // 	const string _name;
+// // 	RC!ConnectionPoint _cp;
+// }

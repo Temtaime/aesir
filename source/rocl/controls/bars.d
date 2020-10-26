@@ -8,19 +8,19 @@ import
 
 final:
 
-class CastBar : GUIQuad
+class CastBar : GUIElement
 {
 	this(uint dur)
 	{
 		_dur = dur;
 		_tick = PE.tick;
 
-		super(PE.gui.root, Color(0, 0, 0, 255));
+		//super(PE.gui.root, Color(0, 0, 0, 255));
 
 		size = Vector2s(60, 6);
 	}
 
-	override void draw(Vector2s p) const
+	/*override void draw(Vector2s p) const
 	{
 		super.draw(p);
 
@@ -31,7 +31,7 @@ class CastBar : GUIQuad
 		{
 			drawQuad(p + pos + Vector2s(1), Vector2s(k, size.y - 2), Color(85, 205, 120, 255));
 		}
-	}
+	}*/
 
 private:
 	uint
@@ -43,10 +43,10 @@ class HpBar : GUIElement
 {
 	this()
 	{
-		super(PE.gui.root, Vector2s(60, 9));
+		//super(PE.gui.root, Vector2s(60, 9));
 	}
 
-	override void draw(Vector2s p) const
+	/*override void draw(Vector2s p) const
 	{
 		drawQuad(p += pos, Vector2s(size.x, maxSp ? size.y : size.y - 4), Color(0, 0, 0, 255));
 
@@ -67,7 +67,7 @@ class HpBar : GUIElement
 				drawQuad(p + Vector2s(1, 5), Vector2s(min(w, n), 3), Color(30, 145, 255, 255));
 			}
 		}
-	}
+	}*/
 
 	uint
 			hp,

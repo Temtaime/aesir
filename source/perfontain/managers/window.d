@@ -8,7 +8,8 @@ import
 		perfontain.math.matrix,
 		perfontain.opengl,
 
-		utils.except;
+		utils.except,
+		nuklear;
 
 public import
 				derelict.sdl2.sdl;
@@ -96,7 +97,9 @@ class WindowManager
 			PE._msaaLevel = v > 1 ? cast(ubyte)v : 0;
 		}
 
-		SDL_StopTextInput();
+
+
+		//SDL_StopTextInput();
 		SDL_SetWindowMinimumSize(_win, 640, 480);
 
 		onVSync(PE.settings.vsync);
@@ -104,6 +107,7 @@ class WindowManager
 		PE.settings.vsyncChange.permanent(&onVSync);
 		PE.settings.fullscreenChange.permanent(&onFS);
 	}
+
 
 	~this()
 	{
@@ -145,6 +149,7 @@ class WindowManager
 		return Vector2s(x, y);
 	}
 
+
 package(perfontain):
 
 	mixin publicProperty!(Vector2s, `size`);
@@ -157,15 +162,35 @@ package(perfontain):
 		SDL_GL_SwapWindow(_win);
 	}
 
+	auto ctx() { return PE.gui._nk; }
+
+	auto isGuiHovered()
+	{
+		for(auto w = ctx.begin; w; w = w.next)
+		{
+			if(w.flags & NK_WINDOW_NOT_INTERACTIVE)
+				continue;
+
+			//logger(*w);
+
+			if(nk_input_is_mouse_hovering_rect(&ctx.input, w.bounds))
+				return true;
+		}
+
+		return false;
+		//return !!nk_window_is_any_hovered(ctx);
+	}
+
 	void processEvents()
 	{
-		SDL_Event evt;
+		auto inGui = isGuiHovered();
 
-		while(SDL_PollEvent(&evt))
-		{
+		nk_input_begin(ctx);
+
+		loop: for(SDL_Event evt; SDL_PollEvent(&evt); )
 			switch(evt.type)
 			{
-			case SDL_MOUSEWHEEL:
+			/*case SDL_MOUSEWHEEL:
 				auto sc = Vector2s(evt.wheel.x, evt.wheel.y);
 
 				if(evt.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
@@ -176,27 +201,7 @@ package(perfontain):
 				PE.onWheel.first(sc);
 				break;
 
-			case SDL_KEYUP:
-			case SDL_KEYDOWN:
-				auto r = evt.key.keysym.sym;
 
-				if(!evt.key.repeat || r == SDLK_BACKSPACE)
-				{
-					auto st = evt.key.state == SDL_PRESSED;
-
-					if(st)
-					{
-						_keys ~= r;
-					}
-					else
-					{
-						_keys = _keys.remove(_keys.countUntil(r));
-					}
-
-					PE.onKey.last(r, st);
-				}
-
-				break;
 
 			case SDL_WINDOWEVENT:
 				switch(evt.window.event)
@@ -216,7 +221,28 @@ package(perfontain):
 				default:
 				}
 
-				break;
+				break;*/
+			case SDL_KEYUP:
+			case SDL_KEYDOWN:
+				auto r = evt.key.keysym.sym;
+
+				if(!evt.key.repeat)
+				{
+					auto st = evt.key.state == SDL_PRESSED;
+
+					if(st)
+					{
+						_keys ~= r;
+					}
+					else
+					{
+						_keys = _keys.remove(_keys.countUntil(r));
+					}
+
+					PE.onKey.last(r, st);
+				}
+
+				goto default;
 
 			case SDL_MOUSEBUTTONUP:
 			case SDL_MOUSEBUTTONDOWN:
@@ -228,17 +254,24 @@ package(perfontain):
 				];
 
 				auto t = map[cast(SDL_D_MouseButton)evt.button.button]; // TODO: REPORT DERELICT
-				auto b = evt.button.state == SDL_PRESSED;
+				auto v = evt.button.state == SDL_PRESSED;
 
-				if(!b && evt.button.clicks == 2)
+
+				//if(inGui && !(_mouse & t))
+				//		goto default;
+
+				if(!inGui || (_mouse & t))
 				{
-					PE.onDoubleClick.first(t);
+					byFlag(_mouse, t, v);
+					PE.onButton.first(t, v);
 				}
 
-				byFlag(_mouse, t, b);
-				PE.onButton.first(t, b);
+				/*if(!v && evt.button.clicks == 2)
+				{
+					PE.onDoubleClick.first(t);
+				}*/
 
-				break;
+				goto default;
 
 			case SDL_MOUSEMOTION:
 				if(_skip)
@@ -250,27 +283,23 @@ package(perfontain):
 					PE.onMoveDelta(Vector2s(evt.motion.xrel, evt.motion.yrel));
 				}
 
-				PE.onMove.reverse(Vector2s(evt.motion.x, evt.motion.y));
-				break;
-
-			case SDL_TEXTINPUT:
-				if(_text)
-				{
-					_text(evt.text.text.ptr.fromStringz.idup);
-				}
-
-				break;
+				//PE.onMove.reverse(Vector2s(evt.motion.x, evt.motion.y));
+				goto default;
 
 			case SDL_QUIT:
 				PE._run = false;
-				break;
+				break loop;
 
 			default:
+				nk_sdl_handle_event(&evt);
 			}
-		}
+
+		nk_input_end(ctx);
 	}
 
 private:
+
+
 	mixin publicProperty!(uint[], `keys`);
 
 	void onVSync(bool v)
@@ -291,7 +320,7 @@ private:
 		return throwError(SDL_GetError().fromStringz, f, l);
 	}
 
-	SDL_Window *_win;
+	SDL_Window* _win;
 	SDL_GLContext _ctx;
 
 	void delegate(string) _text;
@@ -319,4 +348,96 @@ class TextInput : RCounted
 void showErrorMessage(string s)
 {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, `Error`, s.toStringz, null);
+}
+
+int
+nk_sdl_handle_event(SDL_Event *evt)
+{
+    nk_context *ctx = PE.gui._nk;
+
+    if (evt.type == SDL_KEYUP || evt.type == SDL_KEYDOWN) {
+        /* key events */
+        int down = evt.type == SDL_KEYDOWN;
+        const Uint8* state = SDL_GetKeyboardState(null);
+        SDL_Keycode sym = evt.key.keysym.sym;
+        if (sym == SDLK_RSHIFT || sym == SDLK_LSHIFT)
+            nk_input_key(ctx, NK_KEY_SHIFT, down);
+        else if (sym == SDLK_DELETE)
+            nk_input_key(ctx, NK_KEY_DEL, down);
+        else if (sym == SDLK_RETURN)
+            nk_input_key(ctx, NK_KEY_ENTER, down);
+        else if (sym == SDLK_TAB)
+            nk_input_key(ctx, NK_KEY_TAB, down);
+        else if (sym == SDLK_BACKSPACE)
+            nk_input_key(ctx, NK_KEY_BACKSPACE, down);
+        else if (sym == SDLK_HOME) {
+            nk_input_key(ctx, NK_KEY_TEXT_START, down);
+            nk_input_key(ctx, NK_KEY_SCROLL_START, down);
+        } else if (sym == SDLK_END) {
+            nk_input_key(ctx, NK_KEY_TEXT_END, down);
+            nk_input_key(ctx, NK_KEY_SCROLL_END, down);
+        } else if (sym == SDLK_PAGEDOWN) {
+            nk_input_key(ctx, NK_KEY_SCROLL_DOWN, down);
+        } else if (sym == SDLK_PAGEUP) {
+            nk_input_key(ctx, NK_KEY_SCROLL_UP, down);
+        } else if (sym == SDLK_z)
+            nk_input_key(ctx, NK_KEY_TEXT_UNDO, down && state[SDL_SCANCODE_LCTRL]);
+        else if (sym == SDLK_r)
+            nk_input_key(ctx, NK_KEY_TEXT_REDO, down && state[SDL_SCANCODE_LCTRL]);
+        else if (sym == SDLK_c)
+            nk_input_key(ctx, NK_KEY_COPY, down && state[SDL_SCANCODE_LCTRL]);
+        else if (sym == SDLK_v)
+            nk_input_key(ctx, NK_KEY_PASTE, down && state[SDL_SCANCODE_LCTRL]);
+        else if (sym == SDLK_x)
+            nk_input_key(ctx, NK_KEY_CUT, down && state[SDL_SCANCODE_LCTRL]);
+        else if (sym == SDLK_b)
+            nk_input_key(ctx, NK_KEY_TEXT_LINE_START, down && state[SDL_SCANCODE_LCTRL]);
+        else if (sym == SDLK_e)
+            nk_input_key(ctx, NK_KEY_TEXT_LINE_END, down && state[SDL_SCANCODE_LCTRL]);
+        else if (sym == SDLK_UP)
+            nk_input_key(ctx, NK_KEY_UP, down);
+        else if (sym == SDLK_DOWN)
+            nk_input_key(ctx, NK_KEY_DOWN, down);
+        else if (sym == SDLK_LEFT) {
+            if (state[SDL_SCANCODE_LCTRL])
+                nk_input_key(ctx, NK_KEY_TEXT_WORD_LEFT, down);
+            else nk_input_key(ctx, NK_KEY_LEFT, down);
+        } else if (sym == SDLK_RIGHT) {
+            if (state[SDL_SCANCODE_LCTRL])
+                nk_input_key(ctx, NK_KEY_TEXT_WORD_RIGHT, down);
+            else nk_input_key(ctx, NK_KEY_RIGHT, down);
+        } else return 0;
+        return 1;
+    } else if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
+        /* mouse button */
+        int down = evt.type == SDL_MOUSEBUTTONDOWN;
+        const int x = evt.button.x, y = evt.button.y;
+        if (evt.button.button == SDL_BUTTON_LEFT) {
+            if (evt.button.clicks > 1)
+                nk_input_button(ctx, NK_BUTTON_DOUBLE, x, y, down);
+            nk_input_button(ctx, NK_BUTTON_LEFT, x, y, down);
+        } else if (evt.button.button == SDL_BUTTON_MIDDLE)
+            nk_input_button(ctx, NK_BUTTON_MIDDLE, x, y, down);
+        else if (evt.button.button == SDL_BUTTON_RIGHT)
+            nk_input_button(ctx, NK_BUTTON_RIGHT, x, y, down);
+        return 1;
+    } else if (evt.type == SDL_MOUSEMOTION) {
+        /* mouse motion */
+        if (ctx.input.mouse.grabbed) {
+            int x = cast(int)ctx.input.mouse.prev.x, y = cast(int)ctx.input.mouse.prev.y;
+            nk_input_motion(ctx, x + evt.motion.xrel, y + evt.motion.yrel);
+        } else nk_input_motion(ctx, evt.motion.x, evt.motion.y);
+        return 1;
+    } else if (evt.type == SDL_TEXTINPUT) {
+        /* text input */
+        nk_glyph glyph; import core.stdc.string;
+        memcpy(glyph.ptr, evt.text.text.ptr, NK_UTF_SIZE);
+        nk_input_glyph(ctx, glyph.ptr);
+        return 1;
+    } else if (evt.type == SDL_MOUSEWHEEL) {
+        /* mouse wheel */
+        nk_input_scroll(ctx,nk_vec2(cast(float)evt.wheel.x,cast(float)evt.wheel.y));
+        return 1;
+    }
+    return 0;
 }

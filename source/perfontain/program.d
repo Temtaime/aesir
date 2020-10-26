@@ -19,6 +19,7 @@ enum
 	PROG_DATA_NORMAL	= 4,
 	PROG_DATA_LIGHTS	= 8,
 	PROG_DATA_SM_MAT	= 16,
+	PROG_DATA_SCISSOR	= 32,
 }
 
 struct Attrib
@@ -53,6 +54,7 @@ final class Program : RCounted
 			tuple(`pe_transforms.transforms[0].model`, PROG_DATA_MODEL),
 			tuple(`pe_transforms.transforms[0].color`, PROG_DATA_COLOR),
 			tuple(`pe_transforms.transforms[0].normal`, PROG_DATA_NORMAL),
+			tuple(`pe_transforms.transforms[0].scissor`, PROG_DATA_SCISSOR),
 			tuple(`pe_transforms.transforms[0].lightStart`, PROG_DATA_LIGHTS),
 		];
 

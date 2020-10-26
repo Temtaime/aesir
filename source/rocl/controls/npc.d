@@ -1,26 +1,17 @@
 module rocl.controls.npc;
 
-import
-		std.meta,
-		std.algorithm,
-
-		perfontain,
-
-		ro.conv.gui,
-
-		rocl.controls;
-
+import std.meta, std.algorithm, perfontain, ro.conv.gui, rocl.controls;
 
 class WinNpc : GUIElement
 {
 	this()
 	{
-		super(PE.gui.root);
+		//super(PE.gui.root);
 
-		flags.moveable = true;
+		//flags.moveable = true;
 	}
 
-	override void draw(Vector2s p) const
+	/*override void draw(Vector2s p) const
 	{
 		auto
 				np = p + pos,
@@ -48,7 +39,7 @@ class WinNpc : GUIElement
 		drawQuad(np + Vector2s(size.x - sz.x, sz.y), Vector2s(sz.x, size.y - sz.y * 2), colorWhite);
 
 		super.draw(p);
-	}
+	}*/
 }
 
 final:
@@ -57,40 +48,40 @@ class WinNpcDialog : WinNpc
 {
 	this()
 	{
-		name = `npc`;
-		size = Vector2s(320, 220);
+		// name = `npc`;
+		// size = Vector2s(320, 220);
 
-		super();
+		// super();
 
-		if(pos.x < 0)
-		{
-			pos = PE.window.size / 3;
-		}
+		// if(pos.x < 0)
+		// {
+		// 	pos = PE.window.size / 3;
+		// }
 
-		{
-			auto sz = size - NPC_WIN_SZ * 2 - Vector2s(0, BTN_PART_SZ.y + 6);
+		// {
+		// 	auto sz = size - NPC_WIN_SZ * 2 - Vector2s(0, BTN_PART_SZ.y + 6);
 
-			new ScrolledText(this, Vector2s(sz.x, sz.y / PE.fonts.base.height));
+		// 	new ScrolledText(this, Vector2s(sz.x, sz.y / PE.fonts.base.height));
 
-			text.pos = NPC_WIN_SZ;
-			text.autoBottom = false;
-		}
+		// 	text.pos = NPC_WIN_SZ;
+		// 	text.autoBottom = false;
+		// }
 	}
 
 	auto makeButton(string s)
 	{
-		auto b = new Button(this, s);
+		// auto b = new Button(this, s);
 
-		b.pos = size - b.size - Vector2s(NPC_WIN_SZ.x, 6);
-		b.focus;
+		// b.pos = size - b.size - Vector2s(NPC_WIN_SZ.x, 6);
+		// b.focus;
 
-		PE.gui.updateMouse;
-		return b;
+		// //PE.gui.updateMouse;
+		// return b;
 	}
 
 	auto text()
 	{
-		return cast(ScrolledText)childs[0];
+		//return cast(ScrolledText)childs[0];
 	}
 }
 

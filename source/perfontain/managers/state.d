@@ -16,7 +16,7 @@ final class StateManager
 {
 	this()
 	{
-		culling = true;
+		culling = false; // TODO GUI TEST
 
 		if(PE._msaaLevel > 0) msaa = true;
 	}

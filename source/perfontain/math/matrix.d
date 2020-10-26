@@ -285,8 +285,10 @@ alias Vertex = Vector!(float, 8);
 
 alias Vector2s = Vector!(short, 2);
 alias Vector3s = Vector!(short, 3);
+alias Vector4s = Vector!(short, 4);
 
 alias Vector2i = Vector!(int, 2);
+alias Vector4i = Vector!(int, 4);
 
 alias Vector2u = Vector!(uint, 2);
 alias Vector3u = Vector!(uint, 3);

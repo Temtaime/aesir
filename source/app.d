@@ -1,38 +1,26 @@
-import
-		core.sys.windows.windows,
-		core.sys.posix.sys.resource,
+import core.sys.windows.windows, core.sys.posix.sys.resource, perfontain,
+	perfontain.misc.report, ro.conv, rocl.rofs, rocl.game;
 
-		perfontain,
-		perfontain.misc.report,
-
-		ro.conv,
-
-		rocl.rofs,
-		rocl.game;
-
-
-version(Windows)
+version (Windows)
 {
-	pragma(linkerDirective, `"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'"`);
+	//pragma(linkerDirective, `"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'"`);
 }
 
-extern(C) __gshared
+extern (C) __gshared
 {
 	bool rt_cmdline_enabled = false;
 	bool rt_envvars_enabled = false;
-	string[] rt_options = [ `scanDataSeg=precise`, `gcopt=cleanup:finalize` ]; // gc:precise
+	string[] rt_options = [`scanDataSeg=precise`, `gcopt=cleanup:finalize`]; // gc:precise
 
 	export
 	{
-		uint
-				NvOptimusEnablement = 1,
-				AmdPowerXpressRequestHighPerformance = 1;
+		uint NvOptimusEnablement = 1, AmdPowerXpressRequestHighPerformance = 1;
 	}
 }
 
 void main(string[] args)
 {
-	version(Windows)
+	version (Windows)
 	{
 		SetConsoleOutputCP(65001);
 	}
@@ -44,15 +32,16 @@ void main(string[] args)
 
 	try
 	{
-		if(!processConv(args))
+		if (!processConv(args))
 		{
 			RO.run(args);
 		}
 	}
-	catch(Throwable e)
+	catch (Throwable e)
 	{
 		debug
-		{}
+		{
+		}
 		else
 		{
 			//errorReport(e);

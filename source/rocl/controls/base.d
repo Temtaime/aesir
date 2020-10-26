@@ -1,52 +1,21 @@
 module rocl.controls.base;
 
-import
-		std.utf,
-		std.meta,
-		std.conv,
-		std.range,
-		std.string,
-		std.typecons,
-		std.algorithm,
-		std.functional,
-
-		perfontain,
-		perfontain.opengl,
-
-		ro.grf,
-		ro.conv,
-		ro.conv.gui,
-		ro.conv.item,
-
-		rocl.paths,
-
-		rocl,
-		rocl.game,
-		rocl.status,
-		rocl.status.helpers,
-		rocl.controls,
-		rocl.controls.status.equip,
-		rocl.controls.status.stats,
-		rocl.controls.status.bonuses,
-		rocl.network.packets;
-
+import std.utf, std.meta, std.conv, std.range, std.string, std.typecons,
+	std.algorithm, std.functional, perfontain, perfontain.opengl, ro.grf,
+	ro.conv, ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game,
+	rocl.status, rocl.status.helpers, rocl.controls,
+	rocl.controls.status.equip, rocl.controls.status.stats,
+	rocl.controls.status.bonuses, rocl.network.packets;
 
 final:
 
-class WinBase : WinBasic2
+class WinBase : GUIWindow
 {
 	this()
 	{
-		{
-			super(MSG_CHARACTER, `base`); // TODO: FIX ROent.self.cleanName
+		super(MSG_CHARACTER, Vector2s(200)); // TODO: FIX ROent.self.cleanName
 
-			if(pos.x < 0)
-			{
-				pos.x = 0;
-			}
-		}
-
-		auto w1 = new GUIElement(main);
+		/*auto w1 = new GUIElement(main);
 		auto w2 = new GUIElement(main);
 
 		{
@@ -104,7 +73,7 @@ class WinBase : WinBasic2
 			t.moveX(w2, POS_ABOVE, 4);
 		}
 
-		adjust;
+		adjust;*/
 	}
 }
 
@@ -112,43 +81,43 @@ class InfoMeter : GUIElement
 {
 	this(GUIElement p, string s)
 	{
-		super(p);
+		// super(p);
 
-		auto e = new GUIStaticText(this, s);
+		// auto e = new GUIStaticText(this, s);
 
-		new class GUIQuad
-		{
-			this()
-			{
-				super(this.outer, Color(200, 200, 200, 255));
+		// new class GUIQuad
+		// {
+		// 	this()
+		// 	{
+		// 		super(this.outer, Color(200, 200, 200, 255));
 
-				flags.captureFocus = true;
-			}
+		// 		flags.captureFocus = true;
+		// 	}
 
-			override void onHover(bool st)
-			{
-				if(st)
-				{
-					new TextTooltip(format(`%u / %u`, value, maxValue));
-				}
-			}
-		};
+		// 	override void onHover(bool st)
+		// 	{
+		// 		if(st)
+		// 		{
+		// 			new TextTooltip(format(`%u / %u`, value, maxValue));
+		// 		}
+		// 	}
+		// };
 
-		bg.size = BAR_SIZE + Vector2s(2);
-		bg.moveX(e, POS_ABOVE, 4);
+		// bg.size = BAR_SIZE + Vector2s(2);
+		// bg.moveX(e, POS_ABOVE, 4);
 
-		new GUIQuad(this, Color(120, 225, 80, 255));
-		proc.move(bg, POS_MIN, 1, bg, POS_MIN, 1);
+		// new GUIQuad(this, Color(120, 225, 80, 255));
+		// proc.move(bg, POS_MIN, 1, bg, POS_MIN, 1);
 
-		{
-			auto r = new GUIElement(this, Vector2s(0, PE.fonts.small.height));
-			r.moveY(bg, POS_ABOVE);
-		}
+		// {
+		// 	auto r = new GUIElement(this, Vector2s(0, PE.fonts.small.height));
+		// 	r.moveY(bg, POS_ABOVE);
+		// }
 
-		toChildSize;
-		onUpdate;
+		// toChildSize;
+		// onUpdate;
 
-		e.moveY(POS_CENTER);
+		// e.moveY(POS_CENTER);
 	}
 
 	mixin StatusValue!(uint, `misc`, onUpdate);
@@ -157,29 +126,26 @@ class InfoMeter : GUIElement
 private:
 	enum BAR_SIZE = Vector2s(80, 5);
 
-	mixin MakeChildRef!(GUIQuad, `bg`, 1);
-	mixin MakeChildRef!(GUIQuad, `proc`, 2);
+	//mixin MakeChildRef!(GUIQuad, `bg`, 1);
+	//mixin MakeChildRef!(GUIQuad, `proc`, 2);
 
 	void onUpdate()
 	{
-		if(auto n = maxValue ? ulong(BAR_SIZE.x) * min(value, maxValue) / maxValue : 0)
-		{
-			proc.flags.hidden = false;
-			proc.size = Vector2s(n, BAR_SIZE.y);
-		}
-		else
-		{
-			proc.flags.hidden = true;
-		}
+		// if (auto n = maxValue ? ulong(BAR_SIZE.x) * min(value, maxValue) / maxValue : 0)
+		// {
+		// 	proc.flags.hidden = false;
+		// 	proc.size = Vector2s(n, BAR_SIZE.y);
+		// }
+		// else
+		// {
+		// 	proc.flags.hidden = true;
+		// }
 
-		childs.popBack;
+		// //childs.popBack;
 
-		FontInfo fi =
-		{
-			font: PE.fonts.small
-		};
+		// FontInfo fi = {font: PE.fonts.small};
 
-		auto e = new GUIStaticText(this, misc ? misc.to!string : format(`%s / %s`, price(value), price(maxValue)), fi);
-		e.move(bg, POS_CENTER, 0, bg, POS_ABOVE);
+		// auto e = new GUIStaticText(this, misc ? misc.to!string : format(`%s / %s`, price(value), price(maxValue)), fi);
+		// e.move(bg, POS_CENTER, 0, bg, POS_ABOVE);
 	}
 }

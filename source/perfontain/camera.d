@@ -102,7 +102,7 @@ package:
 
 	void onTick(uint d)
 	{
-		if(fixed)
+		if(fixed || !_mp)
 		{
 			return;
 		}

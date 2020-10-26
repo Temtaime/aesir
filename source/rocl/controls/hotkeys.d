@@ -18,18 +18,18 @@ class WinHotkeys : GUIElement
 {
 	this()
 	{
-		super(PE.gui.root, Vector2s.init, Win.none, `hotkeys`);
+		// super(PE.gui.root, Vector2s.init, Win.none, `hotkeys`);
 
-		size = Vector2s(9, 4) * KS + Vector2s(SP + 10, SP);
-		flags.moveable = true;
+		// size = Vector2s(9, 4) * KS + Vector2s(SP + 10, SP);
+		// flags.moveable = true;
 
-		if(pos.x < 0)
-		{
-			pos = PE.window.size - size - Vector2s(0, RO.gui.chat.size.y);
-		}
+		// if(pos.x < 0)
+		// {
+		// 	pos = PE.window.size - size - Vector2s(0, RO.gui.chat.size.y);
+		// }
 	}
 
-	override void draw(Vector2s p) const
+	/*override void draw(Vector2s p) const
 	{
 		auto np = p + pos;
 
@@ -54,7 +54,7 @@ class WinHotkeys : GUIElement
 		}
 
 		super.draw(p);
-	}
+	}*/
 
 	override void onMoved()
 	{
@@ -90,7 +90,7 @@ class WinHotkeys : GUIElement
 		{
 			if(auto s = RO.status.skillOf(cast(ushort)h.id))
 			{
-				add(new SkillIcon(this, s), p);
+				//add(new SkillIcon(this, s), p);
 			}
 		}
 		else
@@ -99,53 +99,53 @@ class WinHotkeys : GUIElement
 
 			if(!s.empty)
 			{
-				add(new ItemIcon(this, s.front), p);
+				//add(new ItemIcon(this, s.front), p);
 			}
 		}
 	}
 
-	bool add(HotkeyIcon w, in Vector2s p = Vector2s(-1))
-	{
-		Vector2s q;
+	// bool add(HotkeyIcon w, in Vector2s p = Vector2s(-1))
+	// {
+	// 	// Vector2s q;
 
-		if(p.x < 0)
-		{
-			if(_cur.x < 0)
-			{
-				return false;
-			}
+	// 	// if(p.x < 0)
+	// 	// {
+	// 	// 	if(_cur.x < 0)
+	// 	// 	{
+	// 	// 		return false;
+	// 	// 	}
 
-			q = _cur;
-		}
-		else
-		{
-			q = p;
-		}
+	// 	// 	q = _cur;
+	// 	// }
+	// 	// else
+	// 	// {
+	// 	// 	q = p;
+	// 	// }
 
-		w.attach(this);
-		w.pos = posOf(q);
+	// 	// w.attach(this);
+	// 	// w.pos = posOf(q);
 
-		if(p.x < 0)
-		{
-			ROnet.setHotkey(q.y * 9 + q.x, w.hotkey);
-		}
+	// 	// if(p.x < 0)
+	// 	// {
+	// 	// 	ROnet.setHotkey(q.y * 9 + q.x, w.hotkey);
+	// 	// }
 
-		w.flags.topMost = false;
-		w.flags.captureFocus = true;
+	// 	// w.flags.topMost = false;
+	// 	// w.flags.captureFocus = true;
 
-		PE.gui.updateMouse;
+	// 	// PE.gui.updateMouse;
 
-		foreach(e; childs[0..$ - 1])
-		{
-			if(e.pos == w.pos)
-			{
-				e.deattach;
-				break;
-			}
-		}
+	// 	// foreach(e; childs[0..$ - 1])
+	// 	// {
+	// 	// 	if(e.pos == w.pos)
+	// 	// 	{
+	// 	// 		e.deattach;
+	// 	// 		break;
+	// 	// 	}
+	// 	// }
 
-		return true;
-	}
+	// 	// return true;
+	// }
 
 	auto posToId(Vector2s p)
 	{

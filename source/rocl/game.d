@@ -117,7 +117,7 @@ private:
 		PEscene.camera = new CameraFPS(p, p + Vector3(0.657, 0, -0.657));
 
 		auto w = new WinSettings(true);
-		PE.hotkeys.add(Hotkey(null, { w.show(!w.visible); return true; }, SDLK_F12));
+		//PE.hotkeys.add(Hotkey(null, { w.show(!w.visible); return true; }, SDLK_F12));
 	}
 
 	bool initialize(uint fov)

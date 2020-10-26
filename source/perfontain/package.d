@@ -1,98 +1,68 @@
 module perfontain;
 
-import
-		std.utf,
-		std.file,
-		std.path,
-		std.conv,
-		std.array,
-		std.range,
-		std.stdio,
-		std.traits,
-		std.string,
-		std.encoding,
-		std.exception,
-		std.algorithm : filter, map;
+import std.utf, std.file, std.path, std.conv, std.array, std.range, std.stdio,
+	std.traits, std.string, std.encoding, std.exception, std.algorithm : filter, map;
 
-import
-		core.time,
-		core.thread,
-		core.memory,
+import core.time, core.thread, core.memory, perfontain.misc,
+	perfontain.misc.report, perfontain.managers.state, perfontain.opengl,
 
-		perfontain.misc,
-		perfontain.misc.report,
+	perfontain.sampler, perfontain.filesystem, perfontain.managers.audio,
+	perfontain.math.frustum, perfontain.managers.shadow, perfontain.managers.sampler;
 
-		perfontain.managers.state,
-		perfontain.opengl,
+public import perfontain.misc, perfontain.misc.rc, perfontain.misc.dxt, perfontain.meshholder,
+	perfontain.meshholder.structs, perfontain.meshholder.creator, perfontain.nodes,
+	perfontain.nodes.octree, perfontain.nodes.sprite, perfontain.managers.gui,
+	perfontain.managers.font, perfontain.managers.timer, perfontain.managers.scene,
+	perfontain.managers.render, perfontain.managers.window, perfontain.managers.shadow,
+	perfontain.managers.hotkey, perfontain.managers.objects, perfontain.managers.texture,
+	perfontain.managers.settings, perfontain.shader, perfontain.shader.lang,
 
-		perfontain.sampler,
-		perfontain.filesystem,
-		perfontain.managers.audio,
-		perfontain.math.frustum,
-		perfontain.managers.shadow,
-		perfontain.managers.sampler;
-
-
-public import
-				perfontain.misc,
-				perfontain.misc.rc,
-				perfontain.misc.dxt,
-
-				perfontain.meshholder,
-				perfontain.meshholder.structs,
-				perfontain.meshholder.creator,
-
-				perfontain.nodes,
-				perfontain.nodes.octree,
-				perfontain.nodes.sprite,
-
-				perfontain.managers.gui,
-				perfontain.managers.font,
-				perfontain.managers.timer,
-				perfontain.managers.scene,
-				perfontain.managers.render,
-				perfontain.managers.window,
-				perfontain.managers.shadow,
-				perfontain.managers.hotkey,
-				perfontain.managers.objects,
-				perfontain.managers.texture,
-				perfontain.managers.settings,
-
-				perfontain.shader,
-				perfontain.shader.lang,
-
-				perfontain.math.bbox,
-				perfontain.math.matrix,
-
-				perfontain.vao,
-				perfontain.vbo,
-				perfontain.mesh,
-				perfontain.render,
-				perfontain.camera,
-				perfontain.config,
-				perfontain.signals,
-				perfontain.submesh,
-				perfontain.program,
-				perfontain.sampler,
-				perfontain.filesystem,
-				perfontain.rendertarget,
-
-				stb.image,
-
-				utils.except,
-				utils.logger;
-
+	perfontain.math.bbox, perfontain.math.matrix, perfontain.vao, perfontain.vbo,
+	perfontain.mesh, perfontain.render, perfontain.camera, perfontain.config, perfontain.signals,
+	perfontain.submesh, perfontain.program, perfontain.sampler, perfontain.filesystem,
+	perfontain.rendertarget, stb.image, utils.except, utils.logger;
 
 alias PE = Engine.instance;
 
-@property ref PEfs() { return PE.fs; }
-@property PEaudio() { return PE.audio; }
-@property PEstate() { return PE._state; }
-@property PEobjs() { return PE._objs; }
-@property PEscene() { return PE.scene; }
-@property PEwindow() { return PE.window; }
-@property PEsamplers() { return PE._samplers; }
-@property PEsettings() { return PE.settings; }
+@property ref PEfs()
+{
+	return PE.fs;
+}
+
+@property PEaudio()
+{
+	return PE.audio;
+}
+
+@property PEstate()
+{
+	return PE._state;
+}
+
+@property PEobjs()
+{
+	return PE._objs;
+}
+
+@property PEscene()
+{
+	return PE.scene;
+}
+
+@property PEwindow()
+{
+	return PE.window;
+}
+
+@property PEsamplers()
+{
+	return PE._samplers;
+}
+
+@property PEsettings()
+{
+	return PE.settings;
+}
 
 final class Engine
 {
@@ -100,12 +70,12 @@ final class Engine
 
 	void doInit()
 	{
-		if(!fs)
+		if (!fs)
 		{
 			fs = new FileSystem;
 		}
 
-		if(!settings)
+		if (!settings)
 		{
 			settings = new SettingsManager;
 		}
@@ -113,10 +83,10 @@ final class Engine
 
 	~this()
 	{
-		if(gui)
-		{
-			gui.root = null;
-		}
+		// if (gui)
+		// {
+		// 	gui.root = null;
+		// }
 
 		dtors;
 		logLeaks;
@@ -132,15 +102,13 @@ final class Engine
 		logger.info2(`[gpu info]`);
 
 		{
-			_glGetString = cast(typeof(_glGetString))load(`glGetString`);
-			_glGetStringi = cast(typeof(_glGetStringi))load(`glGetStringi`);
-			_glGetIntegerv = cast(typeof(_glGetIntegerv))load(`glGetIntegerv`); // TODO: REMOVE
+			_glGetString = cast(typeof(_glGetString)) load(`glGetString`);
+			_glGetStringi = cast(typeof(_glGetStringi)) load(`glGetStringi`);
+			_glGetIntegerv = cast(typeof(_glGetIntegerv)) load(`glGetIntegerv`); // TODO: REMOVE
 
-			auto
-					vendor = glGetString(GL_VENDOR).fromStringz.idup,
-					version_ = glGetString(GL_VERSION).fromStringz.idup,
-					renderer = glGetString(GL_RENDERER).fromStringz.idup,
-					glsl = glGetString(GL_SHADING_LANGUAGE_VERSION).fromStringz.idup;
+			auto vendor = glGetString(GL_VENDOR).fromStringz.idup, version_ = glGetString(GL_VERSION).fromStringz.idup,
+				renderer = glGetString(GL_RENDERER).fromStringz.idup,
+				glsl = glGetString(GL_SHADING_LANGUAGE_VERSION).fromStringz.idup;
 
 			logger.info3(`opengl vendor: %s`, vendor);
 			logger.info3(`opengl version: %s`, version_);
@@ -148,7 +116,8 @@ final class Engine
 			logger.info3(`opengl sl version: %s`, glsl);
 
 			debug
-			{}
+			{
+			}
 			else
 			{
 				//configReport(vendor, version_, renderer, glsl);
@@ -163,9 +132,9 @@ final class Engine
 		// can't use bindless without draw parameters
 		GL_ARB_bindless_texture &= GL_ARB_shader_draw_parameters;
 
-		foreach(s; PERF_EXTENSIONS)
+		foreach (s; PERF_EXTENSIONS)
 		{
-			if(mixin(s))
+			if (mixin(s))
 			{
 				logger.info(`%s : supported`, s);
 			}
@@ -179,9 +148,9 @@ final class Engine
 			int v;
 			glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &v);
 
-			_aaLevel = v > 1 ? cast(ubyte)v : 0;
+			_aaLevel = v > 1 ? cast(ubyte) v : 0;
 
-			if(_aaLevel)
+			if (_aaLevel)
 			{
 				logger.info(`anisotropy level = %ux`, _aaLevel);
 			}
@@ -191,7 +160,7 @@ final class Engine
 			}
 		}
 
-		if(_msaaLevel)
+		if (_msaaLevel)
 		{
 			logger.info(`msaa level = %ux`, _msaaLevel);
 		}
@@ -206,11 +175,24 @@ final class Engine
 		onResize(PE.window.size);
 
 		settings.disableUnsupported;
+
+		{
+
+			/*auto s = `hello WORLD`;
+
+			auto f = PE.gui.ctx.style.font;
+			auto w = f.width(cast()f.userdata, f.height, s.ptr, cast(int)s.length);
+
+			logger(`%s %s`, w, f.height);*/
+
+			//auto e = new InvisibleWindow(Vector2s(0));
+			//new GUIStaticText(e, s);
+		}
 	}
 
 	void work()
 	{
-		while(processWork)
+		while (processWork)
 		{
 			glEnable(GL_DEPTH_TEST);
 
@@ -224,7 +206,10 @@ final class Engine
 		}
 	}
 
-	void quit() { _run = false; }
+	void quit()
+	{
+		_run = false;
+	}
 
 	GUIManager gui;
 	FontManager fonts;
@@ -252,7 +237,8 @@ final class Engine
 
 	Signal!(bool, SDL_Keycode, bool) onKey;
 package:
-	mixin createCtorsDtors!(fs, settings, window, render, shadows, _samplers, _state, audio, timers, textures, scene, fonts, _objs, gui, hotkeys);
+	mixin createCtorsDtors!(fs, settings, window, render, shadows, _samplers,
+			_state, audio, timers, textures, scene, fonts, _objs, gui, hotkeys);
 
 	mixin publicProperty!(bool, `run`);
 
@@ -268,7 +254,7 @@ package:
 			_tick = t;
 		}
 
-		if(_diff)
+		if (_diff)
 		{
 			onTickDelta(_diff);
 		}
@@ -279,7 +265,7 @@ package:
 			_fpsCounter++;
 			auto delta = _tick - _fpsTick;
 
-			if(delta >= FPS_UPDATE_TIME)
+			if (delta >= FPS_UPDATE_TIME)
 			{
 				_fpsCount = _fpsCounter * 1000 / delta;
 
@@ -297,10 +283,12 @@ package:
 
 		timers.process;
 
-		debug {}
+		debug
+		{
+		}
 		else
 		{
-			if(!window.active)
+			if (!window.active)
 			{
 				Thread.sleep(25.msecs);
 			}
@@ -311,7 +299,7 @@ package:
 
 	void showDebug()
 	{
-		if(_debugInfo)
+		/*if(_debugInfo)
 		{
 			_debugInfo.childs.clear;
 		}
@@ -326,6 +314,8 @@ package:
 		s ~= format("gui draws: %u, %u tris\n", render.drawAlloc[RENDER_GUI].drawnNodes, render.drawAlloc[RENDER_GUI].drawnTriangles);
 		s ~= format("scene draws: %u, %u tris\n", render.drawAlloc[RENDER_SCENE].drawnNodes, render.drawAlloc[RENDER_SCENE].drawnTriangles);
 
+		s.writeln;
+
 		foreach(i, e; fonts.base.toLines(s.strip, 360))
 		{
 			auto t = new GUIStaticText(_debugInfo, e);
@@ -335,7 +325,7 @@ package:
 		_debugInfo.toChildSize;
 		_debugInfo.size.x += 4;
 
-		_debugInfo.pos = Vector2s(window.size.x - _debugInfo.size.x - 20, 20);
+		_debugInfo.pos = Vector2s(window.size.x - _debugInfo.size.x - 20, 20);*/
 	}
 
 	GUIQuad _debugInfo;
@@ -344,12 +334,9 @@ package:
 	ObjectsManager _objs;
 	SamplerManager _samplers;
 
-	uint	_diff,
-			_fpsTick,
-			_fpsCount;
+	uint _diff, _fpsTick, _fpsCount;
 
 	ushort _fpsCounter;
 
-	byte	_aaLevel,
-			_msaaLevel;
+	byte _aaLevel, _msaaLevel;
 }

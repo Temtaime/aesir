@@ -1,7 +1,5 @@
 module perfontain.render.types;
-
-import
-		std.algorithm;
+import std;
 
 
 enum
@@ -10,13 +8,13 @@ enum
 	RENDER_SCENE,
 }
 
-static immutable ubyte[][] renderLoc =
+static immutable renderLoc =
 [
-	[ 4 ], // vec4
+	[ 4, 4 ], // vec4, vec4
 	[ 3, 3, 2 ], // vec3, vec3, vec2
 ];
 
 auto vertexSize(ubyte type)
 {
-	return cast(ubyte)(renderLoc[type].sum * 4);
+	return cast(ubyte)renderLoc[type].map!(a => a * 4).sum;
 }

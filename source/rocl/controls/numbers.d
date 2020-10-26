@@ -19,7 +19,7 @@ final class ValueManager : RCounted
 {
 	this()
 	{
-		auto f = asRC(new Font(`data/font/mechanical-out.ttf`, 72));
+		/*auto f = asRC(new Font(`data/font/mechanical-out.ttf`, 72));
 
 		foreach(i; 0..10)
 		{
@@ -36,7 +36,7 @@ final class ValueManager : RCounted
 			{
 				_sz = sz;
 			}
-		}
+		}*/
 	}
 
 	auto show(Vector3 pos, uint num)
@@ -55,14 +55,14 @@ final class ValueManager : RCounted
 private:
 	auto add(Vector3 pos, uint num, DamageType tp, uint t = 1_000)
 	{
-		auto e = new Damage(pos, num, tp, t);
+		// auto e = new Damage(pos, num, tp, t);
 
-		auto f =
-		{
-			e.deattach;
-		};
+		// // auto f =
+		// // {
+		// // 	e.deattach;
+		// // };
 
-		return PE.timers.add(f, t, TM_ONCE);
+		// return PE.timers.add(f, t, TM_ONCE);
 	}
 
 	Vector2s _sz;
@@ -80,7 +80,7 @@ class Damage : GUIElement
 {
 	this(Vector3 pos, uint n, DamageType tp, uint t)
 	{
-		super(PE.gui.root);
+		//super(PE.gui.root);
 
 		_pos = pos;
 		_delay = t;
@@ -92,7 +92,7 @@ class Damage : GUIElement
 		//flags.background = true;
 	}
 
-	override void draw(Vector2s p) const
+	/*override void draw(Vector2s p) const
 	{
 		auto n = project(_pos * PE.scene.viewProject, PE.window.size).xy.Vector2s;
 
@@ -122,7 +122,7 @@ class Damage : GUIElement
 
 			drawImage(vm._ns[k], 0, n + Vector2s(i * vm._sz.x * r, 0), c, sz);
 		}
-	}
+	}*/
 
 private:
 	const color()

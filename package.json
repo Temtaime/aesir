@@ -14,7 +14,7 @@
 	{
 		"stb": ">=1.7.5",
 		"pegged": ">=0.4.4",
-		"derelict-sdl2": ">=3.1.0-alpha.4"
+		"derelict-sdl2": ">=3.1.0-alpha.4",
 	},
 
 	"subConfigurations":
@@ -24,7 +24,7 @@
 
 	"stringImportPaths": [ "source/perfontain/shader/res" ],
 
-	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64" ],
+	"libs": [ "sdl_mixer_x64", "sdl_x64", "sdl_ttf_x64", "lispsm_x64", "nuklear_x64" ],
 
 	"dflags": [ "-preview=intpromote" ],
 	"dflags-ldc": [ "-ffast-math", "-enable-cross-module-inlining" ],

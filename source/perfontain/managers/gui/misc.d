@@ -1,10 +1,6 @@
 module perfontain.managers.gui.misc;
 
-import
-		std,
-
-		perfontain;
-
+import std, perfontain;
 
 template MakeChildRef(T, string Name, Idx...)
 {
@@ -32,9 +28,10 @@ auto calcSize(R)(auto ref R r, bool withPos = true)
 {
 	Vector2s res;
 
-	foreach(i; 0..2)
+	foreach (i; 0 .. 2)
 	{
-		res[i] = cast(short)r.map!(a => withPos ? a.end[i] : a.size[i]).fold!max(0);
+		res[i] = cast(short) r.map!(a => withPos ? a.end[i] : a.size[i])
+			.fold!max(0);
 	}
 
 	return res;

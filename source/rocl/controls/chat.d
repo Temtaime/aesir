@@ -1,80 +1,75 @@
 module rocl.controls.chat;
 
-import
-		std.utf,
-		std.array,
+import std, perfontain, ro.conv.gui, rocl.game;
 
-		perfontain,
-
-		ro.conv.gui,
-
-		rocl.game;
-
-
-final class RoChat : GUIElement
+final class RoChat : GUIWindow
 {
 	this(bool online = true)
 	{
-		super(PE.gui.root, Vector2s.init, Win.moveable | Win.captureFocus, `chat`);
+		super(`chat`, Vector2s(200, 200));
 
-		{
-			auto q = new GUIQuad(this, Color(0, 0, 0, 110));
+		//_group = new Group_(this);
 
-			new ScrolledText(this, Vector2s(660, 5));
+		// {
+		// 	auto q = new GUIQuad(this, Color(0, 0, 0, 110));
 
-			sc.pos = 4.Vector2s;
-			size = q.size = 8.Vector2s + sc.size;
-		}
+		// 	new ScrolledText(this, Vector2s(660, 5));
 
-		{
-			auto l = new GUIImage(this, CHAT_PART);
-			auto r = new GUIImage(this, CHAT_PART, DRAW_MIRROR_H);
-			auto s = new GUIImage(this, CHAT_SPACER);
+		// 	sc.pos = 4.Vector2s;
+		// 	size = q.size = 8.Vector2s + sc.size;
+		// }
 
-			new GUIEditText(this);
+		// {
+		// 	auto l = new GUIImage(this, CHAT_PART);
+		// 	auto r = new GUIImage(this, CHAT_PART, DRAW_MIRROR_H);
+		// 	auto s = new GUIImage(this, CHAT_SPACER);
 
-			size.y += l.size.y;
+		// 	new GUIEditText(this);
 
-			l.moveY(POS_MAX);
-			r.move(POS_MAX, 0, POS_MAX);
-			s.moveY(POS_MAX);
+		// 	size.y += l.size.y;
 
-			s.poseBetween(l, r);
+		// 	l.moveY(POS_MAX);
+		// 	r.move(POS_MAX, 0, POS_MAX);
+		// 	s.moveY(POS_MAX);
 
-			edit.size.x = s.size.x;
-			edit.move(s, POS_MIN, 0, l, POS_CENTER);
-		}
+		// 	s.poseBetween(l, r);
 
-		edit.onEnter = (a)
-		{
-			if(a.length)
-			{
-				ROnet.toChat(a);
-				return true;
-			}
-			else
-			{
-				edit.flags.enabled = disabled;
-			}
+		// 	edit.size.x = s.size.x;
+		// 	edit.move(s, POS_MIN, 0, l, POS_CENTER);
+		// }
 
-			return false;
-		};
+		// edit.onEnter = (a)
+		// {
+		// 	if(a.length)
+		// 	{
+		// 		ROnet.toChat(a);
+		// 		return true;
+		// 	}
+		// 	else
+		// 	{
+		// 		edit.flags.enabled = disabled;
+		// 	}
 
-		tryPose;
-		edit.focus;
+		// 	return false;
+		// };
+
+		// tryPose;
+		// edit.focus;
 	}
 
 	void add(string s, Color c = colorTransparent)
 	{
-		sc.add(s, c);
+		//sc.add(s, c);
+		//new GUIStaticText(_group, s).color = c;
 	}
 
 	const disabled()
 	{
-		return !edit.flags.enabled;
+		return true; // !edit.flags.enabled;
 	}
 
 private:
-	mixin MakeChildRef!(ScrolledText, `sc`, 1);
-	mixin MakeChildRef!(GUIEditText, `edit`, 5);
+	//Group_ _group;
+	//mixin MakeChildRef!(ScrolledText, `sc`, 1);
+	//mixin MakeChildRef!(GUIEditText, `edit`, 5);
 }

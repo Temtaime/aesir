@@ -8,9 +8,15 @@ import
 
 final class MeshHolder : RCounted
 {
+	this(ubyte type, in SubMeshData data)
+	{
+		_iv = PE.render.drawAlloc[type].iv;
+		reg = _iv.alloc(data);
+	}
+
 	this(ref in HolderData v)
 	{
-		_iv = PE.render.drawAlloc[v.type].iv;
+		this(v.type, v.data);
 
 		texs = v
 					.textures
@@ -18,7 +24,6 @@ final class MeshHolder : RCounted
 					.array;
 
 		meshes = v.meshes;
-		reg = _iv.alloc(v.data);
 	}
 
 	~this()
@@ -29,10 +34,10 @@ final class MeshHolder : RCounted
 	const
 	{
 		RegionIV reg;
-
-		HolderMesh[] meshes;
-		RCArray!Texture texs;
 	}
+
+	RCArray!Texture texs;
+	const(HolderMesh)[] meshes;
 
 	const size()
 	{

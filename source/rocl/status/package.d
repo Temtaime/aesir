@@ -118,7 +118,7 @@ struct Stat
 private:
 	void onUpdate()
 	{
-		RO.gui.status.stats.update(this);
+		//RO.gui.status.stats.update(this);
 	}
 }
 
@@ -131,7 +131,7 @@ struct Bonus
 private:
 	void onUpdate()
 	{
-		RO.gui.status.bonuses.update(this);
+		//RO.gui.status.bonuses.update(this);
 	}
 }
 
@@ -147,7 +147,7 @@ final class Skiller : RCounted
 	{
 		if(_bg)
 		{
-			_bg.deattach;
+			//_bg.deattach;
 		}
 	}
 
@@ -160,7 +160,7 @@ final class Skiller : RCounted
 		else
 		{
 			RO.action.use(this);
-			_bg = new TargetSelector;
+			//_bg = new TargetSelector;
 		}
 	}
 
@@ -203,6 +203,6 @@ final class Skill
 private:
 	void onUpdate()
 	{
-		RO.gui.skills.update(this);
+		//RO.gui.skills.update(this);
 	}
 }

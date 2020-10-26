@@ -40,167 +40,62 @@ enum
 //deprecated
 class WinBasic : GUIElement
 {
+	this() {}
 	this(Vector2s sz, string s, bool bottom = true)
 	{
-		super(PE.gui.root, size, Win.moveable | Win.captureFocus);
+		// super(PE.gui.root, size, Win.moveable | Win.captureFocus);
 
-		{
-			auto t = new GUIStaticText(this, s);
-			t.pos = Vector2s(WPOS_START, 0);
-		}
+		// {
+		// 	auto t = new GUIStaticText(this, s);
+		// 	t.pos = Vector2s(WPOS_START, 0);
+		// }
 
-		_bottom = bottom;
+		// _bottom = bottom;
 	}
 
-	override void draw(Vector2s p) const
-	{
-		auto np = p + pos;
-
-		auto
-				tp = WIN_TOP_SZ,
-				bt = WIN_BOTTOM_SZ;
-
-		// left top
-		drawImage(WIN_TOP, np, colorWhite, tp);
-
-		// right top
-		drawImage(WIN_TOP, np + Vector2s(size.x - tp.x, 0), colorWhite, tp, DRAW_MIRROR_H);
-
-		// center top
-		drawImage(WIN_TOP_SPACER, np + Vector2s(tp.x, 0), colorWhite, Vector2s(size.x - tp.x * 2, tp.y));
-
-		// addition part
-		drawImage(WIN_PART, np + Vector2s(4), colorWhite, WIN_PART_SZ);
-
-		if(_bottom)
-		{
-			auto vp = np + Vector2s(0, size.y - bt.y);
-
-			// left bottom
-			drawImage(WIN_BOTTOM, vp, colorWhite, bt);
-
-			// right bottom
-			drawImage(WIN_BOTTOM, vp + Vector2s(size.x - bt.x, 0), colorWhite, bt, DRAW_MIRROR_H);
-
-			// center bottom
-			drawImage(WIN_BOTTOM_SPACER, vp + Vector2s(bt.x, 0), colorWhite, Vector2s(size.x - bt.x * 2, bt.y));
-		}
-
-		// center
-		drawQuad(np + Vector2s(0, tp.y), size - Vector2s(0, tp.y + (_bottom ? bt.y : 0)), colorWhite);
-
-		// CHILDS
-		super.draw(p);
-	}
 
 private:
 	bool _bottom;
 }
 
-class WinBasic2 : GUIElement
-{
-	this(string s, string n)
-	{
-		super(PE.gui.root, Vector2s.init, Win.moveable | Win.captureFocus, n);
+//deprecated
 
-		new GUIElement(this);
-		new GUIQuad(this, colorWhite);
-		new GUIElement(this);
 
-		_title = s;
-	}
+// final class WinInfo : WinBasic2
+// {
+// 	this(string s, bool withCancel = false)
+// 	{
+// 		super(MSG_INFO, `info`);
 
-	void adjust()
-	{
-		main.toChildSize;
-		main.pad(4);
+// 		{
+// 			auto e = new ScrolledText(main, Vector2s(280, 4));
 
-		auto	bt = childs[0],
-				bb = childs[2];
+// 			e.autoBottom = false;
+// 			e.add(s);
+// 		}
 
-		bt.size.x = bb.size.x = main.size.x;
+// 		adjust;
+// 		center;
 
-		{
-			make(bt, WIN_TOP, WIN_TOP_SPACER);
+// 		new Button(bottom, MSG_OK);
+// 		ok.moveY(bottom, POS_CENTER);
 
-			auto e = new GUIImage(bt, WIN_PART);
-			e.pos = Vector2s(4);
+// 		if(withCancel)
+// 		{
+// 			new Button(bottom, MSG_CANCEL);
+// 			cancel.move(bottom, POS_MAX, -5, bottom, POS_CENTER);
 
-			auto t = new GUIStaticText(bt, _title);
-			t.move(POS_MIN, WPOS_START, POS_CENTER);
-		}
+// 			ok.moveX(cancel, POS_BELOW, -5);
+// 		}
+// 		else
+// 		{
+// 			ok.onClick = { deattach; };
+// 			ok.moveX(bottom, POS_MAX, -5);
+// 		}
 
-		main.moveY(bt, POS_ABOVE);
+// 		ok.focus;
+// 	}
 
-		{
-			make(bb, WIN_BOTTOM, WIN_BOTTOM_SPACER);
-			bb.moveY(main, POS_ABOVE);
-		}
-
-		new GUIElement(bt, bt.size);
-		new GUIElement(bb, bb.size);
-
-		toChildSize;
-		tryPose;
-	}
-
-protected:
-	mixin MakeChildRef!(GUIElement, `top`, 0, -1);
-	mixin MakeChildRef!(GUIElement, `main`, 1);
-	mixin MakeChildRef!(GUIElement, `bottom`, 2, -1);
-private:
-	void make(GUIElement e, ushort id, ushort spacer)
-	{
-		e.childs.clear;
-
-		auto l = new GUIImage(e, id);
-		auto r = new GUIImage(e, id, DRAW_MIRROR_H);
-		auto q = new GUIImage(e, spacer);
-
-		r.moveX(POS_MAX);
-		q.poseBetween(l, r);
-
-		e.toChildSize;
-	}
-
-	string _title;
-}
-
-final class WinInfo : WinBasic2
-{
-	this(string s, bool withCancel = false)
-	{
-		super(MSG_INFO, `info`);
-
-		{
-			auto e = new ScrolledText(main, Vector2s(280, 4));
-
-			e.autoBottom = false;
-			e.add(s);
-		}
-
-		adjust;
-		center;
-
-		new Button(bottom, MSG_OK);
-		ok.moveY(bottom, POS_CENTER);
-
-		if(withCancel)
-		{
-			new Button(bottom, MSG_CANCEL);
-			cancel.move(bottom, POS_MAX, -5, bottom, POS_CENTER);
-
-			ok.moveX(cancel, POS_BELOW, -5);
-		}
-		else
-		{
-			ok.onClick = { deattach; };
-			ok.moveX(bottom, POS_MAX, -5);
-		}
-
-		ok.focus;
-	}
-
-	mixin MakeChildRef!(Button, `ok`, 2, 0);
-	mixin MakeChildRef!(Button, `cancel`, 2, 1);
-}
+// 	mixin MakeChildRef!(Button, `ok`, 2, 0);
+// 	mixin MakeChildRef!(Button, `cancel`, 2, 1);
+// }
