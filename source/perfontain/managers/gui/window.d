@@ -10,8 +10,6 @@ class GUIWindow : RCounted
 		name = id;
 		size = sz;
 
-		PE.gui.add(this);
-
 		flags |= NK_WINDOW_TITLE;
 		flags |= NK_WINDOW_BORDER;
 		flags |= NK_WINDOW_MOVABLE;
@@ -19,6 +17,7 @@ class GUIWindow : RCounted
 		flags |= NK_WINDOW_MINIMIZABLE;
 
 		hide;
+		PE.gui.add(this);
 	}
 
 	void remove()
@@ -28,6 +27,9 @@ class GUIWindow : RCounted
 
 	void draw()
 	{
+		if (flags & NK_WINDOW_HIDDEN)
+			return;
+
 		if (nk_begin(ctx, name.toStringz, nk_rect(50, 50, size.x, size.y), flags))
 			_layouts.each!(a => a.process);
 		nk_end(ctx);
@@ -35,8 +37,9 @@ class GUIWindow : RCounted
 
 	void show(bool show = true)
 	{
-		flags &= ~NK_WINDOW_HIDDEN;
-		if (!show)
+		if (show)
+			flags &= ~NK_WINDOW_HIDDEN;
+		else
 			flags |= NK_WINDOW_HIDDEN;
 	}
 
@@ -48,6 +51,8 @@ class GUIWindow : RCounted
 	uint flags;
 	string name;
 	Vector2s size;
+
+	RCArray!Layout _layouts;
 protected:
 	void addLayout(Layout e)
 	{
@@ -60,5 +65,4 @@ protected:
 	}
 
 private:
-	RCArray!Layout _layouts;
 }

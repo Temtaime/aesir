@@ -1,17 +1,7 @@
 module rocl.status.item;
 
-import
-		std.meta,
-		std.algorithm,
-
-		perfontain,
-
-		rocl.status,
-		rocl.network,
-		rocl.controls,
-
-		utils.logger;
-
+import std.meta, std.algorithm, perfontain, rocl.status, rocl.network,
+	rocl.controls, utils.logger;
 
 enum
 {
@@ -35,7 +25,7 @@ final class Item : RCounted
 
 	this(ref in Pk0a09 p)
 	{
-		foreach(s; AliasSeq!(`id`, `type`, `amount`, `flags`, `attr`, `refine`, `cards`))
+		foreach (s; AliasSeq!(`id`, `type`, `amount`, `flags`, `attr`, `refine`, `cards`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}
@@ -47,7 +37,7 @@ final class Item : RCounted
 	{
 		amount = 1;
 
-		foreach(s; AliasSeq!(`equip`, `equip2`, `refine`, `expireTime`, `bound`, `look`))
+		foreach (s; AliasSeq!(`equip`, `equip2`, `refine`, `expireTime`, `bound`, `look`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}
@@ -57,7 +47,7 @@ final class Item : RCounted
 
 	this(ref in Pk0a0a p)
 	{
-		foreach(s; AliasSeq!(`amount`, `refine`))
+		foreach (s; AliasSeq!(`amount`, `refine`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}
@@ -67,7 +57,7 @@ final class Item : RCounted
 
 	this(ref in PkStackableItem p)
 	{
-		foreach(s; AliasSeq!(`amount`, `equip`, `expireTime`))
+		foreach (s; AliasSeq!(`amount`, `equip`, `expireTime`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}
@@ -77,7 +67,7 @@ final class Item : RCounted
 
 	this(ref in Pk0a37 p)
 	{
-		foreach(s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`, `bound`, `look`))
+		foreach (s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`, `bound`, `look`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}
@@ -110,15 +100,15 @@ final class Item : RCounted
 
 	const action()
 	{
-		if(equip)
+		if (equip)
 		{
-			if(equip2)
+			if (equip2)
 			{
 				ROnet.unequip(idx);
 			}
 			else
 			{
-				ROnet.equip(idx, cast(ushort)equip);
+				ROnet.equip(idx, cast(ushort) equip);
 			}
 		}
 		else
@@ -129,7 +119,7 @@ final class Item : RCounted
 
 	void doEquip(uint loc)
 	{
-		if(loc)
+		if (loc)
 		{
 			equip2 = loc;
 			onEquip(this);
@@ -148,46 +138,22 @@ final class Item : RCounted
 
 	ubyte tab() const
 	{
-		static immutable arr =
-		[
-			[ IT_HEALING, IT_USABLE, IT_CASH ],
-			[ IT_ARMOR, IT_WEAPON, IT_PETARMOR, ],
+		static immutable arr = [
+			[IT_HEALING, IT_USABLE, IT_CASH], [
+				IT_ARMOR, IT_WEAPON, IT_PETARMOR,
+			],
 		];
 
-		auto n = cast(byte)arr.countUntil!(a => a.canFind(type));
+		auto n = cast(byte) arr.countUntil!(a => a.canFind(type));
 		return n < 0 ? 2 : n;
 	}
 
-	uint
-			equip,
-			equip2,
-			expireTime,
-
-			price;
-
-	short
-			id,
-			idx,
-			amount,
-			trading,
-
-			bound,
-			look;
-
+	uint equip, equip2, expireTime, price;
+	short id, idx, amount, trading, bound, look;
 	short[4] cards;
+	byte type, attr, flags, refine, source;
 
-	byte
-			type,
-			attr,
-			flags,
-			refine,
-			source;
-
-	Signal!(void, Item)
-							onEquip,
-							onRemove,
-							onUnequip,
-							onCountChanged;
+	Signal!(void, Item) onEquip, onRemove, onUnequip, onCountChanged;
 private:
 	this(in Item m)
 	{
@@ -195,7 +161,8 @@ private:
 		assert(!m.equip2);
 		assert(!m.trading);
 
-		foreach(s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`, `price`, `bound`, `look`, `attr`, `source`))
+		foreach (s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`,
+				`price`, `bound`, `look`, `attr`, `source`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))m.` ~ s ~ `;`);
 		}
@@ -205,7 +172,7 @@ private:
 
 	void createFrom(T)(ref in T p)
 	{
-		foreach(s; AliasSeq!(`id`, `idx`, `type`, `flags`, `cards`))
+		foreach (s; AliasSeq!(`id`, `idx`, `type`, `flags`, `cards`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))p.` ~ s ~ `;`);
 		}

@@ -335,12 +335,6 @@ class Icon : GUIElement
 		assert(space.w == 36);
 		assert(space.h == 36);
 
-		// if (nk_button_behavior_(&ctx.last_widget_state, space, input, NK_BUTTON_DEFAULT))
-		// {
-		// 	nk_fill_rect(canvas, space, 0, ctx.style.selectable.pressed_active.data.color);
-		// }
-		//if (input && nk_input_is_mouse_hovering_rect(input, space))
-		//	nk_fill_rect(canvas, space, 0, ctx.style.selectable.pressed_active.data.color);
 		auto img = nk_image_ptr(cast(void*) _tex);
 
 		if (input && nk_input_is_mouse_hovering_rect(input, space))

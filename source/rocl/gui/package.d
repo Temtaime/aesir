@@ -40,7 +40,7 @@ final class GuiManager
 			removeCharSelect;
 
 			inv.show;
-			//chat.show;
+			chat.show;
 			//base.show;
 
 			with (ROnet.st.curChar)
@@ -51,7 +51,9 @@ final class GuiManager
 				inv.zeny = zeny;
 			}
 
-			//status = new WinStatus;
+			status = new WinStatus;
+			status.show;
+
 			//skills = new WinSkills;
 			//hotkeys = new WinHotkeys;
 
@@ -95,7 +97,7 @@ final class GuiManager
 
 	WinBase base;
 	//WinSkills skills;
-	//WinStatus status;
+	WinStatus status;
 	WinInventory inv;
 	WinHotkeys hotkeys;
 

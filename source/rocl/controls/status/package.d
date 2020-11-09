@@ -1,70 +1,113 @@
-
 module rocl.controls.status;
+import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
+	rocl.game, rocl.status, rocl.controls, rocl.controls.status.equip,
+	rocl.controls.status.stats, rocl.controls.status.bonuses, rocl.network.packets, rocl.gui.misc;
 
-import
-		std.utf,
-		std.meta,
-		std.conv,
-		std.range,
-		std.string,
-		std.algorithm,
+final class WinStatus : GUIWindow
+{
+	this()
+	{
+		super(MSG_CHARACTER, Vector2s(400));
 
-		perfontain,
-		perfontain.opengl,
+		{
+			_table = [
+				Slot(EQP_HEAD_TOP, MSG_HEAD), Slot(EQP_HEAD_MID, MSG_HEAD),
+				Slot(EQP_HEAD_LOW, MSG_HEAD), Slot(EQP_ARMOR, MSG_ARMOR),
+				Slot(EQP_HAND_R, MSG_HAND_R), Slot(EQP_HAND_L, MSG_HAND_L),
+				Slot(EQP_GARMENT, MSG_ROBE), Slot(EQP_SHOES, MSG_SHOES),
+				Slot(EQP_ACC_R, MSG_ACC), Slot(EQP_ACC_L, MSG_ACC)
+			];
 
-		ro.grf,
-		ro.conv.gui,
+			auto r = cast(uint) ctx.style.combo.content_padding.y.lrint;
 
-		rocl,
-		rocl.game,
-		rocl.status,
-		rocl.controls,
-		rocl.controls.status.equip,
-		rocl.controls.status.stats,
-		rocl.controls.status.bonuses,
-		rocl.network.packets;
+			addLayout(new DynamicRowLayout(2, 24 + r * 2));
+			curLayout.menu = MSG_EQUIPMENT;
+			curLayout.styles ~= new Style(&ctx.style.combo.button_padding.y, 8); // make scroll arrow a bit smaller
 
+			RO.status.items.onAdded.permanent(&register);
 
-// final class WinStatus : WinBasic2
-// {
-// 	this()
-// 	{
-// 		super(MSG_EQUIPMENT, `status`);
+			foreach (i, ref slot; _table)
+			{
+				auto wrap = () {
+					uint k = cast(uint) i;
+					auto combo = slot.combo = new ImageCombo(curLayout);
 
-// 		ushort
-// 				y,
-// 				w = 360;
+					combo.onChange = (idx) {
+						if (auto n = idx ? idx : combo.selected)
+							_table[k].items[n - 1].action;
+						return false;
+					};
 
-// 		{
-// 			equip = new EquipView(this, w);
-// 			equip.pos = Vector2s(10, 20);
+					combo.add(slot.name, null);
+				};
 
-// 			y += equip.pos.y + equip.size.y + 10;
-// 		}
+				wrap();
+			}
+		}
 
-// 		{
-// 			stats = new StatsView(this, 130);
-// 			stats.pos = Vector2s(10, y);
-// 		}
+		addLayout(new DynamicRowLayout(2, 36));
+		curLayout.menu = MSG_STATS;
+	}
 
-// 		{
-// 			auto x = cast(ushort)(20 + stats.size.x);
+private:
+	void register(Item m)
+	{
+		if (m.equip)
+		{
+			process(m, true);
 
-// 			bonuses = new BonusesView(this, cast(ushort)(w - x + 10));
-// 			bonuses.pos = Vector2s(x, y);
-// 		}
+			m.onEquip.permanent(a => process(a, true));
+			m.onUnequip.permanent(a => process(a, false));
+			m.onRemove.permanent(a => process(a, false));
+		}
+	}
 
-// 		y += stats.size.y;
+	void onRemove(Item m)
+	{
+		auto slots = slotsForItem(m);
+		slots.each!(a => a.items = a.items.remove!(a => a == m.idx));
+		fill(slots);
+	}
 
-// 		{
-// 			if(pos.x < 0)
-// 			{
-// 				pos.x = cast(ushort)((PE.window.size.x - size.x) / 2);
-// 			}
-// 		}
-// 	}
+	auto slotsForItem(Item m)
+	{
+		return _table[].map!((ref a) => &a)
+			.filter!(a => a.mask & m.equip)
+			.array;
+	}
 
-// 	StatsView stats;
-// 	EquipView equip;
-// 	BonusesView bonuses;
-// }
+	void process(Item item, bool canEquip)
+	{
+		auto arr = _table[].map!((ref a) => &a)
+			.filter!(a => a.mask & item.equip);
+
+		foreach (slot; arr)
+		{
+			auto combo = slot.combo;
+			slot.items = RO.status.items.get(a => !!((a.equip2 && canEquip
+					? a.equip2 : a.equip) & slot.mask));
+
+			combo.clear;
+			combo.add(slot.name, null);
+
+			foreach (i, m; slot.items)
+			{
+				auto data = m.data;
+				combo.add(data.name, makeIconTex(data.res));
+
+				if (canEquip && m.equip2 & slot.mask)
+					combo.selected = cast(uint) i + 1;
+			}
+		}
+	}
+
+	struct Slot
+	{
+		uint mask;
+		string name;
+		Item[] items;
+		ImageCombo combo;
+	}
+
+	Slot[10] _table;
+}

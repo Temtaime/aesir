@@ -64,6 +64,7 @@ final class WinSettings : GUIWindow
 
 				e.onChange = (a) {
 					mixin(c.var ~ `= cast(typeof( ` ~ c.var ~ `))a;`);
+					return true;
 				};
 			}
 		}
@@ -93,6 +94,8 @@ final class WinSettings : GUIWindow
 					{
 						e.logger;
 					}
+
+					return true;
 				};
 			}
 		}

@@ -204,11 +204,13 @@ final class CheckBox : GUIElement
 	{
 		int ch = checked;
 		if (nk_checkbox_text(ctx, _text.ptr, cast(uint) _text.length, &ch))
-			onChange(checked ^= true);
+		{
+			onChange(checked ^= true); // TODO: FIX CHANGE LOGIC
+		}
 	}
 
 	bool checked;
-	void delegate(bool) onChange;
+	bool delegate(bool) onChange;
 private:
 	string _text;
 }

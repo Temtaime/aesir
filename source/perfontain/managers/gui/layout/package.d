@@ -10,8 +10,20 @@ class Layout : RCounted
 	final process()
 	{
 		styles.each!(a => a.push);
-		draw;
-		styles.retro.each!(a => a.pop);
+		scope (exit)
+			styles.retro.each!(a => a.pop);
+
+		if (menu)
+		{
+			if (nk_tree_push_hashed(ctx, NK_TREE_TAB, menu.toStringz,
+					NK_MINIMIZED, null, 0, cast(uint) toHash))
+			{
+				draw;
+				nk_tree_pop(ctx);
+			}
+		}
+		else
+			draw;
 	}
 
 	void draw()
@@ -19,6 +31,7 @@ class Layout : RCounted
 		childs.each!(a => a.process);
 	}
 
+	string menu;
 	Style[] styles;
 	RCArray!GUIElement childs;
 }
