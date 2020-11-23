@@ -1,5 +1,4 @@
 module rocl.status.item;
-
 import std.meta, std.algorithm, perfontain, rocl.status, rocl.network,
 	rocl.controls, utils.logger;
 
@@ -108,7 +107,7 @@ final class Item : RCounted
 			}
 			else
 			{
-				ROnet.equip(idx, cast(ushort) equip);
+				ROnet.equip(idx, cast(ushort)equip);
 			}
 		}
 		else
@@ -119,16 +118,13 @@ final class Item : RCounted
 
 	void doEquip(uint loc)
 	{
+		auto prevEquip = equip2;
+		equip2 = loc;
+
 		if (loc)
-		{
-			equip2 = loc;
 			onEquip(this);
-		}
 		else
-		{
-			onUnequip(this);
-			equip2 = 0;
-		}
+			onUnequip(this, prevEquip);
 	}
 
 	const data()
@@ -144,7 +140,7 @@ final class Item : RCounted
 			],
 		];
 
-		auto n = cast(byte) arr.countUntil!(a => a.canFind(type));
+		auto n = cast(byte)arr.countUntil!(a => a.canFind(type));
 		return n < 0 ? 2 : n;
 	}
 
@@ -153,7 +149,8 @@ final class Item : RCounted
 	short[4] cards;
 	byte type, attr, flags, refine, source;
 
-	Signal!(void, Item) onEquip, onRemove, onUnequip, onCountChanged;
+	Signal!(void, Item, uint) onUnequip;
+	Signal!(void, Item) onEquip, onRemove, onCountChanged;
 private:
 	this(in Item m)
 	{

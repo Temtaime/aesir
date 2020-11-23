@@ -1,6 +1,16 @@
 module rocl.controls.status.equip;
 
-import std.meta, perfontain, ro.conv.gui, rocl, rocl.status, rocl.controls;
+import
+		std.meta,
+
+		perfontain,
+
+		ro.conv.gui,
+
+		rocl,
+		rocl.status,
+		rocl.controls;
+
 
 final:
 
@@ -64,22 +74,22 @@ class EquipView : GUIElement
 private:
 	void register(Item m)
 	{
-		if (m.equip)
+		if(m.equip)
 		{
-			if (m.equip2)
+			if(m.equip2)
 			{
 				equip(m);
 			}
 
 			m.onEquip.permanent(a => equip(a));
-			m.onUnequip.permanent(a => equip(a, false));
+			//m.onUnequip.permanent(a => equip(a, false));
 			m.onRemove.permanent(&remove);
 		}
 	}
 
 	void remove(Item m)
 	{
-		if (m.equip2)
+		if(m.equip2)
 		{
 			equip(m, false);
 		}
@@ -124,8 +134,17 @@ private:
 		// }
 	}
 
-	enum Names = [
-			`MSG_HEAD`, `MSG_HEAD`, `MSG_HAND_R`, `MSG_ROBE`, `MSG_ACC`,
-			`MSG_HEAD`, `MSG_ARMOR`, `MSG_HAND_L`, `MSG_SHOES`, `MSG_ACC`
-		];
+	enum Names =
+	[
+		`MSG_HEAD`,
+		`MSG_HEAD`,
+		`MSG_HAND_R`,
+		`MSG_ROBE`,
+		`MSG_ACC`,
+		`MSG_HEAD`,
+		`MSG_ARMOR`,
+		`MSG_HAND_L`,
+		`MSG_SHOES`,
+		`MSG_ACC`
+	];
 }

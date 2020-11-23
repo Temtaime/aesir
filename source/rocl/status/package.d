@@ -1,20 +1,6 @@
 module rocl.status;
-
-import
-		std.array,
-		std.typecons,
-		std.algorithm,
-
-		perfontain,
-
-		rocl.controls,
-		rocl.status.helpers;
-
-public import
-				rocl.game,
-				rocl.status.item,
-				rocl.status.enums;
-
+import std.array, std.typecons, std.algorithm, perfontain, rocl.controls, rocl.status.helpers;
+public import rocl.game, rocl.status.item, rocl.status.enums;
 
 final class Status
 {
@@ -42,18 +28,8 @@ final class Status
 	Items items;
 
 	// rest
-	Param!uint	hp,
-				sp,
-				maxHp,
-				maxSp,
-
-				bexp,
-				jexp,
-				bnextExp,
-				jnextExp;
-
-	Param!ushort	blvl,
-					jlvl;
+	Param!uint hp, sp, maxHp, maxSp, bexp, jexp, bnextExp, jnextExp;
+	Param!ushort blvl, jlvl;
 }
 
 struct Items
@@ -65,7 +41,7 @@ struct Items
 
 	void add(Item m)
 	{
-		assert(!getIdx(m.idx));
+		assert(getIdx(m.idx) is null);
 
 		arr ~= m;
 		onAdded(m);
@@ -85,11 +61,10 @@ struct Items
 
 	auto get(scope bool delegate(Item) dg)
 	{
-		return arr[]
-						.filter!dg
-						.array
-						.sort!((a, b) => a.idx < b.idx)
-						.release;
+		return arr[].filter!dg
+			.array
+			.sort!((a, b) => a.idx < b.idx)
+			.release;
 	}
 
 	RCArray!Item arr;
@@ -145,7 +120,7 @@ final class Skiller : RCounted
 
 	~this()
 	{
-		if(_bg)
+		if (_bg)
 		{
 			//_bg.deattach;
 		}
@@ -153,7 +128,7 @@ final class Skiller : RCounted
 
 	void use()
 	{
-		if(_s.type == INF_SELF_SKILL)
+		if (_s.type == INF_SELF_SKILL)
 		{
 			use(ROent.self.bl);
 		}
@@ -193,9 +168,7 @@ final class Skill
 	ushort id;
 	string name;
 
-	ubyte
-			type,
-			range;
+	ubyte type, range;
 
 	mixin StatusValue!(ushort, `sp`, onUpdate);
 	mixin StatusValue!(ubyte, `lvl`, onUpdate);

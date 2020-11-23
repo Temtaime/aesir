@@ -1,16 +1,6 @@
 module perfontain.shader.lang;
-
-import
-		std.conv,
-		std.string,
-		std.algorithm,
-
-		perfontain,
-		perfontain.opengl,
-
-		perfontain.shader.types,
-		perfontain.shader.defineprocessor;
-
+import std.conv, std.string, std.algorithm, perfontain, perfontain.opengl,
+	perfontain.shader.types, perfontain.shader.defineprocessor;
 
 struct ProgramCreator
 {
@@ -46,7 +36,7 @@ struct ProgramCreator
 		auto h = header;
 		auto aa = _dp.process(_name);
 
-		foreach(t, s; aa)
+		foreach (t, s; aa)
 		{
 			auto data = replace(h ~ s ~ "\n", "\n", "\r\n");
 
@@ -59,7 +49,8 @@ struct ProgramCreator
 			res ~= new Shader(_name, data, tp);
 		}
 
-		return new Program(res.data);
+		auto shaders = res[];
+		return new Program(shaders);
 	}
 
 private:
@@ -67,15 +58,13 @@ private:
 	{
 		auto res = format("#version %u\n", OPENGL_VERSION * 10);
 
-		foreach(ex; PERF_EXTENSIONS)
-		{
-			if(mixin(ex))
+		foreach (ex; PERF_EXTENSIONS)
+			if (mixin(ex))
 			{
-				define(ex[7..$].toUpper);
+				define(ex[7 .. $].toUpper);
 
 				res ~= format("#extension %s : require\n", ex);
 			}
-		}
 
 		res ~= "#extension GL_ARB_shader_image_load_store : require\n";
 		res ~= "#extension GL_ARB_shading_language_420pack : require\n";

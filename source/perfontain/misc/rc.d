@@ -42,7 +42,7 @@ final:
 		version (LOG_RC)
 			logger(`%s, %u refs`, this, _refs);
 
-		debug rcLeaks[cast(void*) this]++;
+		debug rcLeaks[cast(void*)this]++;
 	}
 
 	void release()
@@ -57,24 +57,24 @@ final:
 			debug
 			{
 				_wasFreed = true;
-				rcLeaks.remove(cast(void*) this);
+				rcLeaks.remove(cast(void*)this);
 			}
 
-			auto b = useAllocator;
+			const b = useAllocator;
 			auto sz = b ? typeid(this).initializer.length : 0;
 
 			this.destroy;
 
 			if (b)
 			{
-				auto p = (cast(void*) this)[0 .. sz];
+				auto p = (cast(void*)this)[0 .. sz];
 
 				GC.removeRange(p.ptr);
 				Alloc.deallocate(p);
 			}
 		}
 		else
-			debug rcLeaks[cast(void*) this]--;
+			debug rcLeaks[cast(void*)this]--;
 	}
 
 	bool useAllocator;
@@ -160,19 +160,22 @@ struct RCArray(T)
 	void remove(T t)
 	{
 		auto idx = _arr.countUntil!(a => a is t);
+		auto e = _arr[idx];
 
-		_arr[idx].release;
 		_arr.remove(idx);
-
 		resize(length - 1);
+
+		e.release;
 	}
 
 	void opIndexAssign(T p, size_t idx)
 	{
-		_arr[idx].release;
-		_arr[idx] = p;
+		auto e = _arr[idx];
 
+		_arr[idx] = p;
 		p.acquire;
+
+		e.release;
 	}
 
 	void opOpAssign(string op : `~`)(T p)
@@ -207,11 +210,6 @@ struct RCArray(T)
 		return _arr[idx];
 	}
 
-	inout data()
-	{
-		return _arr;
-	}
-
 	inout opSlice()
 	{
 		return _arr;
@@ -224,7 +222,7 @@ struct RCArray(T)
 
 	const length()
 	{
-		return cast(uint) _arr.length;
+		return cast(uint)_arr.length;
 	}
 
 	const opDollar()
@@ -242,7 +240,7 @@ private:
 		{
 			void[] u = _arr;
 
-			auto b = Alloc.reallocate(u, len * size_t.sizeof);
+			const b = Alloc.reallocate(u, len * size_t.sizeof);
 			assert(b);
 
 			GC.addRange(u.ptr, u.length);
@@ -287,7 +285,7 @@ debug
 				logger.ident++;
 
 				foreach (k, v; rcLeaks)
-					logger.warning(`%s - %u refs`, (cast(Object) k).toString, v);
+					logger.warning(`%s - %u refs`, (cast(Object)k).toString, v);
 
 				logger.ident--;
 			}
