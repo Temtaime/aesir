@@ -12,13 +12,21 @@ public import nuklear, perfontain.managers.gui.tab, perfontain.managers.gui.text
 	perfontain.managers.gui.scroll, perfontain.managers.gui.select,
 	perfontain.managers.gui.images, perfontain.managers.gui.element,
 	perfontain.managers.gui.tooltip, perfontain.managers.gui.layout,
-	perfontain.managers.gui.window, perfontain.managers.gui.style;
+	perfontain.managers.gui.window, perfontain.managers.gui.style,
+	perfontain.managers.gui.property;
 
 mixin template Nuklear()
 {
 	protected static ctx()
 	{
 		return PE.gui.ctx;
+	}
+
+	protected static widthFor(string text)
+	{
+		auto font = ctx.style.font;
+		return cast(ushort)font.width(cast(nk_handle)font.userdata,
+				font.height, text.ptr, cast(int)text.length);
 	}
 }
 
@@ -65,7 +73,7 @@ final class GUIManager
 			new Image(w, h, td.data).saveToFile(`res.png`);
 
 			ftex = new Texture(ti);
-			nk_font_atlas_end(atlas, nk_handle_ptr(cast(void*) ftex), &null_);
+			nk_font_atlas_end(atlas, nk_handle_ptr(cast(void*)ftex), &null_);
 
 			/*if (atlas.default_font)
 					nk_style_set_font(_nk, &atlas.default_font.handle);
@@ -198,16 +206,16 @@ private:
 
 				{
 					auto tex = cmd.texture.ptr;
-					auto idx = mh.texs[].countUntil!(a => cast(void*) a is tex);
+					auto idx = mh.texs[].countUntil!(a => cast(void*)a is tex);
 
 					if (idx < 0)
 					{
-						mh.texs ~= cast(Texture) tex;
+						mh.texs ~= cast(Texture)tex;
 						idx = mh.texs[].length - 1;
 					}
 
 					mh.meshes ~= HolderMesh([
-							HolderSubMesh(cmd.elem_count, offset, cast(ushort) idx)
+							HolderSubMesh(cmd.elem_count, offset, cast(ushort)idx)
 							]);
 				}
 
@@ -249,10 +257,10 @@ private:
 			assert(s.length);
 
 			auto f = ctx.style.font;
-			auto w = f.width(cast() f.userdata, f.height, s.ptr, cast(uint) s.length);
+			auto w = f.width(cast()f.userdata, f.height, s.ptr, cast(uint)s.length);
 
-			pt.pos.x -= cast(short) w / 2;
-			pt.pos.y -= cast(short) f.height / 2;
+			pt.pos.x -= cast(short)w / 2;
+			pt.pos.y -= cast(short)f.height / 2;
 
 			if (pt.fill)
 			{
@@ -268,9 +276,9 @@ private:
 					if (x || y)
 						nk_draw_list_add_text(&ctx.draw_list, f,
 								nk_rect(r.x + x, r.y + y, r.w, r.h), s.ptr,
-								cast(uint) s.length, f.height, nk_rgb(0, 0, 0));
+								cast(uint)s.length, f.height, nk_rgb(0, 0, 0));
 
-			nk_draw_list_add_text(&ctx.draw_list, f, r, s.ptr, cast(uint) s.length, f.height, c);
+			nk_draw_list_add_text(&ctx.draw_list, f, r, s.ptr, cast(uint)s.length, f.height, c);
 		}
 
 		_texts = null;

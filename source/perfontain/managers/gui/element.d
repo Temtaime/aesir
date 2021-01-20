@@ -67,13 +67,6 @@ class GUIElement : RCounted
 {
 	mixin Nuklear;
 
-	static widthFor(string text)
-	{
-		auto font = ctx.style.font;
-		return cast(ushort) font.width(cast(nk_handle) font.userdata,
-				font.height, text.ptr, cast(int) text.length);
-	}
-
 	this(Layout p = null, Vector2s sz = Vector2s.init, Win f = Win.none, string n = null)
 	{
 		parent = p;
@@ -291,12 +284,12 @@ final:
 
 	inout firstParent(T)()
 	{
-		return cast(T) byHierarchy.find!(a => cast(T) a).front;
+		return cast(T)byHierarchy.find!(a => cast(T)a).front;
 	}
 
 	auto find(T)()
 	{
-		return childs[].filter!(a => cast(T) a).array;
+		return childs[].filter!(a => cast(T)a).array;
 	}
 
 	void removeChilds()

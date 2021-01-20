@@ -93,7 +93,7 @@ struct Stat
 private:
 	void onUpdate()
 	{
-		//RO.gui.status.stats.update(this);
+		RO.gui.status.stats.update(this);
 	}
 }
 

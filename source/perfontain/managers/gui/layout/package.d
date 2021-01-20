@@ -13,17 +13,7 @@ class Layout : RCounted
 		scope (exit)
 			styles.retro.each!(a => a.pop);
 
-		if (menu)
-		{
-			if (nk_tree_push_hashed(ctx, NK_TREE_TAB, menu.toStringz,
-					NK_MINIMIZED, null, 0, cast(uint) toHash))
-			{
-				draw;
-				nk_tree_pop(ctx);
-			}
-		}
-		else
-			draw;
+		draw;
 	}
 
 	void draw()
@@ -31,9 +21,30 @@ class Layout : RCounted
 		childs.each!(a => a.process);
 	}
 
-	string menu;
 	Style[] styles;
 	RCArray!GUIElement childs;
+}
+
+class MenuLayout : Layout
+{
+	this(string name)
+	{
+		_name = name;
+	}
+
+	override void draw()
+	{
+		if (nk_tree_push_hashed(ctx, NK_TREE_TAB, _name.toStringz,
+				NK_MINIMIZED, null, 0, cast(uint)toHash))
+		{
+			layouts.each!(a => a.draw);
+			nk_tree_pop(ctx);
+		}
+	}
+
+	RCArray!Layout layouts;
+private:
+	string _name;
 }
 
 abstract class RowTemplateLayout : Layout
@@ -87,7 +98,7 @@ class RowLayout : Layout
 		assert(childs.length == _widths.length);
 
 		nk_layout_row_begin(ctx, _dynamic ? NK_DYNAMIC : NK_STATIC, _height,
-				cast(uint) _widths.length);
+				cast(uint)_widths.length);
 
 		foreach (i, v; _widths)
 		{
