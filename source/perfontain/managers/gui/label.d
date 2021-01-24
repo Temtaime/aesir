@@ -20,13 +20,15 @@ class GUIStaticText : GUIElement
 		// 	cast(GUIWindow) p || throwError(_text);
 		// }
 
-		nk_text_colored(ctx, _text.ptr, cast(int) _text.length, NK_TEXT_LEFT,
+		nk_text_colored(ctx, _text.ptr, cast(int)_text.length, align_,
 				nk_rgb(color.r, color.g, color.b));
 		//nk_text_wrap_colored(ctx, _text.ptr, cast(int) _text.length, nk_rgb(color.r, color.g, color.b));
 	}
 
-	string _text;
 	auto color = colorWhite;
+	auto align_ = NK_TEXT_LEFT;
+private:
+	string _text;
 }
 
 struct FontInfo // TODO: REPLACE OTHER USAGES

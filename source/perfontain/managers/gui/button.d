@@ -13,11 +13,18 @@ final class Button : GUIElement
 
 	override void draw()
 	{
-		if (nk_button_text(ctx, _text.ptr, cast(int) _text.length) && onClick)
+		auto res = symbol ? nk_button_symbol_text(ctx, symbol, _text.ptr,
+				cast(uint)_text.length, align_) : nk_button_text(ctx, _text.ptr,
+				cast(uint)_text.length);
+
+		if (res && onClick)
 			onClick();
 	}
 
 	void delegate() onClick;
+
+	auto align_ = NK_TEXT_LEFT;
+	auto symbol = NK_SYMBOL_NONE;
 private:
 	string _text;
 }

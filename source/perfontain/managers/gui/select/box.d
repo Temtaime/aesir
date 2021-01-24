@@ -17,7 +17,7 @@ private:
 
 	void select(size_t idx)
 	{
-		auto n = cast(uint) idx;
+		auto n = cast(uint)idx;
 
 		if (selected != n && (onChange is null || onChange(n)))
 			selected = n;
@@ -39,8 +39,8 @@ class TextCombo : Combo
 	override void draw()
 	{
 		auto r = nk_widget_size(ctx);
-		auto cur = nk_combo(ctx, cast(const(char)**) _values.ptr,
-				cast(uint) _values.length, selected, cast(int) r.y, nk_vec2(r.x,
+		auto cur = nk_combo(ctx, cast(const(char)**)_values.ptr,
+				cast(uint)_values.length, selected, cast(int)r.y, nk_vec2(r.x,
 					r.y * COMBO_SCROLL_ITEMS));
 
 		if (selected != cur)
@@ -114,17 +114,17 @@ private:
 	bool title(string s, Texture t, nk_vec2 size)
 	{
 		if (t)
-			return !!nk_combo_begin_image_text(ctx, s.ptr, cast(uint) s.length,
-					nk_image_ptr(cast(void*) t), size);
-		return !!nk_combo_begin_text(ctx, s.ptr, cast(uint) s.length, size);
+			return !!nk_combo_begin_image_text(ctx, s.ptr, cast(uint)s.length,
+					nk_image_ptr(cast(void*)t), size);
+		return !!nk_combo_begin_text(ctx, s.ptr, cast(uint)s.length, size);
 	}
 
 	bool item(string s, Texture t)
 	{
 		if (t)
-			return !!nk_combo_item_image_text(ctx, nk_image_ptr(cast(void*) t),
-					s.ptr, cast(uint) s.length, NK_TEXT_RIGHT);
-		return !!nk_combo_item_text(ctx, s.ptr, cast(uint) s.length, NK_TEXT_CENTERED);
+			return !!nk_combo_item_image_text(ctx, nk_image_ptr(cast(void*)t),
+					s.ptr, cast(uint)s.length, NK_TEXT_RIGHT);
+		return !!nk_combo_item_text(ctx, s.ptr, cast(uint)s.length, NK_TEXT_CENTERED);
 	}
 
 	Tuple!(string, Texture)[] _arr;

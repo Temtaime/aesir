@@ -37,7 +37,7 @@ mixin template PacketHandlers()
 
 	void setHotkey(uint idx, in PkHotkey h)
 	{
-		send!Pk02ba(cast(ushort) idx, h);
+		send!Pk02ba(cast(ushort)idx, h);
 	}
 
 	void pickUp(uint id)
@@ -471,10 +471,12 @@ mixin template PacketHandlers()
 
 	void onParChange(Pk00b0 p)
 	{
-		auto i = cast(int) p.value;
-		auto v = cast(short) p.value;
+		auto i = cast(int)p.value;
+		auto v = cast(short)p.value;
 
 		Actor s = ROent.self;
+
+		RO.status.param(p.varId).value = p.value;
 
 		switch (p.varId)
 		{
@@ -512,52 +514,6 @@ mixin template PacketHandlers()
 			RO.status.maxSp.value = i;
 			break;
 
-		case SP_ATK1:
-			RO.status.bonuses[RO_ATK].base = v;
-			break;
-		case SP_ATK2:
-			RO.status.bonuses[RO_ATK].base2 = v;
-			break;
-
-		case SP_MATK1:
-			RO.status.bonuses[RO_MATK].base = v;
-			break;
-		case SP_MATK2:
-			RO.status.bonuses[RO_MATK].base2 = v;
-			break;
-
-		case SP_HIT:
-			RO.status.bonuses[RO_HIT].base = v;
-			break;
-		case SP_CRITICAL:
-			RO.status.bonuses[RO_CRIT].base = v;
-			break;
-
-		case SP_DEF1:
-			RO.status.bonuses[RO_DEF].base = v;
-			break;
-		case SP_DEF2:
-			RO.status.bonuses[RO_DEF].base2 = v;
-			break;
-
-		case SP_MDEF1:
-			RO.status.bonuses[RO_MDEF].base = v;
-			break;
-		case SP_MDEF2:
-			RO.status.bonuses[RO_MDEF].base2 = v;
-			break;
-
-		case SP_FLEE1:
-			RO.status.bonuses[RO_FLEE].base = v;
-			break;
-		case SP_FLEE2:
-			RO.status.bonuses[RO_FLEE].base2 = v;
-			break;
-
-		case SP_ASPD:
-			RO.status.bonuses[RO_ASPD].base = v;
-			break;
-
 		default:
 		}
 	}
@@ -572,7 +528,7 @@ mixin template PacketHandlers()
 
 	void onSpriteChange(Pk01d7 p)
 	{
-		ROent.doActor(p.id, a => a.changeLook(p.type, cast(ushort) p.value));
+		ROent.doActor(p.id, a => a.changeLook(p.type, cast(ushort)p.value));
 	}
 
 	void onPickUp(Pk0a37 p)
@@ -644,8 +600,8 @@ mixin template PacketHandlers()
 		{
 			with (RO.status.stats[p.statusId - SP_STR])
 			{
-				base = cast(ubyte) p.baseStatus;
-				bonus = cast(ubyte) p.plusStatus;
+				base = cast(ubyte)p.baseStatus;
+				bonus = cast(ubyte)p.plusStatus;
 			}
 		}
 	}
@@ -660,6 +616,7 @@ mixin template PacketHandlers()
 			stats[RO_INT].needs = p.needInt;
 			stats[RO_DEX].needs = p.needDex;
 			stats[RO_LUK].needs = p.needLuk;
+
 		}
 	}
 
@@ -669,7 +626,7 @@ mixin template PacketHandlers()
 
 		foreach_reverse (i, ref c; p.chars)
 		{
-			auto e = ROent.createChar(&c, cast(uint) i, st.gender);
+			auto e = ROent.createChar(&c, cast(uint)i, st.gender);
 
 			e.fix(Vector2s(259 + i * 2, 190).PosDir);
 		}
@@ -786,14 +743,14 @@ mixin template PacketHandlers()
 
 				u.name = r.skillName[].toStr.toLower;
 				u.id = r.skillId;
-				u.type = cast(ubyte) r.type;
+				u.type = cast(ubyte)r.type;
 
 				//RO.gui.skills.add(u);
 			}
 
 			u.sp = r.spCost;
-			u.lvl = cast(ubyte) r.level;
-			u.range = cast(ubyte) r.attackRange;
+			u.lvl = cast(ubyte)r.level;
+			u.range = cast(ubyte)r.attackRange;
 			u.upgradable = !!r.upgradable;
 		}
 	}

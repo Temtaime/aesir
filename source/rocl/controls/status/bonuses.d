@@ -71,16 +71,16 @@ class BonusesView : GUIElement
 		// size.y = cast(ushort)(childs.back.size.y * 4);
 	}
 
-	void update(ref in Bonus b)
-	{
-		// auto idx = b.idx;
-		// auto e = new BonusesSlot(null, childs[idx].size.x, Bonuses[idx], b.base, b.base2);
+	// void update(ref in Bonus b)
+	// {
+	// 	// auto idx = b.idx;
+	// 	// auto e = new BonusesSlot(null, childs[idx].size.x, Bonuses[idx], b.base, b.base2);
 
-		// e.pos = childs[idx].pos;
-		// e.parent = this;
+	// 	// e.pos = childs[idx].pos;
+	// 	// e.parent = this;
 
-		// childs[idx] = e;
-	}
+	// 	// childs[idx] = e;
+	// }
 
 private:
 	static immutable Bonuses =

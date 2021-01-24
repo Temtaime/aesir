@@ -111,6 +111,9 @@ final class GUIManager
 		//overview(_nk);
 		_windows.each!(a => a.draw);
 
+		if (drawGUI)
+			drawGUI();
+
 		nk_buffer vbuf;
 		nk_buffer ebuf;
 
@@ -284,8 +287,8 @@ private:
 		_texts = null;
 	}
 
+	void delegate() drawGUI;
 private:
-
 	void onResize(Vector2s sz)
 	{
 		//root.size = sz;

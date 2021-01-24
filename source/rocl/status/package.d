@@ -15,12 +15,17 @@ final class Status
 		return arr.empty ? null : arr.front;
 	}
 
+	ref param(short idx)
+	{
+		return *_params.get(idx, new Param!int);
+	}
+
 	// misc
 	string map;
 
 	// character
 	Stat[RO_STAT_MAX] stats;
-	Bonus[RO_BONUS_MAX] bonuses;
+	//Bonus[RO_BONUS_MAX] bonuses;
 
 	// skills
 	Skill[] skills;
@@ -30,6 +35,8 @@ final class Status
 	// rest
 	Param!uint hp, sp, maxHp, maxSp, bexp, jexp, bnextExp, jnextExp;
 	Param!ushort blvl, jlvl;
+private:
+	Param!int*[ushort] _params;
 }
 
 struct Items
@@ -94,19 +101,6 @@ private:
 	void onUpdate()
 	{
 		RO.gui.status.stats.update(this);
-	}
-}
-
-struct Bonus
-{
-	mixin StatusIndex!(`bonuses`);
-
-	mixin StatusValue!(short, `base`, onUpdate);
-	mixin StatusValue!(short, `base2`, onUpdate);
-private:
-	void onUpdate()
-	{
-		//RO.gui.status.bonuses.update(this);
 	}
 }
 

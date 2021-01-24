@@ -2,6 +2,17 @@ module perfontain.managers.gui.misc;
 
 import std, perfontain;
 
+mixin template NuklearBase()
+{
+	auto nk = new class
+	{
+		auto onDispatch(string name, A...)(A args)
+		{
+
+		}
+	};
+}
+
 template MakeChildRef(T, string Name, Idx...)
 {
 	mixin(`inout(T) ` ~ Name ~ `() inout
@@ -30,7 +41,7 @@ auto calcSize(R)(auto ref R r, bool withPos = true)
 
 	foreach (i; 0 .. 2)
 	{
-		res[i] = cast(short) r.map!(a => withPos ? a.end[i] : a.size[i])
+		res[i] = cast(short)r.map!(a => withPos ? a.end[i] : a.size[i])
 			.fold!max(0);
 	}
 

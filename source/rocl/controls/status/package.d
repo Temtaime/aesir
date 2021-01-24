@@ -139,9 +139,55 @@ private:
 
 	void create()
 	{
+
+		auto param(short idx)
+		{
+			return RO.status.param(idx);
+		}
+
+		string[] params;
+
+		params ~= [`ATK`, format(`%s + %s`, param(SP_ATK1), param(SP_ATK2))];
+		params ~= [`DEF`, format(`%s + %s`, param(SP_DEF1), param(SP_DEF2))];
+		params ~= [`MDEF`, format(`%s + %s`, param(SP_MDEF1), param(SP_MDEF2))];
+		params ~= [`HIT`, param(SP_HIT).to!string];
+		params ~= [`FLEE`, format(`%s + %s`, param(SP_FLEE1), param(SP_FLEE2))];
+		params ~= [`CRIT`, param(SP_CRITICAL).to!string];
+		params ~= [`ASPD`, param(SP_ASPD).to!string];
+
+		auto layout = makeLayout(true);
+		_menu.layouts ~= layout;
+
+		foreach (i, st; Stats)
+		{
+			auto v = &RO.status.stats[i];
+			auto text = format(`%s: %s`, st, v.base);
+
+			if (i == Stats.length - 2)
+			{
+				layout = makeLayout(false);
+				_menu.layouts ~= layout;
+			}
+
+			if (v.needs)
+			{
+				auto b = new Button(layout, text);
+				b.symbol = NK_SYMBOL_TRIANGLE_RIGHT;
+			}
+			else
+			{
+				new GUIStaticText(layout, text).align_ = NK_TEXT_CENTERED;
+			}
+
+			new GUIStaticText(layout, `+ ` ~ v.bonus.to!string);
+		}
+	}
+
+	auto makeLayout(bool double_)
+	{
 		auto w = 30;
 
-		auto layout = new class RowTemplateLayout
+		return new class RowTemplateLayout
 		{
 			this()
 			{
@@ -152,22 +198,18 @@ private:
 			{
 				dynamic();
 				static_(w);
+
+				dynamic();
+				static_(w * 2);
+
+				if (double_)
+				{
+					dynamic();
+					static_(w * 2);
+				}
+
 			}
 		};
-
-		_menu.layouts ~= layout;
-
-		foreach (i, st; Stats)
-		{
-			auto v = &RO.status.stats[i];
-
-			if (v.needs)
-				new PropertyInt(layout, st ~ ':', v.base, 1, 100, 1, 1);
-			else
-				new GUIStaticText(layout, st ~ `: ` ~ v.base.to!string);
-
-			new GUIStaticText(layout, `+ ` ~ v.bonus.to!string);
-		}
 	}
 
 	MenuLayout _menu;
