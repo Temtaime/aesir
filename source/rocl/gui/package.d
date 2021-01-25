@@ -26,11 +26,21 @@ final class GuiManager
 
 		values = new ValueManager;
 		registerHotkeys;
+
+		status = new WinStatus;
 	}
 
 	~this()
 	{
 		//inv.destroy;
+	}
+
+	void draw()
+	{
+		if (_isGame)
+		{
+			status.draw;
+		}
 	}
 
 	void show(bool game = false)
@@ -45,14 +55,13 @@ final class GuiManager
 
 			with (ROnet.st.curChar)
 			{
-				RO.status.jlvl.value = cast(short) jobLvl; // TODO: WTF int
+				RO.status.jlvl.value = cast(short)jobLvl; // TODO: WTF int
 				RO.status.blvl.value = baseLvl;
 
 				inv.zeny = zeny;
 			}
 
-			status = new WinStatus;
-			status.show;
+			//status.show;
 
 			//skills = new WinSkills;
 			//hotkeys = new WinHotkeys;

@@ -145,6 +145,8 @@ private:
 		PE.timers.add(&onWork, 0, 0);
 		ctors;
 
+		PE.gui.drawGUI = &gui.draw;
+
 		return true;
 	}
 

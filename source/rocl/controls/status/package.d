@@ -5,23 +5,40 @@ import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
 
 final:
 
-class WinStatus : GUIWindow
+class WinStatus //: GUIWindow
 {
 	this()
 	{
-		super(MSG_CHARACTER, Vector2s(400));
+		// super(MSG_CHARACTER, Vector2s(400));
 
-		auto m = new MenuLayout(MSG_EQUIPMENT);
-		addLayout(m);
-		equip = new EquipTab(m);
+		// auto m = new MenuLayout(MSG_EQUIPMENT);
+		// addLayout(m);
+		// equip = new EquipTab(m);
 
-		m = new MenuLayout(MSG_STATS);
-		addLayout(m);
-		stats = new StatsTab(m);
+		// m = new MenuLayout(MSG_STATS);
+		// addLayout(m);
+		stats = new StatsTab;
 	}
 
-	EquipTab equip;
+	void draw()
+	{
+		if (auto win = Window(MSG_CHARACTER, nk_vec2(410, 400)))
+		{
+			if (auto tree = Tree(MSG_EQUIPMENT))
+			{
+			}
+
+			if (auto tree = Tree(MSG_STATS))
+			{
+				stats.draw;
+			}
+		}
+	}
+
+	//EquipTab equip;
 	StatsTab stats;
+private:
+	mixin NuklearBase;
 }
 
 class EquipTab
@@ -122,96 +139,96 @@ private:
 
 class StatsTab
 {
-	this(MenuLayout m)
+	this()
 	{
-		_menu = m;
-		create;
+		//_menu = m;
+		//create;
 	}
 
 	void update(ref Stat st)
 	{
-		_menu.layouts.clear;
-		create;
+		//_menu.layouts.clear;
+		//create;
 	}
 
-private:
-	mixin Nuklear;
-
-	void create()
+	void draw()
 	{
+		makeLayout(true);
 
-		auto param(short idx)
-		{
-			return RO.status.param(idx);
-		}
-
-		string[] params;
-
+		string[][] params;
 		params ~= [`ATK`, format(`%s + %s`, param(SP_ATK1), param(SP_ATK2))];
 		params ~= [`DEF`, format(`%s + %s`, param(SP_DEF1), param(SP_DEF2))];
-		params ~= [`MDEF`, format(`%s + %s`, param(SP_MDEF1), param(SP_MDEF2))];
-		params ~= [`HIT`, param(SP_HIT).to!string];
-		params ~= [`FLEE`, format(`%s + %s`, param(SP_FLEE1), param(SP_FLEE2))];
-		params ~= [`CRIT`, param(SP_CRITICAL).to!string];
-		params ~= [`ASPD`, param(SP_ASPD).to!string];
 
-		auto layout = makeLayout(true);
-		_menu.layouts ~= layout;
+		params ~= [`MATK`, format(`%s + %s`, param(SP_MATK1), param(SP_MATK2))];
+		params ~= [`MDEF`, format(`%s + %s`, param(SP_MDEF1), param(SP_MDEF2))];
+
+		params ~= [`HIT`, param(SP_HIT)];
+		params ~= [`FLEE`, format(`%s + %s`, param(SP_FLEE1), param(SP_FLEE2))];
+
+		params ~= [`CRIT`, param(SP_CRITICAL)];
+		params ~= [`ASPD`, param(SP_ASPD)];
+
+		params ~= [MSG_SPEED, param(SP_SPEED)];
+		params ~= [MSG_STAT_POINTS, param(SP_STATUSPOINT)];
 
 		foreach (i, st; Stats)
 		{
 			auto v = &RO.status.stats[i];
 			auto text = format(`%s: %s`, st, v.base);
 
-			if (i == Stats.length - 2)
-			{
-				layout = makeLayout(false);
-				_menu.layouts ~= layout;
-			}
+			if (i == 4)
+				makeLayout(false);
 
 			if (v.needs)
 			{
-				auto b = new Button(layout, text);
-				b.symbol = NK_SYMBOL_TRIANGLE_RIGHT;
+				if (nk.button(text, NK_TEXT_LEFT, NK_SYMBOL_TRIANGLE_RIGHT))
+				{
+				}
+			}
+			else
+				nk.label(text, NK_TEXT_CENTERED);
+			nk.label(`+ ` ~ v.bonus.to!string);
+
+			if (i >= 4)
+			{
+				nk.label(params[i + 4].front);
+				nk.label(params[i + 4].back);
 			}
 			else
 			{
-				new GUIStaticText(layout, text).align_ = NK_TEXT_CENTERED;
+				nk.label(params[i * 2].front);
+				nk.label(params[i * 2].back);
+				nk.label(params[i * 2 + 1].front);
+				nk.label(params[i * 2 + 1].back);
 			}
-
-			new GUIStaticText(layout, `+ ` ~ v.bonus.to!string);
 		}
 	}
 
-	auto makeLayout(bool double_)
+private:
+	mixin NuklearBase;
+
+	void makeLayout(bool extra)
 	{
-		auto w = 30;
+		const w = 30;
 
-		return new class RowTemplateLayout
+		with (LayoutRowTemplate(0))
 		{
-			this()
+			foreach (i; 0 .. extra ? 3 : 2)
 			{
-				super(0);
-			}
-
-			override void make()
-			{
-				dynamic();
-				static_(w);
-
-				dynamic();
-				static_(w * 2);
-
-				if (double_)
-				{
+				if (i)
 					dynamic();
-					static_(w * 2);
-				}
+				else
+					static_(120);
 
+				static_(i ? w * 2 : w);
 			}
-		};
+		}
 	}
 
-	MenuLayout _menu;
+	static param(ushort idx)
+	{
+		return RO.status.param(idx).value.to!string;
+	}
+
 	static immutable Stats = [`STR`, `AGI`, `VIT`, `INT`, `DEX`, `LUK`];
 }

@@ -15,9 +15,9 @@ final class Status
 		return arr.empty ? null : arr.front;
 	}
 
-	ref param(short idx)
+	ref param(ushort idx)
 	{
-		return *_params.get(idx, new Param!int);
+		return *_params.require(idx, new Param!int);
 	}
 
 	// misc
@@ -86,7 +86,7 @@ struct Param(T)
 private:
 	void onUpdate()
 	{
-		onChange(value);
+		onChange(_value);
 	}
 }
 
@@ -100,7 +100,7 @@ struct Stat
 private:
 	void onUpdate()
 	{
-		RO.gui.status.stats.update(this);
+		//RO.gui.status.stats.update(this);
 	}
 }
 

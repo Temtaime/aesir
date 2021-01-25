@@ -68,6 +68,9 @@ enum MESSAGES =
 	[ `BASE_LVL`, `Base lvl`, `Баз. ур.` ],
 	[ `JOB_LVL`, `Job lvl`, `Проф. ур.` ],
 
+	[`SPEED`, `Speed`, `Скорость`],
+	[`STAT_POINTS`, `Status points`, `Очки статуса`],
+
 	[ `STATS`, `Stats`, `Характеристики` ],
 	[ `EQUIPMENT`, `Equipment`, `Экипировка` ],
 	[ `HEAD`, `Head`, `Голова` ],

@@ -166,6 +166,8 @@ final class GUIManager
 		_texts ~= pt;
 	}
 
+	void delegate() drawGUI;
+
 	nk_draw_null_texture null_;
 
 	Signal!(void, GUIElement) onCurrentChanged;
@@ -287,7 +289,6 @@ private:
 		_texts = null;
 	}
 
-	void delegate() drawGUI;
 private:
 	void onResize(Vector2s sz)
 	{
