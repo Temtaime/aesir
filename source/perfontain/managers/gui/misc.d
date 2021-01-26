@@ -2,35 +2,88 @@ module perfontain.managers.gui.misc;
 
 import std, perfontain;
 
+enum COMBO_SCROLL_ITEMS_CNT = 8;
+
 mixin template NuklearBase()
 {
 	mixin Nuklear;
+
+	struct Combo
+	{
+		this(string text)
+		{
+			_process = !!nk.combo_begin_text(text.ptr, cast(uint)text.length, size);
+		}
+
+		this(string text, Texture tex)
+		{
+			_process = !!nk.combo_begin_image_text(text.ptr,
+					cast(uint)text.length, nk_image_ptr(cast(void*)tex), size);
+		}
+
+		bool item(string text)
+		{
+			return !!nk.combo_item_text(text.ptr, cast(uint)text.length, NK_TEXT_CENTERED);
+		}
+
+		bool item(string text, Texture tex)
+		{
+			return !!nk.combo_item_image_text(nk_image_ptr(cast(void*)tex),
+					text.ptr, cast(uint)text.length, NK_TEXT_RIGHT);
+		}
+
+		bool opCast(T : bool)() const
+		{
+			return _process;
+		}
+
+		~this()
+		{
+			if (_process)
+				nk.combo_end();
+		}
+
+	private:
+		auto size()
+		{
+			auto r = nk.widget_size();
+
+			_height = r.y;
+			_height -= ctx.style.combo.content_padding.y * 2;
+			_height += ctx.style.contextual_button.padding.y * 2;
+
+			return nk_vec2(r.x, _height * COMBO_SCROLL_ITEMS_CNT);
+		}
+
+		bool _process;
+		mixin publicProperty!(float, `height`);
+	}
 
 	struct LayoutRowTemplate
 	{
 		this(uint height)
 		{
-			nk_layout_row_template_begin(ctx, height);
+			nk.layout_row_template_begin(height);
 		}
 
 		void dynamic()
 		{
-			nk_layout_row_template_push_dynamic(ctx);
+			nk.layout_row_template_push_dynamic();
 		}
 
 		void variable(float width)
 		{
-			nk_layout_row_template_push_variable(ctx, width);
+			nk.layout_row_template_push_variable(width);
 		}
 
 		void static_(float width)
 		{
-			nk_layout_row_template_push_static(ctx, width);
+			nk.layout_row_template_push_static(width);
 		}
 
 		~this()
 		{
-			nk_layout_row_template_end(ctx);
+			nk.layout_row_template_end();
 		}
 	}
 
@@ -50,7 +103,7 @@ mixin template NuklearBase()
 		~this()
 		{
 			if (_process)
-				nk_tree_pop(ctx);
+				nk.tree_pop();
 		}
 
 	private:
@@ -73,7 +126,7 @@ mixin template NuklearBase()
 
 		~this()
 		{
-			nk_end(ctx);
+			nk.end();
 		}
 
 	private:
@@ -100,6 +153,16 @@ mixin template NuklearBase()
 		bool button(string text, uint align_, nk_symbol_type symbol)
 		{
 			return !!this.button_symbol_text(symbol, text.ptr, cast(uint)text.length, align_);
+		}
+
+		void tooltip(string text)
+		{
+			nk_tooltip(ctx, text.toStringz);
+		}
+
+		bool isWidgetHovered()
+		{
+			return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
 		}
 	}
 

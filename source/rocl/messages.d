@@ -70,6 +70,7 @@ enum MESSAGES =
 
 	[`SPEED`, `Speed`, `Скорость`],
 	[`STAT_POINTS`, `Status points`, `Очки статуса`],
+	[`STAT_COSTS`, `Costs %u points`, `Расходует %u очков статуса`],
 
 	[ `STATS`, `Stats`, `Характеристики` ],
 	[ `EQUIPMENT`, `Equipment`, `Экипировка` ],

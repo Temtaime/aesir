@@ -3,7 +3,31 @@ module rocl.gui;
 import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game,
 	rocl.paths, rocl.gui.misc, rocl.network.packets, rocl.controls,
 	rocl.controls.chat, rocl.controls.status, rocl.controls.numbers,
-	rocl.controls.charselect, rocl.controls.hotkeysettings, utils.except;
+	rocl.status.item, rocl.controls.charselect, rocl.controls.hotkeysettings, utils.except;
+
+struct IconCache
+{
+	auto get(Item m)
+	{
+		auto res = m.data.res;
+		return _aa.require(res, makeTex(res));
+	}
+
+	~this()
+	{
+		_aa.values.each!(a => a.release);
+	}
+
+private:
+	auto makeTex(string res)
+	{
+		auto tex = makeIconTex(res);
+		tex.acquire;
+		return tex;
+	}
+
+	Texture[string] _aa;
+}
 
 final class GuiManager
 {
@@ -109,6 +133,7 @@ final class GuiManager
 	WinStatus status;
 	WinInventory inv;
 	WinHotkeys hotkeys;
+	IconCache iconCache;
 
 	mixin MakeWindow!(WinShop, `shop`);
 	//mixin MakeWindow!(WinStorage, `store`);

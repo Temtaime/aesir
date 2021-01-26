@@ -5,56 +5,31 @@ import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
 
 final:
 
-class WinStatus //: GUIWindow
+class WinStatus
 {
-	this()
-	{
-		// super(MSG_CHARACTER, Vector2s(400));
-
-		// auto m = new MenuLayout(MSG_EQUIPMENT);
-		// addLayout(m);
-		// equip = new EquipTab(m);
-
-		// m = new MenuLayout(MSG_STATS);
-		// addLayout(m);
-		stats = new StatsTab;
-	}
-
 	void draw()
 	{
 		if (auto win = Window(MSG_CHARACTER, nk_vec2(410, 400)))
 		{
 			if (auto tree = Tree(MSG_EQUIPMENT))
-			{
-			}
+				equip.draw;
 
 			if (auto tree = Tree(MSG_STATS))
-			{
 				stats.draw;
-			}
 		}
 	}
 
-	//EquipTab equip;
+	EquipTab equip;
 	StatsTab stats;
 private:
 	mixin NuklearBase;
 }
 
-class EquipTab
+struct EquipTab
 {
-	this(MenuLayout m)
+	void draw()
 	{
-		{
-			auto r = cast(uint)ctx.style.combo.content_padding.y.lrint;
-			_layout = new DynamicRowLayout(2, 24 + r * 2);
-
-			m.layouts ~= _layout;
-		}
-
-		_layout.styles ~= new Style(&ctx.style.combo.button_padding.y, 8); // make scroll arrow a bit smaller
-
-		_slots = [
+		auto slots = [
 			Slot(EQP_HEAD_TOP, MSG_HEAD), Slot(EQP_HEAD_MID, MSG_HEAD),
 			Slot(EQP_HEAD_LOW, MSG_HEAD), Slot(EQP_ARMOR, MSG_ARMOR),
 			Slot(EQP_HAND_R, MSG_HAND_R), Slot(EQP_HAND_L, MSG_HAND_L),
@@ -62,70 +37,52 @@ class EquipTab
 			Slot(EQP_ACC_R, MSG_ACC), Slot(EQP_ACC_L, MSG_ACC)
 		];
 
-		RO.status.items.onAdded.permanent(&register);
+		nk.layout_row_dynamic(24 + ctx.style.combo.content_padding.y * 2, 2);
 
-		foreach (ref s; _slots)
+		// _layout.styles ~= new Style(&ctx.style.combo.button_padding.y, 8); // make scroll arrow a bit smaller
+
+		foreach (s; slots)
 		{
-			auto wrap = () {
-				auto slot = &s;
-				auto combo = new ImageCombo(_layout);
+			auto items = itemsForSlot(s.mask);
+			auto idx = items.countUntil!(a => !!(a.equip2 & s.mask));
 
-				combo.onChange = (idx) {
-					if (auto n = idx ? idx : combo.selected)
-					{
-						itemsForSlot(slot.mask)[n - 1].action;
-					}
-
-					return false;
-				};
-
-				combo.add(slot.name, null);
-			};
-
-			wrap();
-		}
-	}
-
-private:
-	mixin Nuklear;
-
-	void register(Item m)
-	{
-		if (m.equip)
-		{
-			process(m);
-
-			m.onEquip.permanent(&process);
-			m.onUnequip.permanent((a, _) => process(a));
-			m.onRemove.permanent(&process);
-		}
-	}
-
-	void process(Item m)
-	{
-		foreach (idx, slot; _slots[].enumerate.filter!(a => a.value.mask & m.equip))
-		{
-			auto items = itemsForSlot(slot.mask);
-			auto combo = cast(ImageCombo)_layout.childs[idx];
-
-			combo.clear;
-			combo.add(slot.name, null);
-
-			foreach (i, e; items)
+			if (idx >= 0) // https://issues.dlang.org/show_bug.cgi?id=21586
 			{
-				auto data = e.data;
-				combo.add(data.name, makeIconTex(data.res));
+				auto m = items[idx];
+				auto tex = RO.gui.iconCache.get(m);
 
-				if (e.equip2 & slot.mask)
-					combo.selected = cast(uint)i + 1;
+				if (auto combo = Combo(m.data.name, tex))
+					processItems(s, combo, items, m);
+			}
+			else
+			{
+				if (auto combo = Combo(s.name))
+					processItems(s, combo, items, null);
 			}
 		}
 	}
 
-	auto itemsForSlot(uint mask)
+	void processItems(T)(ref Slot s, ref T combo, Item[] items, Item eq) // TODO: REMOVE OVERLOAD
 	{
-		return RO.status.items.get(a => !!((a.equip2 ? a.equip2 : a.equip) & mask));
+		nk.layout_row_dynamic(combo.height, 1);
+
+		if (combo.item(s.name) && eq)
+			eq.action;
+
+		foreach (m; items)
+		{
+			if (m is eq)
+				continue;
+
+			auto tex = RO.gui.iconCache.get(m);
+
+			if (combo.item(m.data.name, tex))
+				m.action;
+		}
 	}
+
+private:
+	mixin NuklearBase;
 
 	struct Slot
 	{
@@ -133,60 +90,65 @@ private:
 		string name;
 	}
 
-	Layout _layout;
-	Slot[10] _slots; // immutable, DMD BUG
+	auto itemsForSlot(uint mask)
+	{
+		return RO.status.items.get(a => !!((a.equip2 ? a.equip2 : a.equip) & mask));
+	}
 }
 
-class StatsTab
+struct StatsTab
 {
-	this()
-	{
-		//_menu = m;
-		//create;
-	}
-
-	void update(ref Stat st)
-	{
-		//_menu.layouts.clear;
-		//create;
-	}
-
 	void draw()
 	{
-		makeLayout(true);
-
 		string[][] params;
-		params ~= [`ATK`, format(`%s + %s`, param(SP_ATK1), param(SP_ATK2))];
-		params ~= [`DEF`, format(`%s + %s`, param(SP_DEF1), param(SP_DEF2))];
 
-		params ~= [`MATK`, format(`%s + %s`, param(SP_MATK1), param(SP_MATK2))];
-		params ~= [`MDEF`, format(`%s + %s`, param(SP_MDEF1), param(SP_MDEF2))];
+		auto fmt = `%u + %u`;
+		auto points = param(SP_STATUSPOINT);
 
-		params ~= [`HIT`, param(SP_HIT)];
-		params ~= [`FLEE`, format(`%s + %s`, param(SP_FLEE1), param(SP_FLEE2))];
+		params ~= [`ATK`, format(fmt, param(SP_ATK1), param(SP_ATK2))];
+		params ~= [`DEF`, format(fmt, param(SP_DEF1), param(SP_DEF2))];
 
-		params ~= [`CRIT`, param(SP_CRITICAL)];
-		params ~= [`ASPD`, param(SP_ASPD)];
+		params ~= [`MATK`, format(fmt, param(SP_MATK1), param(SP_MATK2))];
+		params ~= [`MDEF`, format(fmt, param(SP_MDEF1), param(SP_MDEF2))];
 
-		params ~= [MSG_SPEED, param(SP_SPEED)];
-		params ~= [MSG_STAT_POINTS, param(SP_STATUSPOINT)];
+		params ~= [`HIT`, param(SP_HIT).to!string];
+		params ~= [`FLEE`, format(fmt, param(SP_FLEE1), param(SP_FLEE2))];
+
+		params ~= [`CRIT`, param(SP_CRITICAL).to!string];
+		params ~= [`ASPD`, (cast(uint)(200 - param(SP_ASPD) / 10f)).to!string];
+
+		params ~= [MSG_SPEED, param(SP_SPEED).to!string];
+		params ~= [MSG_STAT_POINTS, points.to!string];
 
 		foreach (i, st; Stats)
 		{
 			auto v = &RO.status.stats[i];
 			auto text = format(`%s: %s`, st, v.base);
 
-			if (i == 4)
+			if (i == 0)
+				makeLayout(true);
+			else if (i == 4)
 				makeLayout(false);
 
 			if (v.needs)
 			{
-				if (nk.button(text, NK_TEXT_LEFT, NK_SYMBOL_TRIANGLE_RIGHT))
+				if (nk.isWidgetHovered)
+					nk.tooltip(format(MSG_STAT_COSTS, v.needs));
+
+				if (points >= v.needs)
 				{
+					if (nk.button(text, NK_TEXT_LEFT, NK_SYMBOL_TRIANGLE_RIGHT))
+					{
+					}
 				}
+				else
+					goto no_up;
 			}
 			else
+			{
+			no_up:
 				nk.label(text, NK_TEXT_CENTERED);
+			}
 			nk.label(`+ ` ~ v.bonus.to!string);
 
 			if (i >= 4)
@@ -227,7 +189,7 @@ private:
 
 	static param(ushort idx)
 	{
-		return RO.status.param(idx).value.to!string;
+		return RO.status.param(idx).value;
 	}
 
 	static immutable Stats = [`STR`, `AGI`, `VIT`, `INT`, `DEX`, `LUK`];
