@@ -50,8 +50,6 @@ final class GuiManager
 
 		values = new ValueManager;
 		registerHotkeys;
-
-		status = new WinStatus;
 	}
 
 	~this()
@@ -64,6 +62,7 @@ final class GuiManager
 		if (_isGame)
 		{
 			status.draw;
+			chat.draw;
 		}
 	}
 
@@ -74,7 +73,6 @@ final class GuiManager
 			removeCharSelect;
 
 			inv.show;
-			chat.show;
 			//base.show;
 
 			with (ROnet.st.curChar)
@@ -106,7 +104,6 @@ final class GuiManager
 
 			base = new WinBase;
 			inv = new WinInventory;
-			chat = new RoChat;
 
 			// inv.show(false);
 			// base.show(false);

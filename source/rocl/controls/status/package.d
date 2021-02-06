@@ -3,9 +3,7 @@ import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
 	rocl.game, rocl.status, rocl.controls, rocl.controls.status.equip,
 	rocl.controls.status.stats, rocl.controls.status.bonuses, rocl.network.packets, rocl.gui.misc;
 
-final:
-
-class WinStatus
+struct WinStatus
 {
 	void draw()
 	{
@@ -46,7 +44,7 @@ struct EquipTab
 			auto items = itemsForSlot(s.mask);
 			auto idx = items.countUntil!(a => !!(a.equip2 & s.mask));
 
-			if (idx >= 0) // https://issues.dlang.org/show_bug.cgi?id=21586
+			if (idx >= 0)
 			{
 				auto m = items[idx];
 				auto tex = RO.gui.iconCache.get(m);

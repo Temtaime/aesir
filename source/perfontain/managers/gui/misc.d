@@ -1,12 +1,61 @@
 module perfontain.managers.gui.misc;
 
-import std, perfontain;
+import std, perfontain, std.uni : isWhite;
 
 enum COMBO_SCROLL_ITEMS_CNT = 8;
 
 mixin template NuklearBase()
 {
 	mixin Nuklear;
+
+	struct Group
+	{
+		this(string name, uint flags = NK_WINDOW_BORDER)
+		{
+			_process = !!nk.group_begin(name.toStringz, flags);
+		}
+
+		~this()
+		{
+			if (_process)
+				nk.group_end();
+		}
+
+		bool opCast(T : bool)() const
+		{
+			return _process;
+		}
+
+	private:
+		bool _process;
+	}
+
+	struct Widget
+	{
+		static create()
+		{
+			Widget res;
+
+			res.canvas = nk.window_get_canvas();
+			const r = nk_widget(&res.space, ctx);
+
+			if (r == NK_WIDGET_INVALID)
+				res.canvas = null;
+			else if (r == NK_WIDGET_VALID)
+				res.input = &ctx.input;
+
+			return res;
+		}
+
+		bool opCast(T : bool)() const
+		{
+			return !!canvas;
+		}
+
+		nk_rect space;
+		nk_input* input;
+		nk_command_buffer* canvas;
+	}
 
 	struct Combo
 	{
@@ -61,7 +110,7 @@ mixin template NuklearBase()
 
 	struct LayoutRowTemplate
 	{
-		this(uint height)
+		this(float height)
 		{
 			nk.layout_row_template_begin(height);
 		}
@@ -160,11 +209,110 @@ mixin template NuklearBase()
 			nk_tooltip(ctx, text.toStringz);
 		}
 
+		const buttonWidth(string text)
+		{
+			return widthFor(text) + (
+					ctx.style.button.rounding + ctx.style.button.border + ctx
+					.style.button.padding.x) * 2;
+		}
+
+		const editHeight()
+		{
+			return ctx.style.font.height + (ctx.style.edit.padding.y + ctx.style.edit.border) * 2;
+		}
+
 		bool isWidgetHovered()
 		{
 			return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
 		}
+
+		void coloredText(CharColor[] line)
+		{
+			assert(line.length);
+
+			if (auto widget = Widget.create)
+			{
+				float x = 0;
+
+				foreach (g; line.chunkBy!((a, b) => a.color == b.color)
+						.map!array)
+				{
+					auto c = g[0].color;
+					auto str = g.map!(a => a.c).toUTF8;
+
+					auto rect = nk_rect(widget.space.x + x, widget.space.y,
+							widget.space.w, ctx.style.font.height);
+					auto color = nk_rgba(c.r, c.g, c.b, c.a);
+
+					nk_draw_text(widget.canvas, rect, str.ptr, cast(uint)str.length,
+							ctx.style.font, ctx.style.window.background, color);
+					x += widthFor(str);
+				}
+			}
+		}
 	}
 
 	static NuklearProxy nk;
+}
+
+struct StringSplitter
+{
+	this(ushort delegate(string) calcWidth)
+	{
+		_calcWidth = calcWidth;
+	}
+
+	auto split(CharColor[] s, ushort width)
+	{
+		CharColor[][] res;
+
+		for (skipWhitespaces(s); s.length; skipWhitespaces(s))
+		{
+			uint p;
+
+			do
+			{
+				auto next = p;
+
+				while (s[next].c.isWhite) // skip whitespaces between words
+					next++;
+				while (next != s.length && !s[next].c.isWhite) // iterate until end of the word
+					next++;
+
+				if (calcWidth(s[0 .. next]) > width)
+				{
+					if (!p)
+					{
+						while (calcWidth(s[0 .. p + 1]) <= width)
+							p++;
+						assert(p); // check if width can hold a single char
+					}
+
+					break;
+				}
+
+				p = next;
+			}
+			while (p != s.length && s[p].c != '\r' && s[p].c != '\n'); // eoi or newline
+
+			res ~= s[0 .. p];
+			s = s[p .. $];
+		}
+
+		return res;
+	}
+
+private:
+	void skipWhitespaces(ref CharColor[] s)
+	{
+		while (s.length && s[0].c.isWhite)
+			s.popFront;
+	}
+
+	auto calcWidth(CharColor[] s)
+	{
+		return _calcWidth(s.map!(a => a.c).toUTF8);
+	}
+
+	ushort delegate(string) _calcWidth;
 }

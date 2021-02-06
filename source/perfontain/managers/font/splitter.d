@@ -1,15 +1,6 @@
 module perfontain.managers.font.splitter;
 
-import
-		std.utf,
-		std.ascii,
-		std.range,
-		std.algorithm,
-
-		stb.image,
-
-		perfontain;
-
+import std.utf, std.ascii, std.range, std.algorithm, stb.image, perfontain;
 
 struct CharColor
 {
@@ -17,7 +8,7 @@ struct CharColor
 	Color color;
 }
 
-package:
+//package:
 
 struct LineSplitter
 {
@@ -38,23 +29,22 @@ struct LineSplitter
 
 		auto arr = text.splitter!(a => a.c == '\n');
 
-		lines: while(!arr.empty)
+		lines: while (!arr.empty)
 		{
 			auto s = arr.front;
 			arr.popFront;
 
-			auto words = s
-							.split!(a => a.c.isWhite)
-							.filter!(a => a.length);
+			auto words = s.split!(a => a.c.isWhite)
+				.filter!(a => a.length);
 
-			loop: while(true)
+			loop: while (true)
 			{
 				res.length++;
 
 				auto n = _width;
 				auto end = res.length == _lines;
 
-				while(!words.empty)
+				while (!words.empty)
 				{
 					auto w = words.front;
 					auto firstWord = n == _width;
@@ -62,25 +52,27 @@ struct LineSplitter
 					auto u = firstWord ? w : CharColor(' ', w[0].color) ~ w;
 					auto len = size(u);
 
-					if(n >= len)
+					if (n >= len)
 					{
 						words.popFront;
 
-						if(end)
+						if (end)
 						{
-							if(!words.empty || !arr.empty)
+							if (!words.empty || !arr.empty)
 							{
-								if(n < len + _cw)
+								if (n < len + _cw)
 								{
 									uint k;
 
 									n -= _cw;
 
-									for(; size(u[0..k + 1]) <= n; k++) {}
-
-									if(firstWord || k > 1)
+									for (; size(u[0 .. k + 1]) <= n; k++)
 									{
-										res.back ~= u[0..k];
+									}
+
+									if (firstWord || k > 1)
+									{
+										res.back ~= u[0 .. k];
 									}
 
 									res.back ~= CONT.map!(a => CharColor(a, w[0].color)).array;
@@ -94,20 +86,22 @@ struct LineSplitter
 					}
 					else
 					{
-						if(firstWord)
+						if (firstWord)
 						{
 							uint k;
 
-							if(end)
+							if (end)
 							{
 								n -= _cw;
 							}
 
-							for(; size(w[0..k + 1]) <= n; k++) {}
+							for (; size(w[0 .. k + 1]) <= n; k++)
+							{
+							}
 
-							res.back ~= w[0..k];
+							res.back ~= w[0 .. k];
 
-							if(end)
+							if (end)
 							{
 								res.back ~= CONT.map!(a => CharColor(a, w[0].color)).array;
 								break lines;
@@ -119,7 +113,7 @@ struct LineSplitter
 
 							words.front.popFrontN(k);
 						}
-						else if(end)
+						else if (end)
 						{
 							res.back ~= CONT.map!(a => CharColor(a, w[0].color)).array;
 							break lines;
@@ -146,8 +140,5 @@ private:
 
 	uint delegate(string) _size;
 
-	short
-			_cw,
-			_width,
-			_lines = -1;
+	short _cw, _width, _lines = -1;
 }

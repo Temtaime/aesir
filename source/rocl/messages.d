@@ -117,5 +117,7 @@ enum MESSAGES =
 	[ `ITM`, `Item`, `Предм.` ],
 	[ `ETC`, `Etc`, `Проч.` ],
 
+	[ `CHAT`, `Chat`, `Чат` ],
+	[ `SUBMIT`, `Submit`, `Отправить` ],
 	//[ ``, ``, `` ],
 ];
