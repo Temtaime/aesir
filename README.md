@@ -3,7 +3,7 @@
 Æsir — an open-source cross-platform MMORPG client.
 
 ## Building
-* Go to https://cloud.acomirei.ru/s/6Y0T4jvdkvYEIRc and grab data.7z and deps.7z.
+* Go to https://cloud.acomirei.cc/s/6Y0T4jvdkvYEIRc and grab data.7z and deps.7z.
 * Extract data.7z to bin directory.
 * Extract deps to utils directory.
 
@@ -20,5 +20,5 @@ Then build the Æsir itself using first dub command.
 
 ## Related Links
 
-- [Forums](http://aesir.perfontain.ru/forum/)
+- [Forums](http://aesir.perfontain.cc/forum/)
 - [Patreon](https://www.patreon.com/temtaime/posts)
