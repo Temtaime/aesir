@@ -4,52 +4,58 @@ import std, perfontain, std.uni : isWhite;
 
 enum COMBO_SCROLL_ITEMS_CNT = 8;
 
+mixin template NuklearStruct(string Dtor, bool Cond, bool DtorOnCond = true)
+{
+	@disable this(this);
+
+	static if (Cond)
+		bool opCast(T : bool)() const
+		{
+			return _process;
+		}
+
+	static if (Dtor.length)
+		 ~this()
+		{
+			static if (Cond && DtorOnCond)
+				if (!_process)
+					return;
+
+			mixin(`nk.` ~ Dtor ~ `();`);
+		}
+
+	static if (Cond)
+		private bool _process;
+}
+
 mixin template NuklearBase()
 {
 	mixin Nuklear;
 
 	struct Group
 	{
+		mixin NuklearStruct!(`group_end`, true);
+
 		this(string name, uint flags = NK_WINDOW_BORDER)
 		{
 			_process = !!nk.group_begin(name.toStringz, flags);
 		}
-
-		~this()
-		{
-			if (_process)
-				nk.group_end();
-		}
-
-		bool opCast(T : bool)() const
-		{
-			return _process;
-		}
-
-	private:
-		bool _process;
 	}
 
 	struct Widget
 	{
+		mixin NuklearStruct!(null, true);
+
 		static create()
 		{
-			Widget res;
+			nk_rect space;
+			const r = nk_widget(&space, ctx);
 
-			res.canvas = nk.window_get_canvas();
-			const r = nk_widget(&res.space, ctx);
-
-			if (r == NK_WIDGET_INVALID)
-				res.canvas = null;
-			else if (r == NK_WIDGET_VALID)
-				res.input = &ctx.input;
-
+			Widget res = {
+				canvas: nk.window_get_canvas(), space: space, input: r == NK_WIDGET_VALID
+					? &ctx.input : null, _process: r != NK_WIDGET_INVALID
+			};
 			return res;
-		}
-
-		bool opCast(T : bool)() const
-		{
-			return !!canvas;
 		}
 
 		nk_rect space;
@@ -59,6 +65,8 @@ mixin template NuklearBase()
 
 	struct Combo
 	{
+		mixin NuklearStruct!(`combo_end`, true);
+
 		this(string text)
 		{
 			_process = !!nk.combo_begin_text(text.ptr, cast(uint)text.length, size);
@@ -81,17 +89,6 @@ mixin template NuklearBase()
 					text.ptr, cast(uint)text.length, NK_TEXT_RIGHT);
 		}
 
-		bool opCast(T : bool)() const
-		{
-			return _process;
-		}
-
-		~this()
-		{
-			if (_process)
-				nk.combo_end();
-		}
-
 	private:
 		auto size()
 		{
@@ -104,12 +101,13 @@ mixin template NuklearBase()
 			return nk_vec2(r.x, _height * COMBO_SCROLL_ITEMS_CNT);
 		}
 
-		bool _process;
 		mixin publicProperty!(float, `height`);
 	}
 
 	struct LayoutRowTemplate
 	{
+		mixin NuklearStruct!(`layout_row_template_end`, false);
+
 		this(float height)
 		{
 			nk.layout_row_template_begin(height);
@@ -129,57 +127,29 @@ mixin template NuklearBase()
 		{
 			nk.layout_row_template_push_static(width);
 		}
-
-		~this()
-		{
-			nk.layout_row_template_end();
-		}
 	}
 
 	struct Tree
 	{
+		mixin NuklearStruct!(`tree_pop`, true);
+
 		this(string File = __FILE__, uint Line = __LINE__)(string name)
 		{
 			_process = !!nk_tree_push_hashed(ctx, NK_TREE_TAB, name.toStringz,
 					NK_MINIMIZED, File.ptr, File.length, Line);
 		}
-
-		bool opCast(T : bool)() const
-		{
-			return _process;
-		}
-
-		~this()
-		{
-			if (_process)
-				nk.tree_pop();
-		}
-
-	private:
-		bool _process;
 	}
 
 	struct Window
 	{
+		mixin NuklearStruct!(`end`, true, false);
+
 		this(string name, nk_vec2 size,
 				uint flags = NK_WINDOW_TITLE | NK_WINDOW_BORDER
 				| NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)
 		{
 			_process = !!nk.begin(name.toStringz, nk_rect(50, 50, size.x, size.y), flags);
 		}
-
-		bool opCast(T : bool)() const
-		{
-			return _process;
-		}
-
-		~this()
-		{
-			nk.end();
-		}
-
-	private:
-		bool _process;
 	}
 
 	struct NuklearProxy
@@ -209,23 +179,6 @@ mixin template NuklearBase()
 			nk_tooltip(ctx, text.toStringz);
 		}
 
-		const buttonWidth(string text)
-		{
-			return widthFor(text) + (
-					ctx.style.button.rounding + ctx.style.button.border + ctx
-					.style.button.padding.x) * 2;
-		}
-
-		const editHeight()
-		{
-			return ctx.style.font.height + (ctx.style.edit.padding.y + ctx.style.edit.border) * 2;
-		}
-
-		bool isWidgetHovered()
-		{
-			return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
-		}
-
 		void coloredText(CharColor[] line)
 		{
 			assert(line.length);
@@ -249,6 +202,23 @@ mixin template NuklearBase()
 					x += widthFor(str);
 				}
 			}
+		}
+
+		const buttonWidth(string text)
+		{
+			return widthFor(text) + (
+					ctx.style.button.rounding + ctx.style.button.border + ctx
+					.style.button.padding.x) * 2;
+		}
+
+		const editHeight()
+		{
+			return ctx.style.font.height + (ctx.style.edit.padding.y + ctx.style.edit.border) * 2;
+		}
+
+		bool isWidgetHovered()
+		{
+			return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
 		}
 	}
 

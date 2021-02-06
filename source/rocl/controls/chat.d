@@ -53,18 +53,12 @@ struct RoChat
 		_scroll = true;
 	}
 
-	const disabled()
-	{
-		return true; // !edit.flags.enabled;
-	}
-
 private:
 	mixin NuklearBase;
 
 	auto makeLines(CharColor[] line)
 	{
-		auto ss = StringSplitter(a => widthFor(a));
-		return ss.split(line, _width);
+		return StringSplitter(a => widthFor(a)).split(line, _width);
 	}
 
 	void processChat()
@@ -77,8 +71,7 @@ private:
 			_cache = _messages.map!(a => makeLines(a)).join;
 		}
 
-		foreach (line; _cache)
-			nk.coloredText(line);
+		_cache.each!(a => nk.coloredText(a));
 	}
 
 	void processEdit()
