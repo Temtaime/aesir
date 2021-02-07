@@ -444,6 +444,8 @@ mixin template PacketHandlers()
 	{
 		auto v = p.value;
 
+		RO.status.param(p.varId).value = v;
+
 		switch (p.varId)
 		{
 		case SP_JOBEXP:

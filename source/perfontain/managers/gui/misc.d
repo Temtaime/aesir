@@ -184,10 +184,10 @@ mixin template NuklearBase()
 	{
 		mixin NuklearStruct!(`tree_pop`, true);
 
-		this(string File = __FILE__, uint Line = __LINE__)(string name)
+		this(string File = __FILE__, uint Line = __LINE__)(string name, ubyte type = NK_TREE_TAB, ubyte flags = NK_MINIMIZED)
 		{
-			_process = !!nk_tree_push_hashed(ctx, NK_TREE_TAB, name.toStringz,
-					NK_MINIMIZED, File.ptr, File.length, Line);
+			_process = !!nk_tree_push_hashed(ctx, type, name.toStringz,
+					flags, File.ptr, File.length, Line);
 		}
 	}
 
@@ -195,12 +195,13 @@ mixin template NuklearBase()
 	{
 		mixin NuklearStruct!(`end`, true, false);
 
-		this(string name, nk_vec2 size,
-				uint flags = NK_WINDOW_TITLE | NK_WINDOW_BORDER
-				| NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)
+		this(string name, nk_rect rect, uint flags = DEFAULT_FLAGS)
 		{
-			_process = !!nk.begin(name.toStringz, nk_rect(50, 50, size.x, size.y), flags);
+			_process = !!nk.begin(name.toStringz, rect, flags);
 		}
+
+		enum DEFAULT_FLAGS = NK_WINDOW_TITLE | NK_WINDOW_BORDER
+			| NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE;
 	}
 
 	struct NuklearProxy

@@ -7,14 +7,23 @@ struct WinStatus
 {
 	void draw()
 	{
-		if (auto win = Window(MSG_CHARACTER, nk_vec2(410, 400)))
+		auto sz = nk_vec2(410, 440);
+		auto x = (PE.window.size.x - sz.x) / 2;
+
+		auto name = MSG_CHARACTER.toStringz;
+		const collapse = nk.window_find(name) is null;
+
+		if (auto win = Window(MSG_CHARACTER, nk_rect(x, 0, sz.x, sz.y)))
 		{
-			if (auto tree = Tree(MSG_EQUIPMENT))
+			if (auto tree = Tree(MSG_EQUIPMENT, NK_TREE_TAB, NK_MAXIMIZED))
 				equip.draw;
 
-			if (auto tree = Tree(MSG_STATS))
+			if (auto tree = Tree(MSG_STATS, NK_TREE_TAB, NK_MAXIMIZED))
 				stats.draw;
 		}
+
+		if (collapse)
+			nk.window_collapse(name, NK_MINIMIZED);
 	}
 
 	EquipTab equip;
@@ -37,7 +46,7 @@ struct EquipTab
 
 		nk.layout_row_dynamic(24 + ctx.style.combo.content_padding.y * 2, 2);
 
-		// _layout.styles ~= new Style(&ctx.style.combo.button_padding.y, 8); // make scroll arrow a bit smaller
+		auto s1 = Style(&ctx.style.combo.button_padding.y, 8); // make scroll arrow a bit smaller
 
 		foreach (s; slots)
 		{

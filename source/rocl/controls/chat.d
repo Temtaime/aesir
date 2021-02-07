@@ -7,7 +7,10 @@ struct RoChat
 {
 	void draw()
 	{
-		if (auto win = Window(MSG_CHAT, nk_vec2(600, 200)))
+		auto sz = Vector2s(600, 200);
+		auto pos = PE.window.size - sz;
+
+		if (auto win = Window(MSG_CHAT, nk_rect(pos.x, pos.y, sz.x, sz.y)))
 		{
 			auto editHeight = nk.editHeight;
 
