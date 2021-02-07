@@ -46,7 +46,7 @@ private:
 	{
 		with (ROnet.st)
 		{
-			ch = cast(ubyte) a.bl;
+			ch = cast(ubyte)a.bl;
 			RO.gui.createCharSelect(curChar);
 		}
 	}
@@ -57,7 +57,7 @@ private:
 		{
 			if (auto c = ROent.cur)
 			{
-				if (auto p = cast(Player) c)
+				if (auto p = cast(Player)c)
 				{
 					/*if(p is ROent.self || ROent.self is null)
 					{
@@ -93,7 +93,7 @@ private:
 
 	bool doCS()
 	{
-		if(true)// (!RO.gui.creation)
+		if (true) // (!RO.gui.creation)
 		{
 			if (auto c = ROent.cur)
 			{

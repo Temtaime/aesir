@@ -145,8 +145,7 @@ struct StatsTab
 				if (points >= v.needs)
 				{
 					if (nk.button(text, NK_TEXT_LEFT, NK_SYMBOL_TRIANGLE_RIGHT))
-					{
-					}
+						ROnet.statsUp(cast(ushort)(SP_STR + i));
 				}
 				else
 					goto no_up;
