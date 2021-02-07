@@ -1,5 +1,5 @@
 module rocl.controls.icon;
-import std, perfontain, rocl.messages;
+import std, perfontain, rocl.messages, rocl.status;
 
 // import
 // 		std.utf,
@@ -306,83 +306,76 @@ import std, perfontain, rocl.messages;
 // 	RC!ConnectionPoint _rm;
 // }
 
-bool drawIcon(Texture tex, lazy string tooltip)
+abstract class Icon
 {
-	if (auto w = Widget.create)
+	this()
 	{
-		auto space = w.space;
-
-		assert(space.w == 36);
-		assert(space.h == 36);
-
-		auto img = nk_image_ptr(cast(void*)tex);
-
-		if (input && nk_input_is_mouse_hovering_rect(input, space))
-		{
-			nk_fill_rect(canvas, space, 0, ctx.style.selectable.pressed_active.data.color);
-
-			nk_draw_image(canvas, nk_rect(space.x + 2, space.y + 2, 32, 32),
-					&img, nk_color(255, 255, 255, 255));
-
-			if (auto s = tooltip)
-				nk.tooltip(s);
-		}
-		else
-			nk_draw_image(canvas, nk_rect(space.x + 6, space.y + 6, 24, 24),
-					&img, nk_color(255, 255, 255, 255));
+		_w = Widget.create;
 	}
+
+	void draw();
+protected:
+	mixin NuklearBase;
+
+	string tooltip();
+
+	bool draw(Texture tex)
+	{
+		if (_w)
+		{
+			auto space = _w.space;
+			auto canvas = _w.canvas;
+
+			assert(space.w == 36);
+			assert(space.h == 36);
+
+			auto img = nk_image_ptr(cast(void*)tex);
+
+			if (_w.input && nk_input_is_mouse_hovering_rect(_w.input, space))
+			{
+				nk_fill_rect(canvas, space, 0, ctx.style.selectable.pressed_active.data.color);
+
+				nk_draw_image(canvas, nk_rect(space.x + 2, space.y + 2, 32, 32),
+						&img, nk_color(255, 255, 255, 255));
+
+				if (auto s = tooltip)
+					nk_tooltip(ctx, s.toStringz);
+			}
+			else
+				nk_draw_image(canvas, nk_rect(space.x + 6, space.y + 6, 24, 24),
+						&img, nk_color(255, 255, 255, 255));
+			return true;
+		}
+
+		return false;
+	}
+
+	Widget _w;
 }
 
-class Icon
+final class ItemIcon : Icon
 {
-	this(Texture tex)
+	this(Item m)
 	{
-		_tex = tex;
+		_m = m;
 	}
 
-	void draw()
+	override void draw()
 	{
-		auto canvas = nk_window_get_canvas(ctx);
+		auto tex = RO.gui.iconCache.get(_m);
 
-		nk_rect space;
-		nk_input* input;
-
-		switch (nk_widget(&space, ctx))
-		{
-		case NK_WIDGET_INVALID:
-			return;
-		case NK_WIDGET_VALID:
-			input = &ctx.input;
-			break;
-		default:
-			break;
-		}
-
-		draw(canvas, space);
+		if (super.draw(tex))
+			drawPcs;
 	}
 
 protected:
-	string tooltip()
+	void drawPcs()
 	{
-		return null;
-	}
-
-	void draw(nk_command_buffer*, nk_rect)
-	{
-	}
-
-private:
-	Texture _tex;
-}
-
-void drawItem(Texture tex, string name, ushort amount)
-{
-	void dg(nk_command_buffer* canvas, nk_rect space)
-	{
-		if (amount == 1)
+		if (_m.amount == 1)
 			return;
 
-		auto text = amount.to!string;
+		auto space = _w.space;
+		auto text = _m.amount.to!string;
 
 		auto w = widthFor(text);
 		auto r = nk_rect(space.x + space.w - w - 3,
@@ -391,23 +384,19 @@ void drawItem(Texture tex, string name, ushort amount)
 		foreach (x; -1 .. 2)
 			foreach (y; -1 .. 2)
 				if (x || y)
-					nk_draw_text(canvas, nk_rect(r.x + x, r.y + y, r.w, r.h), text.ptr,
-							cast(uint)text.length, ctx.style.font,
+					nk_draw_text(_w.canvas, nk_rect(r.x + x, r.y + y, r.w,
+							r.h), text.ptr, cast(uint)text.length, ctx.style.font,
 							nk_color.init, nk_color(0, 0, 0, 255));
 
-		nk_draw_text(canvas, r, text.ptr, cast(uint)text.length,
+		nk_draw_text(_w.canvas, r, text.ptr, cast(uint)text.length,
 				ctx.style.font, nk_color.init, nk_color(255, 255, 255, 255));
 	}
 
-	drawIcon(tex, format(`%s : %u %s`, name, amount, MSG_PCS), dg);
-}
-
-struct IconDrawer
-{
-	@disable this(this);
+	override string tooltip()
+	{
+		return format(`%s : %u %s`, _m.data.name, _m.amount, MSG_PCS);
+	}
 
 private:
-	mixin NuklearBase;
-
-	Widget _w;
+	Item _m;
 }

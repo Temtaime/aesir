@@ -30,7 +30,58 @@ mixin template NuklearStruct(string Dtor, bool Cond, bool DtorOnCond = true)
 
 mixin template NuklearBase()
 {
+	import std;
+
 	mixin Nuklear;
+
+	struct Style
+	{
+		this(nk_user_font* font)
+		{
+			nk.style_push_font(font);
+			_pop = &nk_style_pop_font;
+		}
+
+		this(float* e, float v)
+		{
+			nk.style_push_float(e, v);
+			_pop = &nk_style_pop_float;
+		}
+
+		this(nk_vec2* e, nk_vec2 v)
+		{
+			nk.style_push_vec2(e, v);
+			_pop = &nk_style_pop_vec2;
+		}
+
+		this(nk_style_item* e, nk_style_item v)
+		{
+			nk.style_push_style_item(e, v);
+			_pop = &nk_style_pop_style_item;
+		}
+
+		this(nk_flags* e, nk_flags v)
+		{
+			nk.style_push_flags(e, v);
+			_pop = &nk_style_pop_flags;
+		}
+
+		this(nk_color* e, nk_color v)
+		{
+			nk.style_push_color(e, v);
+			_pop = &nk_style_pop_color;
+		}
+
+		~this()
+		{
+			if (_pop)
+				_pop(ctx);
+		}
+
+		@disable this(this);
+	private:
+		extern (C) int function(nk_context*) _pop;
+	}
 
 	struct Group
 	{
@@ -179,6 +230,40 @@ mixin template NuklearBase()
 			nk_tooltip(ctx, text.toStringz);
 		}
 
+		void tabSelector(string[] tabs, ref ubyte index,
+				void delegate(ref LayoutRowTemplate) dg = null, void delegate() draw = null)
+		{
+			bool extra = dg && draw;
+
+			auto s1 = Style(&ctx.style.button.rounding, 0);
+			auto s2 = Style(&ctx.style.window.spacing, nk_vec2(0, 0));
+
+			{
+				auto r = LayoutRowTemplate(0);
+
+				with (r)
+				{
+					foreach (t; tabs)
+						static_(widthFor(t) + ctx.style.button.padding.x * 3); // TODO: WHY 3 ????
+
+					if (extra)
+						dg(r);
+				}
+			}
+
+			foreach (idx, t; tabs)
+			{
+				auto s3 = idx == index ? Style(&ctx.style.button.normal, ctx.style.button.active)
+					: Style.init;
+
+				if (button(t))
+					index = cast(ubyte)idx;
+			}
+
+			if (extra)
+				draw();
+		}
+
 		void coloredText(CharColor[] line)
 		{
 			assert(line.length);
@@ -214,6 +299,12 @@ mixin template NuklearBase()
 		const editHeight()
 		{
 			return ctx.style.font.height + (ctx.style.edit.padding.y + ctx.style.edit.border) * 2;
+		}
+
+		const maxColumns(uint elem)
+		{
+			auto n = nk.window_get_content_region_size().x / (elem + ctx.style.window.spacing.x);
+			return max(cast(uint)n, 1);
 		}
 
 		bool isWidgetHovered()

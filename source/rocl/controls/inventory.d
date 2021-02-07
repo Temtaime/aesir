@@ -101,55 +101,66 @@ import std.meta, std.conv, std.range, std.string, std.algorithm, perfontain,
 // 	Items items;
 // }
 
-final class WinInventory : GUIWindow
+struct WinInventory
 {
-	this()
+	void draw()
 	{
-		super(MSG_INVENTORY, Vector2s(200));
+		auto tabs = [MSG_ITM, MSG_EQP, MSG_ETC];
 
-		// {
-		// 	auto e = new InventoryTab(main, Vector2s(7, 2));
-		// 	adjust;
+		if (auto win = Window(MSG_INVENTORY, nk_vec2(200, 200)))
+		{
+			{
+				auto s = format(`%s Z, %s: %u / %u`, price(zeny), MSG_WEIGHT, weight, maxWeight); // TODO: Ƶ
 
-		// 	RO.status.items.onAdded.permanent(&e.register);
-		// }
+				nk.tabSelector(tabs, _tab, (ref a) => a.variable(widthFor(s)),
+						() => nk.label(s, NK_TEXT_RIGHT));
+			}
 
-		string[] tabs = [MSG_ITM, MSG_EQP, MSG_ETC];
-		auto tab = new TabLayout(tabs, &onChange);
-		addLayout(tab);
-
-		addLayout(new StaticRowLayout(0, 36, 36));
-		curLayout.styles ~= new Style(&ctx.style.window.spacing, nk_vec2(0, 0));
-
-		RO.status.items.onAdded.permanent(_ => onChange(tab.index));
-		// update;
-		//new Button(this, `hello`);
+			drawTab;
+		}
 	}
 
 	mixin StatusValue!(uint, `zeny`, update);
 	mixin StatusValue!(uint, `weight`, update);
 	mixin StatusValue!(uint, `maxWeight`, update);
 private:
-	void onChange(ushort idx)
+	mixin NuklearBase;
+
+	void drawTab()
 	{
-		curLayout.childs.clear;
+		auto s1 = Style(&ctx.style.window.spacing, nk_vec2(0, 0));
 
-		foreach (e; RO.status.items.arr[].filter!(a => a.tab == idx))
+		enum SZ = 36;
+		nk.layout_row_static(SZ, SZ, nk.maxColumns(SZ));
+
+		foreach (e; RO.status.items.arr[].filter!(a => a.tab == _tab))
 		{
-			auto data = e.data;
-
-			new ItemIcon(curLayout, makeIconTex(data.res), data.name, e.amount);
-
-			//new GUIStaticText(curLayout, e.amount.to!string);
+			scope r = new ItemIcon(e);
+			r.draw;
 		}
 	}
+
+	ubyte _tab;
+
+	// void onChange(ushort idx)
+	// {
+	// 	curLayout.childs.clear;
+
+	// 	foreach (e; RO.status.items.arr[].filter!(a => a.tab == idx))
+	// 	{
+	// 		auto data = e.data;
+
+	// 		new ItemIcon(curLayout, makeIconTex(data.res), data.name, e.amount);
+
+	// 		//new GUIStaticText(curLayout, e.amount.to!string);
+	// 	}
+	// }
 
 	void update()
 	{
 		// bottom.childs.clear;
 
-		// auto e = new GUIStaticText(bottom, format(`%s Ƶ, %s: %u / %u`,
-		// 		price(zeny), MSG_WEIGHT, weight, maxWeight));
+		// auto e = new GUIStaticText(bottom, );
 		// e.move(POS_MIN, 5, POS_CENTER);
 	}
 }

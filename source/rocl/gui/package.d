@@ -61,8 +61,9 @@ final class GuiManager
 	{
 		if (_isGame)
 		{
-			status.draw;
+			inv.draw;
 			chat.draw;
+			status.draw;
 		}
 	}
 
@@ -71,9 +72,6 @@ final class GuiManager
 		if (game)
 		{
 			removeCharSelect;
-
-			inv.show;
-			//base.show;
 
 			with (ROnet.st.curChar)
 			{
@@ -103,7 +101,6 @@ final class GuiManager
 			//settings.hide;
 
 			base = new WinBase;
-			inv = new WinInventory;
 
 			// inv.show(false);
 			// base.show(false);
