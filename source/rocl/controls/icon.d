@@ -371,7 +371,7 @@ final class ItemIcon : Icon
 protected:
 	void drawPcs()
 	{
-		if (_m.amount == 1)
+		if (_m.amount == 1 || _m.source == ITEM_SHOP)
 			return;
 
 		auto space = _w.space;

@@ -65,6 +65,9 @@ final class GuiManager
 			inv.draw;
 			chat.draw;
 			status.draw;
+
+			if (shop)
+				shop.draw;
 		}
 	}
 
@@ -131,7 +134,8 @@ final class GuiManager
 	WinHotkeys hotkeys;
 	IconCache iconCache;
 
-	mixin MakeWindow!(WinShop, `shop`);
+	RC!WinShop shop;
+
 	//mixin MakeWindow!(WinStorage, `store`);
 	//mixin MakeWindow!(WinTrading, `trading`);
 	//mixin MakeWindow!(WinCreation, `creation`);

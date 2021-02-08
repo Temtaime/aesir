@@ -36,7 +36,7 @@ public import
 				rocl.network.structs;
 
 
-//version = LOG_PACKETS;
+version = LOG_PACKETS;
 
 final class PacketManager
 {

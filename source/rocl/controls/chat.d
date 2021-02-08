@@ -15,8 +15,7 @@ struct RoChat
 			auto editHeight = nk.editHeight;
 
 			{
-				auto h = nk.window_get_content_region_size().y;
-				h -= ctx.current.layout.footer_height; // TODO: SEEMS THERE'S ANOTHER METHOD OF CALCULATION USABLE HEIGHT
+				auto h = nk.usableHeight;
 
 				h -= editHeight;
 				h -= ctx.style.window.spacing.y;
@@ -24,7 +23,7 @@ struct RoChat
 				nk.layout_row_dynamic(h, 1);
 			}
 
-			if (auto group = Group(MSG_CHAT))
+			if (auto group = Group(nk.uniqueId))
 			{
 				nk.layout_row_dynamic(0, 1);
 				processChat;

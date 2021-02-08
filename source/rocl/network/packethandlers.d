@@ -115,6 +115,11 @@ mixin template PacketHandlers()
 		send!Pk00c5(s, t);
 	}
 
+	void closeShop()
+	{
+		send!Pk09d4;
+	}
+
 	void talkNpc(uint bl)
 	{
 		send!Pk0090(bl, 1);
@@ -306,27 +311,27 @@ mixin template PacketHandlers()
 	/// ====================================== NPC SHOP ======================================
 	void onShopType(Pk00c4 p)
 	{
-		//RO.gui.createShop(p.shopId);
+		RO.gui.shop = new WinShop(p.shopId);
 	}
 
 	void onItemsBuy(Pk00c6 p)
 	{
-		//RO.gui.shop.make(p.items);
+		RO.gui.shop.buy(p.items);
 	}
 
 	void onItemsSell(Pk00c7 p)
 	{
-		//RO.gui.shop.make(p.items);
+		RO.gui.shop.sell(p.items);
 	}
 
 	void onBuyResult(Pk00ca p)
 	{
-		//RO.gui.removeShop;
+		RO.gui.shop = null;
 	}
 
 	void onSellResult(Pk00cb p)
 	{
-		//RO.gui.removeShop;
+		RO.gui.shop = null;
 	}
 
 	/// ====================================== KAFRA ======================================
@@ -375,11 +380,7 @@ mixin template PacketHandlers()
 		//RO.gui.removeStore;
 	}
 
-	void onEffect(Pk01f3 p)
-	{
-		RO.effects.add(p.effectId, ROent.self.ent.pos2);
-	}
-
+	/// ====================================== ITEM DROP ======================================
 	void onItemDrop(Pk084b p)
 	{
 		RO.items.add(p);
@@ -421,6 +422,12 @@ mixin template PacketHandlers()
 	void onItemRemove(Pk00a1 p)
 	{
 		RO.items.remove(p.id);
+	}
+
+	/// ====================================== MISC ======================================
+	void onEffect(Pk01f3 p)
+	{
+		RO.effects.add(p.effectId, ROent.self.ent.pos2);
 	}
 
 	void onCasting(Pk07fb p)

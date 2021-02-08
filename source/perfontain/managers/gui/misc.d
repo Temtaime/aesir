@@ -30,7 +30,7 @@ mixin template NuklearStruct(string Dtor, bool Cond, bool DtorOnCond = true)
 
 mixin template NuklearBase()
 {
-	import std;
+	import std, std.digest.crc;
 
 	mixin Nuklear;
 
@@ -184,10 +184,11 @@ mixin template NuklearBase()
 	{
 		mixin NuklearStruct!(`tree_pop`, true);
 
-		this(string File = __FILE__, uint Line = __LINE__)(string name, ubyte type = NK_TREE_TAB, ubyte flags = NK_MINIMIZED)
+		this(string File = __FILE__, uint Line = __LINE__)(string name,
+				ubyte type = NK_TREE_TAB, ubyte flags = NK_MINIMIZED)
 		{
-			_process = !!nk_tree_push_hashed(ctx, type, name.toStringz,
-					flags, File.ptr, File.length, Line);
+			_process = !!nk_tree_push_hashed(ctx, type, name.toStringz, flags,
+					File.ptr, File.length, Line);
 		}
 	}
 
@@ -231,10 +232,11 @@ mixin template NuklearBase()
 			nk_tooltip(ctx, text.toStringz);
 		}
 
-		void tabSelector(string[] tabs, ref ubyte index,
+		bool tabSelector(string[] tabs, ref ubyte index,
 				void delegate(ref LayoutRowTemplate) dg = null, void delegate() draw = null)
 		{
-			bool extra = dg && draw;
+
+			bool res, extra = dg && draw;
 
 			auto s1 = Style(&ctx.style.button.rounding, 0);
 			auto s2 = Style(&ctx.style.window.spacing, nk_vec2(0, 0));
@@ -258,11 +260,16 @@ mixin template NuklearBase()
 					: Style.init;
 
 				if (button(t))
+				{
+					res = true;
 					index = cast(ubyte)idx;
+				}
 			}
 
 			if (extra)
 				draw();
+
+			return res;
 		}
 
 		void coloredText(CharColor[] line)
@@ -271,7 +278,7 @@ mixin template NuklearBase()
 
 			if (auto widget = Widget.create)
 			{
-				float x = 0;
+				float x = 0, y = (widget.space.h - ctx.style.font.height) / 2;
 
 				foreach (g; line.chunkBy!((a, b) => a.color == b.color)
 						.map!array)
@@ -279,7 +286,7 @@ mixin template NuklearBase()
 					auto c = g[0].color;
 					auto str = g.map!(a => a.c).toUTF8;
 
-					auto rect = nk_rect(widget.space.x + x, widget.space.y,
+					auto rect = nk_rect(widget.space.x + x, widget.space.y + y,
 							widget.space.w, ctx.style.font.height);
 					auto color = nk_rgba(c.r, c.g, c.b, c.a);
 
@@ -308,9 +315,25 @@ mixin template NuklearBase()
 			return max(cast(uint)n, 1);
 		}
 
+		const usableHeight()
+		{
+			return nk.window_get_content_region_size().y - ctx.current.layout.footer_height; // TODO: SEEMS THERE'S ANOTHER METHOD OF CALCULATION USABLE HEIGHT
+		}
+
+		const rowHeight()
+		{
+			return ctx.current.layout.row.min_height;
+		}
+
 		bool isWidgetHovered()
 		{
 			return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
+		}
+
+		static uniqueId(string File = __FILE__, uint Line = __LINE__)()
+		{
+			enum R = `NK_ID_` ~ crc32Of(File ~ ':' ~ Line.to!string).crcHexString;
+			return R;
 		}
 	}
 

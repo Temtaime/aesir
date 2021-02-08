@@ -75,6 +75,7 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 00c9 <items>.ToBuy? (CZ_PC_SELL_ITEMLIST)
 00ca <result>.B (ZC_PC_PURCHASE_RESULT)
 00cb <result>.B (ZC_PC_SELL_RESULT)
+09d4 (CZ_NPC_TRADE_QUIT)
 
 0193 (CZ_CLOSE_STORE)
 00f8 (ZC_CLOSE_STORE)

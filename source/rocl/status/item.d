@@ -149,6 +149,9 @@ final class Item : RCounted
 	short[4] cards;
 	byte type, attr, flags, refine, source;
 
+	// CUSTOM FIELDS: REFACTOR ?
+	int shopAmount;
+
 	Signal!(void, Item, uint) onUnequip;
 	Signal!(void, Item) onEquip, onRemove, onCountChanged;
 private:
