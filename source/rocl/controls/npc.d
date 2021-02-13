@@ -2,7 +2,22 @@ module rocl.controls.npc;
 
 import std.meta, std.algorithm, perfontain, ro.conv.gui, rocl.controls;
 
-class WinNpc : GUIElement
+class WinNpc : RCounted
+{
+	void draw()
+	{
+		auto rect = nk_rect();
+
+		if (auto win = Window(nk.uniqueId, rect, NK_WINDOW_SCALABLE | NK_WINDOW_MOVABLE))
+		{
+		}
+	}
+
+private:
+	mixin NuklearBase;
+}
+
+class WinNpc2 : GUIElement
 {
 	this()
 	{
@@ -44,7 +59,7 @@ class WinNpc : GUIElement
 
 final:
 
-class WinNpcDialog : WinNpc
+class WinNpcDialog : WinNpc2
 {
 	this()
 	{
@@ -85,7 +100,7 @@ class WinNpcDialog : WinNpc
 	}
 }
 
-class WinNpcSelect : WinNpc
+class WinNpcSelect : WinNpc2
 {
 	this(WinNpcDialog diag, string[] arr)
 	{

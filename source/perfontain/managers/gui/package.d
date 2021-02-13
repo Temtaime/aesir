@@ -81,7 +81,7 @@ final class GUIManager
 						nk_style_set_font(_nk, &font.handle);*/
 
 			nk_init_default(_nk = new nk_context, &font.handle);
-			_nk.style.window.min_row_height_padding = 2;
+			_nk.style.window.min_row_height_padding = 2; // TODO: ???
 
 			nk_buffer_init_default(&cmds);
 		}

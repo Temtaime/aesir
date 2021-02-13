@@ -1,89 +1,191 @@
 module perfontain.managers.settings;
+import std, perfontain, perfontain.opengl, perfontain.managers.shadow;
 
-import
-		std,
-
-		perfontain,
-		perfontain.opengl,
-
-		perfontain.managers.shadow;
-
-public import
-				perfontain.managers.settings.data;
-
+public import perfontain.managers.settings.data;
 
 final class SettingsManager
 {
 	this()
 	{
-		auto j = PEfs.get(SETTINGS_FILE)
-										.assumeUTF
-										.parseJSON
-										.ifThrown(JSONValue.init);
-
-		{
-			static foreach(s; [ `lights`, `shadows` ])
-			{
-				collectException(mixin(`_st.` ~ s) = cast(ubyte)j[s].integer);
-			}
-
-			with(_st)
-			{
-				if(lights > LIGHTS_FULL) lights = 0;
-				if(shadows > SHADOWS_ULTRA) shadows = 0;
-			}
-		}
-
-		static foreach(s; [ `fog`, `vsync`, `msaa`, `fullscreen`, `useBindless` ])
-		{
-			collectException(mixin(`_st.` ~ s) = j[s].type == JSONType.true_);
-		}
-
 		try
 		{
-			foreach(name, w; j[`wins`].object)
-			{
-				collectException(_st.wins[name] = WindowData(Vector2s(w[`x`].integer, w[`y`].integer)));
-			}
+			auto data = PEfs.get(SETTINGS_FILE);
+			rc4.process(data);
 
-			foreach(name, arr; j[`hotkeys`].object)
+			if (data.isValid)
 			{
-				collectException(_st.hotkeys[name] = arr.array.map!(a => cast(SDL_Keycode)a.integer).array);
+				auto json = data.assumeUTF.parseJSON;
+
+				static foreach (name; settingNames)
+				{
+					try
+					{
+						load(json[name], mixin(name));
+					}
+					catch (Exception e)
+					{
+						logger.error(e);
+					}
+				}
 			}
+			else
+				logger.error(`%s is not a valid settings file`, SETTINGS_FILE);
 		}
-		catch(Exception)
-		{}
+		catch (Exception e)
+		{
+			logger.error(e);
+		}
 	}
 
 	void disableUnsupported()
 	{
-		_st.useBindless &= GL_ARB_bindless_texture;
-		save;
+		useBindless &= GL_ARB_bindless_texture;
 	}
 
 	~this()
 	{
-		save;
+		JSONValue json;
+
+		static foreach (name; settingNames)
+			json[name] = jsonize(mixin(name));
+
+		auto data = json.toJSON.representation.dup;
+		rc4.process(data);
+
+		PEfs.put(SETTINGS_FILE, data);
 	}
 
-	mixin(genSettings);
+	mixin Setting!(bool, `fog`, true);
+	mixin Setting!(bool, `vsync`, true);
+	mixin Setting!(bool, `msaa`, false);
+	mixin Setting!(bool, `fullscreen`, false);
+	mixin Setting!(bool, `useBindless`, false);
+
+	mixin Setting!(Lights, `lights`, Lights.global);
+	mixin Setting!(Shadows, `shadows`, Shadows.medium);
+	mixin Setting!(Tuple!(string, `user`, string, `pass`)[], `accounts`, null);
 private:
-	const save()
+	static settingNames() // TODO: BUGREPORT
 	{
-		JSONValue j;
+		string[] arr;
 
-		static foreach(s; [ `fog`, `vsync`, `msaa`, `fullscreen`, `useBindless`, `lights`, `shadows`, `hotkeys` ])
-		{
-			j[s] = mixin(`_st.` ~ s);
-		}
+		foreach (name; __traits(allMembers, typeof(this)))
+			if (is(typeof(mixin(name).offsetof)) && !name.endsWith(`Change`)) // TODO: more elegant way
+				arr ~= name;
 
-		j[`wins`] = _st.wins
-							.byKeyValue
-							.map!(a => tuple(a.key, [ `x` : a.value.pos.x, `y`: a.value.pos.y ].JSONValue))
-							.assocArray;
-
-		PEfs.put(SETTINGS_FILE, j.toJSON);
+		return arr;
 	}
 
-	Settings _st;
+	static jsonize(T)(T value)
+	{
+		static if (isDynamicArray!T)
+			return value.map!jsonize.array.JSONValue;
+		else
+		{
+			static if (isTuple!T)
+			{
+				JSONValue[string] aa;
+
+				static foreach (i, name; T.fieldNames)
+					aa[name] = value[i].JSONValue;
+
+				return JSONValue(aa);
+			}
+			else
+				return JSONValue(value);
+		}
+	}
+
+	static load(T)(ref in JSONValue json, ref T value)
+	{
+		static if (is(T == string))
+		{
+			value = json.str;
+		}
+		else static if (isTuple!T)
+		{
+			T v;
+
+			static foreach (i, name; T.fieldNames)
+			{
+				{
+					T.Types[i] u;
+					load(json[name], u);
+					v[i] = u;
+				}
+			}
+
+			value = v;
+		}
+		else static if (isDynamicArray!T)
+		{
+			T arr;
+
+			foreach (j; json.array)
+			{
+				ElementType!T e;
+				load(j, e);
+				arr ~= e;
+			}
+
+			value = arr;
+		}
+		else static if (is(T == enum))
+		{
+			auto k = json.integer;
+
+			if (only(EnumMembers!T).canFind(k))
+				value = cast(T)k;
+		}
+		else static if (isBoolean!T)
+			value = json.boolean;
+		else
+			static assert(false);
+	}
+
+	static rc4()
+	{
+		return RC4(thisExePath);
+	}
+}
+
+struct RC4
+{
+	this(string key)
+	{
+		this(key.representation);
+	}
+
+	this(const(ubyte)[] key)
+	{
+		foreach (i, ref v; _S)
+			v = cast(ubyte)i;
+
+		uint j;
+		foreach (i, ref v; _S)
+		{
+			j += v + key[i % $];
+			j %= N;
+			swap(_S[j], v);
+		}
+	}
+
+	void process(ubyte[] data)
+	{
+		uint j;
+		ubyte[N] S = _S;
+
+		foreach (i, ref v; data)
+		{
+			auto r = &S[(i + 1) % N];
+			auto q = &S[(j += *r) %= N];
+
+			swap(*r, *q);
+			v ^= S[(*r + *q) % N];
+		}
+	}
+
+private:
+	enum N = 256;
+	ubyte[N] _S;
 }

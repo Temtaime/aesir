@@ -187,8 +187,10 @@ mixin template NuklearBase()
 		this(string File = __FILE__, uint Line = __LINE__)(string name,
 				ubyte type = NK_TREE_TAB, ubyte flags = NK_MINIMIZED)
 		{
-			_process = !!nk_tree_push_hashed(ctx, type, name.toStringz, flags,
-					File.ptr, File.length, Line);
+			auto id = nk.uniqueId!(File, Line);
+
+			_process = !!nk.tree_push_hashed(type, name.toStringz, flags,
+					id.ptr, cast(uint)id.length, 0);
 		}
 	}
 
@@ -306,7 +308,17 @@ mixin template NuklearBase()
 
 		const editHeight()
 		{
-			return ctx.style.font.height + (ctx.style.edit.padding.y + ctx.style.edit.border) * 2;
+			return fontHeight + (ctx.style.edit.padding.y + ctx.style.edit.border) * 2;
+		}
+
+		const comboHeight()
+		{
+			return fontHeight + ctx.style.combo.button.padding.y * 2;
+		}
+
+		const fontHeight()
+		{
+			return ctx.style.font.height;
 		}
 
 		const maxColumns(uint elem)

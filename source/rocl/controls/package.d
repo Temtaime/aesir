@@ -1,46 +1,26 @@
 module rocl.controls;
+import std.meta, std.stdio, std.range, std.algorithm, perfontain, ro.conv.gui,
+	rocl, rocl.gui, rocl.game;
 
-import
-		std.meta,
-		std.stdio,
-		std.range,
-		std.algorithm,
-
-		perfontain,
-
-		ro.conv.gui,
-
-		rocl,
-		rocl.gui,
-		rocl.game;
-
-public import
-				rocl.controls.npc,
-				rocl.controls.base,
-				rocl.controls.bars,
-				rocl.controls.icon,
-				rocl.controls.menu,
-				rocl.controls.shops,
-				rocl.controls.status,
-				rocl.controls.skills,
-				rocl.controls.hotkeys,
-				rocl.controls.trading,
-				rocl.controls.settings,
-				rocl.controls.creation,
-				rocl.controls.charinfo,
-				rocl.controls.inventory;
-
+public import rocl.controls.npc, rocl.controls.base, rocl.controls.bars,
+	rocl.controls.icon, rocl.controls.menu, rocl.controls.shops,
+	rocl.controls.login, rocl.controls.status, rocl.controls.skills,
+	rocl.controls.hotkeys, rocl.controls.trading, rocl.controls.settings,
+	rocl.controls.creation, rocl.controls.charinfo, rocl.controls.inventory;
 
 enum
 {
-	WPOS_START		= 15,
-	WPOS_SPACING	= 18,
+	WPOS_START = 15,
+	WPOS_SPACING = 18,
 }
 
 //deprecated
 class WinBasic : GUIElement
 {
-	this() {}
+	this()
+	{
+	}
+
 	this(Vector2s sz, string s, bool bottom = true)
 	{
 		// super(PE.gui.root, size, Win.moveable | Win.captureFocus);
@@ -53,13 +33,11 @@ class WinBasic : GUIElement
 		// _bottom = bottom;
 	}
 
-
 private:
 	bool _bottom;
 }
 
 //deprecated
-
 
 // final class WinInfo : WinBasic2
 // {

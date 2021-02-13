@@ -1,10 +1,6 @@
 module perfontain.managers.hotkey;
 
-import
-		std,
-
-		perfontain;
-
+import std, perfontain;
 
 final class HotkeyManager
 {
@@ -18,7 +14,7 @@ final class HotkeyManager
 		auto e = _arr.find!(a => a.name == name);
 		e.length || throwError!`trying to update unknown hotkey: %s`(name);
 
-		PE.settings.hotkeys[name] = e[0].keys = keys.dup;
+		//PE.settings.hotkeys[name] = e[0].keys = keys.dup;
 	}
 
 	auto add(Hotkey h, bool permanent = true)
@@ -26,31 +22,33 @@ final class HotkeyManager
 		auto e = new Hotkey(h.tupleof);
 		_arr ~= e;
 
-		if(auto n = e.name)
+		if (auto n = e.name)
 		{
-			if(auto p = n in PE.settings.hotkeys)
-			{
-				e.keys = *p;
-			}
-			else
-			{
-				PE.settings.hotkeys[n] = e.keys;
-			}
+			// if(auto p = n in PE.settings.hotkeys)
+			// {
+			// 	e.keys = *p;
+			// }
+			// else
+			// {
+			// 	PE.settings.hotkeys[n] = e.keys;
+			// }
 		}
 
-		return permanent ? null : new ConnectionPoint({ _arr = _arr.remove(_arr.countUntil(e)); });
+		return permanent ? null : new ConnectionPoint({
+			_arr = _arr.remove(_arr.countUntil(e));
+		});
 	}
 
 private:
 	bool onKey(SDL_Keycode k, bool st)
 	{
-		if(st)
+		if (st)
 		{
-			foreach(h; _arr)
+			foreach (h; _arr)
 			{
-				if(h.keys.isPermutation(PE.window.keys))
+				if (h.keys.isPermutation(PE.window.keys))
 				{
-					if(h.dg())
+					if (h.dg())
 					{
 						return true;
 					}

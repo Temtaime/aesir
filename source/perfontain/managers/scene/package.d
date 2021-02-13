@@ -1,30 +1,11 @@
 module perfontain.managers.scene;
 
-import
-		std.math,
-		std.stdio,
-		std.array,
-		std.typecons,
-		std.algorithm,
+import std.math, std.stdio, std.array, std.typecons, std.algorithm, stb.image,
 
-		stb.image,
+	perfontain, perfontain.math, perfontain.misc, perfontain.misc.draw,
+	perfontain.misc.vmem, perfontain.opengl, perfontain.math.frustum, perfontain.managers.shadow;
 
-		perfontain,
-
-		perfontain.math,
-		perfontain.misc,
-		perfontain.misc.draw,
-		perfontain.misc.vmem,
-
-		perfontain.opengl,
-		perfontain.math.frustum,
-
-		perfontain.managers.shadow;
-
-public import
-				perfontain.render.types,
-				perfontain.managers.scene.structs;
-
+public import perfontain.render.types, perfontain.managers.scene.structs;
 
 final class SceneManager
 {
@@ -50,7 +31,10 @@ final class SceneManager
 
 	@property
 	{
-		CameraBase camera() { return _camera; }
+		CameraBase camera()
+		{
+			return _camera;
+		}
 
 		void camera(CameraBase camera)
 		{
@@ -58,7 +42,10 @@ final class SceneManager
 			PE.window.cursor = _camera.cursor;
 		}
 
-		Scene scene() { return _scene; }
+		Scene scene()
+		{
+			return _scene;
+		}
 
 		void scene(Scene sc)
 		{
@@ -71,9 +58,15 @@ final class SceneManager
 			return Tuple!(Vector3, `pos`, Vector3, `dir`)(_ray.front, _ray.back);
 		}
 
-		bool hasLights() { return _scene.lights.length && level == LIGHTS_FULL; }
+		bool hasLights()
+		{
+			return _scene.lights.length && level == Lights.full;
+		}
 
-		ref viewProject() const { return _vp; }
+		ref viewProject() const
+		{
+			return _vp;
+		}
 	}
 
 	Matrix4 proj;
@@ -93,36 +86,36 @@ private:
 			{
 				auto s = PE.shadows;
 
-				if(PE.settings.shadows)
+				if (PE.settings.shadows)
 				{
 					creator.define(`SHADOWS_ENABLED`);
 				}
 
-				if(s.normals || level)
+				if (s.normals || level)
 				{
 					creator.define(`LIGHT_DIR`, _scene.lightDir);
 				}
 
-				if(s.normals)
+				if (s.normals)
 				{
 					creator.define(`SHADOWS_USE_NORMALS`);
 				}
 			}
 
-			if(level)
+			if (level)
 			{
 				creator.define(`LIGHTING_ENABLED`);
 
 				creator.define(`LIGHT_AMBIENT`, _scene.ambient);
 				creator.define(`LIGHT_DIFFUSE`, _scene.diffuse);
 
-				if(full)
+				if (full)
 				{
 					creator.define(`LIGHTING_FULL`);
 				}
 			}
 
-			if(PE.settings.fog)
+			if (PE.settings.fog)
 			{
 				creator.define(`USE_FOG`);
 				creator.define(`FOG_FAR`, _scene.fogFar);
@@ -133,15 +126,13 @@ private:
 			_prog = creator.create;
 		}
 
-		if(full)
+		if (full)
 		{
 			ubyte[] buf;
 
-			foreach(ref r; _scene.lights)
+			foreach (ref r; _scene.lights)
 			{
-				auto
-						v = Vector4(r.pos, r.range),
-						u = Vector4(r.color, 0);
+				auto v = Vector4(r.pos, r.range), u = Vector4(r.color, 0);
 
 				buf ~= v.toByte;
 				buf ~= u.toByte;
@@ -158,9 +149,10 @@ package(perfontain):
 
 	void draw()
 	{
-		if(_scene)
+		if (_scene)
 		{
-			if(!_prog) compile;
+			if (!_prog)
+				compile;
 		}
 
 		draw(_prog, null, _camera.view * proj);
@@ -174,7 +166,7 @@ package(perfontain):
 		{
 			auto flags = GL_DEPTH_BUFFER_BIT;
 
-			if(rt)
+			if (rt)
 			{
 				rt.bind;
 			}
@@ -189,7 +181,7 @@ package(perfontain):
 			glClear(flags);
 		}
 
-		if(_scene)
+		if (_scene)
 		{
 			DrawInfo di;
 			_scene.node.draw(&di);
@@ -197,7 +189,7 @@ package(perfontain):
 			PE.render.doDraw(pg, RENDER_SCENE, vp, rt);
 		}
 
-		if(rt)
+		if (rt)
 		{
 			rt.unbind;
 		}
@@ -209,7 +201,7 @@ package(perfontain):
 		pos.y = cast(short)(sz.y - pos.y - 1);
 
 		auto v1 = unproject(pos.x, pos.y, -1, _vp, sz);
-		auto v2 = unproject(pos.x, pos.y,  1, _vp, sz);
+		auto v2 = unproject(pos.x, pos.y, 1, _vp, sz);
 
 		_ray[0] = v1;
 		_ray[1] = (v2 - v1).normalize;

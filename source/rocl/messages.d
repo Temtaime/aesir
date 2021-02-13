@@ -119,5 +119,13 @@ enum MESSAGES =
 
 	[ `CHAT`, `Chat`, `Чат` ],
 	[ `SUBMIT`, `Submit`, `Отправить` ],
+
+	[ `QUIT`, `Quit`, `Выйти` ],
+	[ `LOGIN`, `Login`, `Вход` ],
+	[ `USERNAME`, `Username`, `Логин` ],
+	[ `PASSWORD`, `Password`, `Пароль` ],
+	[ `ADD`, `Add`, `Добавить` ],
+	[ `ADDING`, `Adding`, `Добавление` ],
+
 	//[ ``, ``, `` ],
 ];

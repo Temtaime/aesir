@@ -28,7 +28,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"command": "start cmd /c \"dub build -a x86_64 -b debug-no-info && cd bin && start.bat & pause\"",
+			"command": "start cmd /c \"dub build -a x86_64 -b debug-no-info && cd bin && perfontain.exe & pause\"",
 			"group": {
 				"kind": "test",
 				"isDefault": true

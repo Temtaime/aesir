@@ -1,11 +1,6 @@
 module perfontain.managers.shadow;
 
-import
-		std.algorithm,
-
-		perfontain,
-		perfontain.managers.shadow.lispsm;
-
+import std.algorithm, perfontain, perfontain.managers.shadow.lispsm;
 
 final class ShadowManager
 {
@@ -19,28 +14,22 @@ final class ShadowManager
 
 	void process()
 	{
-		if(level)
+		if (level)
 		{
 			auto s = PE.scene;
 
-			if(!s.scene)
+			if (!s.scene)
 			{
 				return;
 			}
 
-			SceneData sd =
-			{
-				view:				s.camera.view,
-				viewProjInversed:	(s.camera.view * s.proj).inverse,
-				box:				s.scene.node.bbox,
-				cameraPos:			s.camera._pos,
-				cameraDir:			s.camera._dir,
-				lightDir:			s.scene.lightDir,
+			SceneData sd = {
+				view: s.camera.view, viewProjInversed: (s.camera.view * s.proj)
+					.inverse, box: s.scene.node.bbox, cameraPos: s.camera._pos,
+				cameraDir: s.camera._dir, lightDir: s.scene.lightDir,
 			};
 
-			Matrix4
-						view = void,
-						proj = void;
+			Matrix4 view = void, proj = void;
 
 			//import perfontain.math, std.math, std.stdio;
 			//float q = angleTo(sd.cameraDir, sd.lightDir);
@@ -64,12 +53,12 @@ final class ShadowManager
 
 	const textured()
 	{
-		return level >= SHADOWS_MEDIUM;
+		return level >= Shadows.medium;
 	}
 
 	const normals()
 	{
-		return level >= SHADOWS_HIGH;
+		return level >= Shadows.high;
 	}
 
 	bool lispsm = true;
@@ -84,7 +73,7 @@ private:
 
 	void update()
 	{
-		if(level)
+		if (level)
 		{
 			{
 				auto k = 2 ^^ (level - 1);
@@ -101,7 +90,7 @@ private:
 			{
 				auto creator = ProgramCreator(`depth`);
 
-				if(textured)
+				if (textured)
 				{
 					creator.define(`TEXTURED_SHADOWS`);
 				}

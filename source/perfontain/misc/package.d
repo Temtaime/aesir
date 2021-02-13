@@ -1,57 +1,23 @@
 module perfontain.misc;
 
-import
-		std.conv,
-		std.math,
-		std.range,
-		std.traits,
-		std.string,
-		std.algorithm,
-		std.experimental.allocator,
-		std.experimental.allocator.mallocator,
-		std.experimental.allocator.gc_allocator,
-		std.experimental.allocator.building_blocks.free_tree,
+import std.conv, std.math, std.range, std.traits, std.string, std.algorithm,
+	std.experimental.allocator, std.experimental.allocator.mallocator,
+	std.experimental.allocator.gc_allocator, std.experimental.allocator.building_blocks.free_tree,
 
-		core.stdc.string,
+	core.stdc.string, stb.image, perfontain.opengl, perfontain.config,
+	perfontain.math.matrix, utils.except, utils.logger;
 
-		stb.image,
-
-		perfontain.opengl,
-		perfontain.config,
-		perfontain.math.matrix,
-
-		utils.except,
-		utils.logger;
-
-public import
-				utils.misc,
-				utils.binary;
-
+public import utils.misc, utils.binary;
 
 alias Op(string S) = (a, b) => mixin(`a` ~ S ~ `b`);
 
 @property blendingModeGL(ubyte m)
 {
-	static immutable modes =
-	[
-		GL_ZERO,
-		GL_ONE,
-		GL_SRC_COLOR,
-		GL_ONE_MINUS_SRC_COLOR,
-		GL_SRC_ALPHA,
-		GL_ONE_MINUS_SRC_ALPHA,
-		GL_DST_ALPHA,
-		GL_ONE_MINUS_DST_ALPHA,
-		GL_DST_COLOR,
-		GL_ONE_MINUS_DST_COLOR,
-		GL_SRC_ALPHA_SATURATE,
-	],
-
-	modes2 =
-	[
-		GL_CONSTANT_COLOR,
-		GL_ONE_MINUS_CONSTANT_ALPHA,
-	];
+	static immutable modes = [
+		GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA,
+		GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA,
+		GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE,
+	], modes2 = [GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_ALPHA,];
 
 	return m < 14 ? modes[m - 1] : modes2[m - 14]; // [1, 15]
 }
@@ -65,7 +31,7 @@ auto packModes(ubyte src, ubyte dst)
 
 auto unpackModes(ubyte mode)
 {
-	ubyte[2] res = [ mode & 0xF, mode >> 4 ];
+	ubyte[2] res = [mode & 0xF, mode >> 4];
 
 	return res;
 }
@@ -78,25 +44,25 @@ auto alignTo(T)(T v, ushort a)
 auto makeAligned(void[] b, ubyte a)
 {
 	auto k = cast(size_t)b.ptr;
-	return b[alignTo(k, a) - k..$];
+	return b[alignTo(k, a) - k .. $];
 }
 
 auto sliceOne(T)(ref T t)
 {
-	return (&t)[0..1];
+	return (&t)[0 .. 1];
 }
 
 void eachGroup(alias F, T)(T[] arr, void delegate(T[]) dg)
 {
-	for(auto start = arr.ptr, cur = start + 1; true; cur++)
+	for (auto start = arr.ptr, cur = start + 1; true; cur++)
 	{
 		bool end = cur > &arr.back;
 
-		if(end || F(*start, *cur))
+		if (end || F(*start, *cur))
 		{
-			dg(start[0..cur - start]);
+			dg(start[0 .. cur - start]);
 
-			if(end)
+			if (end)
 			{
 				break;
 			}
@@ -113,12 +79,9 @@ auto constAway(T)(in T[] arr)
 
 auto createArray(T, A...)(uint len, A args)
 {
-	static if(args.length)
+	static if (args.length)
 	{
-		return len
-					.iota
-					.map!(_ => createArray!T(args))
-					.array;
+		return len.iota.map!(_ => createArray!T(args)).array;
 	}
 	else
 	{
@@ -135,16 +98,15 @@ ubyte direction(Vector2 v, bool inv = false)
 
 auto makeIndices(uint cnt)
 {
-	return cnt
-				.iota
-				.map!(a => a * 3)
-				.map!(a => triangleOrder[].map!(b => b + a))
-				.join;
+	return cnt.iota
+		.map!(a => a * 3)
+		.map!(a => triangleOrder[].map!(b => b + a))
+		.join;
 }
 
 void cas(T)(ref T var, T old, T new_)
 {
-	if(var == old)
+	if (var == old)
 	{
 		var = new_;
 	}
@@ -152,7 +114,7 @@ void cas(T)(ref T var, T old, T new_)
 
 bool set(T)(ref T var, T new_)
 {
-	if(var != new_)
+	if (var != new_)
 	{
 		var = new_;
 		return true;
@@ -172,7 +134,7 @@ void byFlag(T)(ref T v, uint bit, bool st)
 	{
 		float[N] res;
 
-		foreach(i, ref v; res)
+		foreach (i, ref v; res)
 		{
 			v = arr[i] / 1000f;
 		}
@@ -184,7 +146,7 @@ void byFlag(T)(ref T v, uint bit, bool st)
 	{
 		int[N] res;
 
-		foreach(i, ref v; res)
+		foreach (i, ref v; res)
 		{
 			v = cast(int)lrint(arr[i] * 1000);
 		}
@@ -194,10 +156,10 @@ void byFlag(T)(ref T v, uint bit, bool st)
 
 	auto parseNum(string s) // TODO
 	{
-		return s.startsWith(`0x`) || s.startsWith(`0X`) ? s[2..$].to!uint(16) : s.to!uint;
+		return s.startsWith(`0x`) || s.startsWith(`0X`) ? s[2 .. $].to!uint(16) : s.to!uint;
 	}
 
-	/********************************************//**
+	/********************************************/ /**
 	 * \brief Converts ubyte from 0-255 to float 0-1.
 	 *
 	 * \param b Unsigned byte.
@@ -219,11 +181,16 @@ void byFlag(T)(ref T v, uint bit, bool st)
 
 	//Color toCol(ref in Vector4 v) { with(v) return Color(cast(uint)x * 255, cast(uint)y * 255, cast(uint)z * 255, cast(uint)w * 255); }
 
-	Vector4 toVec(Color c) { with(c) return Vector4(r.toFloat, g.toFloat, b.toFloat, a.toFloat); }
+	Vector4 toVec(Color c)
+	{
+		with (c)
+			return Vector4(r.toFloat, g.toFloat, b.toFloat, a.toFloat);
+	}
 
 	uint systemTick()
 	{
 		import core.time : TickDuration;
+
 		return cast(uint)TickDuration.currSystemTick.msecs;
 	}
 
@@ -234,9 +201,15 @@ void byFlag(T)(ref T v, uint bit, bool st)
 		return res;
 	}
 
-	bool isPowerOf2(uint x) { return x && !(x & (x - 1)); }
+	bool isPowerOf2(uint x)
+	{
+		return x && !(x & (x - 1));
+	}
 
-	size_t ptrToInt(T)(T t) { return cast(size_t)cast(void *)t; }
+	size_t ptrToInt(T)(T t)
+	{
+		return cast(size_t)cast(void*)t;
+	}
 }
 
 mixin template readableToString()
@@ -249,9 +222,10 @@ mixin template readableToString()
 		import std.string : format;
 		import std.traits : FunctionTypeOf, Unqual;
 
-		foreach(m; __traits(allMembers, T))
+		foreach (m; __traits(allMembers, T))
 		{
-			static if(mixin(`__traits(compiles, &this.` ~ m ~ `) && !is(FunctionTypeOf!(T.` ~ m ~ `) == function) && is(typeof(T.` ~ m ~ `.offsetof))`))
+			static if (mixin(`__traits(compiles, &this.` ~ m ~ `) && !is(FunctionTypeOf!(T.`
+					~ m ~ `) == function) && is(typeof(T.` ~ m ~ `.offsetof))`))
 			{
 				r ~= (r.length ? `, ` : ``) ~ format(`%s: %s`, m, mixin(`this.` ~ m));
 			}
@@ -263,16 +237,26 @@ mixin template readableToString()
 
 mixin template createCtorsDtors(A...)
 {
-	void ctors() { foreach(ref a; A) if(!a) a = new typeof(a); }
-	void dtors() { foreach_reverse(a; A) a.destroy; }
+	void ctors()
+	{
+		foreach (ref a; A)
+			if (!a)
+				a = new typeof(a);
+	}
+
+	void dtors()
+	{
+		foreach_reverse (a; A)
+			a.destroy;
+	}
 }
 
 mixin template publicProperty(T, string name, string value = null)
 {
 	mixin(`
 		public ref ` ~ name ~ `() @property const { return _` ~ name ~ `; }
-		T _` ~ name ~ (value.length ? `=` ~ value : null) ~ `;`
-																);
+		T _` ~ name ~ (value.length
+			? `=` ~ value : null) ~ `;`);
 }
 
 mixin template makeHelpers(A...)
@@ -281,11 +265,12 @@ mixin template makeHelpers(A...)
 	{
 		string res;
 
-		static foreach(i; 0..A.length / 2)
+		static foreach (i; 0 .. A.length / 2)
 		{
 			auto n = A[i * 2], f = A[i * 2 + 1];
 
-			res ~= `@property const ` ~ n ~ `() { return !!(_flags & ` ~ f ~ `); } @property ` ~ n ~ `(bool b) { mixin(setFlag("flags", "b", ` ~ f ~ `)); }`;
+			res ~= `@property const ` ~ n ~ `() { return !!(_flags & ` ~ f
+				~ `); } @property ` ~ n ~ `(bool b) { mixin(setFlag("flags", "b", ` ~ f ~ `)); }`;
 		}
 
 		return res;
@@ -297,14 +282,16 @@ mixin template makeHelpers(A...)
 void changed(uint old, uint new_, uint bit, void delegate(bool) func)
 {
 	auto v = new_ & bit;
-	if((old & bit) != v) func(!!v);
+	if ((old & bit) != v)
+		func(!!v);
 }
 
 struct TimeMeter
 {
 	this(A...)(string msg, auto ref in A args)
 	{
-		static if(args.length) msg = format(msg, args);
+		static if (args.length)
+			msg = format(msg, args);
 
 		_msg = msg;
 		_t = systemTick;
@@ -344,7 +331,7 @@ struct ScopeArray(T)
 
 	inout opSlice(size_t a, size_t b)
 	{
-		return _data[a..b];
+		return _data[a .. b];
 	}
 
 	@property opDollar(size_t dim : 0)()

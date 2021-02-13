@@ -1,38 +1,39 @@
 module rocl.game;
 
-import
-		std,
+import std, perfontain, perfontain.misc, perfontain.misc.report, ro.db, ro.str,
+	ro.conv, rocl.loaders.asp, rocl, rocl.gui, rocl.status, rocl.entity,
+	rocl.network, rocl.controls, rocl.resources, rocl.controller.npc,
+	rocl.controller.item, rocl.controller.action, rocl.controller.effect;
 
-		perfontain,
-		perfontain.misc,
-		perfontain.misc.report,
+@property ref RO()
+{
+	return Game.instance;
+}
 
-		ro.db,
-		ro.str,
-		ro.conv,
-		rocl.loaders.asp,
+@property ROdb()
+{
+	return RO._db;
+}
 
-		rocl,
-		rocl.gui,
-		rocl.status,
-		rocl.entity,
-		rocl.network,
-		rocl.controls,
-		rocl.resources,
+@property ROent()
+{
+	return RO._emgr;
+}
 
-		rocl.controller.npc,
-		rocl.controller.item,
-		rocl.controller.action,
-		rocl.controller.effect;
+@property ROres()
+{
+	return RO._rmgr;
+}
 
+@property ROnet()
+{
+	return RO._pmgr;
+}
 
-@property ref RO() { return Game.instance; }
-
-@property ROdb() { return RO._db; }
-@property ROent() { return RO._emgr; }
-@property ROres() { return RO._rmgr; }
-@property ROnet() { return RO._pmgr; }
-@property ROnpc() { return RO._npc; }
+@property ROnpc()
+{
+	return RO._npc;
+}
 
 final class Game
 {
@@ -56,32 +57,19 @@ final class Game
 	void run(string[] args)
 	{
 		bool viewer;
-		string login;
+		getopt(args, `viewer`, &viewer);
 
-		getopt(args, `login`, &login, `viewer`, &viewer);
-
-		if(!viewer && !login.length)
+		if (initialize(viewer ? 45 : 15))
 		{
-			return;
-		}
-
-		if(initialize(login.length ? 15 : 45))
-		{
-			if(login.length)
-			{
-				auto r = login.findSplit(`:`);
-
-				auto
-						user = r[0],
-						pass = r[2];
-
-				gui.show;
-				ROnet.login(user, pass);
-			}
-			else
+			if (viewer)
 			{
 				//if(std.file.exists(`tmp/map/prontera.rom`)) std.file.remove(`tmp/map/prontera.rom`);
 				mapViewer;
+			}
+			else
+			{
+				gui.show;
+				//ROnet.login(user, pass);
 			}
 
 			PE.work;
@@ -109,8 +97,14 @@ private:
 		//PE.hotkeys.add(Hotkey({ log(`lispsm %s`, PE.shadows.lispsm ^= true); }, SDLK_LCTRL, SDLK_a));
 		debug
 		{
-			PE.hotkeys.add(Hotkey(null, { PEstate.wireframe = !PEstate.wireframe; return true; }, SDLK_F11));
-			PE.hotkeys.add(Hotkey(null, { PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA); return true; }, SDLK_F10));
+			PE.hotkeys.add(Hotkey(null, {
+					PEstate.wireframe = !PEstate.wireframe;
+					return true;
+				}, SDLK_F11));
+			PE.hotkeys.add(Hotkey(null, {
+					PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA);
+					return true;
+				}, SDLK_F10));
 		}
 
 		auto p = Vector3(0, 24.810, 0);
@@ -135,10 +129,12 @@ private:
 		{
 			PE.create(`Æsir`);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			//errorReport(e);
-			showErrorMessage("Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: " ~ e.msg);
+			showErrorMessage(
+					"Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: "
+					~ e.msg);
 			return false;
 		}
 

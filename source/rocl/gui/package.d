@@ -60,14 +60,19 @@ final class GuiManager
 
 	void draw()
 	{
-		if (_isGame)
+		if (login)
+			login.draw;
+		else
 		{
-			inv.draw;
-			chat.draw;
-			status.draw;
+			if (_isGame)
+			{
+				inv.draw;
+				chat.draw;
+				status.draw;
 
-			if (shop)
-				shop.draw;
+				if (shop)
+					shop.draw;
+			}
 		}
 	}
 
@@ -106,6 +111,7 @@ final class GuiManager
 			//settings.hide;
 
 			base = new WinBase;
+			login = new WinLogin;
 
 			// inv.show(false);
 			// base.show(false);
@@ -135,6 +141,7 @@ final class GuiManager
 	IconCache iconCache;
 
 	RC!WinShop shop;
+	RC!WinLogin login;
 
 	//mixin MakeWindow!(WinStorage, `store`);
 	//mixin MakeWindow!(WinTrading, `trading`);
