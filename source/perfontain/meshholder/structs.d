@@ -1,8 +1,5 @@
 module perfontain.meshholder.structs;
-
-import
-		perfontain;
-
+import perfontain;
 
 struct HolderData
 {
@@ -23,10 +20,7 @@ struct HolderData
 
 struct HolderSubMesh
 {
-	uint
-			len,
-			start;
-
+	uint len, start;
 	ushort tex;
 }
 

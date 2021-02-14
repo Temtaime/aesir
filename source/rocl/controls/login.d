@@ -74,7 +74,7 @@ private:
 
 	void drawAccountSelection()
 	{
-		if (auto win = make(MSG_LOGIN, 140))
+		if (auto win = make(MSG_LOGIN, 120))
 		{
 			nk.layout_row_dynamic(nk.comboHeight, 2);
 

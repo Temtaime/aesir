@@ -210,12 +210,12 @@ private:
 				//writefln(`%s`, cmd.elem_count);
 
 				{
-					auto tex = cmd.texture.ptr;
-					auto idx = mh.texs[].countUntil!(a => cast(void*)a is tex);
+					auto tex = cast(Texture)cmd.texture.ptr;
+					auto idx = mh.texs[].countUntil!(a => a is tex);
 
 					if (idx < 0)
 					{
-						mh.texs ~= cast(Texture)tex;
+						mh.texs ~= tex;
 						idx = mh.texs[].length - 1;
 					}
 

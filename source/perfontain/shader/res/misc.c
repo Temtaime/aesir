@@ -64,7 +64,8 @@ VERTEX_SHADER
 			else
 				DRAW_ID = int(submeshes[gl_DrawIDARB].z)
 		else
-			DRAW_ID = gl_DrawIDARB
+			uniform int pe_base_draw_id;
+			DRAW_ID = (gl_DrawIDARB + pe_base_draw_id)
 	else
 		DRAW_ID = pe_object_id
 

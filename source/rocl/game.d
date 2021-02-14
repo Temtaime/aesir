@@ -57,7 +57,9 @@ final class Game
 	void run(string[] args)
 	{
 		bool viewer;
-		getopt(args, `viewer`, &viewer);
+		string user, pass;
+
+		getopt(args, `viewer`, &viewer, `user`, &user, `pass`, &pass);
 
 		if (initialize(viewer ? 45 : 15))
 		{
@@ -69,7 +71,12 @@ final class Game
 			else
 			{
 				gui.show;
-				//ROnet.login(user, pass);
+
+				if (user.length)
+				{
+					gui.login = null; // TODO: rewrite
+					ROnet.login(user, pass);
+				}
 			}
 
 			PE.work;

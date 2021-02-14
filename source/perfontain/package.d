@@ -102,9 +102,9 @@ final class Engine
 		logger.info2(`[gpu info]`);
 
 		{
-			_glGetString = cast(typeof(_glGetString)) load(`glGetString`);
-			_glGetStringi = cast(typeof(_glGetStringi)) load(`glGetStringi`);
-			_glGetIntegerv = cast(typeof(_glGetIntegerv)) load(`glGetIntegerv`); // TODO: REMOVE
+			_glGetString = cast(typeof(_glGetString))load(`glGetString`);
+			_glGetStringi = cast(typeof(_glGetStringi))load(`glGetStringi`);
+			_glGetIntegerv = cast(typeof(_glGetIntegerv))load(`glGetIntegerv`); // TODO: REMOVE
 
 			auto vendor = glGetString(GL_VENDOR).fromStringz.idup, version_ = glGetString(GL_VERSION).fromStringz.idup,
 				renderer = glGetString(GL_RENDERER).fromStringz.idup,
@@ -126,8 +126,8 @@ final class Engine
 			hookGL;
 		}
 
-		//GL_ARB_bindless_texture = false;
-		//GL_ARB_shader_draw_parameters = false;
+		GL_ARB_bindless_texture = false;
+		GL_ARB_shader_draw_parameters = false;
 
 		// can't use bindless without draw parameters
 		GL_ARB_bindless_texture &= GL_ARB_shader_draw_parameters;
@@ -148,7 +148,7 @@ final class Engine
 			int v;
 			glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &v);
 
-			_aaLevel = v > 1 ? cast(ubyte) v : 0;
+			_aaLevel = v > 1 ? cast(ubyte)v : 0;
 
 			if (_aaLevel)
 			{
