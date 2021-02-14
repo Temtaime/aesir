@@ -5,8 +5,6 @@ final class WinLogin : RCounted
 {
 	void draw()
 	{
-		//overview(ctx);
-
 		if (_adding || accounts.empty)
 			drawAddAccount;
 		else
@@ -39,7 +37,8 @@ private:
 
 		auto rect = nk_rect((ws.x - sz.x) / 2, ws.y * 2 / 3 - sz.y / 2, sz.x, sz.y);
 
-		return Window(title, rect, Window.DEFAULT_FLAGS & ~NK_WINDOW_MINIMIZABLE);
+		return Window(title, rect,
+				Window.DEFAULT_FLAGS & ~NK_WINDOW_MINIMIZABLE | NK_WINDOW_CLOSABLE);
 	}
 
 	void drawAddAccount()
@@ -47,18 +46,29 @@ private:
 		if (auto win = make(MSG_ADDING, 150))
 		{
 			drawFields;
+
 			nk.layout_row_dynamic(0, 2);
+			nk.spacing(1);
 
-			if (nk.button(MSG_QUIT))
-				_adding = false;
-
-			if (nk.button(MSG_ADD) && _userLen && _passLen)
+			if (nk.button(MSG_ADD) && _userLen)
 			{
 				auto user = _user[0 .. _userLen].idup;
 				auto pass = _pass[0 .. _passLen].idup;
 
+				_userLen = 0;
+				_passLen = 0;
+
+				_adding = false;
 				accounts ~= ElementType!(typeof(accounts))(user, pass);
 			}
+		}
+
+		if (nk.window_is_hidden(MSG_ADDING.toStringz))
+		{
+			if (_adding)
+				_adding = false;
+			else
+				PE.quit;
 		}
 	}
 
@@ -69,31 +79,50 @@ private:
 			nk.layout_row_dynamic(nk.comboHeight, 2);
 
 			nk.label(MSG_USERNAME ~ ':', NK_TEXT_CENTERED);
-			auto sz = nk.widget_size();
 
-			auto cnt = cast(uint)accounts.length;
-			auto items = accounts.map!(a => cast(const(char)*)a[0].toStringz).array.ptr;
-
-			nk.combobox(items, cnt, &_account, cast(uint)sz.y, nk_vec2(sz.x, 200));
-			nk.spacing(1);
-
-			if (nk.button(MSG_ADD))
-				_adding = true;
-
-			if (nk.button(MSG_QUIT))
+			if (auto combo = Combo(accounts[_selected].user))
 			{
-				PE.quit;
+				nk.layout_row_dynamic(combo.height, 1);
+
+				if (nk.button(MSG_ADD))
+					_adding = true;
+
+				enum X = `x`;
+
+				with (LayoutRowTemplate(combo.height))
+				{
+					dynamic;
+					static_(nk.buttonWidth(X));
+				}
+
+				foreach (i, acc; accounts)
+				{
+					if (combo.item(acc.user))
+						_selected = cast(ubyte)i;
+
+					if (nk.button(X))
+						accounts = accounts.remove(i);
+				}
 			}
+
+			nk.spacing(1);
 
 			if (nk.button(MSG_OK))
 			{
+				auto acc = accounts[_selected];
+				RO.gui.login = null; // TODO: rewrite
 
+				ROnet.login(acc.user, acc.pass);
+				return;
 			}
 		}
+
+		if (nk.window_is_hidden(MSG_LOGIN.toStringz))
+			PE.quit;
 	}
 
-	int _account;
 	bool _adding;
+	ubyte _selected;
 
 	char[24] _user, _pass;
 	int _userLen, _passLen;

@@ -125,6 +125,7 @@ enum MESSAGES =
 	[ `USERNAME`, `Username`, `Логин` ],
 	[ `PASSWORD`, `Password`, `Пароль` ],
 	[ `ADD`, `Add`, `Добавить` ],
+	[ `REMOVE`, `Remove`, `Удалить` ],
 	[ `ADDING`, `Adding`, `Добавление` ],
 
 	//[ ``, ``, `` ],
