@@ -1,31 +1,14 @@
 module rocl.rofs;
-
-import
-		std,
-
-		perfontain,
-
-		perfontain.misc.rc,
-		perfontain.filesystem,
-
-		ro.grf,
-		ro.conf,
-
-		rocl.game,
-		rocl.paths,
-
-		utils.except,
-		utils.logger,
-
-		utils.miniz : Zip;
-
+import std, perfontain, perfontain.misc.rc, perfontain.filesystem, ro.grf,
+	ro.conf, rocl.game, rocl.paths, utils.except, utils.logger, utils.miniz : Zip;
 
 final class RoFileSystem : FileSystem
 {
 	this()
 	{
 		debug
-		{}
+		{
+		}
 		else
 		{
 			_zip = new Zip(RES_FILE, false);
@@ -39,7 +22,7 @@ final class RoFileSystem : FileSystem
 
 	auto grfs()
 	{
-		if(!_arr.length)
+		if (!_arr.length)
 		{
 			auto t = TimeMeter(`loading grf files`);
 
@@ -56,14 +39,16 @@ protected:
 		{
 			return super.doRead(`tmp/` ~ name, dg);
 		}
-		catch(Exception)
-		{}
+		catch (Exception)
+		{
+		}
 
 		debug
-		{}
+		{
+		}
 		else
 		{
-			if(auto data = _zip.get(name).ifThrown(null))
+			if (auto data = _zip.get(name).ifThrown(null))
 			{
 				return dg(data, false);
 			}
@@ -73,13 +58,13 @@ protected:
 		{
 			super.doRead(name, dg);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
-			if(!PE.run || name.extension == `.wav` || name.extension == `.jpg`) // TODO: REMAKE
+			if (!PE.run || name.extension == `.wav` || name.extension == `.jpg`) // TODO: REMAKE
 			{
-				foreach(g; grfs)
+				foreach (g; grfs)
 				{
-					if(auto data = g.get(name))
+					if (auto data = g.get(name.RoPath))
 					{
 						return dg(data, false);
 					}

@@ -73,7 +73,7 @@ final class WinSettings : GUIWindow
 		{
 			GUIElement[] arr;
 
-			auto maps = (cast(RoFileSystem) PEfs).grfs
+			auto maps = (cast(RoFileSystem)PEfs).grfs
 				.map!(a => a.files.byKey)
 				.joiner
 				.filter!(a => a.startsWith(`data/`) && a.endsWith(`.rsw`))
@@ -81,9 +81,9 @@ final class WinSettings : GUIWindow
 				.array
 				.sort().uniq.array;
 
-			if (maps.length)
+			if (maps.length) // TODO: FIX
 			{
-				auto e = new TextCombo(curLayout, maps, cast(short) maps.countUntil(`prontera`));
+				/*auto e = new TextCombo(curLayout, maps, cast(short) maps.countUntil(`prontera`));
 
 				e.onChange = (a) {
 					try
@@ -96,7 +96,7 @@ final class WinSettings : GUIWindow
 					}
 
 					return true;
-				};
+				};*/
 			}
 		}
 		else

@@ -17,13 +17,18 @@ final class DrawAllocator : RCounted
 	//
 	//
 	//
-	//
 
 	void draw(Program pg, in DrawInfo[] nodes, uint submeshes, bool bind)
 	in
 	{
-		assert(nodes.all!(a => a.mh is nodes[0].mh));
-		//assert(nodes.map!(a => a.mh.meshes[a.id].subs).join.chunkBy!((a, b) => a.tex == b.tex).walkLength == 1);
+		assert(nodes[1 .. $].all!(a => a.mh is nodes[0].mh));
+
+		assert(nodes.map!(a => a.mh.meshes[a.id].subs)
+				.all!(a => a.map!(s => cast()s.tex)
+					.array
+					.sort
+					.group
+					.all!(g => g[1] == 1)));
 	}
 	do
 	{

@@ -1,24 +1,13 @@
 module ro.conv.map;
 
-import
-		std,
-
-		perfontain,
-
-		ro.map,
-		ro.grf,
-		ro.conf,
-		ro.conv,
-
-		utils.logger;
-
+import std, perfontain, ro.map, ro.grf, ro.conf, ro.conv, utils.logger;
 
 final class RomConverter : Converter
 {
 	this(string n)
 	{
 		_rsw = PEfs.read!RswFile(`data/` ~ n ~ `.rsw`);
-		_gat = PEfs.read!GatFile(`data/` ~ _rsw.gat.convertName);
+		_gat = PEfs.read!GatFile(`data/` ~ _rsw.gat.charsToString);
 
 		_name = n;
 		_mapTranslation = Vector3(_gat.width / 2f, DELTA_UP, _gat.height / 2f);
@@ -42,50 +31,43 @@ private:
 	auto objects(string Type)()
 	{
 		return _rsw.objects
-							.filter!(a => a.type == mixin(`RswObjectType.` ~ Type))
-							.map!(a => mixin(`a.` ~ Type));
+			.filter!(a => a.type == mixin(`RswObjectType.` ~ Type))
+			.map!(a => mixin(`a.` ~ Type));
 	}
 
 	void processGround(ref RomFile f)
 	{
-		with(f.ground)
+		with (f.ground)
 		{
 			size = Vector2s(_gat.width, _gat.height);
 
-			flags = cellType
-							.dup
-							.indexed(_gat.cells.map!(a => a.type))
-							.array;
+			flags = cellType.dup.indexed(_gat.cells.map!(a => a.type)).array;
 
-			heights = _gat
-							.cells
-							.map!((ref a) => a.heights[])
-							.join;
+			heights = _gat.cells.map!((ref a) => a.heights[]).join;
 		}
 	}
 
 	auto processFloor(ref RomFile f)
 	{
-		auto res = GndConverter(`data/` ~ _rsw.gnd.convertName, f.water.level, f.water.height).process;
+		auto res = GndConverter(`data/` ~ _rsw.gnd.charsToString, f.water.level, f.water.height)
+			.process;
 
 		f.floor = res[0].map!(a => RomFloor(a.calcBBox)).array;
 		f.floor.each!((ref a) => _lights.push(a.box));
 
 		auto water = res[1];
 
-		if(water[0].subs)
+		if (water[0].subs)
 		{
-			foreach(i, ref w; water)
+			foreach (i, ref w; water)
 			{
 				auto n = format(`data/texture/워터/water%u%02u.jpg`, f.water.type, i);
 				w.subs[0].tex = new Image(PEfs.get(n));
 
-				with(w.subs[0].data)
+				with (w.subs[0].data)
 				{
-					auto vs = asVertexes
-										.chunks(4)
-										.map!(a => chain(a[0..3], a[1..4].retro)) // TODO: COMMON FUNC
-										.join;
+					auto vs = asVertexes.chunks(4).map!(a => chain(a[0 .. 3], a[1 .. 4].retro)) // TODO: COMMON FUNC
+					.join;
 
 					vertices = vs.toByte;
 					indices = makeIndices(cast(uint)vs.length / 3);
@@ -116,18 +98,17 @@ private:
 		auto objs = poses.keys;
 
 		{
-			auto arr =	processFloor(f) ~
-						objs.map!(a => meshesOf(*a)).join; // TODO: HACK
+			auto arr = processFloor(f) ~ objs.map!(a => meshesOf(*a)).join; // TODO: HACK
 
 			f.objectsData = makeHolderCreator(arr, RENDER_SCENE, MH_DXT).process; // TODO: CONFIG
 		}
 
-		foreach(id, r; objs)
+		foreach (id, r; objs)
 		{
 			auto bb = calcBBox(r.mesh);
 			auto ps = poses[r];
 
-			foreach(ref m; ps)
+			foreach (ref m; ps)
 			{
 				f.poses ~= RomPose(m, bb * (r.trans * m), 0, 0, cast(ushort)id);
 
@@ -162,17 +143,16 @@ private:
 	auto makeObjects()
 	{
 		uint k;
-		Matrix4[][RsmObject *] res;
+		Matrix4[][RsmObject* ] res;
 
-		foreach(ref r; objects!`model`)
+		foreach (ref r; objects!`model`)
 		{
-			auto name = r.fileName.convertName;
+			auto name = r.fileName.charsToString;
 			auto negScale = r.scale.fold!((a, b) => a * b) < 0;
 
-			auto mat = Matrix4.scale(r.scale / ROM_SCALE_DIV)
-						* Matrix4.rotate(r.rot * TO_RAD)
-						* Matrix4.translate(r.pos / ROM_SCALE_DIV + _mapTranslation + Vector3(0, DELTA_UP * (k++ % 4), 0))
-						* coordsConv;
+			auto mat = Matrix4.scale(r.scale / ROM_SCALE_DIV) * Matrix4.rotate(
+					r.rot * TO_RAD) * Matrix4.translate(r.pos / ROM_SCALE_DIV + _mapTranslation + Vector3(0,
+					DELTA_UP * (k++ % 4), 0)) * coordsConv;
 
 			//if(name != "나무잡초꽃/나무02.rsm") continue;
 			//if(name != "나무잡초꽃/덤불01.rsm") continue;
@@ -186,7 +166,7 @@ private:
 			{
 				res[_objs.get(name, negScale)] ~= mat;
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				logger.error(`can't convert %s: %s`, name, e.msg);
 			}
@@ -209,10 +189,8 @@ private:
 		}
 
 		f.lights = objects!`light`.map!(a => RomLight(
-														(a.pos / ROM_SCALE_DIV + _mapTranslation) * coordsConv,
-														a.color,
-														a.range / ROM_SCALE_DIV
-																				)).array;
+				(a.pos / ROM_SCALE_DIV + _mapTranslation) * coordsConv, a.color,
+				a.range / ROM_SCALE_DIV)).array;
 
 		_lights = LightsCalculator(f.lights);
 
@@ -224,11 +202,11 @@ private:
 	{
 		auto arr = _lights.calc(f.lightIndices);
 
-		foreach(i, p; arr)
+		foreach (i, p; arr)
 		{
 			auto k = cast(int)(i - f.floor.length);
 
-			if(k >= 0)
+			if (k >= 0)
 			{
 				f.poses[k].lightStart = p.front;
 				f.poses[k].lightEnd = p.back;
@@ -250,11 +228,12 @@ private:
 		{
 			string map;
 
-			foreach(s; PEfs.get(`data/fogparametertable.txt`).as!char.assumeUnique.splitter(`#`).map!strip)
+			foreach (s; PEfs.get(`data/fogparametertable.txt`)
+					.as!char.assumeUnique.splitter(`#`).map!strip)
 			{
-				if(s.endsWith(`.rsw`))
+				if (s.endsWith(`.rsw`))
 				{
-					map = s[0..$ - 4];
+					map = s[0 .. $ - 4];
 				}
 				else
 				{
@@ -265,12 +244,12 @@ private:
 
 		auto arr = aa.get(_name, null);
 
-		if(arr.length > 2)
+		if (arr.length > 2)
 		{
 			f.fogFar = arr[1].to!float * 240;
 			f.fogNear = arr[0].to!float * 240;
 
-			f.fogColor = Color.fromInt(arr[2].parseNum << 8).tupleof[0..3].Vector3 / 255;
+			f.fogColor = Color.fromInt(arr[2].parseNum << 8).tupleof[0 .. 3].Vector3 / 255;
 		}
 		else
 		{
@@ -303,14 +282,14 @@ struct RsmObjects
 	{
 		auto o = _objs.get(name, null);
 
-		if(!o)
+		if (!o)
 		{
 			_objs[name] = o = new S(RsmConverter(name).process);
 		}
 
-		if(neg)
+		if (neg)
 		{
-			if(!o.neg.mesh.ns)
+			if (!o.neg.mesh.ns)
 			{
 				swapOrder(o.neg = o.obj);
 			}
@@ -335,7 +314,7 @@ private:
 		RsmObject obj, neg;
 	}
 
-	S *[string] _objs;
+	S*[string] _objs;
 }
 
 struct LightsCalculator
@@ -349,9 +328,9 @@ struct LightsCalculator
 	{
 		_indices.length++;
 
-		foreach(i, ref s; _arr)
+		foreach (i, ref s; _arr)
 		{
-			if(s.box.collision(obj))
+			if (s.box.collision(obj))
 			{
 				s.used = true;
 				_indices.back ~= cast(ushort)i;
@@ -361,10 +340,9 @@ struct LightsCalculator
 
 	auto used()
 	{
-		return _arr
-					.enumerate
-					.filter!(a => a.value.used)
-					.map!(a => a.index);
+		return _arr.enumerate
+			.filter!(a => a.value.used)
+			.map!(a => a.index);
 	}
 
 	auto calc(ref ushort[] res)
@@ -376,30 +354,28 @@ struct LightsCalculator
 		makeIndex!((a, b) => a.length > b.length)(_indices, index);
 
 		// unused lights
-		auto unused = _arr
-							.enumerate
-							.filter!(a => !a.value.used)
-							.map!(a => a.index)
-							.array
-							.assumeSorted;
+		auto unused = _arr.enumerate
+			.filter!(a => !a.value.used)
+			.map!(a => a.index)
+			.array
+			.assumeSorted;
 
-		foreach(sub; index.map!(a => *a))
+		foreach (sub; index.map!(a => *a))
 		{
-			foreach(ref k; sub)
+			foreach (ref k; sub)
 			{
 				k -= unused.lowerBound(k).length;
 			}
 
-			if(!res.canFind(sub))
+			if (!res.canFind(sub))
 			{
 				res ~= sub;
 			}
 		}
 
-		alias func = (a)
-		{
+		alias func = (a) {
 			auto s = a.length ? cast(uint)res.countUntil(a) : 0;
-			return [ s, s + cast(uint)a.length ];
+			return [s, s + cast(uint)a.length];
 		};
 
 		return _indices.map!func.array;

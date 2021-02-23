@@ -1,23 +1,7 @@
 module ro.conv.effect;
 
-import
-		std.uni,
-		std.math,
-		std.array,
-		std.stdio,
-		std.algorithm,
-
-		perfontain,
-		perfontain.misc,
-		perfontain.mesh,
-		perfontain.math,
-
-		ro.grf,
-		ro.conf,
-		ro.map,
-		ro.str,
-		ro.conv;
-
+import std.uni, std.math, std.array, std.stdio, std.algorithm, perfontain,
+	perfontain.misc, perfontain.mesh, perfontain.math, ro.grf, ro.conf, ro.map, ro.str, ro.conv;
 
 class AafCreator : Converter
 {
@@ -25,7 +9,7 @@ class AafCreator : Converter
 	{
 		_str = PEfs.read!StrFile(`data/texture/effect/` ~ name ~ `.str`);
 
-		foreach(ref r; _str.layers)
+		foreach (ref r; _str.layers)
 		{
 			r.anims.sort!((a, b) => a.frame < b.frame, SwapStrategy.stable);
 		}
@@ -36,15 +20,15 @@ class AafCreator : Converter
 		AafFile res;
 		StrFramePart[][] frames;
 
-		foreach(key; 0.._str.maxKey)
+		foreach (key; 0 .. _str.maxKey)
 		{
 			StrFramePart[] arr;
 
-			foreach(ref r; _str.layers)
+			foreach (ref r; _str.layers)
 			{
 				StrAnimation p;
 
-				if(calcAnim(r, key, p))
+				if (calcAnim(r, key, p))
 				{
 					Vertex[4] vs;
 
@@ -60,23 +44,28 @@ class AafCreator : Converter
 					m *= Matrix4.translate(p.pos.x, p.pos.y, 0);
 					m *= Matrix4.scale(SPRITE_PROP, -SPRITE_PROP, 1);
 
-					foreach(i, ref v; vs)
+					foreach (i, ref v; vs)
 					{
 						v.p *= m;
-						v.t = [ Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 1) ][i];// p.uv[i];
+						v.t = [
+							Vector2(0, 0), Vector2(1, 0), Vector2(0, 1),
+							Vector2(1, 1)
+						][i]; // p.uv[i];
 					}
 
 					Color c;
 
-					foreach(i, ref v; c.tupleof)
+					foreach (i, ref v; c.tupleof)
 					{
 						v = cast(ubyte)clamp(cast(uint)p.color[i], 0, 255);
 					}
 
-					auto tex = `data/texture/effect/` ~ r.texs[cast(uint)p.animTex].name.convertName;
+					auto tex = `data/texture/effect/` ~ r.texs[cast(
+								uint)p.animTex].name.charsToString;
+
 					auto mode = packModes(cast(ubyte)p.srcAlpha, cast(ubyte)p.dstAlpha);
 
-					if(!arr.length || arr.back.c != c || arr.back.mode != mode)
+					if (!arr.length || arr.back.c != c || arr.back.mode != mode)
 					{
 						arr ~= StrFramePart(c, mode);
 					}
@@ -90,13 +79,13 @@ class AafCreator : Converter
 			{
 				StrFramePart[] tmp;
 
-				foreach(ref p; arr)
+				foreach (ref p; arr)
 				{
-					if(tmp.length)
+					if (tmp.length)
 					{
 						auto b = &tmp.back;
 
-						if(b.mesh == p.mesh && b.mode == p.mode)
+						if (b.mesh == p.mesh && b.mode == p.mode)
 						{
 							b.c += p.c;
 							continue;
@@ -122,11 +111,11 @@ class AafCreator : Converter
 		{
 			auto ms = frames.map!(a => a.map!(b => b.mesh).array).join.sort().uniq.array;
 
-			foreach(arr; frames)
+			foreach (arr; frames)
 			{
 				AafFrame f;
 
-				foreach(ref p; arr)
+				foreach (ref p; arr)
 				{
 					auto idx = cast(short)ms.countUntil(p.mesh);
 					assert(idx >= 0);
@@ -137,32 +126,30 @@ class AafCreator : Converter
 				res.frames ~= f;
 			}
 
-			foreach(ref m; ms)
+			foreach (ref m; ms)
 			{
 				SubMeshInfo[] ss;
 
-				foreach(ref s; m.subs)
+				foreach (ref s; m.subs)
 				{
-					SubMeshInfo sm =
-					{
-						tex: s.tex
-					};
+					SubMeshInfo sm = {tex: s.tex};
 
 					auto vertices = s.vss.intsToType!Vertex;
 
-					foreach(i; 0..cast(uint)vertices.length / 4)
+					foreach (i; 0 .. cast(uint)vertices.length / 4)
 					{
 						uint[6] ds;
 
-						ds[0..3] = triangleOrderReversed[];
-						ds[3..$] = triangleOrder[] + 1;
+						ds[0 .. 3] = triangleOrderReversed[];
+						ds[3 .. $] = triangleOrder[] + 1;
 
 						ds[] += i * 4;
 
 						{
-							auto n = calcNormal(vertices[ds[0]].p, vertices[ds[1]].p, vertices[ds[2]].p);
+							auto n = calcNormal(vertices[ds[0]].p,
+									vertices[ds[1]].p, vertices[ds[2]].p);
 
-							if(n.z < 0)
+							if (n.z < 0)
 							{
 								ds[].reverse(); // TODO: WATTA HELL ???
 							}
@@ -184,7 +171,7 @@ class AafCreator : Converter
 
 		//meshes.length.writeln;
 
-		res.data = new AtlasHolderCreator(meshes, RENDER_SCENE, MH_DXT).process;//HolderCreator(meshes, RENDER_GUI, MH_ATLAS).process;
+		res.data = new AtlasHolderCreator(meshes, RENDER_SCENE, MH_DXT).process; //HolderCreator(meshes, RENDER_GUI, MH_ATLAS).process;
 		return res.binaryWrite;
 	}
 
@@ -193,13 +180,13 @@ private:
 	{
 		short fromId = -1, toId = -1, lastSource, lastFrame;
 
-		foreach(i, ref a; r.anims)
+		foreach (i, ref a; r.anims)
 		{
 			assert(a.frame >= 0);
 
-			if(a.frame <= key)
+			if (a.frame <= key)
 			{
-				final switch(a.type)
+				final switch (a.type)
 				{
 				case 0:
 					fromId = cast(short)i;
@@ -211,14 +198,14 @@ private:
 
 			lastFrame = max(lastFrame, cast(short)a.frame);
 
-			if(!a.type)
+			if (!a.type)
 			{
 				lastSource = max(lastSource, cast(short)a.frame);
 			}
 		}
 
 		// nothing to render
-		if(fromId < 0 || (toId < 0 && lastFrame < key))
+		if (fromId < 0 || (toId < 0 && lastFrame < key))
 		{
 			return false;
 		}
@@ -245,7 +232,7 @@ private:
 		if (toId != fromId + 1 || toId >= 0 && r.anims[toId].frame != from.frame)
 		{
 			// No other source
-			if(toId >= 0 && lastSource <= from.frame)
+			if (toId >= 0 && lastSource <= from.frame)
 			{
 				return false;
 			}
@@ -262,7 +249,7 @@ private:
 		p.angle += to.angle * delta;
 		p.color += to.color * delta;
 
-		switch(to.animType)
+		switch (to.animType)
 		{
 		case 1: // normal
 			p.animTex = from.animTex + to.animTex * delta;
@@ -305,17 +292,20 @@ private:
 	{
 		const opCmp(ref in StrMesh m)
 		{
-			if(subs.length != m.subs.length) return cast(int)subs.length - cast(int)m.subs.length;
+			if (subs.length != m.subs.length)
+				return cast(int)subs.length - cast(int)m.subs.length;
 
-			foreach(i, ref s; subs)
+			foreach (i, ref s; subs)
 			{
 				auto o = &m.subs[i];
 
-				if(s.tex ! is o.tex) return cast(long)cast(void *)s.tex - cast(long)cast(void *)o.tex < 0 ? -1 : 1;
+				if (s.tex !is o.tex)
+					return cast(long)cast(void*)s.tex - cast(long)cast(void*)o.tex < 0 ? -1 : 1;
 
 				auto r = s.vss.cmp(o.vss);
 
-				if(r) return r;
+				if (r)
+					return r;
 			}
 
 			return 0;
@@ -327,7 +317,7 @@ private:
 
 			auto idx = cast(int)subs.countUntil!(a => a.tex is im);
 
-			if(idx < 0)
+			if (idx < 0)
 			{
 				subs ~= StrSubMesh(im, vs);
 			}
