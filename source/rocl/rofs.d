@@ -32,6 +32,17 @@ final class RoFileSystem : FileSystem
 		return _arr[];
 	}
 
+	T read(T)(RoPath p)
+	{
+		T res;
+		return res;
+	}
+
+	const(void)[] get(RoPath p)
+	{
+		return new ubyte[1];
+	}
+
 protected:
 	override void doRead(string name, Rdg dg)
 	{

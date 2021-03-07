@@ -3,7 +3,12 @@ module rocl.game;
 import std, perfontain, perfontain.misc, perfontain.misc.report, ro.db, ro.str,
 	ro.conv, rocl.loaders.asp, rocl, rocl.gui, rocl.status, rocl.entity,
 	rocl.network, rocl.controls, rocl.resources, rocl.controller.npc,
-	rocl.controller.item, rocl.controller.action, rocl.controller.effect;
+	rocl.controller.item, rocl.controller.action, rocl.controller.effect, rocl.rofs;
+
+@property ROfs()
+{
+	return cast(RoFileSystem)PEfs;
+}
 
 @property ref RO()
 {

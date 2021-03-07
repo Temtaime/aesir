@@ -1,7 +1,7 @@
 module ro.map.rsm;
 
 import std.conv, std.math, std.stdio, std.array, std.range, std.algorithm,
-	std.exception, perfontain, perfontain.misc, ro.grf, ro.map, ro.conv,
+	std.exception, perfontain, perfontain.misc, ro.grf, ro.map, ro.conv, rocl.game,
 	ro.conv.map, ro.map.rsm.structs;
 
 struct RsmObject
@@ -15,10 +15,10 @@ struct RsmObject
 
 struct RsmConverter
 {
-	this(RomConverter conv, string name)
+	this(RomConverter conv, RoPath name)
 	{
 		_conv = conv;
-		_rsm = PEfs.read!RsmFile(`data/model/` ~ name);
+		_rsm = ROfs.read!RsmFile(RoPath(`data/model/`, name));
 	}
 
 	auto process()
@@ -166,7 +166,7 @@ private:
 					.filter!((ref a) => a.parent == name && meshId(a) != _main)
 					.map!((ref a) => processMesh(a, ms.boxTrans)) // ms.trans ???
 
-					
+
 
 					.array;
 

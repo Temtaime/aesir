@@ -1,7 +1,7 @@
 module ro.conv;
 import std.file, std.path, std.conv, std.range, std.getopt, std.process,
 	core.memory, perfontain, perfontain.misc, ro.conv.asp, ro.conv.map,
-	ro.conv.gui, ro.conv.all, ro.conv.item, ro.conv.effect, rocl.rofs, ro.paths;
+	ro.conv.gui, ro.conv.all, ro.conv.item, ro.conv.effect, rocl.rofs, rocl.game, ro.paths;
 
 /*auto convert(T)(string res, string path, bool delegate() checker = null)
 {
@@ -60,7 +60,7 @@ abstract class Converter(T)
 			return *p;
 		}
 
-		auto im = new Image(PEfs.get(s));
+		auto im = new Image(ROfs.get(s));
 		im.clean;
 
 		return _images[s] = im;

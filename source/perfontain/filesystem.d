@@ -52,7 +52,7 @@ class FileSystem
 			}
 			else
 			{
-				res = data.deserializeMem!T(f, l);
+				res = data.deserializeMem!T(false, f, l);
 			}
 		};
 

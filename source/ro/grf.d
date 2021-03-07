@@ -102,7 +102,7 @@ private:
 
 	void parseHeader()
 	{
-		auto h = _f[].deserializeMem!GrfHeader(true);
+		auto h = deserializeMem!GrfHeader(_f[], false);
 
 		auto buf = uncompress(h.data, h.len);
 		auto arr = buf.deserializeMem!GFiles.files;
@@ -113,7 +113,7 @@ private:
 
 			if (t.name.length && t.flags == GRF_FLAG_FILE && t.len && t.off + t.zlenAl <= _f.length)
 			{
-				_files[t.name.toLower.representation] = GrfFile(t.zlenAl, t.len, t.off);
+				_files[t.name] = GrfFile(t.zlenAl, t.len, t.off);
 			}
 		}
 	}

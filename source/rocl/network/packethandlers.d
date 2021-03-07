@@ -766,7 +766,7 @@ mixin template PacketHandlers()
 
 	void onMapChange(Pk0091 p)
 	{
-		auto map = p.mapName[].until(0).stripExtension;
+		auto map = p.mapName[].until(0).array.assumeUTF.idup.stripExtension;
 
 		{
 			RO.status.items.clear;

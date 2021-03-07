@@ -1,12 +1,12 @@
 module ro.conv.map;
-import std, perfontain, ro.map, ro.grf, ro.conf, ro.conv, utile.logger;
+import std, perfontain, ro.map, ro.grf, ro.conf, ro.conv, rocl.game, utile.logger;
 
 final class RomConverter : Converter!RomFile
 {
 	this(string n)
 	{
-		_rsw = PEfs.read!RswFile(RoPath(`data/`, n, `.rsw`));
-		_gat = PEfs.read!GatFile(RoPath(`data/`, _rsw.gat));
+		_rsw = ROfs.read!RswFile(RoPath(`data/`, n, `.rsw`));
+		_gat = ROfs.read!GatFile(RoPath(`data/`, _rsw.gat));
 
 		_name = n;
 		_mapTranslation = Vector3(_gat.width / 2f, DELTA_UP, _gat.height / 2f);
@@ -164,7 +164,7 @@ private:
 
 			try
 			{
-				res[_objs.get(this, name, negScale)] ~= mat;
+				res[_objs.get(this, RoPath(name), negScale)] ~= mat;
 			}
 			catch (Exception e)
 			{
@@ -278,7 +278,7 @@ enum DELTA_UP = -0.005f;
 
 struct RsmObjects
 {
-	auto get(RomConverter conv, string name, bool neg)
+	auto get(RomConverter conv, RoPath name, bool neg)
 	{
 		auto o = _objs.get(name, null);
 
@@ -314,7 +314,7 @@ private:
 		RsmObject obj, neg;
 	}
 
-	S*[string] _objs;
+	S*[RoPath] _objs;
 }
 
 struct LightsCalculator

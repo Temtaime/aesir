@@ -1,7 +1,7 @@
 module ro.map.gnd;
 import std.math, std.conv, std.array, std.range, std.string, std.typecons,
 	std.algorithm, perfontain, perfontain.misc, perfontain.math, ro.grf,
-	ro.map, ro.conf, ro.conv, ro.conv.map;
+	ro.map, ro.conf, ro.conv, ro.conv.map, rocl.game;
 
 struct GndConverter
 {
@@ -11,7 +11,7 @@ struct GndConverter
 		_waterHeight = height;
 
 		_conv = conv;
-		_gnd = PEfs.read!GndFile(path);
+		_gnd = ROfs.read!GndFile(path);
 	}
 
 	auto process()
@@ -44,7 +44,7 @@ struct GndConverter
 	}
 
 private:
-	alias Subs = Vertex[][string];
+	alias Subs = Vertex[][RoPath];
 	alias Grid = Surface[][];
 
 	auto surfaceOf(ushort x, ushort y, ubyte idx)
@@ -220,7 +220,7 @@ private:
 
 			foreach (ref c; grid.joiner.filter!(a => a.tex.length))
 			{
-				mi[c.tex] ~= c.va;
+				mi[RoPath(c.tex)] ~= c.va;
 			}
 		}
 
@@ -228,7 +228,7 @@ private:
 
 		foreach (t, vs; mi)
 		{
-			SubMeshInfo sm = {tex: _conv.imageOf(`data/texture/` ~ t)};
+			SubMeshInfo sm = {tex: _conv.imageOf(RoPath(`data/texture/`, t))};
 
 			with (sm.data)
 			{
@@ -257,7 +257,7 @@ private:
 			return;
 
 		// drop tex's coord check for black texture
-		auto compCoord = icmp(a.tex, `backside.bmp`) != 0;
+		auto compCoord = true; // TODO: FIX FIX FIX icmp(a.tex, `backside.bmp`) != 0;
 
 		auto va = a.va[], vb = b.va[];
 
