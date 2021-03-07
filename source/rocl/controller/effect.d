@@ -1,19 +1,7 @@
 module rocl.controller.effect;
 
-import
-		std.format,
-		std.algorithm,
-
-		perfontain,
-		perfontain.nodes.effect,
-
-		ro.str,
-		ro.conv,
-
-		rocl.game,
-		rocl.render.nodes,
-		rocl.entity.visual;
-
+import std.format, std.algorithm, perfontain, perfontain.nodes.effect, ro.str,
+	ro.conv, ro.conv.effect, rocl.game, rocl.render.nodes, rocl.entity.visual;
 
 final class EffectController
 {
@@ -31,7 +19,7 @@ final class EffectController
 	{
 		auto e = ROdb.skillEffect(id);
 
-		if(e.length)
+		if (e.length)
 		{
 			add(e[0], pos.Vector2);
 		}
@@ -44,7 +32,7 @@ final class EffectController
 		{
 			auto r = ROdb.effect(id);
 
-			if(r.length)
+			if (r.length)
 			{
 				auto e = r[0];
 				n = e[1] ? format(e[0], 1) : e[0];
@@ -58,14 +46,14 @@ final class EffectController
 
 		try
 		{
-			auto s = convert!AafFile(n, n ~ `.aaf`);
+			auto s = new AafConverter(n).convert;
 			auto e = new EffectNode(s);
 
 			e.matrix.translation = Vector3(pos.x + 0.5, ROres.heightOf(pos) + 5, -(pos.y + 0.5));
 
 			_arr ~= S(null, e, PE.tick + e.duration);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			logger.error(`effect %u: %s`, id, e.msg);
 		}
@@ -74,11 +62,11 @@ final class EffectController
 private:
 	void onTick()
 	{
-		for(uint i; i < _arr.length; )
+		for (uint i; i < _arr.length;)
 		{
 			auto s = &_arr[i];
 
-			if(PE.tick >= s.end)
+			if (PE.tick >= s.end)
 			{
 				s.n.remove;
 			}

@@ -1,19 +1,6 @@
 module rocl.loaders.asp;
-
-import
-		std,
-
-		perfontain,
-		perfontain.nodes.sprite,
-
-		ro.conv,
-		ro.conv.asp,
-
-		rocl.game,
-		rocl.paths,
-
-		utils.logger;
-
+import std, perfontain, perfontain.nodes.sprite, ro.conv, ro.conv.asp,
+	rocl.game, rocl.paths, utile.logger;
 
 enum : ubyte
 {
@@ -46,9 +33,7 @@ enum : ubyte
 
 struct AspLoadInfo
 {
-	ushort
-			id,
-			jobId;
+	ushort id, jobId;
 
 	ubyte type;
 	bool gender;
@@ -63,27 +48,26 @@ auto loadASP(in AspLoadInfo r)
 
 	logger.info3(`loading sprite: %s`, r);
 
-	string	path,
-			kpath;
+	string path, kpath;
 
 	ushort id = r.id;
 
-	final switch(r.type)
+	final switch (r.type)
 	{
 	case ASP_BODY:
-		if(id == 45 || id == 111 || id == 139)
+		if (id == 45 || id == 111 || id == 139)
 		{
 			break;
 		}
 
-		if(id < 45 || id >= 4000 && id < 6000)
+		if (id < 45 || id >= 4000 && id < 6000)
 		{
 			auto name = ROdb.jobName(id);
 
 			path = jobPath(id, r.gender);
 			kpath = format(`data/sprite/인간족/몸통/%1$s/%2$s_%1$s`, r.gender.koreanSex, name);
 		}
-		else if(id < 4000)
+		else if (id < 4000)
 		{
 			auto isNpc = id < 1000;
 
@@ -108,11 +92,12 @@ auto loadASP(in AspLoadInfo r)
 	case ASP_HEAD_TOP:
 
 		path = format(`data/sprite/head/%u_%smale.asp`, r.id, r.gender ? null : `fe`);
-		kpath = format(`data/sprite/악세사리/%1$s/%1$s_%2$s`, r.gender.koreanSex, ROdb.hatOf(r.id));
+		kpath = format(`data/sprite/악세사리/%1$s/%1$s_%2$s`,
+				r.gender.koreanSex, ROdb.hatOf(r.id));
 
 		break;
 
-	/*case ASP_WEAPON:
+		/*case ASP_WEAPON:
 		auto job = r.jobId.baseClass;
 		auto s = weaponTable[r.id]; // or id ???
 
@@ -120,24 +105,24 @@ auto loadASP(in AspLoadInfo r)
 		kpath = format(`data/sprite/인간족/%1$s/%1$s_%2$s_%3$s`, jobTable[job].name, r.gender.sexToString, s);*/
 	}
 
-	if(path.length)
+	if (path.length)
 	{
 		try
 		{
 			string s;
 
-			if(r.type == ASP_HEAD && r.palette)
+			if (r.type == ASP_HEAD && r.palette)
 			{
 				s = `:` ~ id.to!string ~ `_` ~ r.gender.koreanSex ~ `_` ~ r.palette.to!string;
 			}
 
-			auto asp = convert!AspFile(format(`%s:%u%s`, kpath.toLower, r.type, s), path);
+			auto asp = new AspConverter(format(`%s:%u%s`, kpath.toLower, r.type, s)).convert;
 			res = new SpriteObject;
 
 			res.mh = new MeshHolder(asp.data);
 			res.spr = asp.spr;
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			logger.error(e.msg);
 		}

@@ -1,8 +1,6 @@
 module ro.path;
-
 import std.math, std.array, std.algorithm, std.exception,
-
-	perfontain.math.matrix, ro.map.gat, utils.except;
+	perfontain.math.matrix, ro.map.gat, utile.except;
 
 enum
 {

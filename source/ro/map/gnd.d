@@ -1,16 +1,16 @@
 module ro.map.gnd;
-
 import std.math, std.conv, std.array, std.range, std.string, std.typecons,
 	std.algorithm, perfontain, perfontain.misc, perfontain.math, ro.grf,
 	ro.map, ro.conf, ro.conv, ro.conv.map;
 
 struct GndConverter
 {
-	this(string path, float level, float height)
+	this(RomConverter conv, RoPath path, float level, float height)
 	{
 		_waterLevel = level;
 		_waterHeight = height;
 
+		_conv = conv;
 		_gnd = PEfs.read!GndFile(path);
 	}
 
@@ -69,7 +69,7 @@ private:
 
 		auto sur = &_gnd.surs[sid];
 
-		Surface res = {tex: _gnd.texs[sur.texId].name.charsToString};
+		Surface res = {tex: _gnd.texs[sur.texId].name};
 
 		foreach (i, ref v; res.va)
 		{
@@ -228,7 +228,7 @@ private:
 
 		foreach (t, vs; mi)
 		{
-			SubMeshInfo sm = {tex: RomConverter.imageOf(`data/texture/` ~ t)};
+			SubMeshInfo sm = {tex: _conv.imageOf(`data/texture/` ~ t)};
 
 			with (sm.data)
 			{
@@ -334,6 +334,7 @@ private:
 	}
 
 	GndFile _gnd;
+	RomConverter _conv;
 
 	float _waterLevel, _waterHeight;
 }
@@ -366,14 +367,14 @@ struct GndFile
 
 	uint texturesCount, texturePathLen;
 
-	@(`length`, `texturesCount`) GndTexture[] texs;
+	@ArrayLength!(e => e.that.texturesCount) GndTexture[] texs;
 
 	uint lightsCount, gridWidth, gridHeight, gridCells;
 
-	@(`length`, `lightsCount`) GndLightData[] ld;
+	@ArrayLength!(e => e.that.lightsCount) GndLightData[] ld;
 
-	@(`uint`) GndSurface[] surs;
-	@(`length`, `height * width`) GndCell[] cells;
+	@(ArrayLength!uint) GndSurface[] surs;
+	@(ArrayLength!(e => e.that.height * e.that.width)) GndCell[] cells;
 
 	const cell(uint x, uint y)
 	{
@@ -383,7 +384,7 @@ struct GndFile
 
 struct GndTexture
 {
-	@(`length`, `STRUCT.texturePathLen`) char[] name;
+	@ArrayLength!(e => e.input.texturePathLen) const(ubyte)[] name;
 }
 
 struct GndColor
@@ -415,7 +416,7 @@ struct GndCell
 
 struct Surface
 {
-	string tex;
+	const(ubyte)[] tex;
 	Vertex[4] va;
 }
 

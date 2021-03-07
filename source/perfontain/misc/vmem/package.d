@@ -1,21 +1,8 @@
 module perfontain.misc.vmem;
+import std.range, std.typecons, std.algorithm, core.stdc.stdlib,
+	perfontain.vbo, perfontain.misc, perfontain.misc.rc, utile.logger;
 
-import
-		std.range,
-		std.typecons,
-		std.algorithm,
-
-		core.stdc.stdlib,
-
-		perfontain.vbo,
-		perfontain.misc,
-		perfontain.misc.rc,
-
-		utils.logger;
-
-public import
-				perfontain.misc.vmem.region;
-
+public import perfontain.misc.vmem.region;
 
 final class VMemAlloc : RCounted
 {
@@ -38,7 +25,7 @@ final class VMemAlloc : RCounted
 		auto p = find(cast(uint)data.length, idx);
 		auto r = new AllocRegion(p, 0, data);
 
-		if(idx >= 0)
+		if (idx >= 0)
 		{
 			_regs.insertInPlace(idx, r);
 		}
@@ -59,7 +46,7 @@ final class VMemAlloc : RCounted
 		auto a = vbo.alignment;
 		auto n = (_used + _used / 4 + a - 1) / a * a;
 
-		if(vbo.length > n)
+		if (vbo.length > n)
 		{
 			compact(n);
 		}
@@ -74,12 +61,12 @@ final class VMemAlloc : RCounted
 private:
 	void write(const(void)[] data, uint v, uint p)
 	{
-		if(v)
+		if (v)
 		{
 			auto old = data.as!uint;
 			auto tmp = ScopeArray!uint(data.length / 4);
 
-			foreach(i, ref e; tmp)
+			foreach (i, ref e; tmp)
 			{
 				e = old[i] + v;
 			}
@@ -96,24 +83,24 @@ private:
 	{
 		auto ow = len != vbo.length;
 
-		if(ow)
+		if (ow)
 		{
 			vbo.realloc(_used + len);
 		}
 
 		uint p;
 
-		foreach(r; _regs)
+		foreach (r; _regs)
 		{
 			auto nq = r.start != p;
 
-			if(nq || ow)
+			if (nq || ow)
 			{
-				if(nq)
+				if (nq)
 				{
 					r.start = p;
 
-					if(r.onMove)
+					if (r.onMove)
 					{
 						r.onMove();
 					}
@@ -128,15 +115,15 @@ private:
 
 	uint find(uint len, ref int idx)
 	{
-		if(vbo.length - _used >= len)
+		if (vbo.length - _used >= len)
 		{
 			uint p;
 
-			foreach(i, r; _regs)
+			foreach (i, r; _regs)
 			{
-				if(r.start != p)
+				if (r.start != p)
 				{
-					if(r.start - p >= len)
+					if (r.start - p >= len)
 					{
 						idx = cast(int)i;
 						return p;
@@ -146,7 +133,7 @@ private:
 				p = cast(uint)(r.start + r.data.length);
 			}
 
-			if(vbo.length - p >= len)
+			if (vbo.length - p >= len)
 			{
 				return p;
 			}

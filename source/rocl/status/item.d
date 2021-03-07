@@ -1,6 +1,6 @@
 module rocl.status.item;
 import std.meta, std.algorithm, perfontain, rocl.status, rocl.network,
-	rocl.controls, utils.logger;
+	rocl.controls, utile.logger;
 
 enum
 {

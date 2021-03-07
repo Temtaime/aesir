@@ -21,6 +21,18 @@ struct RoPath
 		return this;
 	}
 
+	ref opOpAssign(string op : `~`)(const(ubyte)[] s)
+	{
+		data ~= s;
+		return this;
+	}
+
+	ref opOpAssign(string op : `~`, size_t N)(const(char)[N] s)
+	{
+		data ~= s.representation.until(0);
+		return this;
+	}
+
 	ref opOpAssign(string op : `~`)(ubyte v)
 	{
 		data ~= v;

@@ -1,18 +1,11 @@
 module ro.map.rsm.structs;
-
-import
-		ro.map,
-
-		perfontain;
-
+import ro.map, perfontain;
 
 struct RsmMesh
 {
-	char[40]
-				name,
-				parent;
+	@(ArrayLength!(_ => 40), ZeroTerminated) const(ubyte)[] name, parent;
 
-	@(`uint`) uint[] texIds;
+	@(ArrayLength!uint) uint[] texIds;
 
 	Matrix3 matrix;
 	Vector3 translate1, translate2;
@@ -20,7 +13,7 @@ struct RsmMesh
 	float angle;
 	Vector3 axisVector, scale;
 
-	@(`uint`)
+	@(ArrayLength!uint)
 	{
 		Vector3[] vertices;
 		RsmTextureCoord[] texsInfo;
@@ -28,8 +21,7 @@ struct RsmMesh
 		FrameOrientation[] frames;
 	}
 
-	debug
-		mixin readableToString;
+	debug mixin readableToString;
 }
 
 struct RsmSurface
@@ -51,7 +43,7 @@ struct RsmTextureCoord
 
 struct RsmTextureInfo
 {
-	char[40] name;
+	@(ArrayLength!(_ => 40), ZeroTerminated) const(ubyte)[] name;
 }
 
 struct RsmFile
@@ -62,36 +54,30 @@ struct RsmFile
 		ubyte major = 1;
 	}
 
-	@(`validif`, `minor >= 4 && minor <= 5`) ubyte minor;
+	@Validate!(e => e.that.minor >= 4 && e.that.minor <= 5) ubyte minor;
 
-	uint
-			animLen,
-			shadeType;
+	uint animLen, shadeType;
 
 	ubyte alpha;
-	@(`skip`, `16`, `uint`) RsmTextureInfo[] texs;
+	@(Skip!(_ => 16), ArrayLength!uint) RsmTextureInfo[] texs;
 
-	char[40] main;
+	@(ArrayLength!(_ => 40), ZeroTerminated) const(ubyte)[] main;
 
-	@(`uint`)
+	@ArrayLength!uint
 	{
 		RsmMesh[] meshes;
-		@(`ignoreif`, `minor >= 5`, `validif`, `keyFrames.length == 0`) RsmPosKeyFrame[] keyFrames;
+		@(IgnoreIf!(e => e.that.minor >= 5), Validate!(e => e.that.keyFrames.length == 0)) RsmPosKeyFrame[] keyFrames;
 		RsmVolumeBox[] boxes;
 	}
 
-	@(`ignoreif`, `minor < 5`) static immutable ulong unused;
+	@(IgnoreIf!(e => e.that.minor < 5)) static immutable ulong unused;
 
-	debug
-		mixin readableToString;
+	debug mixin readableToString;
 }
 
 struct RsmVolumeBox
 {
-	Vector3
-				size,
-				pos,
-				rot;
+	Vector3 size, pos, rot;
 
 	uint flags;
 }

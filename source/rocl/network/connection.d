@@ -1,14 +1,5 @@
 module rocl.network.connection;
-
-import
-		std.socket,
-
-		core.bitop,
-
-		perfontain.misc,
-
-		utils.except;
-
+import std.socket, core.bitop, perfontain.misc, utile.except;
 
 struct NetReader
 {
@@ -38,18 +29,18 @@ struct NetReader
 
 	auto read(uint len, bool reset = true)
 	{
-		if(_ra.length < len)
+		if (_ra.length < len)
 		{
 			return null;
 		}
 
 		ubyte[] res;
 
-		if(key)
+		if (key)
 		{
 			res = new ubyte[len];
 
-			foreach(i, ref v; res)
+			foreach (i, ref v; res)
 			{
 				v = _ra[i];
 
@@ -67,27 +58,27 @@ struct NetReader
 				_km += c;
 			}
 
-			if(reset)
+			if (reset)
 			{
 				_ri = 0;
 			}
 		}
 		else
 		{
-			res = _ra[0..len];
+			res = _ra[0 .. len];
 		}
 
-		_ra = _ra[len..$];
+		_ra = _ra[len .. $];
 		return res;
 	}
 
 	void write(in void[] data, bool reset = true)
 	{
-		if(key)
+		if (key)
 		{
 			_wa.length += data.length;
 
-			foreach(i, v; data.toByte)
+			foreach (i, v; data.toByte)
 			{
 				v ^= _skm;
 				v ^= _wi++;
@@ -103,7 +94,7 @@ struct NetReader
 				_wa[$ - data.length + i] = v;
 			}
 
-			if(reset)
+			if (reset)
 			{
 				_wi = 0;
 			}
@@ -120,33 +111,33 @@ struct NetReader
 			ubyte[8192] arr = void;
 			auto len = _sock.receive(arr);
 
-			if(!len)
+			if (!len)
 			{
 				close;
 				throwError(`connection was closed`);
 			}
 
-			if(len == Socket.ERROR)
+			if (len == Socket.ERROR)
 			{
 				wouldHaveBlocked || throwError!`socket reading error: %s`(lastSocketError);
 			}
 			else
 			{
-				_ra ~= arr[0..len];
+				_ra ~= arr[0 .. len];
 			}
 		}
 
-		if(_wa.length)
+		if (_wa.length)
 		{
 			auto len = _sock.send(_wa);
 
-			if(len == Socket.ERROR)
+			if (len == Socket.ERROR)
 			{
 				wouldHaveBlocked || throwError!`socket writing error: %s`(lastSocketError);
 			}
 			else
 			{
-				_wa = _wa[len..$];
+				_wa = _wa[len .. $];
 			}
 		}
 	}

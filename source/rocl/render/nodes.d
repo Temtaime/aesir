@@ -1,64 +1,41 @@
 module rocl.render.nodes;
 
-import
+import std.math, std.stdio, std.range, perfontain, perfontain.math,
+	perfontain.nodes, perfontain.misc, perfontain.misc.rc,
 
-		std.math,
-		std.stdio,
-		std.range,
-
-		perfontain,
-		perfontain.math,
-		perfontain.nodes,
-
-		perfontain.misc,
-		perfontain.misc.rc,
-
-		perfontain.math.matrix,
-
-		ro.str,
-		rocl.game;
+	perfontain.math.matrix, ro.str, rocl.game;
 
 import rocl.game, rocl.paths, ro.conv, ro.conv.item, ro.conf;
-
 
 final class ItemNode : Node // TODO: BBOX ON CREATION
 {
 	this(ushort id)
 	{
-		HolderSubMesh sub =
-		{
-			len: 6
-		};
+		HolderSubMesh sub = {len: 6};
 
-		HolderData od =
-		{
-			type: RENDER_SCENE
-		};
+		HolderData od = {type: RENDER_SCENE};
 
 		od.meshes ~= HolderMesh(sub.sliceOne.dup);
 
 		{
 			auto u = ROdb.itemOf(id).res;
-			auto data = convert!RoItem(u, itemPath(u));
+			auto data = new ItemConverter(u).convert;
 
-			TextureInfo tex =
-			{
-				TEX_DXT_5,
-				[ TextureData(Vector2s(24), data.data) ]
-			};
+			TextureInfo tex = {TEX_DXT_5, [TextureData(Vector2s(24), data.data)]};
 
 			od.textures ~= tex;
 		}
 
-		auto m = Matrix4.scale(Vector3(Vector2(24), 0)) * Matrix4.scale(-SPRITE_PROP, -SPRITE_PROP, 1);
+		auto m = Matrix4.scale(Vector3(Vector2(24),
+				0)) * Matrix4.scale(-SPRITE_PROP, -SPRITE_PROP, 1);
 
-		with(od.data)
+		with (od.data)
 		{
-			foreach(i; 0..2)
+			foreach (i; 0 .. 2)
 			{
 				auto x = -0.5f * (-1) ^^ i;
 
-				foreach(j; 0..2)
+				foreach (j; 0 .. 2)
 				{
 					auto y = -0.5f * (-1) ^^ j;
 
@@ -68,7 +45,7 @@ final class ItemNode : Node // TODO: BBOX ON CREATION
 			}
 
 			indices = triangleOrder ~ triangleOrderReversed;
-			indices[3..$] += 1;
+			indices[3 .. $] += 1;
 
 			auto bb = BBox(asVertexes);
 			_q = Vector4(bb.min.xy, bb.max.xy);
@@ -82,9 +59,9 @@ final class ItemNode : Node // TODO: BBOX ON CREATION
 		RO.items.remove(this);
 	}
 
-	override void draw(in DrawInfo *di) // TODO: move in onTick
+	override void draw(in DrawInfo* di) // TODO: move in onTick
 	{
-		if(PE.shadows.passActive)
+		if (PE.shadows.passActive)
 		{
 			return;
 		}
@@ -110,20 +87,16 @@ final class ItemNode : Node // TODO: BBOX ON CREATION
 	{
 		auto u = bbox * PE.scene.viewProject;
 
-		auto
-				a = project(u.min, PE.window.size),
-				b = project(u.max, PE.window.size);
+		auto a = project(u.min, PE.window.size), b = project(u.max, PE.window.size);
 
 		auto m = PE.window.mpos;
 
 		//log(`%s %s`, a, b);
 
-		if(
-			m.x > a.x && m.x < b.x &&
-			m.y > b.y && m.y < a.y
-									)
+		if (m.x > a.x && m.x < b.x && m.y > b.y && m.y < a.y)
 		{
-			return planeIntersection(a, Vector3(a.x, b.yz), b, Vector3(PE.window.mpos, 1), Vector3(0, 0, -1));
+			return planeIntersection(a, Vector3(a.x, b.yz), b,
+					Vector3(PE.window.mpos, 1), Vector3(0, 0, -1));
 		}
 		else
 		{
@@ -152,7 +125,7 @@ final class EffectNode : Node
 		RO.effects.onRemove(this);
 	}
 
-	override void draw(in DrawInfo *di)
+	override void draw(in DrawInfo* di)
 	{
 		auto cam = PEscene.camera;
 
@@ -164,7 +137,7 @@ final class EffectNode : Node
 
 		//writeln(`-----------------------`);
 
-		foreach(ref a; f.anims)
+		foreach (ref a; f.anims)
 		{
 			DrawInfo m;
 

@@ -32,10 +32,7 @@ void main(string[] args)
 
 	try
 	{
-		if (!processConv(args))
-		{
-			RO.run(args);
-		}
+		RO.run(args);
 	}
 	catch (Throwable e)
 	{

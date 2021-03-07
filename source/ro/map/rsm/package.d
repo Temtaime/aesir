@@ -15,17 +15,15 @@ struct RsmObject
 
 struct RsmConverter
 {
-	this(string name)
+	this(RomConverter conv, string name)
 	{
+		_conv = conv;
 		_rsm = PEfs.read!RsmFile(`data/model/` ~ name);
 	}
 
 	auto process()
 	{
-		auto n = _rsm.main.charsToString;
-
-		_main = cast(int)_rsm.meshes.countUntil!((ref a) => a.name.charsToString == n);
-
+		_main = cast(int)_rsm.meshes.map!(a => a.name).countUntil(_rsm.main);
 		_main >= 0 || throwError(`cannot find main mesh`);
 
 		auto m = &_rsm.meshes[_main];
@@ -74,7 +72,7 @@ private:
 		foreach (tid, va; vertices)
 		{
 			SubMeshInfo sm = {
-				tex: RomConverter.imageOf(`data/texture/` ~ _rsm.texs[tid].name.charsToString)
+				tex: _conv.imageOf(RoPath(`data/texture/`, _rsm.texs[tid].name))
 			};
 
 			with (sm.data)
@@ -160,12 +158,12 @@ private:
 		res.mesh.subs = makeSubs(vertices);
 
 		{
-			auto name = mesh.name.charsToString;
+			auto name = mesh.name;
 
-			if (name != mesh.parent.charsToString)
+			if (name != mesh.parent)
 			{
 				res.childs = _rsm.meshes
-					.filter!((ref a) => a.parent.charsToString == name && meshId(a) != _main)
+					.filter!((ref a) => a.parent == name && meshId(a) != _main)
 					.map!((ref a) => processMesh(a, ms.boxTrans)) // ms.trans ???
 
 					
@@ -210,4 +208,6 @@ private:
 
 	int _main;
 	uint[] _meshes;
+
+	RomConverter _conv;
 }

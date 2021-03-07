@@ -1,21 +1,10 @@
 module perfontain.vbo;
-
-import
-		std.stdio,
-		std.algorithm,
-
-		perfontain,
-		perfontain.misc,
-		perfontain.config,
-		perfontain.opengl,
-		perfontain.math.matrix,
-
-		utils.except;
-
+import std.stdio, std.algorithm, perfontain, perfontain.misc,
+	perfontain.config, perfontain.opengl, perfontain.math.matrix, utile.except;
 
 enum
 {
-	VBO_DYNAMIC		= 1,
+	VBO_DYNAMIC = 1,
 }
 
 final class VertexBuffer : RCounted
@@ -47,26 +36,26 @@ final class VertexBuffer : RCounted
 		glNamedBufferSubData(id, start, data.length, data.ptr);
 	}
 
-	void realloc(uint len, in void *ptr = null)
+	void realloc(uint len, in void* ptr = null)
 	{
-		glNamedBufferData(id, _length = len, ptr, _flags & VBO_DYNAMIC ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+		glNamedBufferData(id, _length = len, ptr, _flags & VBO_DYNAMIC
+				? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 	}
 
 	void bind()
 	{
-		if(untyped)
+		if (untyped)
 		{
 			return glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, id);
 
-		ubyte	ptr,
-				size = _type.vertexSize;
+		ubyte ptr, size = _type.vertexSize;
 
 		auto arr = renderLoc[_type];
 
-		foreach(i, v; arr)
+		foreach (i, v; arr)
 		{
 			auto r = cast(uint)i;
 

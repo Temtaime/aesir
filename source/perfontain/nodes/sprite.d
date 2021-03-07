@@ -1,15 +1,7 @@
 module perfontain.nodes.sprite;
 
-import
-		std.math,
-		std.stdio,
-		std.range,
-
-		perfontain,
-		perfontain.math,
-		perfontain.nodes,
-
-		perfontain.misc;
+import std.math, std.stdio, std.range, perfontain, perfontain.math,
+	perfontain.nodes, perfontain.misc;
 
 enum
 {
@@ -40,7 +32,7 @@ struct SpriteImage
 
 struct SpriteFrame
 {
-	@(`ubyte`) SpriteImage[] images;
+	@ArrayLength!ubyte SpriteImage[] images;
 
 	Vector4 size;
 	Vector2 extra;
@@ -50,19 +42,19 @@ struct SpriteFrame
 
 struct SpriteAction
 {
-	@(`ushort`) SpriteFrame[] frames;
+	@ArrayLength!ushort SpriteFrame[] frames;
 	ushort delay;
 }
 
 struct SpriteEvent
 {
-	@(`ubyte`) string audio;
+	@ArrayLength!ubyte const(ubyte)[] audio;
 }
 
 struct Sprite
 {
-	@(`ubyte`) SpriteEvent[] events;
-	@(`ubyte`) SpriteAction[] actions;
+	@ArrayLength!ubyte SpriteEvent[] events;
+	@ArrayLength!ubyte SpriteAction[] actions;
 }
 
 final class SpriteObject : RCounted
@@ -73,15 +65,15 @@ final class SpriteObject : RCounted
 
 final class SpriteNode : Node // TODO: BBOX ON CREATION
 {
-	override void draw(in DrawInfo *di) // TODO: move in onTick
+	override void draw(in DrawInfo* di) // TODO: move in onTick
 	{
 		SpriteObject spr = sprites[0];
 		//if(!spr) return;
 
 		auto cam = PEscene.camera;
-		auto mat = cam._inversed * matrix;// * Matrix4.translate(0, 0.8, 0);
+		auto mat = cam._inversed * matrix; // * Matrix4.translate(0, 0.8, 0);
 
-		if(!PE.shadows.passActive)
+		if (!PE.shadows.passActive)
 		{
 			auto v = cam.view;
 
@@ -96,7 +88,7 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 
 		auto tm = PE._tick - _start;
 
-		if(_time > 0 && tm > _time)
+		if (_time > 0 && tm > _time)
 		{
 			_action = _next;
 			_start = PE._tick;
@@ -109,20 +101,15 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 		auto aa = (_action * 8 + fdir);
 		auto a = &spr.spr.actions[aa % $];
 
-		auto frame =	_time > 0
-									? tm * cast(uint)a.frames.length / _time
-									: tm / (
-												_factor
-														? a.delay * _factor / 100
-														: a.delay
-																	);
+		auto frame = _time > 0 ? tm * cast(uint)a.frames.length / _time
+			: tm / (_factor ? a.delay * _factor / 100 : a.delay);
 
 		auto fs = &a.frames[(directionHead < 0 || _action ? frame : directionHead) % $];
 
 		// TODO: OPTIMIZE
 		bbox = BBox(Vector3(fs.size.xy, 0), Vector3(fs.size.zw, 0)) * mat;
 
-		foreach(ref im; fs.images)
+		foreach (ref im; fs.images)
 		{
 			DrawInfo m;
 			auto c = im.color;
@@ -136,14 +123,14 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 			PE.render.toQueue(m);
 		}
 
-		foreach_reverse(i, SpriteObject s; sprites[1..$])
+		foreach_reverse (i, SpriteObject s; sprites[1 .. $])
 		{
-			if(!s)
+			if (!s)
 			{
 				continue;
 			}
 
-			if(fdir >= 3 && fdir <= 5 && (i == SPR_HEAD_MIDDLE - 1 || i == SPR_HEAD_BOTTOM - 1))
+			if (fdir >= 3 && fdir <= 5 && (i == SPR_HEAD_MIDDLE - 1 || i == SPR_HEAD_BOTTOM - 1))
 			{
 				continue;
 			}
@@ -153,11 +140,12 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 			auto cnt = cast(ushort)sa.frames.length / 3;
 			auto u = &sa.frames[cnt > 1 ? directionHead * 3 + frame % cnt : directionHead];
 
-			auto m2 = u.extra.x.isNaN ? mat : Matrix4.translate(Vector3(fs.extra - u.extra, 0)) * mat;
+			auto m2 = u.extra.x.isNaN ? mat : Matrix4.translate(Vector3(fs.extra - u.extra, 0))
+				* mat;
 
 			bbox += BBox(Vector3(u.size.xy, 0), Vector3(u.size.zw, 0)) * m2;
 
-			foreach(ref im; u.images)
+			foreach (ref im; u.images)
 			{
 				DrawInfo m;
 
@@ -170,17 +158,18 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 			}
 		}
 
-		if(_event != fs.event)
+		if (_event != fs.event)
 		{
 			_event = fs.event;
 
-			if(_event >= 0)
+			if (_event >= 0)
 			{
 				auto name = spr.spr.events[_event].audio;
 
-				if(name != `atk`) // ???
+				if (name != `atk`) // ???
 				{
-					PEaudio.play(`data/wav/` ~ name);
+					// TODO: FIX FIX FIX
+					//PEaudio.play(`data/wav/` ~ name);
 				}
 			}
 		}
@@ -188,7 +177,7 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 
 	void doAction(ubyte cur, byte next = -1, ushort time = 0, ushort factor = 0) // TODO: SEPARATE
 	{
-		if(_action != cur)
+		if (_action != cur)
 		{
 			_action = cur;
 			_start = PE._tick;
@@ -206,10 +195,7 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 private:
 	uint _start;
 
-	ushort	_time,
-			_factor;
+	ushort _time, _factor;
 
-	byte	_action = -1,
-			_next = -1,
-			_event = -1;
+	byte _action = -1, _next = -1, _event = -1;
 }

@@ -1,11 +1,5 @@
 module perfontain.filesystem;
-
-import
-		std,
-
-		perfontain.misc,
-		utils.except;
-
+import std, perfontain.misc, utile.except;
 
 enum
 {
@@ -25,19 +19,21 @@ class FileSystem
 	{
 		try
 		{
-			if(_temp.exists)
+			if (_temp.exists)
 			{
 				rmdirRecurse(_temp);
 			}
 		}
-		catch(Exception) {}
+		catch (Exception)
+		{
+		}
 	}
 
 	auto get(string name, string f = __FILE__, uint l = __LINE__)
 	{
 		struct S
 		{
-			@(`rest`) ubyte[] data;
+			@ToTheEnd ubyte[] data;
 		}
 
 		return read!S(name, f, l).data;
@@ -47,17 +43,16 @@ class FileSystem
 	{
 		T res;
 
-		Rdg dg = (data, isPath)
-		{
+		Rdg dg = (data, isPath) {
 			data.length || throwError!`can't find file %s`(f, l, name);
 
-			if(isPath)
+			if (isPath)
 			{
-				res = binaryReadFile!T(data.assumeUTF, f, l);
+				res = deserializeFile!T(data.assumeUTF, f, l);
 			}
 			else
 			{
-				res = data.binaryRead!T(false, f, l);
+				res = data.deserializeMem!T(f, l);
 			}
 		};
 
@@ -69,7 +64,7 @@ class FileSystem
 	{
 		struct S
 		{
-			@(`rest`) const(void)[] data;
+			@ToTheEnd const(void)[] data;
 		}
 
 		return write(name, S(data), t);
@@ -77,15 +72,14 @@ class FileSystem
 
 	void write(T)(string name, auto ref in T data, ubyte t = FS_DISK)
 	{
-		Wdg dg = (name)
-		{
-			if(name.length)
+		Wdg dg = (name) {
+			if (name.length)
 			{
-				name.binaryWriteFile(data);
+				name.serializeFile(data);
 				return null;
 			}
 
-			return binaryWrite(data).toByte;
+			return serializeMem(data);
 		};
 
 		doWrite(name, dg, t);
@@ -93,20 +87,20 @@ class FileSystem
 
 protected:
 	alias Rdg = void delegate(in ubyte[], bool);
-	alias Wdg = const(ubyte)[] delegate(string);
+	alias Wdg = const(ubyte)[]delegate(string);
 
 	void doRead(string name, Rdg dg)
 	{
-		if(auto p = name in _files)
+		if (auto p = name in _files)
 		{
 			return dg(*p, false);
 		}
 
-		if(!name.exists)
+		if (!name.exists)
 		{
 			name = buildPath(_temp, name);
 
-			if(!name.exists)
+			if (!name.exists)
 			{
 				return dg(null, false);
 			}
@@ -117,7 +111,7 @@ protected:
 
 	void doWrite(string name, Wdg dg, ubyte t)
 	{
-		final switch(t)
+		final switch (t)
 		{
 		case FS_MEMORY:
 			_files[name] = dg(null);

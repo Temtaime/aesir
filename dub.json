@@ -1,0 +1,52 @@
+{
+	"name": "perfontain",
+	"targetPath": "bin",
+	"buildTypes": {
+		"debug-no-info": {
+			"buildOptions": [
+				"debugMode"
+			]
+		}
+	},
+	"dependencies": {
+		"stb": "2.0.0",
+		"utile": "1.1.0",
+		"pegged": "0.4.5-beta.2",
+		"derelict-sdl2": ">=3.1.0-alpha.4"
+	},
+	"subConfigurations": {
+		"derelict-sdl2": "derelict-sdl2-static"
+	},
+	"stringImportPaths": [
+		"source/perfontain/shader/res"
+	],
+	"libs": [
+		"sdl_mixer_x64",
+		"sdl_x64",
+		"sdl_ttf_x64",
+		"lispsm_x64",
+		"nuklear_x64"
+	],
+	"dflags": [
+		"-preview=intpromote"
+	],
+	"dflags-ldc": [
+		"-ffast-math",
+		"-enable-cross-module-inlining"
+	],
+	"libs-linux": [
+		"X11",
+		"Xext",
+		"Xi",
+		"asound",
+		"stdc++"
+	],
+	"lflags-linux": [
+		"-Lutils/deps",
+		"-s"
+	],
+	"lflags-windows": [
+		"/LIBPATH:utils/deps",
+		"/manifest:embed"
+	],
+}

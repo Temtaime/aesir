@@ -3,7 +3,7 @@ module ro.conv.effect;
 import std.uni, std.math, std.array, std.stdio, std.algorithm, perfontain,
 	perfontain.misc, perfontain.mesh, perfontain.math, ro.grf, ro.conf, ro.map, ro.str, ro.conv;
 
-class AafCreator : Converter
+class AafConverter : Converter!AafFile
 {
 	this(string name)
 	{
@@ -15,7 +15,7 @@ class AafCreator : Converter
 		}
 	}
 
-	override const(void)[] process()
+	override AafFile process()
 	{
 		AafFile res;
 		StrFramePart[][] frames;
@@ -60,8 +60,7 @@ class AafCreator : Converter
 						v = cast(ubyte)clamp(cast(uint)p.color[i], 0, 255);
 					}
 
-					auto tex = `data/texture/effect/` ~ r.texs[cast(
-								uint)p.animTex].name.charsToString;
+					auto tex = RoPath(`data/texture/effect/`, r.texs[cast(uint)p.animTex].name);
 
 					auto mode = packModes(cast(ubyte)p.srcAlpha, cast(ubyte)p.dstAlpha);
 
@@ -70,7 +69,7 @@ class AafCreator : Converter
 						arr ~= StrFramePart(c, mode);
 					}
 
-					arr.back.mesh.add(tex, vs.toInts);
+					arr.back.mesh.add(this, tex, vs.toInts);
 				}
 			}
 
@@ -172,7 +171,7 @@ class AafCreator : Converter
 		//meshes.length.writeln;
 
 		res.data = new AtlasHolderCreator(meshes, RENDER_SCENE, MH_DXT).process; //HolderCreator(meshes, RENDER_GUI, MH_ATLAS).process;
-		return res.binaryWrite;
+		return res;
 	}
 
 private:
@@ -311,10 +310,9 @@ private:
 			return 0;
 		}
 
-		void add(string s, int[] vs)
+		void add(AafConverter conv, RoPath s, int[] vs)
 		{
-			auto im = Converter.imageOf(s);
-
+			auto im = conv.imageOf(s);
 			auto idx = cast(int)subs.countUntil!(a => a.tex is im);
 
 			if (idx < 0)
@@ -345,18 +343,18 @@ struct StrFile
 
 	uint fps, maxKey, layersCount;
 
-	@(`skip`, `16`, `length`, `layersCount`) StrLayer[] layers;
+	@(Skip!(_ => 16), ArrayLength!(e => e.that.layersCount)) StrLayer[] layers;
 }
 
 struct StrLayer
 {
-	@(`uint`) StrTexture[] texs;
-	@(`uint`) StrAnimation[] anims;
+	@(ArrayLength!uint) StrTexture[] texs;
+	@(ArrayLength!uint) StrAnimation[] anims;
 }
 
 struct StrTexture
 {
-	char[128] name;
+	@(ArrayLength!(_ => 128), ZeroTerminated) const(ubyte)[] name; // VERIFY LENGTH
 }
 
 struct StrAnimation

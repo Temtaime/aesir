@@ -1,26 +1,13 @@
 module rocl.loaders.map;
 
-import
-		std.stdio,
-		std.range,
-		std.array,
-		std.algorithm,
-
-		perfontain,
-		perfontain.opengl,
-
-		ro.map,
-		ro.conv,
-
-		rocl.paths,
-		rocl.render.water;
-
+import std.stdio, std.range, std.array, std.algorithm, perfontain,
+	perfontain.opengl, ro.map, ro.conv, rocl.paths, ro.conv.map, rocl.render.water;
 
 struct RomLoader
 {
 	this(string name)
 	{
-		_rom = convert!RomFile(name, name.mapPath, () => _rom.objectsData.atlased != PE.settings.useBindless);
+		_rom = new RomConverter(name).convert; // TODO: FIXME _rom.objectsData.atlased != PE.settings.useBindless
 	}
 
 	auto process(ref RomGround ground)
@@ -54,7 +41,7 @@ private:
 	{
 		auto node = asRC(new Node);
 
-		foreach(i, ref f; _rom.floor)
+		foreach (i, ref f; _rom.floor)
 		{
 			auto n = allocateRC!ObjecterNode;
 
@@ -71,7 +58,7 @@ private:
 		processObjects(node);
 		node.recalcBBox;
 
-		if(_rom.waterData.meshes)
+		if (_rom.waterData.meshes)
 		{
 			auto n = allocateRC!WaterNode(_rom);
 			n.bbox = node.bbox;
@@ -86,12 +73,9 @@ private:
 
 	void processObjects(Node node)
 	{
-		RCArray!ObjecterNode nodes = _rom
-											.nodes
-											.map!((ref a) => makeNode(a))
-											.array;
+		RCArray!ObjecterNode nodes = _rom.nodes.map!((ref a) => makeNode(a)).array;
 
-		foreach(ref r; _rom.poses)
+		foreach (ref r; _rom.poses)
 		{
 			auto n = allocateRC!ObjecterNode;
 			auto s = nodes[r.id];
@@ -122,7 +106,7 @@ private:
 		res.oris = n.oris;
 		res.matrix = n.trans;
 
-		foreach(c; n.childs.map!((ref a) => makeNode(a)))
+		foreach (c; n.childs.map!((ref a) => makeNode(a)))
 		{
 			res.childs ~= c;
 		}

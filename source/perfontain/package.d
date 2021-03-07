@@ -20,7 +20,7 @@ public import perfontain.misc, perfontain.misc.rc, perfontain.misc.dxt, perfonta
 	perfontain.math.bbox, perfontain.math.matrix, perfontain.vao, perfontain.vbo,
 	perfontain.mesh, perfontain.render, perfontain.camera, perfontain.config, perfontain.signals,
 	perfontain.submesh, perfontain.program, perfontain.sampler, perfontain.filesystem,
-	perfontain.rendertarget, stb.image, utils.except, utils.logger;
+	perfontain.rendertarget, stb.image, utile.except, utile.logger;
 
 alias PE = Engine.instance;
 

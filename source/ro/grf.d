@@ -1,14 +1,14 @@
 module ro.grf;
 import std.utf, std.conv, std.file, std.path, std.zlib, std.stdio, std.range,
 	std.array, std.mmfile, std.string, std.datetime, std.algorithm, etc.c.zlib,
+	perfontain.misc, perfontain.misc.rc, utile.except, utile.logger, utile.encoding;
 
-	perfontain.misc, perfontain.misc.rc, utils.except, utils.logger, utils.encoding;
 public import ro.paths;
 
-string charsToString(T)(in T[] str) if (T.sizeof == 1)
-{
-	return cast(string)str.toByte.until(0).array;
-}
+// string charsToString(T)(in T[] str) if (T.sizeof == 1)
+// {
+// 	return cast(string)str.toByte.until(0).array;
+// }
 
 char[N] stringToChars(uint N)(string s) // TODO: remove
 {
@@ -48,10 +48,10 @@ final class Grf : RCounted
 		GFiles arr;
 
 		foreach (n, ref f; _files)
-			arr.files ~= GrfFileImpl(cast(string)n, f.zlenAl, f.zlenAl, f.len,
+			arr.files ~= GrfFileImpl(n, f.zlenAl, f.zlenAl, f.len,
 					GRF_FLAG_FILE, f.off - GRF_HEADER_LEN); // TODO: remove cast(?)
 
-		auto buf = arr.binaryWrite;
+		auto buf = arr.serializeMem;
 
 		auto comp = compress(buf);
 		auto zl = cast(uint)comp.length;
@@ -61,7 +61,7 @@ final class Grf : RCounted
 			zlen: zl, len: cast(uint)buf.length, data: comp
 		};
 
-		binaryWrite(_f[], h, true);
+		//binaryWrite(_f[], h, true); TODO: FIX FIX FIX
 		_modified = false;
 	}
 
@@ -93,19 +93,19 @@ final class Grf : RCounted
 	}
 
 private:
-	mixin publicProperty!(GrfFile[ubyte[]], `files`);
+	mixin publicProperty!(GrfFile[const(ubyte)[]], `files`);
 
 	struct GFiles
 	{
-		@(`rest`) GrfFileImpl[] files;
+		@ToTheEnd GrfFileImpl[] files;
 	}
 
 	void parseHeader()
 	{
-		auto h = _f[].binaryRead!GrfHeader(true);
+		auto h = _f[].deserializeMem!GrfHeader(true);
 
 		auto buf = uncompress(h.data, h.len);
-		auto arr = buf.binaryRead!GFiles.files;
+		auto arr = buf.deserializeMem!GFiles.files;
 
 		foreach (ref t; arr)
 		{
@@ -174,15 +174,15 @@ struct GrfHeader
 	static immutable ver = 0x200;
 
 	// HEADER DATA BEGINS
-	@(`skip`, `off`) uint zlen;
+	@Skip!(e => e.that.off) uint zlen;
 
 	uint len;
-	@(`length`, `zlen`) const(void)[] data;
+	@ArrayLength!(e => e.that.zlen) const(void)[] data;
 }
 
 struct GrfFileImpl
 {
-	string name;
+	@ZeroTerminated const(ubyte)[] name;
 	uint zlen;
 	uint zlenAl;
 	uint len;

@@ -1,25 +1,7 @@
 module ro.sprite.act;
-
-
-import
-		std.conv,
-		std.math,
-		std.array,
-		std.stdio,
-		std.string,
-		std.algorithm,
-
-		stb.image,
-
-		perfontain,
-		perfontain.misc,
-		perfontain.nodes.sprite,
-		perfontain.math.matrix,
-
-		ro.sprite.spr,
-		ro.conv.asp,
-
-		utils.except;
+import std.conv, std.math, std.array, std.stdio, std.string, std.algorithm,
+	stb.image, perfontain, perfontain.misc, perfontain.nodes.sprite,
+	perfontain.math.matrix, ro.sprite.spr, ro.conv.asp, utile.except;
 
 struct ActSprite
 {
@@ -27,12 +9,12 @@ struct ActSprite
 	Color color;
 
 	float sx;
-	@(`ignoreif`, `STRUCT.ver < 0x204`, `default`, `sx`) float sy;
+	@(IgnoreIf!(e => e.input.ver < 0x204), Default!(e => e.that.sx)) float sy;
 
 	int rot;
 	uint type;
 
-	@(`ignoreif`, `STRUCT.ver < 0x205`) ubyte[8] waste;
+	@(IgnoreIf!(e => e.input.ver < 0x205)) ubyte[8] waste;
 }
 
 struct ActExtra
@@ -44,34 +26,34 @@ struct ActExtra
 
 struct ActFrame
 {
-	@(`skip`, `32`, `uint`) ActSprite[] parts;
+	@(Skip!(_ => 32), ArrayLength!uint) ActSprite[] parts;
 
 	int eventId;
 
-	@(`ignoreif`, `STRUCT.ver < 0x203`) uint hasExtra;
-	@(`ignoreif`, `!hasExtra`) ActExtra extra;
+	@(IgnoreIf!(e => e.input.ver < 0x203)) uint hasExtra;
+	@(IgnoreIf!(e => !e.that.hasExtra)) ActExtra extra;
 }
 
 struct ActAction
 {
-	@(`uint`) ActFrame[] frames;
+	@(ArrayLength!uint) ActFrame[] frames;
 }
 
 struct ActSound
 {
-	char[40] path;
+	@(ArrayLength!(_ => 40), ZeroTerminated) const(ubyte)[] path;
 }
 
 struct ActFile
 {
 	static immutable char[2] bom = `AC`;
-	@(`validif`, `ver > 0x200 && ver < 0x206`) ushort ver;
+	@(Validate!(e => e.that.ver > 0x200 && e.that.ver < 0x206)) ushort ver;
 
 	ushort cnt;
-	@(`length`, `cnt`, `skip`, `10`) ActAction[] acts;
+	@(Skip!(_ => 10), ArrayLength!(e => e.that.cnt)) ActAction[] acts;
 
-	@(`uint`) ActSound[] sounds;
-	@(`ignoreif`, `ver < 0x202`, `length`, `cnt`) float[] delays;
+	@(ArrayLength!uint) ActSound[] sounds;
+	@(IgnoreIf!(e => e.that.ver < 0x202), ArrayLength!(e => e.that.cnt)) float[] delays;
 }
 
 auto imageOf(ref ImageInfo info, ref in ActSprite s)

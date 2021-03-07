@@ -31,7 +31,7 @@ class WinCharSelect : GUIWindow
 				stats ~= [name, s];
 			}
 
-			stat(`Name`, c.name.charsToString);
+			//stat(`Name`, c.name.charsToString);
 			stat(`STR`, c.str);
 
 			stat(`Job`, `???`);

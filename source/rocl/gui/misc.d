@@ -101,7 +101,7 @@ mixin template MakeWindow(T, string Name)
 
 auto makeIconTex(string res)
 {
-	auto data = convert!RoItem(res, itemPath(res));
+	auto data = new ItemConverter(res).convert;
 
 	TextureInfo ti = {TEX_DXT_5, [TextureData(24.Vector2s, data.data)]};
 	return new Texture(ti);

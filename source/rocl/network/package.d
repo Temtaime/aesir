@@ -171,7 +171,7 @@ private:
 				}
 			}
 
-			auto data = p.binaryWrite;
+			auto data = p.serializeMem;
 		}
 		else
 		{
@@ -227,7 +227,7 @@ private:
 	{
 		try
 		{
-			auto p = data.binaryRead!T;
+			auto p = data.deserializeMem!T;
 
 			version (LOG_PACKETS)
 			{

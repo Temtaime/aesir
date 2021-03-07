@@ -1,14 +1,7 @@
 module perfontain.opengl;
+import std.conv, std.algorithm, utile.logger;
 
-import
-		std.conv,
-		std.algorithm,
-
-		utils.logger;
-
-public import
-				perfontain.opengl.functions;
-
+public import perfontain.opengl.functions;
 
 debug:
 package:
@@ -21,17 +14,19 @@ void enableDebug()
 	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DONT_CARE, 0, null, true);
 	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_PORTABILITY, GL_DONT_CARE, 0, null, true);
 	//glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_PERFORMANCE, GL_DONT_CARE, 0, null, true);
-	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, GL_DONT_CARE, 0, null, true);
-	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR, GL_DONT_CARE, 0, null, true);
+	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,
+			GL_DONT_CARE, 0, null, true);
+	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
+			GL_DONT_CARE, 0, null, true);
 
 	glDebugMessageCallback(&debugCallback, null);
 }
 
 void checkError(string func, string file, uint line)
 {
-	if(error.length)
+	if (error.length)
 	{
-		if(!errors.canFind(error))
+		if (!errors.canFind(error))
 		{
 			errors ~= error;
 			logger.warning(`[%s:%u]: %s - %s`, file, line, func, error);
@@ -43,7 +38,8 @@ void checkError(string func, string file, uint line)
 
 private:
 
-extern(System) void debugCallback(uint source, uint type, uint id, uint severity, uint length, in char *message, in void *userParam) nothrow
+extern (System) void debugCallback(uint source, uint type, uint id, uint severity,
+		uint length, in char* message, in void* userParam) nothrow
 {
 	error = message.to!string;
 }

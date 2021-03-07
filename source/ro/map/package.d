@@ -1,13 +1,8 @@
 module ro.map;
 
-import
-		perfontain;
+import perfontain;
 
-public import
-				ro.map.gat,
-				ro.map.rsm,
-				ro.map.gnd,
-				ro.map.rsw;
+public import ro.map.gat, ro.map.rsm, ro.map.gnd, ro.map.rsw;
 
 struct RomFile
 {
@@ -17,37 +12,27 @@ struct RomFile
 		ubyte ver = 18;
 	}
 
-	float
-			fogFar,
-			fogNear;
+	float fogFar, fogNear;
 
-	Vector3
-				fogColor,
-				ambient,
-				diffuse,
-				lightDir;
+	Vector3 fogColor, ambient, diffuse, lightDir;
 
 	RomWater water;
 	RomGround ground;
 
-	@(`ushort`) RomFloor[] floor;
-	@(`ushort`) RomNode[] nodes;
-	@(`ushort`) RomPose[] poses;
-	@(`ushort`) RomEffect[] effects;
+	@(ArrayLength!ushort) RomFloor[] floor;
+	@(ArrayLength!ushort) RomNode[] nodes;
+	@(ArrayLength!ushort) RomPose[] poses;
+	@(ArrayLength!ushort) RomEffect[] effects;
 
-	@(`ushort`) RomLight[] lights;
-	@(`uint`) ushort[] lightIndices;
+	@(ArrayLength!ushort) RomLight[] lights;
+	@(ArrayLength!uint) ushort[] lightIndices;
 
-	HolderData	objectsData,
-				waterData;
+	HolderData objectsData, waterData;
 }
 
 struct RomWater
 {
-	float	pitch,
-			speed,
-			level,
-			height;
+	float pitch, speed, level, height;
 
 	uint animSpeed;
 	ubyte type;
@@ -57,17 +42,15 @@ struct RomGround
 {
 	Vector2s size;
 
-	@(`length`, `size.x * size.y`) ubyte[] flags;
-	@(`length`, `size.x * size.y * 4`) float[] heights;
+	@(ArrayLength!(e => e.that.size.x * e.that.size.y)) ubyte[] flags;
+	@(ArrayLength!(e => e.that.size.x * e.that.size.y * 4)) float[] heights;
 }
 
 struct RomFloor
 {
 	BBox box;
 
-	uint
-			lightStart,
-			lightEnd;
+	uint lightStart, lightEnd;
 }
 
 struct RomCell
@@ -78,8 +61,8 @@ struct RomCell
 
 struct RomNode
 {
-	@(`ushort`) RomNode[] childs;
-	@(`ushort`) FrameOrientation[] oris;
+	@(ArrayLength!ushort) RomNode[] childs;
+	@(ArrayLength!ushort) FrameOrientation[] oris;
 
 	Matrix4 trans;
 	short id;
@@ -90,18 +73,14 @@ struct RomPose
 	Matrix4 pos;
 	BBox box;
 
-	uint
-			lightStart,
-			lightEnd;
+	uint lightStart, lightEnd;
 
 	ushort id;
 }
 
 struct RomLight
 {
-	Vector3
-			pos,
-			color;
+	Vector3 pos, color;
 
 	float range;
 }

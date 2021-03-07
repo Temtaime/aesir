@@ -1,19 +1,19 @@
 module ro.conv.map;
+import std, perfontain, ro.map, ro.grf, ro.conf, ro.conv, utile.logger;
 
-import std, perfontain, ro.map, ro.grf, ro.conf, ro.conv, utils.logger;
-
-final class RomConverter : Converter
+final class RomConverter : Converter!RomFile
 {
 	this(string n)
 	{
-		_rsw = PEfs.read!RswFile(`data/` ~ n ~ `.rsw`);
-		_gat = PEfs.read!GatFile(`data/` ~ _rsw.gat.charsToString);
+		_rsw = PEfs.read!RswFile(RoPath(`data/`, n, `.rsw`));
+		_gat = PEfs.read!GatFile(RoPath(`data/`, _rsw.gat));
 
 		_name = n;
 		_mapTranslation = Vector3(_gat.width / 2f, DELTA_UP, _gat.height / 2f);
 	}
 
-	override const(void)[] process()
+protected:
+	override RomFile process()
 	{
 		RomFile res;
 
@@ -24,7 +24,7 @@ final class RomConverter : Converter
 		processLightsIndices(res);
 		processFogEntries(res);
 
-		return res.binaryWrite;
+		return res;
 	}
 
 private:
@@ -49,7 +49,7 @@ private:
 
 	auto processFloor(ref RomFile f)
 	{
-		auto res = GndConverter(`data/` ~ _rsw.gnd.charsToString, f.water.level, f.water.height)
+		auto res = GndConverter(this, RoPath(`data/`, _rsw.gnd), f.water.level, f.water.height)
 			.process;
 
 		f.floor = res[0].map!(a => RomFloor(a.calcBBox)).array;
@@ -147,7 +147,7 @@ private:
 
 		foreach (ref r; objects!`model`)
 		{
-			auto name = r.fileName.charsToString;
+			auto name = r.fileName;
 			auto negScale = r.scale.fold!((a, b) => a * b) < 0;
 
 			auto mat = Matrix4.scale(r.scale / ROM_SCALE_DIV) * Matrix4.rotate(
@@ -164,7 +164,7 @@ private:
 
 			try
 			{
-				res[_objs.get(name, negScale)] ~= mat;
+				res[_objs.get(this, name, negScale)] ~= mat;
 			}
 			catch (Exception e)
 			{
@@ -278,13 +278,13 @@ enum DELTA_UP = -0.005f;
 
 struct RsmObjects
 {
-	auto get(string name, bool neg)
+	auto get(RomConverter conv, string name, bool neg)
 	{
 		auto o = _objs.get(name, null);
 
 		if (!o)
 		{
-			_objs[name] = o = new S(RsmConverter(name).process);
+			_objs[name] = o = new S(RsmConverter(conv, name).process);
 		}
 
 		if (neg)

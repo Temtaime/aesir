@@ -1,10 +1,9 @@
 module rocl.gui;
-
 import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game,
 	rocl.paths, rocl.gui.misc, rocl.network.packets, rocl.controls,
 	rocl.controls.chat, rocl.controls.status, rocl.controls.numbers,
 	rocl.status.item, rocl.controls.charselect, rocl.controls.hotkeysettings,
-	rocl.status, utils.except;
+	rocl.status, utile.except;
 
 struct IconCache
 {
@@ -39,14 +38,6 @@ final class GuiManager
 			//big = new Font(FONT_FILE, 12);
 			base = new Font(FONT_FILE, 12);
 			small = new Font(FONT_FILE, 8);
-		}
-
-		with (PE.gui)
-		{
-			auto rog = convert!RogFile(null, GUI_PATH);
-
-			holder = new MeshHolder(rog.data);
-			sizes = rog.sizes.dup;
 		}
 
 		values = new ValueManager;

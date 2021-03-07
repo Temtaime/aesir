@@ -285,7 +285,7 @@ mixin template PacketHandlers()
 		foreach (ref s; p.servers)
 		{
 			auto addr = new InternetAddress(s.ip.bswap, s.port);
-			auto name = s.name.charsToString;
+			//auto name = s.name[].until(0);
 
 			connect(addr);
 			_flags |= M_ACC_ID;
@@ -766,7 +766,7 @@ mixin template PacketHandlers()
 
 	void onMapChange(Pk0091 p)
 	{
-		auto map = p.mapName.as!char.charsToString.stripExtension;
+		auto map = p.mapName[].until(0).stripExtension;
 
 		{
 			RO.status.items.clear;

@@ -1,14 +1,5 @@
 module ro.db;
-
-import
-		std,
-
-		perfontain,
-		rocl,
-
-		utils.db,
-		utils.logger;
-
+import std, perfontain, rocl, utile.db, utile.logger;
 
 struct RoItemData
 {
@@ -43,24 +34,30 @@ final class RoDb
 
 	auto skill(string id)
 	{
-		return _db.queryOne!string(`select coalesce((select ` ~ lang ~ ` from skills where name = upper(?)), "???");`, id);
+		return _db.queryOne!string(
+				`select coalesce((select ` ~ lang ~ ` from skills where name = upper(?)), "???");`,
+				id);
 	}
 
 	auto skill(uint id)
 	{
-		return _db.queryOne!string(`select coalesce((select ` ~ lang ~ ` from skills where id = ?), "???");`, id);
+		return _db.queryOne!string(
+				`select coalesce((select ` ~ lang ~ ` from skills where id = ?), "???");`, id);
 	}
 
 	auto skilldesc(string id)
 	{
-		return _db.queryOne!string(`select coalesce((select desc_` ~ lang ~ ` from skills where name = upper(?)), "???");`, id);
+		return _db.queryOne!string(
+				`select coalesce((select desc_` ~ lang ~ ` from skills where name = upper(?)), "???");`,
+				id);
 	}
 
 	auto itemOf(ushort id)
 	{
-		auto res = _db.query!(string, string)(`select ` ~ lang ~ `, res from items where id = ?;`, id);
+		auto res = _db.query!(string,
+				string)(`select ` ~ lang ~ `, res from items where id = ?;`, id);
 
-		if(res.empty)
+		if (res.empty)
 		{
 			return new RoItemData(`???`, `사과`);
 		}
@@ -70,17 +67,20 @@ final class RoDb
 
 	auto hatOf(ushort id)
 	{
-		return _db.queryOne!string(`select coalesce((select name from hats where id = ?), "고글");`, id);
+		return _db.queryOne!string(
+				`select coalesce((select name from hats where id = ?), "고글");`, id);
 	}
 
 	auto actorOf(ushort id)
 	{
-		return _db.queryOne!string(`select coalesce((select name from actors where id = ?), "poring");`, id);
+		return _db.queryOne!string(
+				`select coalesce((select name from actors where id = ?), "poring");`, id);
 	}
 
 	auto skillEffect(uint id)
 	{
-		return _db.query!uint(`select main from sk_effects join skills using(name) where id = ?;`, id).array;
+		return _db.query!uint(`select main from sk_effects join skills using(name) where id = ?;`,
+				id).array;
 	}
 
 	auto effect(uint id)
@@ -95,7 +95,9 @@ final class RoDb
 
 	auto mapName(string n)
 	{
-		return _db.queryOne!string(`select coalesce((select value from map_names where id = e), e) from (select ? as e);`, n);
+		return _db.queryOne!string(
+				`select coalesce((select value from map_names where id = e), e) from (select ? as e);`,
+				n);
 	}
 
 	auto jobName(uint id)

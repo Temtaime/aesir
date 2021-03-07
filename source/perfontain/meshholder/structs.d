@@ -11,7 +11,7 @@ struct HolderData
 	ubyte type;
 	SubMeshData data;
 
-	@(`ushort`)
+	@(ArrayLength!ushort)
 	{
 		HolderMesh[] meshes;
 		TextureInfo[] textures;
@@ -26,5 +26,5 @@ struct HolderSubMesh
 
 struct HolderMesh
 {
-	@(`ubyte`) HolderSubMesh[] subs;
+	@(ArrayLength!ubyte) HolderSubMesh[] subs;
 }

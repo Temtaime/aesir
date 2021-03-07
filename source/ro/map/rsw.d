@@ -1,53 +1,36 @@
 module ro.map.rsw;
 
-import
-		perfontain;
-
+import perfontain;
 
 struct RswFile
 {
 	static immutable char[4] bom = `GRSW`;
 
-	@(`validif`, `major && major <= 2`) ubyte major;
-	@(`validif`, `major == 1 ? minor == 9 : minor <= 1`) ubyte minor;
+	@(Validate!(e => e.that.major && e.that.major <= 2)) ubyte major;
+	@(Validate!(e => e.that.major == 1 ? e.that.minor == 9 : e.that.minor <= 1)) ubyte minor;
 
-	char[40]
-				ini,
-				gnd,
-				gat,
-				scr;
+	@(ArrayLength!(_ => 40), ZeroTerminated) const(ubyte)[] ini, gnd, gat, scr;
 
 	/// water
 	float waterLevel;
-	@(`validif`, `waterType <= 9`) uint waterType;
+	@(Validate!(e => e.that.waterType <= 9)) uint waterType;
 
-	float
-			waterHeight,
-			waterSpeed,
-			waterPitch;
+	float waterHeight, waterSpeed, waterPitch;
 
 	uint waterAnimSpeed;
 
 	/// light
-	uint
-			longitude,
-			latitude;
+	uint longitude, latitude;
 
-	Vector3
-				diffuse,
-				ambient;
+	Vector3 diffuse, ambient;
 
 	float intensity;
 
 	/// ground
-	uint
-			gTop,
-			gBottom,
-			gLeft,
-			gRight;
+	uint gTop, gBottom, gLeft, gRight;
 
-	@(`uint`) RswObject[] objects;
-	@(`rest`) ubyte[] waste;
+	@(ArrayLength!uint) RswObject[] objects;
+	@ToTheEnd ubyte[] waste;
 }
 
 enum RswObjectType
@@ -62,62 +45,52 @@ struct RswObject
 {
 	uint type;
 
-	@(`ignoreif`, `type != 1`) RswModel model;
-	@(`ignoreif`, `type != 2`) RswLight light;
-	@(`ignoreif`, `type != 3`) RswSound sound;
-	@(`ignoreif`, `type != 4`) RswEffect effect;
+	@(IgnoreIf!(e => e.that.type != 1)) RswModel model;
+	@(IgnoreIf!(e => e.that.type != 2)) RswLight light;
+	@(IgnoreIf!(e => e.that.type != 3)) RswSound sound;
+	@(IgnoreIf!(e => e.that.type != 4)) RswEffect effect;
 }
 
 struct RswModel
 {
-	char[40] name;
+	@(ArrayLength!(_ => 40), ZeroTerminated) const(ubyte)[] name;
 
 	uint anim_type;
 	float anim_speed;
 	uint block_type;
 
-	char[80]
-				fileName,
-				node;
+	@(ArrayLength!(_ => 80), ZeroTerminated) const(ubyte)[] fileName, node;
 
-	Vector3		pos,
-				rot,
-				scale;
+	Vector3 pos, rot, scale;
 
 	mixin readableToString;
 }
 
 struct RswLight
 {
-	char[80] name;
+	@(ArrayLength!(_ => 80), ZeroTerminated) const(ubyte)[] name;
 
-	Vector3
-				pos,
-				color;
+	Vector3 pos, color;
 
 	float range;
 }
 
 struct RswSound
 {
-	char[80]
-				name,
-				path;
+	@(ArrayLength!(_ => 80), ZeroTerminated) const(ubyte)[] name, path;
 
 	Vector3 pos;
 	float vol;
 
-	uint
-			width,
-			height;
+	uint width, height;
 
 	float range;
-	@(`ignoreif`, `STRUCT.major < 2`) float cycle; // ONLY RSW 2.+, FLOAT ???
+	@(IgnoreIf!(e => e.input.major < 2)) float cycle; // ONLY RSW 2.+, FLOAT ???
 }
 
 struct RswEffect
 {
-	char[80] name;
+	@(ArrayLength!(_ => 80), ZeroTerminated) const(ubyte)[] name;
 
 	Vector3 pos;
 	uint id;

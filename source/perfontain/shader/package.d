@@ -1,26 +1,8 @@
 module perfontain.shader;
-
-import
-		std.file,
-		std.conv,
-		std.stdio,
-		std.range,
-		std.traits,
-		std.string,
-		std.typecons,
-		std.exception,
-		std.algorithm,
-
-		stb.image,
-
-		perfontain,
-		perfontain.misc,
-		perfontain.opengl,
-		perfontain.shader.lang,
-		perfontain.shader.types,
-
-		utils.except;
-
+import std.file, std.conv, std.stdio, std.range, std.traits, std.string,
+	std.typecons, std.exception, std.algorithm, stb.image, perfontain,
+	perfontain.misc, perfontain.opengl, perfontain.shader.lang,
+	perfontain.shader.types, utile.except;
 
 final class Shader : RCounted
 {
@@ -63,6 +45,6 @@ private:
 		auto str = new char[len];
 
 		glGetShaderInfoLog(id, len, null, str.ptr);
-		return str[0..$ - 1].assumeUnique;
+		return str[0 .. $ - 1].assumeUnique;
 	}
 }

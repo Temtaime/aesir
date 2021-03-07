@@ -1,15 +1,5 @@
-import
-		std.file,
-		std.path,
-		std.conv,
-		std.stdio,
-		std.array,
-		std.regex,
-		std.string,
-		std.algorithm,
-
-		pegged.grammar;
-
+import std.file, std.path, std.conv, std.stdio, std.array, std.regex,
+	std.string, std.algorithm, pegged.grammar;
 
 mixin(grammar(`
 Packets:
@@ -34,7 +24,7 @@ auto gen(in ParseTree[] arr)
 
 string gen(ref in ParseTree t)
 {
-	switch(t.name)
+	switch (t.name)
 	{
 	case `Packets.Main`:
 		return t.children.gen.join("\n\n");
@@ -43,19 +33,24 @@ string gen(ref in ParseTree t)
 		auto n = t.children.length > 1 && t.children.back.name == `Packets.Name`;
 		auto v = n ? format("\n\tenum PK_NAME = `%s`;\n", t.children.back.matches.front) : null;
 
-		return format("struct Pk%s\n{%s%-(\n\t%s%)\n\n\tmixin readableToString;\n}", t.children.front.gen, v, t.children[1..n ? $ - 1 : $].gen);
+		return format("struct Pk%s\n{%s%-(\n\t%s%)\n\n\tmixin readableToString;\n}",
+				t.children.front.gen, v, t.children[1 .. n ? $ - 1 : $].gen);
 
 	case `Packets.Field`:
-		return format("%s %s;", t.children.back.gen, t.children.front.gen ~ t.children[1..$ - 1].map!(a => a.gen.capitalize).join);
+		return format("%s %s;", t.children.back.gen,
+				t.children.front.gen ~ t.children[1 .. $ - 1].map!(a => a.gen.capitalize).join);
 
 	case `Packets.Type`:
 		auto r = t.matches.back == `?`;
 		auto u = t.children.back.matches.front;
 
-		return format(`%s%s%s`,
-									r ? "@(`rest`) " : null,
-									[ `L`: `int`, `W`: `short`, `B`: `ubyte`, `P`: `RoPos` ].get(u, `Pk` ~ u),
-									r ? `[]` : t.children.length > 1 ? `[` ~ t.matches.front ~ `]` : null);
+		return format(`%s%s%s`, r ? "@ToTheEnd " : null, [
+				`L`: `int`,
+				`W`: `short`,
+				`B`: `ubyte`,
+				`P`: `RoPos`
+				].get(u, `Pk` ~ u), r ? `[]` : t.children.length > 1
+				? `[` ~ t.matches.front ~ `]` : null);
 
 	case `Packets.Id`:
 	case `Packets.Name`:
@@ -71,5 +66,7 @@ void main()
 	auto data = buildPath(thisExePath.dirName, `packets.txt`).readText;
 	auto t = Packets(data).children.front;
 
-	std.file.write(`../../source/rocl/network/packets.d`, "module rocl.network.packets;\n\nimport\n\t\tperfontain,\n\t\trocl.network.structs;\n\n\n" ~ t.gen ~ "\n");
+	std.file.write(`../../source/rocl/network/packets.d`,
+			"module rocl.network.packets;\n\nimport\n\t\tperfontain,\n\t\trocl.network.structs;\n\n\n"
+			~ t.gen ~ "\n");
 }

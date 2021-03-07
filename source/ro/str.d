@@ -1,22 +1,6 @@
 module ro.str;
-
-import
-		std.uni,
-		std.math,
-		std.array,
-		std.stdio,
-		std.algorithm,
-
-		perfontain,
-		perfontain.misc,
-		perfontain.mesh,
-		perfontain.math,
-
-		ro.grf,
-		ro.conf,
-		ro.map,
-		ro.conv;
-
+import std.uni, std.math, std.array, std.stdio, std.algorithm, perfontain,
+	perfontain.misc, perfontain.mesh, perfontain.math, ro.grf, ro.conf, ro.map, ro.conv;
 
 struct AafFile
 {
@@ -29,12 +13,12 @@ struct AafFile
 	ubyte fps;
 
 	HolderData data;
-	@(`ushort`) AafFrame[] frames;
+	@(ArrayLength!ushort) AafFrame[] frames;
 }
 
 struct AafFrame
 {
-	@(`ushort`) AafAnim[] anims;
+	@(ArrayLength!ushort) AafAnim[] anims;
 }
 
 struct AafAnim
@@ -46,9 +30,11 @@ struct AafAnim
 
 auto toInts(ubyte N = 0, T)(T[] arr)
 {
-	auto r = arr.as!float.map!(a => cast(int)round(a * 1000)).array;
+	auto r = arr.as!float
+		.map!(a => cast(int)round(a * 1000))
+		.array;
 
-	static if(N)
+	static if (N)
 		return r.as!(int[N]);
 	else
 		return r.as!int;
@@ -56,5 +42,7 @@ auto toInts(ubyte N = 0, T)(T[] arr)
 
 auto intsToType(T)(int[] arr)
 {
-	return arr.map!(a => float(a) / 1000).array.as!T;
+	return arr.map!(a => float(a) / 1000)
+		.array
+		.as!T;
 }

@@ -1,21 +1,11 @@
 module perfontain.managers.audio;
-
-import
-		std.string,
-
-		derelict.sdl2.sdl,
-		derelict.sdl2.mixer,
-
-		perfontain,
-
-		utils.except;
-
+import std.string, derelict.sdl2.sdl, derelict.sdl2.mixer, perfontain, utile.except;
 
 final class AudioManager
 {
 	this()
 	{
-		if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024))
+		if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024))
 		{
 			logMixerError;
 			return;
@@ -34,14 +24,14 @@ final class AudioManager
 
 	void play(string name, bool loop = false)
 	{
-		if(!_ok)
+		if (!_ok)
 		{
 			return;
 		}
 
 		auto sound = _audios.get(name, null);
 
-		if(!sound)
+		if (!sound)
 		{
 			const(void)[] data;
 
@@ -49,7 +39,7 @@ final class AudioManager
 			{
 				data = PEfs.get(name);
 			}
-			catch(Exception)
+			catch (Exception)
 			{
 				logger.warning("can't find `%s' audio", name);
 				return;
@@ -58,7 +48,7 @@ final class AudioManager
 			auto mem = SDL_RWFromConstMem(data.ptr, cast(uint)data.length);
 			sound = Mix_LoadWAV_RW(mem, true);
 
-			if(!sound)
+			if (!sound)
 			{
 				logMixerError;
 				return;
@@ -69,7 +59,7 @@ final class AudioManager
 
 		int ch = Mix_PlayChannel(-1, sound, loop ? -1 : 0);
 
-		if(ch >= 0)
+		if (ch >= 0)
 		{
 			_sounds[ch] = sound;
 		}
@@ -78,7 +68,7 @@ final class AudioManager
 private:
 	void stop(int ch)
 	{
-		if(ch >= 0)
+		if (ch >= 0)
 		{
 			removeAudio(ch);
 		}
@@ -86,7 +76,7 @@ private:
 
 	void removeAudio(int ch, bool force = true)
 	{
-		if(force)
+		if (force)
 		{
 			Mix_HaltChannel(ch);
 		}
@@ -102,8 +92,8 @@ private:
 
 	bool _ok;
 
-	Mix_Chunk *[int] _sounds;
-	Mix_Chunk *[string] _audios;
+	Mix_Chunk*[int] _sounds;
+	Mix_Chunk*[string] _audios;
 }
 
 /*struct Cache(K, V)

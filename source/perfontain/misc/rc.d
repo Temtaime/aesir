@@ -1,6 +1,6 @@
 module perfontain.misc.rc;
 import std, std.experimental.allocator, std.experimental.allocator.mallocator,
-	core.memory, utils.misc, utils.logger;
+	core.memory, utile.misc, utile.logger;
 
 //version = LOG_RC;
 alias Alloc = Mallocator.instance;

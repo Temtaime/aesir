@@ -1,7 +1,6 @@
 module perfontain.managers.window;
-
 import std, perfontain.misc, perfontain, perfontain.math.matrix,
-	perfontain.opengl, utils.except, nuklear;
+	perfontain.opengl, utile.except, nuklear;
 
 public import derelict.sdl2.sdl;
 
