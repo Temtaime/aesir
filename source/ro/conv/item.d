@@ -1,14 +1,14 @@
 module ro.conv.item;
-
-import std.conv, std.range, std.array, std.format, std.string, std.algorithm,
-
-	perfontain, stb.dxt, ro.conv, rocl.gui, rocl.game;
+import std.conv, std.digest.md, std.range, std.array, std.format, std.string,
+	std.algorithm, perfontain, stb.dxt, ro.conv, rocl.gui, rocl.game;
 
 final class ItemConverter : Converter!RoItem
 {
 	this(string name)
 	{
 		_im = new Image(PEfs.get(`data/texture/유저인터페이스/item/` ~ name ~ `.bmp`));
+
+		super(name.md5Of);
 	}
 
 protected:

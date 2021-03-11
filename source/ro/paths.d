@@ -1,5 +1,5 @@
 module ro.paths;
-import std, rocl;
+import std, std.digest, rocl, utile.misc, std.ascii : toLower;
 
 struct RoPath
 {
@@ -7,6 +7,11 @@ struct RoPath
 	{
 		foreach (s; args)
 			this ~= s;
+	}
+
+	static normalized(A...)(A args)
+	{
+		return RoPath(args).data.map!(a => cast(ubyte)(a == '\\' ? '/' : a.toLower)).array.RoPath;
 	}
 
 	ref opOpAssign(string op : `~`)(in RoPath p)
@@ -37,6 +42,17 @@ struct RoPath
 	{
 		data ~= v;
 		return this;
+	}
+
+	bool opCast(T : bool)() const
+	{
+		return !!data;
+	}
+
+	string toString() const
+	{
+		return data.map!(a => a.isPrintable
+				? [cast(immutable char)a] : `\x` ~ a.toByte.toHexString).join;
 	}
 
 	immutable(ubyte)[] data;

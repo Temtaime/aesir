@@ -109,18 +109,18 @@ auto loadASP(in AspLoadInfo r)
 	{
 		try
 		{
-			string s;
+			// string s;
 
-			if (r.type == ASP_HEAD && r.palette)
-			{
-				s = `:` ~ id.to!string ~ `_` ~ r.gender.koreanSex ~ `_` ~ r.palette.to!string;
-			}
+			// if (r.type == ASP_HEAD && r.palette)
+			// {
+			// 	s = `:` ~ id.to!string ~ `_` ~ r.gender.koreanSex ~ `_` ~ r.palette.to!string;
+			// }
 
-			auto asp = new AspConverter(format(`%s:%u%s`, kpath.toLower, r.type, s)).convert;
-			res = new SpriteObject;
+			// auto asp = new AspConverter(kpath, r.type, s).convert;
+			// res = new SpriteObject;
 
-			res.mh = new MeshHolder(asp.data);
-			res.spr = asp.spr;
+			// res.mh = new MeshHolder(asp.data);
+			// res.spr = asp.spr;
 		}
 		catch (Exception e)
 		{

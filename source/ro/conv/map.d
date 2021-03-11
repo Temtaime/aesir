@@ -1,15 +1,17 @@
 module ro.conv.map;
-import std, perfontain, ro.map, ro.grf, ro.conf, ro.conv, rocl.game, utile.logger;
+import std, std.digest.md, perfontain, ro.map, ro.grf, ro.conf, ro.conv, rocl.game, utile.logger;
 
 final class RomConverter : Converter!RomFile
 {
-	this(string n)
+	this(string map)
 	{
-		_rsw = ROfs.read!RswFile(RoPath(`data/`, n, `.rsw`));
+		_rsw = ROfs.read!RswFile(RoPath(`data/`, map, `.rsw`));
 		_gat = ROfs.read!GatFile(RoPath(`data/`, _rsw.gat));
 
-		_name = n;
+		_name = map;
 		_mapTranslation = Vector3(_gat.width / 2f, DELTA_UP, _gat.height / 2f);
+
+		super(map.md5Of);
 	}
 
 protected:
@@ -61,8 +63,8 @@ private:
 		{
 			foreach (i, ref w; water)
 			{
-				auto n = format(`data/texture/워터/water%u%02u.jpg`, f.water.type, i);
-				w.subs[0].tex = new Image(PEfs.get(n));
+				auto n = RoPathMaker.water(f.water.type, cast(ushort)i);
+				w.subs[0].tex = new Image(ROfs.get(n));
 
 				with (w.subs[0].data)
 				{
@@ -228,7 +230,7 @@ private:
 		{
 			string map;
 
-			foreach (s; PEfs.get(`data/fogparametertable.txt`)
+			foreach (s; ROfs.get(`data/fogparametertable.txt`.RoPath)
 					.as!char.assumeUnique.splitter(`#`).map!strip)
 			{
 				if (s.endsWith(`.rsw`))

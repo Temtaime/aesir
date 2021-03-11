@@ -1,47 +1,26 @@
 module ro.conv;
-import std.file, std.path, std.conv, std.range, std.getopt, std.process,
-	core.memory, perfontain, perfontain.misc, ro.conv.asp, ro.conv.map,
-	ro.conv.gui, ro.conv.all, ro.conv.item, ro.conv.effect, rocl.rofs, rocl.game, ro.paths;
-
-/*auto convert(T)(string res, string path, bool delegate() checker = null)
-{
-	T value;
-
-	switch(path.extension.drop(1))
-	{
-	case `aaf`:
-		path = `effect/` ~ path;
-		break;
-
-	default:
-	}
-
-	if(path.tryLoad(value) && (!checker || checker()))
-	{
-		return value;
-	}
-
-	logger.info2(`converting %s...`, path);
-
-	{
-		[ thisExePath, `--res`, res, `--path`, path ].spawnProcess.wait;
-	}
-
-	path.tryLoad(value) || throwError(`conversion failed`);
-	return value;
-}*/
+import std.file, std.format, std.path, std.conv, std.range, std.getopt,
+	std.process, std.digest.md, core.memory, perfontain, perfontain.misc, ro.conv.asp,
+	ro.conv.map, ro.conv.gui, ro.conv.all, ro.conv.item, ro.conv.effect,
+	rocl.rofs, rocl.game, ro.paths;
 
 package:
 
 abstract class Converter(T)
 {
+	this(in ubyte[16] hash)
+	{
+		_saveHash = hash.toHexString;
+	}
+
 	T convert()
 	{
-		auto path = ``;
+		assert(_saveHash);
+		auto p = format(`converted/%s`, _saveHash);
 
 		try
 		{
-			return PEfs.read!T(path);
+			return PEfs.read!T(p);
 		}
 		catch (Exception ex)
 		{
@@ -49,7 +28,7 @@ abstract class Converter(T)
 		}
 
 		auto res = process;
-		PEfs.put(path, res.serializeMem);
+		ROfs.put(p, res.serializeMem);
 		return res;
 	}
 
@@ -68,22 +47,8 @@ abstract class Converter(T)
 
 protected:
 	T process();
+
 private:
-	//__gshared
+	string _saveHash;
 	Image[RoPath] _images;
-}
-
-bool tryLoad(T)(string path, ref T res)
-{
-	try
-	{
-		res = PEfs.read!T(path);
-		return true;
-	}
-	catch (Exception e)
-	{
-		logger.warning("can't load `%s', error: %s", path, e.msg);
-	}
-
-	return false;
 }

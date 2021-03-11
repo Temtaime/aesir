@@ -1,9 +1,8 @@
 module ro.conv.asp;
-
-import std.conv, std.math, std.path, std.file, std.stdio, std.range,
+import std.conv, std.digest.md, std.math, std.path, std.file, std.stdio, std.range,
 	std.string, std.algorithm, stb.image, perfontain, perfontain.nodes.sprite,
-
-	perfontain.math.matrix, ro.grf, ro.conf, ro.conv, ro.sprite.spr, ro.sprite.act, ro.sprite.svg;
+	perfontain.math.matrix, ro.grf, ro.conf, ro.conv, ro.sprite.spr,
+	ro.sprite.act, ro.sprite.svg, rocl.game;
 
 struct AspFile
 {
@@ -19,34 +18,38 @@ struct AspFile
 
 final class AspConverter : Converter!AspFile
 {
-	this(string name)
+	this(RoPath name, RoPath palette, ubyte offset)
 	{
-		auto arr = name.split(`:`);
-		name = arr[0];
+		_name = name;
+		_offset = offset;
+		_palette = palette;
 
-		_act = PEfs.read!ActFile(name ~ `.act`);
-		auto spr = PEfs.read!SprFile(name ~ `.spr`);
-
-		if (arr.length == 3)
-		{
-			auto p = PEfs.get(`data/palette/머리/머리` ~ arr.back ~ `.pal`);
-
-			if (p.length == 1024)
-			{
-				spr.palette = p.as!Color;
-			}
-		}
-
-		spr.palette.front = colorTransparent;
-		spr.palette[1 .. $].each!((ref c) => c.a = 255);
-
-		_info = spr.toInfo;
-		_offset = arr[1].to!ubyte;
+		super(RoPath(name, '\n', palette).data.md5Of);
 	}
 
 protected:
 	override AspFile process()
 	{
+		{
+			_act = ROfs.read!ActFile(RoPath(_name, `.act`));
+			auto spr = ROfs.read!SprFile(RoPath(_name, `.spr`));
+
+			if (_palette)
+			{
+				auto p = ROfs.get(RoPath(`data/palette/머리/머리`, _palette, `.pal`));
+
+				if (p.length == 1024)
+				{
+					spr.palette = p.as!Color;
+				}
+			}
+
+			spr.palette.front = colorTransparent;
+			spr.palette[1 .. $].each!((ref c) => c.a = 255);
+
+			_info = spr.toInfo;
+		}
+
 		Sprite spr = {
 			events: _act.sounds.map!(a => SpriteEvent(a.path)).array, actions: _act.acts.enumerate.map!(
 					a => makeAction(a.value, cast(uint)a.index)).array
@@ -152,9 +155,11 @@ private:
 		return res;
 	}
 
+	RoPath _name, _palette;
+
 	ActFile _act;
 	ImageInfo _info;
 
-	MeshInfo[] _meshes;
 	ubyte _offset;
+	MeshInfo[] _meshes;
 }

@@ -1,6 +1,5 @@
 module ro.conv.effect;
-
-import std.uni, std.math, std.array, std.stdio, std.algorithm, perfontain,
+import std.uni, std.digest.md, std.math, std.array, std.stdio, std.algorithm, perfontain,
 	perfontain.misc, perfontain.mesh, perfontain.math, ro.grf, ro.conf, ro.map, ro.str, ro.conv;
 
 class AafConverter : Converter!AafFile
@@ -13,6 +12,8 @@ class AafConverter : Converter!AafFile
 		{
 			r.anims.sort!((a, b) => a.frame < b.frame, SwapStrategy.stable);
 		}
+
+		super(name.md5Of);
 	}
 
 	override AafFile process()

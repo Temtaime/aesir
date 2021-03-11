@@ -34,13 +34,17 @@ final class RoFileSystem : FileSystem
 
 	T read(T)(RoPath p)
 	{
-		T res;
-		return res;
+		return get(p).deserializeMem!T;
 	}
 
 	const(void)[] get(RoPath p)
 	{
-		return new ubyte[1];
+		foreach (grf; grfs)
+			if (auto data = grf.get(p))
+				return data;
+
+		throwError!`file %s is not found in GRFs`(p);
+		assert(0);
 	}
 
 protected:
@@ -52,57 +56,13 @@ protected:
 		}
 		catch (Exception)
 		{
-		}
-
-		debug
-		{
-		}
-		else
-		{
-			if (auto data = _zip.get(name).ifThrown(null))
-			{
-				return dg(data, false);
-			}
-		}
-
-		try
-		{
-			super.doRead(name, dg);
-		}
-		catch (Exception e)
-		{
-			if (!PE.run || name.extension == `.wav` || name.extension == `.jpg`) // TODO: REMAKE
-			{
-				foreach (g; grfs)
-				{
-					if (auto data = g.get(name.RoPath))
-					{
-						return dg(data, false);
-					}
-				}
-			}
-
-			throw e;
+			return super.doRead(name, dg);
 		}
 	}
 
 	override void doWrite(string name, Wdg dg, ubyte t)
 	{
-		//debug
-		{
-			super.doWrite(`tmp/` ~ name, dg, t);
-		}
-		//else
-		//{
-		//	if(t == FS_DISK)
-		//	{
-		//		_op.put(name, dg(null));
-		//	}
-		//	else
-		//	{
-		//		super.doWrite(name, dg, t);
-		//	}
-		//}
+		super.doWrite(`tmp/` ~ name, dg, t);
 	}
 
 private:

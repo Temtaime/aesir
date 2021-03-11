@@ -384,7 +384,7 @@ struct GndFile
 
 struct GndTexture
 {
-	@ArrayLength!(e => e.input.texturePathLen) const(ubyte)[] name;
+	@(ArrayLength!(e => e.input.texturePathLen), ZeroTerminated) const(ubyte)[] name;
 }
 
 struct GndColor
