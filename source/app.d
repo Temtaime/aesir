@@ -25,6 +25,24 @@ void main(string[] args)
 		SetConsoleOutputCP(65001);
 	}
 
+	// {
+	// 	import utile.db, utile.encoding;
+
+	// 	scope db = new SQLite(`data/ro.db`);
+
+	// 	auto res = db.query!(uint, string)(`select id, name from weapons`).array;
+
+	// 	foreach (r; res)
+	// 	{
+	// 		auto data = r[1].encode(51949).toByte;
+
+	// 		if (r[1] != data)
+	// 		{
+	// 			db.query(`update weapons set name = ? where id = ?`, data, r[0]);
+	// 		}
+	// 	}
+	// }
+
 	PEfs = new RoFileSystem;
 
 	PE.doInit;

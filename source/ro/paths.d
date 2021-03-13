@@ -78,8 +78,9 @@ static:
 		return RoPath(`data/palette/`, X, '/', X, name, `.pal`);
 	}
 
-	auto bodySprite(bool male, string name)
+	auto bodySprite(uint id, bool male)
 	{
+		auto name = ROdb.jobName(id);
 		return RoPath("data/sprite/\xC0\xCE\xB0\xA3\xC1\xB7/\xB8\xF6\xC5\xEB/", sexPath(name, male)); // 인간족 / 몸통
 	}
 
@@ -95,14 +96,15 @@ static:
 
 	auto headSprite(ushort id, bool male)
 	{
+		auto name = id.to!string;
 		return RoPath("data/sprite/\xC0\xCE\xB0\xA3\xC1\xB7/\xB8\xD3\xB8\xAE\xC5\xEB/",
-				sexPath(id.to!string, male)); // 인간족 / 머리통
+				sexPath(name, male)); // 인간족 / 머리통
 	}
 
 	auto hatSprite(ushort id, bool male)
 	{
-		return RoPath("data/sprite/\xBE\xC7\xBC\xBC\xBB\xE7\xB8\xAE/",
-				sexPath(ROdb.hatOf(id), male)); // 악세사리
+		auto name = ROdb.hatOf(id);
+		return RoPath("data/sprite/\xBE\xC7\xBC\xBC\xBB\xE7\xB8\xAE/", sexPath(name, male)); // 악세사리
 	}
 
 	auto sex(bool male)

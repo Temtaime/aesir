@@ -227,6 +227,7 @@ private:
 	{
 		string[][string] aa;
 
+		// TODO: ANOTHER CLASS WITH CONFIGS
 		{
 			string map;
 
