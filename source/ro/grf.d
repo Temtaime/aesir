@@ -5,19 +5,6 @@ import std.utf, std.conv, std.file, std.path, std.zlib, std.stdio, std.range,
 
 public import ro.paths;
 
-// string charsToString(T)(in T[] str) if (T.sizeof == 1)
-// {
-// 	return cast(string)str.toByte.until(0).array;
-// }
-
-char[N] stringToChars(uint N)(string s) // TODO: remove
-{
-	assert(s.length <= N);
-	char[N] ret = 0;
-	ret[0 .. s.length] = s;
-	return ret;
-}
-
 final class Grf : RCounted
 {
 	this(string name, bool canWrite = false)

@@ -1,13 +1,5 @@
 module rocl.entity.misc;
-
-import
-		std.typecons,
-		std.algorithm,
-
-		perfontain,
-
-		rocl.loaders.asp;
-
+import std.typecons, std.algorithm, perfontain, rocl.loaders.asp;
 
 enum
 {
@@ -19,8 +11,7 @@ struct Walk
 	Vector2s[] path;
 	Vector2 lastPos;
 
-	uint	idx,
-			tick;
+	uint idx, tick;
 
 	ushort lastSpeed;
 }
@@ -35,11 +26,11 @@ struct ActorInfo
 {
 	this(T)(ref in T p)
 	{
-		foreach(n; __traits(allMembers, typeof(this)))
+		foreach (n; __traits(allMembers, typeof(this)))
 		{
-			static if(n != `__ctor`)
+			static if (n != `__ctor`)
 			{
-				static if(mixin(`is(typeof(p.` ~ n ~ `))`))
+				static if (mixin(`is(typeof(p.` ~ n ~ `))`))
 				{
 					mixin(n ~ `= p.` ~ n ~ `;`);
 				}
@@ -75,14 +66,14 @@ struct ActorInfo
 	ubyte deadSit;
 	short level;
 	short userFont;
-	const(ubyte)[] name;
+	string name;
 }
 
 auto writePos(PosDir v)
 {
 	ubyte[3] res;
 
-	with(v)
+	with (v)
 	{
 		res[0] = cast(ubyte)(pos.x >> 2);
 		res[1] = cast(ubyte)((pos.x << 6) | ((pos.y >> 4) & 0x3f));
@@ -96,7 +87,7 @@ auto toVec(in ubyte[3] p)
 {
 	PosDir r;
 
-	with(r)
+	with (r)
 	{
 		pos.x = p[0] << 2 | p[1] >> 6;
 		pos.y = (p[1] & 0x3f) << 4 | p[2] >> 4;
@@ -116,8 +107,7 @@ auto toVec(in ubyte[6] p)
 	to.x = ((p[2] & 0x0f) << 6) | (p[3] >> 2);
 	to.y = ((p[3] & 0x03) << 8) | p[4];
 
-	auto	sx = (p[5] & 0xf0) >> 4,
-			sy = p[5] & 0x0f;
+	auto sx = (p[5] & 0xf0) >> 4, sy = p[5] & 0x0f;
 
 	return tuple!(`pos`, `to`, `sx`, `sy`)(pos, to, sx, sy);
 }

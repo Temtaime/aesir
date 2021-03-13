@@ -20,7 +20,7 @@ abstract class Actor : RCounted
 	this(ref in ActorInfo p)
 	{
 		bl = p.bl;
-		name = `TODO: FIX FIX FIX`; // p.name.charsToString;
+		name = p.name;
 
 		ent = new Entity(p.class_, p.type, _gender = !!p.gender);
 		ent.speed = p.speed;

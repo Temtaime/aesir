@@ -8,7 +8,6 @@
 			"archType": "x86_64",
 			"buildType": "debug",
 			"configuration": "application",
-			"_generated": true,
 			"problemMatcher": [
 				"$dmd"
 			],
@@ -21,6 +20,22 @@
 				"isDefault": true
 			},
 			"label": "Build debug"
+		},
+		{
+			"type": "dub",
+			"run": true,
+			"compiler": "dmd",
+			"archType": "x86_64",
+			"buildType": "debug",
+			"configuration": "application",
+			"problemMatcher": [
+				"$dmd"
+			],
+			"options": {
+				"cwd": "utils/packets"
+			},
+			"group": "build",
+			"label": "Packet gen"
 		},
 		{
 			"label": "Run",

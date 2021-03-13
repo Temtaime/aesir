@@ -1,14 +1,14 @@
 // ----------------------------------------- STRUCTS -----------------------------------------
 
-CharData <char id>.L <base exp>.L <zeny>.L <job exp>.L <job lvl>.L <waste>.20B <stat points>.W <hp>.L <max hp>.L <sp>.W <max sp>.W <speed>.W <class_>.W <hair style>.W <body_>.W <weapon>.W <base lvl>.W <skill points>.W <head bottom>.W <shield>.W <head top>.W <head middle>.W <hair color>.W <clothes color>.W <name>.24B <str>.B <agi>.B <vit>.B <int_>.B <dex>.B <luk>.B <slot>.W <rename>.W <map>.16B <delete time>.L <robe>.L <char moves>.L <rename2>.L <sex>.B
+CharData <char id>.L <base exp>.L <zeny>.L <job exp>.L <job lvl>.L <waste>.20B <stat points>.W <hp>.L <max hp>.L <sp>.W <max sp>.W <speed>.W <class_>.W <hair style>.W <body_>.W <weapon>.W <base lvl>.W <skill points>.W <head bottom>.W <shield>.W <head top>.W <head middle>.W <hair color>.W <clothes color>.W <name>.24Z <str>.B <agi>.B <vit>.B <int_>.B <dex>.B <luk>.B <slot>.W <rename>.W <map>.16Z <delete time>.L <robe>.L <char moves>.L <rename2>.L <sex>.B
 
-ServerInfo <ip>.L <port>.W <name>.20B <users count>.W <waste>.132B
+ServerInfo <ip>.L <port>.W <name>.20Z <users count>.W <waste>.132B
 
 StackableItem <idx>.W <id>.W <type>.B <amount>.W <equip>.L <cards>.4W <expire time>.L <flags>.B
 
 EquipItem <idx>.W <id>.W <type>.B <equip>.L <equip2>.L <refine>.B <cards>.4W <expire time>.L <bound>.W <look>.W <random opt>.B <options>.25B <flags>.B
 
-Skill <skill id>.W <type>.L <level>.W <sp cost>.W <attack range>.W <skill name>.24B <upgradable>.B
+Skill <skill id>.W <type>.L <level>.W <sp cost>.W <attack range>.W <skill name>.24Z <upgradable>.B
 Hotkey <is skill>.B <id>.L <count>.W
 
 ItemSell <idx>.W <price>.L <overcharge price>.L
@@ -16,11 +16,11 @@ ItemBuy <price>.L <discount price>.L <type>.B <id>.W
 ToBuy <amount>.W <id>.W
 ToSell <idx>.W <amount>.W
 
-MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
+MapLoginData <char id>.L <map>.16Z <ip>.L <port>.W
 
 // ----------------------------------------- LOGIN SERVER -----------------------------------------
 
-0064 <version_>.L <username>.24B <password>.24B <client type>.B
+0064 <version_>.L <username>.24Z <password>.24Z <client type>.B
 0ac4 <auth code>.L <account id>.L <login id>.L <waste>.30B <gender>.B <waste2>.17B <servers>.ServerInfo? (AC_ACCEPT_LOGIN3)
 
 // ----------------------------------------- CHAR SERVER -----------------------------------------
@@ -28,7 +28,7 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 0065 <account id>.L <auth code>.L <login id>.L <client type>.W <gender>.B
 006b <max slots>.B <availiable slots>.B <premium slots>.B <waste>.20B <chars>.CharData?
 
-0a39 <name>.24B <slot>.B <hair color>.W <hair style>.W <starting job ID>.W <Unknown>.W <sex>.B
+0a39 <name>.24Z <slot>.B <hair color>.W <hair style>.W <starting job ID>.W <Unknown>.W <sex>.B
 006d <data>.CharData
 006e <code>.B
 
@@ -51,16 +51,14 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 
 08a8 <dest>.P (CZ_REQUEST_MOVE2)
 
-09fd <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <tick>.L <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <walk data>.6B <waste>.W <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.B?
-
-09ff <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <position>.3B <waste>.W <dead sit>.B <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.B?
-
-09fe <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <position>.3B <waste>.W <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.B?
+09fd <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <tick>.L <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <walk data>.6B <waste>.W <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.S?
+09ff <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <position>.3B <waste>.W <dead sit>.B <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.S?
+09fe <type>.B <bl>.L <cid>.L <speed>.W <opt1>.W <opt2>.W <option>.L <class_>.W <hair style>.W <weapon>.W <shield>.W <head bottom>.W <head top>.W <head middle>.W <hair color>.W <cloth color>.W <dir head>.W <robe>.W <guild>.L <emblem>.W <manner>.W <opt3>.L <karma>.B <gender>.B <position>.3B <waste>.W <level>.W <user font>.W <max hp>.L <hp>.L <boss>.B <body_>.W <name>.S?
 
 0360 <client tick>.L (CZ_REQUEST_TIME2)
 
 080e <account id>.L <hp>.L <max hp>.L (ZC_NOTIFY_HP_TO_GROUPM_R2)
-0131 <owner id>.L <message>.80B (ZC_STORE_ENTRY)
+0131 <owner id>.L <message>.80Z (ZC_STORE_ENTRY)
 00b0 <var id>.W <value>.L (ZC_PAR_CHANGE)
 0141 <status id>.L <base status>.L <plus status>.L (ZC_COUPLESTATUS)
 
@@ -84,8 +82,8 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 00f2 <current count>.W <max count>.W (ZC_NOTIFY_STOREITEM_COUNTINFO)
 00f6 <index>.W <amount>.L (ZC_DELETE_ITEM_FROM_STORE)
 0a0a <idx>.W <amount>.L <id>.W <type>.B <flags>.B <attr>.B <refine>.B <cards>.4W <random opt>.25B (ZC_ADD_ITEM_TO_STORE3)
-0995 <name>.24B <items>.StackableItem?
-0a10 <name>.24B <items>.EquipItem?
+0995 <name>.24Z <items>.StackableItem?
+0a10 <name>.24Z <items>.EquipItem?
 
 010f <skills>.Skill? (ZC_SKILLINFO_LIST)
 0112 <skill id>.W (CZ_UPGRADE_SKILLLEVEL)
@@ -114,17 +112,17 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 0087 <walk start time>.L <walk data>.6B (ZC_NOTIFY_PLAYERMOVE_SELF)
 
 0080 <id>.L <type>.B (ZC_NOTIFY_VANISH)
-0091 <map name>.16B <x>.W <y>.W (ZC_NPCACK_MAPMOVE)
+0091 <map name>.16Z <x>.W <y>.W (ZC_NPCACK_MAPMOVE)
 
 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3)
 
-00f3 <text>.B?
-00b4 <npc id>.L <message>.B? (ZC_SAY_DIALOG)
+00f3 <text>.Z?
+00b4 <npc id>.L <message>.Z? (ZC_SAY_DIALOG)
 
 00b5 <npc id>.L (ZC_WAIT_DIALOG)
 00b6 <npc id>.L (ZC_CLOSE_DIALOG)
 
-00b7 <npc id>.L <menu items>.B? (ZC_MENU_LIST)
+00b7 <npc id>.L <menu items>.Z? (ZC_MENU_LIST)
 
 0142 <npc id>.L (ZC_OPEN_EDITDLG)
 01d4 <npc id>.L (ZC_OPEN_EDITDLGSTR)
@@ -133,13 +131,13 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 00b8 <npc id>.L <choice>.B (CZ_CHOOSE_MENU)
 00b9 <npc id>.L (CZ_REQ_NEXT_SCRIPT)
 0143 <npc id>.L <value>.L (CZ_INPUT_EDITDLG)
-01d5 <npc id>.L <str>.B? (CZ_INPUT_EDITDLGSTR)
+01d5 <npc id>.L <str>.Z? (CZ_INPUT_EDITDLGSTR)
 0146 <npc id>.L (CZ_CLOSE_DIALOG_CLIENT)
 
-008d <bl>.L <text>.B? (ZC_NOTIFY_CHAT)
-008e <message>.B? (ZC_NOTIFY_PLAYERCHAT)
-017f <message>.B? (ZC_GUILD_CHAT)
-02c1 <id>.L <color>.L <message>.B? (ZC_NPC_CHAT)
+008d <bl>.L <text>.Z? (ZC_NOTIFY_CHAT)
+008e <message>.Z? (ZC_NOTIFY_PLAYERCHAT)
+017f <message>.Z? (ZC_GUILD_CHAT)
+02c1 <id>.L <color>.L <message>.Z? (ZC_NPC_CHAT)
 
 0437 <target id>.L <action>.B (CZ_REQUEST_ACT2)
 
@@ -161,7 +159,7 @@ MapLoginData <char id>.L <map>.16B <ip>.L <port>.W
 
 // trading
 
-01f4 <nick>.24B <charid>.L <baselvl>.W (ZC_REQ_EXCHANGE_ITEM2)
+01f4 <nick>.24Z <charid>.L <baselvl>.W (ZC_REQ_EXCHANGE_ITEM2)
 01f5 <result>.B <charid>.L <baselvl>.W (ZC_ACK_EXCHANGE_ITEM2)
 0a09 <id>.W <type>.B <amount>.L <flags>.B <attr>.B <refine>.B <cards>.4W <random opt>.25B (ZC_ADD_EXCHANGE_ITEM3)
 00ea <index>.W <result>.B (ZC_ACK_ADD_EXCHANGE_ITEM)

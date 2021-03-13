@@ -156,14 +156,15 @@ private:
 
 				static if (is(typeof(n) : string))
 				{
-					static if (isStaticArray!U)
-					{
-						v[0 .. min($, n.length)] = n.toByte;
-					}
-					else
-					{
-						v = n.toByte;
-					}
+					// static if (isStaticArray!U)
+					// {
+					// 	v[0 .. min($, n.length)] = n.toByte;
+					// }
+					// else
+					// {
+					// 	v = n.toByte;
+					// }
+					v = n;
 				}
 				else
 				{

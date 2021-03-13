@@ -17,6 +17,8 @@ Packets:
 	Comment		<~ "//" (!eol .)* eol
 `));
 
+enum TypeMap = [`L` : `int`, `W` : `short`, `B` : `ubyte`, `P` : `RoPos`];
+
 auto gen(in ParseTree[] arr)
 {
 	return arr.map!(a => gen(a));
@@ -44,13 +46,21 @@ string gen(ref in ParseTree t)
 		auto r = t.matches.back == `?`;
 		auto u = t.children.back.matches.front;
 
-		return format(`%s%s%s`, r ? "@ToTheEnd " : null, [
-				`L`: `int`,
-				`W`: `short`,
-				`B`: `ubyte`,
-				`P`: `RoPos`
-				].get(u, `Pk` ~ u), r ? `[]` : t.children.length > 1
-				? `[` ~ t.matches.front ~ `]` : null);
+		auto isStr = u == `S`;
+		auto len = t.children.length > 1 ? t.matches.front : null;
+
+		if (u == `Z` || isStr)
+		{
+			assert(len || r);
+
+			if (r)
+				return `@(ToTheEnd` ~ (isStr ? null : `, ZeroTerminated`) ~ `) string`;
+
+			return format(`@(ArrayLength!(_ => %s), ZeroTerminated) string`, len);
+		}
+
+		return format(`%s%s%s`, r ? "@ToTheEnd " : null, TypeMap.get(u, `Pk` ~ u),
+				r ? `[]` : (len ? '[' ~ len ~ ']' : null));
 
 	case `Packets.Id`:
 	case `Packets.Name`:
@@ -63,10 +73,14 @@ string gen(ref in ParseTree t)
 
 void main()
 {
-	auto data = buildPath(thisExePath.dirName, `packets.txt`).readText;
-	auto t = Packets(data).children.front;
+	auto dir = thisExePath.dirName;
 
-	std.file.write(`../../source/rocl/network/packets.d`,
-			"module rocl.network.packets;\n\nimport\n\t\tperfontain,\n\t\trocl.network.structs;\n\n\n"
-			~ t.gen ~ "\n");
+	auto data = buildPath(dir, `packets.txt`).readText;
+	auto result = buildPath(dir, `../../source/rocl/network/packets.d`);
+
+	auto t = Packets(data).children.front;
+	auto s = "module rocl.network.packets;\n\nimport\n\t\tperfontain,\n\t\trocl.network.structs;\n\n\n"
+		~ t.gen ~ "\n";
+
+	s.toFile(result);
 }

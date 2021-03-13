@@ -750,7 +750,7 @@ mixin template PacketHandlers()
 			{
 				RO.status.skills ~= u;
 
-				u.name = r.skillName[].toStr.toLower;
+				u.name = r.skillName[].toLower;
 				u.id = r.skillId;
 				u.type = cast(ubyte)r.type;
 
@@ -766,7 +766,7 @@ mixin template PacketHandlers()
 
 	void onMapChange(Pk0091 p)
 	{
-		auto map = p.mapName[].until(0).array.assumeUTF.idup.stripExtension;
+		auto map = p.mapName.stripExtension;
 
 		{
 			RO.status.items.clear;
@@ -809,7 +809,7 @@ mixin template PacketHandlers()
 
 	void onNpcMessage(Pk00b4 p)
 	{
-		ROnpc.mes(p.message.toStr, p.npcId);
+		ROnpc.mes(p.message, p.npcId);
 	}
 
 	void onNpcWait(Pk00b5 p)
@@ -824,13 +824,13 @@ mixin template PacketHandlers()
 
 	void onNpcSelect(Pk00b7 p)
 	{
-		ROnpc.select(p.menuItems.toStr);
+		ROnpc.select(p.menuItems);
 	}
 
 	void onChatPlayer(Pk008d p)
 	{
 		auto c = Color(0, 255, 0, 255);
-		auto s = p.text.toStr;
+		auto s = p.text;
 
 		alias F = (a) { a.ent.info.msg(s, c); };
 
@@ -841,7 +841,7 @@ mixin template PacketHandlers()
 	void onPlayerChat(Pk008e p)
 	{
 		auto c = Color(0, 255, 0, 255);
-		auto s = p.message.toStr;
+		auto s = p.message;
 
 		if (ROent.self)
 		{
@@ -853,12 +853,12 @@ mixin template PacketHandlers()
 
 	void onGuildChat(Pk017f p)
 	{
-		chat(p.message.toStr, Color(180, 250, 180, 255));
+		chat(p.message, Color(180, 250, 180, 255));
 	}
 
 	void onDisplayMessage(Pk02c1 p)
 	{
-		chat(p.message.toStr, Color.fromInt((p.color << 8) | 255));
+		chat(p.message, Color.fromInt((p.color << 8) | 255));
 	}
 
 	NetStatus st;

@@ -6,7 +6,8 @@ final class ItemConverter : Converter!RoItem
 {
 	this(string name)
 	{
-		_im = new Image(ROfs.get(RoPathMaker.itemIcon(name)));
+		auto path = RoPathMaker.itemIcon(name);
+		_im = new Image(ROfs.get(path));
 
 		super(name.md5Of);
 	}
