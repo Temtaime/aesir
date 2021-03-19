@@ -310,28 +310,27 @@ abstract class Icon
 {
 	this()
 	{
-		_w = Widget.create;
+		_widget = Widget.create;
 	}
 
 	void draw();
 protected:
 	mixin NuklearBase;
-
-	string tooltip();
+	mixin publicProperty!(Widget, `widget`);
 
 	bool draw(Texture tex)
 	{
-		if (_w)
+		if (_widget)
 		{
-			auto space = _w.space;
-			auto canvas = _w.canvas;
+			auto space = _widget.space;
+			auto canvas = _widget.canvas;
 
 			assert(space.w == 36);
 			assert(space.h == 36);
 
 			auto img = nk_image_ptr(cast(void*)tex);
 
-			if (_w.input && nk_input_is_mouse_hovering_rect(_w.input, space))
+			if (_widget.mouseInside)
 			{
 				nk_fill_rect(canvas, space, 0, ctx.style.selectable.pressed_active.data.color);
 
@@ -344,13 +343,14 @@ protected:
 			else
 				nk_draw_image(canvas, nk_rect(space.x + 6, space.y + 6, 24, 24),
 						&img, nk_color(255, 255, 255, 255));
+
 			return true;
 		}
 
 		return false;
 	}
 
-	Widget _w;
+	string tooltip();
 }
 
 final class ItemIcon : Icon
@@ -374,7 +374,7 @@ protected:
 		if (_m.amount == 1 || _m.source == ITEM_SHOP)
 			return;
 
-		auto space = _w.space;
+		auto space = _widget.space;
 		auto text = _m.amount.to!string;
 
 		auto w = widthFor(text);
@@ -384,11 +384,11 @@ protected:
 		foreach (x; -1 .. 2)
 			foreach (y; -1 .. 2)
 				if (x || y)
-					nk_draw_text(_w.canvas, nk_rect(r.x + x, r.y + y, r.w,
+					nk_draw_text(_widget.canvas, nk_rect(r.x + x, r.y + y, r.w,
 							r.h), text.ptr, cast(uint)text.length, ctx.style.font,
 							nk_color.init, nk_color(0, 0, 0, 255));
 
-		nk_draw_text(_w.canvas, r, text.ptr, cast(uint)text.length,
+		nk_draw_text(_widget.canvas, r, text.ptr, cast(uint)text.length,
 				ctx.style.font, nk_color.init, nk_color(255, 255, 255, 255));
 	}
 

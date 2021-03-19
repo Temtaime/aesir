@@ -43,11 +43,11 @@ string gen(ref in ParseTree t)
 				t.children.front.gen ~ t.children[1 .. $ - 1].map!(a => a.gen.capitalize).join);
 
 	case `Packets.Type`:
-		auto r = t.matches.back == `?`;
-		auto u = t.children.back.matches.front;
+		auto u = t.children.back.gen;
+		auto len = t.children.length > 1 ? t.matches.front : null;
 
 		auto isStr = u == `S`;
-		auto len = t.children.length > 1 ? t.matches.front : null;
+		auto r = t.matches.back == `?`;
 
 		if (u == `Z` || isStr)
 		{

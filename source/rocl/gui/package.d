@@ -3,7 +3,7 @@ import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game,
 	rocl.paths, rocl.gui.misc, rocl.network.packets, rocl.controls,
 	rocl.controls.chat, rocl.controls.status, rocl.controls.numbers,
 	rocl.status.item, rocl.controls.charselect, rocl.controls.hotkeysettings,
-	rocl.status, utile.except;
+	rocl.controller.npc, rocl.status, utile.except;
 
 struct IconCache
 {
@@ -57,12 +57,15 @@ final class GuiManager
 		{
 			if (_isGame)
 			{
+				npc.draw;
 				inv.draw;
 				chat.draw;
 				status.draw;
 
 				if (shop)
 					shop.draw;
+
+				kafra.draw;
 			}
 		}
 	}
@@ -81,6 +84,9 @@ final class GuiManager
 				RO.status.param(SP_ZENY).value = zeny;
 				RO.status.param(SP_STATUSPOINT).value = statPoints;
 			}
+
+			inv = new WinInventory;
+			kafra = new WinKafra;
 
 			//status.show;
 
@@ -124,15 +130,19 @@ final class GuiManager
 
 	RoChat chat;
 
+	NpcController npc;
+
 	WinBase base;
 	//WinSkills skills;
 	WinStatus status;
-	WinInventory inv;
 	WinHotkeys hotkeys;
 	IconCache iconCache;
 
 	RC!WinShop shop;
 	RC!WinLogin login;
+
+	RC!WinKafra kafra;
+	RC!WinInventory inv;
 
 	//mixin MakeWindow!(WinStorage, `store`);
 	//mixin MakeWindow!(WinTrading, `trading`);

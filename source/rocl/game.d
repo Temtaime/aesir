@@ -35,9 +35,9 @@ import std, perfontain, perfontain.misc, perfontain.misc.report, ro.db, ro.str,
 	return RO._pmgr;
 }
 
-@property ROnpc()
+ref ROnpc() @property
 {
-	return RO._npc;
+	return RO.gui.npc;
 }
 
 final class Game
@@ -164,11 +164,9 @@ private:
 		_emgr.process;
 	}
 
-	mixin createCtorsDtors!(_rmgr, _db, gui, _emgr, _pmgr, _npc, action, status, items, effects);
+	mixin createCtorsDtors!(_rmgr, _db, gui, _emgr, _pmgr, action, status, items, effects);
 
 	RoDb _db;
-
-	NpcController _npc;
 	PacketManager _pmgr;
 	EntityManager _emgr;
 	ResourcesManager _rmgr;

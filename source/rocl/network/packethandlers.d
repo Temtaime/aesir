@@ -25,7 +25,7 @@ mixin template PacketHandlers()
 	{
 		s = format(`%s : %s`, ROent.self.name, s);
 
-		send!Pk00f3(s ~ '\0');
+		send!Pk00f3(s);
 	}
 
 	void createChar(string name, ubyte color, ubyte style)
@@ -337,30 +337,26 @@ mixin template PacketHandlers()
 	/// ====================================== KAFRA ======================================
 	void onKafraItems(Pk0995 p)
 	{
-		//RO.gui.createStore;
-
 		foreach (ref v; p.items)
 		{
-			//RO.gui.store.items.add(new Item(v));
+			RO.gui.kafra.add(new Item(v));
+		}
+	}
+
+	void onKafraEquipItems(Pk0a10 p)
+	{
+		foreach (ref v; p.items)
+		{
+			RO.gui.kafra.add(new Item(v));
 		}
 	}
 
 	void onKafraItem(Pk0a0a p)
 	{
-		//RO.gui.store.items.add(new Item(p));
+		RO.gui.kafra.add(new Item(p));
 	}
 
-	void onKafraEquipItems(Pk0a10 p)
-	{
-		//RO.gui.createStore;
-
-		foreach (ref v; p.items)
-		{
-			//RO.gui.store.items.add(new Item(v));
-		}
-	}
-
-	void onKafraRemoved(Pk00f6 p)
+	void onKafraItemRemoved(Pk00f6 p)
 	{
 		// if (auto e = RO.gui.store.items.getIdx(p.index))
 		// {
@@ -377,7 +373,12 @@ mixin template PacketHandlers()
 
 	void onKafraClose(Pk00f8 p)
 	{
-		//RO.gui.removeStore;
+		RO.gui.kafra.remove;
+	}
+
+	void onKafraAmount(Pk00f2 p)
+	{
+		RO.gui.kafra.amount(p.currentCount, p.maxCount);
 	}
 
 	/// ====================================== ITEM DROP ======================================
@@ -769,6 +770,7 @@ mixin template PacketHandlers()
 		auto map = p.mapName.stripExtension;
 
 		{
+			ROnpc.remove;
 			RO.status.items.clear;
 
 			ROent.onMap(map, Vector2s(p.x, p.y));
@@ -824,7 +826,10 @@ mixin template PacketHandlers()
 
 	void onNpcSelect(Pk00b7 p)
 	{
-		ROnpc.select(p.menuItems);
+		enum SEP = ':';
+		auto arr = p.menuItems.stripRight(SEP).split(SEP);
+
+		ROnpc.select(arr);
 	}
 
 	void onChatPlayer(Pk008d p)

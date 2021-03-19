@@ -1,5 +1,4 @@
 module perfontain.managers.gui.misc;
-
 import std, perfontain, std.uni : isWhite;
 
 enum COMBO_SCROLL_ITEMS_CNT = 8;
@@ -83,11 +82,27 @@ mixin template NuklearBase()
 		extern (C) int function(nk_context*) _pop;
 	}
 
+	struct Popup
+	{
+		mixin NuklearStruct!(`popup_end`, true);
+
+		this(string name, nk_rect rect, uint flags = 0, bool static_ = true)
+		{
+			auto type = static_ ? NK_POPUP_STATIC : NK_POPUP_DYNAMIC;
+			_process = !!nk.popup_begin(type, name.toStringz, flags, rect);
+		}
+
+		void close()
+		{
+			nk.popup_close();
+		}
+	}
+
 	struct Group
 	{
 		mixin NuklearStruct!(`group_end`, true);
 
-		this(string name, uint flags = NK_WINDOW_BORDER)
+		this(string name, uint flags = 0)
 		{
 			_process = !!nk.group_begin(name.toStringz, flags);
 		}
@@ -106,7 +121,18 @@ mixin template NuklearBase()
 				canvas: nk.window_get_canvas(), space: space, input: r == NK_WIDGET_VALID
 					? &ctx.input : null, _process: r != NK_WIDGET_INVALID
 			};
+
 			return res;
+		}
+
+		const clicked(uint button)
+		{
+			return !!nk_input_has_mouse_click(input, button);
+		}
+
+		const mouseInside()
+		{
+			return !!nk_input_is_mouse_hovering_rect(input, space);
 		}
 
 		nk_rect space;
@@ -344,7 +370,9 @@ mixin template NuklearBase()
 
 		static uniqueId(string File = __FILE__, uint Line = __LINE__)()
 		{
-			enum R = `NK_ID_` ~ crc32Of(File ~ ':' ~ Line.to!string).crcHexString;
+			enum ID = File ~ ':' ~ Line.to!string;
+			enum R = `NK_ID_` ~ ID.crc32Of.crcHexString;
+
 			return R;
 		}
 	}

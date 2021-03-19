@@ -1,108 +1,134 @@
 module rocl.controller.npc;
+import std.array, std.stdio, std.algorithm, perfontain, rocl, rocl.gui,
+	rocl.game, rocl.network, rocl.controls, rocl.controls.colorbox;
 
-import
-		std.array,
-		std.stdio,
-		std.algorithm,
-
-		perfontain,
-
-		rocl,
-		rocl.gui,
-		rocl.game,
-		rocl.network,
-		rocl.controls;
-
-
-final class NpcController
+struct NpcController
 {
+	void draw()
+	{
+		if (!_npc)
+			return;
+
+		auto rect = nk_rect(300, 300, 300, 300);
+
+		if (auto win = Window(nk.uniqueId, rect, NK_WINDOW_SCALABLE | NK_WINDOW_MOVABLE))
+		{
+			const buttons = _next || _close;
+
+			{
+				auto h = nk.usableHeight;
+
+				if (buttons)
+				{
+					h -= nk.rowHeight;
+					h -= ctx.style.window.spacing.y;
+				}
+
+				nk.layout_row_dynamic(h, 1);
+			}
+
+			_box.draw;
+
+			if (buttons)
+			{
+				with (LayoutRowTemplate(0))
+				{
+					dynamic;
+					static_(80);
+				}
+
+				nk.spacing(1);
+
+				if (_next)
+				{
+					if (nk.button(MSG_NEXT))
+					{
+						_next = false;
+						ROnet.npcNext(_npc);
+					}
+				}
+				else
+				{
+					if (nk.button(MSG_CLOSE))
+					{
+						cleanBox;
+						ROnet.npcClose(_npc);
+
+						_npc = 0;
+						_close = false;
+					}
+				}
+			}
+
+			if (_select)
+			{
+				auto r = nk_rect(rect.w + 10, rect.h + 10, 200, 200);
+
+				if (auto popup = Popup(nk.uniqueId, r))
+				{
+					nk.layout_row_dynamic(0, 1);
+
+					foreach (i, s; _select)
+						if (nk.button(s))
+						{
+							popup.close;
+							_select = null;
+
+							ROnet.npcSelect(_npc, cast(uint)i + 1);
+						}
+				}
+			}
+		}
+	}
+
 	void mes(string s, uint npc)
 	{
-		// _npc = npc;
-		// _select = false;
+		_npc = npc;
 
-		// if(_clear)
-		// {
-		// 	_clear = false;
-		// 	//win.text.clear;
-		// }
+		if (_clear)
+		{
+			cleanBox;
+			_clear = false;
+		}
 
-		// win.text.add(s);
+		enum Color = `^ffffff`;
+
+		_box.add(Color ~ s.replace(`^000000`, Color), colorTransparent);
 	}
 
 	void next()
 	{
-		// auto b = win.makeButton(MSG_NEXT);
-
-		// b.onClick =
-		// {
-		// 	ROnet.npcNext(_npc);
-
-		// 	_clear = true;
-		// 	win.childs.popBack;
-		// };
+		_next = true;
+		_clear = true;
 	}
 
 	void close()
 	{
-		// if(_npc)
-		// {
-		// 	if(_select)
-		// 	{
-		// 		deattach;
-		// 	}
-		// 	else
-		// 	{
-		// 		auto b = win.makeButton(MSG_CLOSE);
-
-		// 		b.onClick =
-		// 		{
-		// 			ROnet.npcClose(_npc);
-		// 			deattach;
-		// 		};
-		// 	}
-		// }
+		_close = true;
 	}
 
-	void select(string s)
+	void select(string[] s)
 	{
-		auto w = new WinNpcSelect(win, s.stripRight(':').split(':'));
+		_select = s;
+	}
 
-		// w.onSelect = (idx)
-		// {
-		// 	ROnet.npcSelect(_npc, idx);
-		// 	w.deattach;
-		// };
-
-		_select = true;
+	void remove()
+	{
+		_npc = 0;
+		cleanBox;
 	}
 
 private:
-	auto win()
+	mixin NuklearBase;
+
+	void cleanBox()
 	{
-		if(!_win)
-		{
-			_win = new WinNpcDialog;
-		}
-
-		return _win;
-	}
-
-	void deattach()
-	{
-		assert(_win);
-
-		//_win.deattach;
-
-		_npc = 0;
-		_win = null;
+		_box = ColorBox.init;
 	}
 
 	uint _npc;
+	bool _clear, _next, _close;
 
-	bool
-			_clear,
-			_select;
-
-	WinNpcDialog _win;
+	ColorBox _box;
+	string[] _select;
 }

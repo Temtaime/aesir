@@ -1,7 +1,6 @@
 module rocl.controls.chat;
-
 import std, perfontain, ro.conv.gui, rocl.game, rocl.messages,
-	perfontain.managers.font.splitter, std.uni : isWhite;
+	perfontain.managers.font.splitter, rocl.controls.colorbox, std.uni : isWhite;
 
 struct RoChat
 {
@@ -23,11 +22,7 @@ struct RoChat
 				nk.layout_row_dynamic(h, 1);
 			}
 
-			if (auto group = Group(nk.uniqueId))
-			{
-				nk.layout_row_dynamic(0, 1);
-				processChat;
-			}
+			_box.draw;
 
 			if (_scroll) // TODO: WHAT'S A PROPER METHOD TO SCROLL ???
 			{
@@ -47,34 +42,12 @@ struct RoChat
 
 	void add(string s, Color c = colorTransparent)
 	{
-		_messages ~= colorSplit(s, c);
-
-		if (_width)
-			_cache ~= makeLines(_messages.back);
-
+		_box.add(s, c);
 		_scroll = true;
 	}
 
 private:
 	mixin NuklearBase;
-
-	auto makeLines(CharColor[] line)
-	{
-		return StringSplitter(a => widthFor(a)).split(line, _width);
-	}
-
-	void processChat()
-	{
-		auto w = cast(ushort)nk.widget_size().x;
-
-		if (_width != w)
-		{
-			_width = w;
-			_cache = _messages.map!(a => makeLines(a)).join;
-		}
-
-		_cache.each!(a => nk.coloredText(a));
-	}
 
 	void processEdit()
 	{
@@ -95,8 +68,6 @@ private:
 	int _len;
 	char[255] _text;
 
-	ushort _width;
-	CharColor[][] _cache, _messages;
-
 	bool _scroll;
+	ColorBox _box;
 }
