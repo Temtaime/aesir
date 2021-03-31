@@ -8,7 +8,7 @@ import
 
 final:
 
-class Scrollbar : GUIElement
+class Scrollbar //: GUIElement
 {
 	this(){}
 	// this(Scrolled sc)
@@ -47,4 +47,3 @@ class Scrollbar : GUIElement
 	// 	};
 	// }
 }
-

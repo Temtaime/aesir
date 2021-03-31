@@ -8,25 +8,22 @@ import std.utf, std.range, std.stdio, std.ascii, std.array, std.string,
 	perfontain.opengl, perfontain.signals;
 
 public import nuklear, perfontain.managers.gui.tab, perfontain.managers.gui.text,
-	perfontain.managers.gui.misc, perfontain.managers.gui.basic,
-	perfontain.managers.gui.scroll, perfontain.managers.gui.select,
-	perfontain.managers.gui.images, perfontain.managers.gui.element,
-	perfontain.managers.gui.tooltip, perfontain.managers.gui.layout,
-	perfontain.managers.gui.window, perfontain.managers.gui.style,
-	perfontain.managers.gui.property;
+	perfontain.managers.gui.misc, perfontain.managers.gui.scroll,
+	perfontain.managers.gui.select, perfontain.managers.gui.images,
+	perfontain.managers.gui.tooltip, perfontain.managers.gui.style;
+
+struct PopupText
+{
+	string msg;
+	Vector2s pos;
+	bool fill;
+}
 
 mixin template Nuklear()
 {
-	protected static ctx()
+	@property nk()
 	{
 		return PE.gui.ctx;
-	}
-
-	protected static widthFor(string text)
-	{
-		auto font = ctx.style.font;
-		return cast(ushort)font.width(cast(nk_handle)font.userdata,
-				font.height, text.ptr, cast(int)text.length);
 	}
 }
 
@@ -80,8 +77,10 @@ final class GUIManager
 					else
 						nk_style_set_font(_nk, &font.handle);*/
 
-			nk_init_default(_nk = new nk_context, &font.handle);
-			_nk.style.window.min_row_height_padding = 2; // TODO: ???
+			_ctx = new NuklearContext;
+			nk_init_default(_ctx.ctx, &font.handle);
+
+			_ctx.ctx.style.window.min_row_height_padding = 2; // TODO: ???
 
 			nk_buffer_init_default(&cmds);
 		}
@@ -92,14 +91,8 @@ final class GUIManager
 	nk_font_atlas* atlas;
 	nk_colorf bg;
 	nk_buffer cmds;
-	nk_context* _nk;
 
 	RC!Texture ftex;
-
-	auto ctx()
-	{
-		return _nk;
-	}
 
 	void draw()
 	{
@@ -109,7 +102,7 @@ final class GUIManager
 		//root.draw(Vector2s.init);
 
 		//overview(_nk);
-		_windows.each!(a => a.draw);
+		//_windows.each!(a => a.draw);
 
 		if (drawGUI)
 			drawGUI();
@@ -141,7 +134,7 @@ final class GUIManager
 
 			nk_buffer_init_default(&vbuf);
 			nk_buffer_init_default(&ebuf);
-			nk_convert(_nk, &cmds, &vbuf, &ebuf, &config);
+			nk_convert(_ctx.ctx, &cmds, &vbuf, &ebuf, &config);
 		}
 
 		drawPopups;
@@ -154,7 +147,7 @@ final class GUIManager
 			draw(SubMeshData(elements, vertices.toByte));
 		}
 
-		nk_clear(_nk);
+		nk_clear(_ctx.ctx);
 
 		nk_buffer_clear(&cmds);
 		nk_buffer_free(&vbuf);
@@ -166,28 +159,34 @@ final class GUIManager
 		_texts ~= pt;
 	}
 
+
+	@property ctx()
+	{
+		return _ctx;
+	}
+
 	void delegate() drawGUI;
 
 	nk_draw_null_texture null_;
 
-	Signal!(void, GUIElement) onCurrentChanged;
+	//Signal!(void, GUIElement) onCurrentChanged;
 
 	RC!MeshHolder holder;
 
 	Vector2s[] sizes;
 package:
-	void add(GUIWindow w)
-	{
-		_windows ~= w;
-	}
+	// void add(GUIWindow w)
+	// {
+	// 	_windows ~= w;
+	// }
 
-	void remove(GUIWindow w)
-	{
-		_windows.remove(w);
-	}
+	// void remove(GUIWindow w)
+	// {
+	// 	_windows.remove(w);
+	// }
 
 private:
-	RCArray!GUIWindow _windows;
+	//RCArray!GUIWindow _windows;
 
 	PopupText[] _texts;
 
@@ -201,8 +200,8 @@ private:
 			short n;
 			glDisable(GL_CULL_FACE);
 
-			for (auto cmd = nk__draw_begin(_nk, &cmds); (cmd); (cmd) = nk__draw_next(cmd,
-					&cmds, _nk))
+			for (auto cmd = nk__draw_begin(_ctx.ctx, &cmds); (cmd); (cmd) = nk__draw_next(cmd,
+					&cmds, _ctx.ctx))
 			{
 				if (!cmd.elem_count)
 					continue;
@@ -261,16 +260,18 @@ private:
 			auto s = pt.msg;
 			assert(s.length);
 
-			auto f = ctx.style.font;
+			auto f = ctx.ctx.style.font;
 			auto w = f.width(cast()f.userdata, f.height, s.ptr, cast(uint)s.length);
 
 			pt.pos.x -= cast(short)w / 2;
 			pt.pos.y -= cast(short)f.height / 2;
 
+			auto lists = &ctx.ctx.draw_list;
+
 			if (pt.fill)
 			{
 				auto r = nk_rect_(pt.pos.x - 2, pt.pos.y, w + 4, f.height);
-				nk_draw_list_fill_rect(&ctx.draw_list, r, nk_rgba(0, 0, 0, 128), 0);
+				nk_draw_list_fill_rect(lists, r, nk_rgba(0, 0, 0, 128), 0);
 			}
 
 			auto c = nk_rgb(255, 255, 255);
@@ -279,17 +280,19 @@ private:
 			foreach (x; -1 .. 2)
 				foreach (y; -1 .. 2)
 					if (x || y)
-						nk_draw_list_add_text(&ctx.draw_list, f,
-								nk_rect(r.x + x, r.y + y, r.w, r.h), s.ptr,
-								cast(uint)s.length, f.height, nk_rgb(0, 0, 0));
+						nk_draw_list_add_text(lists, f, nk_rect(r.x + x, r.y + y,
+								r.w, r.h), s.ptr, cast(uint)s.length, f.height, nk_rgb(0, 0, 0));
 
-			nk_draw_list_add_text(&ctx.draw_list, f, r, s.ptr, cast(uint)s.length, f.height, c);
+			nk_draw_list_add_text(lists, f, r, s.ptr, cast(uint)s.length, f.height, c);
 		}
 
 		_texts = null;
 	}
 
+
 private:
+	NuklearContext _ctx;
+
 	void onResize(Vector2s sz)
 	{
 		//root.size = sz;

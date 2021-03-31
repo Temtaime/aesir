@@ -1,32 +1,10 @@
 module rocl.controls.skills;
 
-import
-		std.utf,
-		std.meta,
-		std.conv,
-		std.range,
-		std.string,
-		std.algorithm,
+import std.utf, std.meta, std.conv, std.range, std.string, std.algorithm,
 
-		perfontain,
-		perfontain.opengl,
+	perfontain, perfontain.opengl, ro.grf, ro.conv, ro.conv.gui, ro.conv.item,
 
-		ro.grf,
-		ro.conv,
-		ro.conv.gui,
-		ro.conv.item,
-
-		rocl.paths,
-
-		rocl,
-		rocl.game,
-		rocl.status,
-		rocl.controls,
-		rocl.controls.status.equip,
-		rocl.controls.status.stats,
-		rocl.controls.status.bonuses,
-		rocl.network.packets;
-
+	rocl.paths, rocl, rocl.game, rocl.status, rocl.controls, rocl.network.packets;
 
 final:
 

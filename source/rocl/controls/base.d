@@ -3,17 +3,15 @@ module rocl.controls.base;
 import std.utf, std.meta, std.conv, std.range, std.string, std.typecons,
 	std.algorithm, std.functional, perfontain, perfontain.opengl, ro.grf,
 	ro.conv, ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game,
-	rocl.status, rocl.status.helpers, rocl.controls,
-	rocl.controls.status.equip, rocl.controls.status.stats,
-	rocl.controls.status.bonuses, rocl.network.packets;
+	rocl.status, rocl.status.helpers, rocl.controls, rocl.network.packets;
 
 final:
 
-class WinBase : GUIWindow
+class WinBase //: GUIWindow
 {
 	this()
 	{
-		super(MSG_CHARACTER, Vector2s(200)); // TODO: FIX ROent.self.cleanName
+		//super(MSG_CHARACTER, Vector2s(200)); // TODO: FIX ROent.self.cleanName
 
 		/*auto w1 = new GUIElement(main);
 		auto w2 = new GUIElement(main);
@@ -77,10 +75,10 @@ class WinBase : GUIWindow
 	}
 }
 
-class InfoMeter : GUIElement
+class InfoMeter// : GUIElement
 {
-	this(GUIElement p, string s)
-	{
+	//this(GUIElement p, string s)
+	//{
 		// super(p);
 
 		// auto e = new GUIStaticText(this, s);
@@ -118,7 +116,7 @@ class InfoMeter : GUIElement
 		// onUpdate;
 
 		// e.moveY(POS_CENTER);
-	}
+	//}
 
 	mixin StatusValue!(uint, `misc`, onUpdate);
 	mixin StatusValue!(uint, `value`, onUpdate);

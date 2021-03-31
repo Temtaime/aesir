@@ -6,12 +6,12 @@ public import rocl.controls.storage.inventory, rocl.controls.storage.kafra;
 abstract class ItemView : RCounted
 {
 protected:
-	mixin NuklearBase;
+	//mixin NuklearBase;
 
 	string info();
 	Item[] items();
 
-	void onIconDraw(in ref Widget, Item)
+	void onIconDraw(in ref NuklearContext.Widget, Item)
 	{
 	}
 
@@ -43,7 +43,7 @@ private:
 			scope r = new ItemIcon(e);
 			r.draw;
 
-			onIconDraw(r.widget, e);
+			//onIconDraw(r.widget, e);
 		}
 	}
 

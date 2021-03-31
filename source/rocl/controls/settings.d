@@ -4,7 +4,7 @@ import std.meta, std.array, std.algorithm, perfontain, perfontain.opengl,
 
 	ro.conv.gui, rocl, rocl.rofs, rocl.game, rocl.controls;
 
-final class WinSettings : GUIWindow
+final class WinSettings //: GUIWindow
 {
 	this(bool viewer = false)
 	{

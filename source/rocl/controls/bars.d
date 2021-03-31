@@ -8,7 +8,7 @@ import
 
 final:
 
-class CastBar : GUIElement
+class CastBar //: GUIElement
 {
 	this(uint dur)
 	{
@@ -17,7 +17,7 @@ class CastBar : GUIElement
 
 		//super(PE.gui.root, Color(0, 0, 0, 255));
 
-		size = Vector2s(60, 6);
+		//size = Vector2s(60, 6);
 	}
 
 	/*override void draw(Vector2s p) const
@@ -39,7 +39,7 @@ private:
 			_tick;
 }
 
-class HpBar : GUIElement
+class HpBar //: GUIElement
 {
 	this()
 	{

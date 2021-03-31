@@ -1,19 +1,7 @@
 module rocl.controls.trading;
 
-import
-		std.conv,
-		std.ascii,
-
-		perfontain,
-
-		ro.conv.gui,
-
-		rocl,
-		rocl.game,
-		rocl.status,
-		rocl.status.item,
-		rocl.controls.status.equip;
-
+import std.conv, std.ascii, perfontain, ro.conv.gui, rocl, rocl.game,
+	rocl.status, rocl.status.item;
 
 // final:
 

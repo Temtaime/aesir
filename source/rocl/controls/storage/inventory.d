@@ -29,7 +29,7 @@ protected:
 		return RO.status.items.arr[];
 	}
 
-	override void onIconDraw(in ref Widget w, Item m)
+	override void onIconDraw(in ref NuklearContext.Widget w, Item m)
 	{
 		if (RO.gui.kafra.isActive)
 		{

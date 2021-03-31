@@ -328,7 +328,7 @@ package:
 		_debugInfo.pos = Vector2s(window.size.x - _debugInfo.size.x - 20, 20);*/
 	}
 
-	GUIQuad _debugInfo;
+	//GUIQuad _debugInfo;
 
 	StateManager _state;
 	ObjectsManager _objs;

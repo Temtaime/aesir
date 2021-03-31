@@ -2,7 +2,7 @@ module rocl.controls.shops;
 import std.math, std.meta, std.conv, std.ascii, std.range, std.stdio,
 	std.string, std.algorithm, perfontain, ro.db, ro.conv, ro.conv.gui,
 	ro.conv.item, rocl, rocl.game, rocl.paths, rocl.status,
-	rocl.status.helpers, rocl.network, rocl.controls, rocl.controls.status.equip;
+	rocl.status.helpers, rocl.network, rocl.controls;
 
 auto price(uint p)
 {
@@ -82,7 +82,7 @@ final class WinShop : RCounted
 	}
 
 private:
-	mixin NuklearBase;
+	//mixin NuklearBase;
 
 	void drawFooter()
 	{

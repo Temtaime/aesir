@@ -11,7 +11,8 @@ struct NpcController
 
 		auto rect = nk_rect(300, 300, 300, 300);
 
-		if (auto win = Window(nk.uniqueId, rect, NK_WINDOW_SCALABLE | NK_WINDOW_MOVABLE))
+		if (auto win = nk().new NuklearContext.Window(nk.uniqueId, rect,
+				NK_WINDOW_SCALABLE | NK_WINDOW_MOVABLE))
 		{
 			const buttons = _next || _close;
 
@@ -21,7 +22,7 @@ struct NpcController
 				if (buttons)
 				{
 					h -= nk.rowHeight;
-					h -= ctx.style.window.spacing.y;
+					h -= nk.ctx.style.window.spacing.y;
 				}
 
 				nk.layout_row_dynamic(h, 1);
@@ -119,7 +120,7 @@ struct NpcController
 	}
 
 private:
-	mixin NuklearBase;
+	mixin Nuklear;
 
 	void cleanBox()
 	{

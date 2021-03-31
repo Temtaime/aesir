@@ -152,7 +152,7 @@ private:
 	ubyte _lvl;
 	const Skill _s;
 
-	GUIElement _bg;
+	//GUIElement _bg;
 }
 
 final class Skill

@@ -1,7 +1,6 @@
 module rocl.controls.status;
 import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
-	rocl.game, rocl.status, rocl.controls, rocl.controls.status.equip,
-	rocl.controls.status.stats, rocl.controls.status.bonuses, rocl.network.packets, rocl.gui.misc;
+	rocl.game, rocl.status, rocl.controls, rocl.network.packets, rocl.gui.misc;
 
 struct WinStatus
 {
@@ -29,7 +28,7 @@ struct WinStatus
 	EquipTab equip;
 	StatsTab stats;
 private:
-	mixin NuklearBase;
+	//mixin NuklearBase;
 }
 
 struct EquipTab
@@ -89,7 +88,7 @@ struct EquipTab
 	}
 
 private:
-	mixin NuklearBase;
+	//mixin NuklearBase;
 
 	struct Slot
 	{
@@ -173,7 +172,7 @@ struct StatsTab
 	}
 
 private:
-	mixin NuklearBase;
+	//mixin NuklearBase;
 
 	void makeLayout(bool extra)
 	{

@@ -148,7 +148,7 @@ final class GuiManager
 	//mixin MakeWindow!(WinTrading, `trading`);
 	//mixin MakeWindow!(WinCreation, `creation`);
 	mixin MakeWindow!(WinSettings, `settings`);
-	mixin MakeWindow!(WinCharSelect, `charSelect`);
+	//mixin MakeWindow!(WinCharSelect, `charSelect`);
 	//mixin MakeWindow!(WinHotkeySettings, `hotkeySettings`);
 private:
 	mixin publicProperty!(bool, `isGame`);

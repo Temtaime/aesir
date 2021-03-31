@@ -167,7 +167,7 @@ private:
 				PE.scene.viewProject, PE.window.size);
 	}
 
-	GUIElement _tip;
+	//GUIElement _tip;
 
 	RC!Skiller _sk;
 	RC!ConnectionPoint _button;

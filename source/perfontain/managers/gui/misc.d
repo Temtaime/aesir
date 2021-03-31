@@ -1,11 +1,11 @@
 module perfontain.managers.gui.misc;
-import std, perfontain, std.uni : isWhite;
+import std, perfontain, std.digest.crc, std.uni : isWhite;
 
 enum COMBO_SCROLL_ITEMS_CNT = 8;
 
 mixin template NuklearStruct(string Dtor, bool Cond, bool DtorOnCond = true)
 {
-	@disable this(this);
+	//@disable this(this);
 
 	static if (Cond)
 		bool opCast(T : bool)() const
@@ -27,13 +27,9 @@ mixin template NuklearStruct(string Dtor, bool Cond, bool DtorOnCond = true)
 		private bool _process;
 }
 
-mixin template NuklearBase()
+mixin template NuklearWrappers()
 {
-	import std, std.digest.crc;
-
-	mixin Nuklear;
-
-	struct Style
+	final class Style
 	{
 		this(nk_user_font* font)
 		{
@@ -73,16 +69,14 @@ mixin template NuklearBase()
 
 		~this()
 		{
-			if (_pop)
-				_pop(ctx);
+			_pop(&_ctx);
 		}
 
-		@disable this(this);
 	private:
 		extern (C) int function(nk_context*) _pop;
 	}
 
-	struct Popup
+	final class Popup
 	{
 		mixin NuklearStruct!(`popup_end`, true);
 
@@ -98,7 +92,7 @@ mixin template NuklearBase()
 		}
 	}
 
-	struct Group
+	final class Group
 	{
 		mixin NuklearStruct!(`group_end`, true);
 
@@ -108,21 +102,18 @@ mixin template NuklearBase()
 		}
 	}
 
-	struct Widget
+	final class Widget
 	{
 		mixin NuklearStruct!(null, true);
 
-		static create()
+		this()
 		{
-			nk_rect space;
 			const r = nk_widget(&space, ctx);
 
-			Widget res = {
-				canvas: nk.window_get_canvas(), space: space, input: r == NK_WIDGET_VALID
-					? &ctx.input : null, _process: r != NK_WIDGET_INVALID
-			};
+			canvas = nk.window_get_canvas();
+			input = r == NK_WIDGET_VALID ? &ctx.input : null;
 
-			return res;
+			_process = r != NK_WIDGET_INVALID;
 		}
 
 		const clicked(uint button)
@@ -140,7 +131,7 @@ mixin template NuklearBase()
 		nk_command_buffer* canvas;
 	}
 
-	struct Combo
+	final class Combo
 	{
 		mixin NuklearStruct!(`combo_end`, true);
 
@@ -172,8 +163,8 @@ mixin template NuklearBase()
 			auto r = nk.widget_size();
 
 			_height = r.y;
-			_height -= ctx.style.combo.content_padding.y * 2;
-			_height += ctx.style.contextual_button.padding.y * 2;
+			_height -= _ctx.style.combo.content_padding.y * 2;
+			_height += _ctx.style.contextual_button.padding.y * 2;
 
 			return nk_vec2(r.x, _height * COMBO_SCROLL_ITEMS_CNT);
 		}
@@ -181,7 +172,7 @@ mixin template NuklearBase()
 		mixin publicProperty!(float, `height`);
 	}
 
-	struct LayoutRowTemplate
+	final class LayoutRowTemplate
 	{
 		mixin NuklearStruct!(`layout_row_template_end`, false);
 
@@ -206,7 +197,7 @@ mixin template NuklearBase()
 		}
 	}
 
-	struct Tree
+	final class Tree
 	{
 		mixin NuklearStruct!(`tree_pop`, true);
 
@@ -220,7 +211,7 @@ mixin template NuklearBase()
 		}
 	}
 
-	struct Window
+	final class Window
 	{
 		mixin NuklearStruct!(`end`, true, false);
 
@@ -232,152 +223,178 @@ mixin template NuklearBase()
 		enum DEFAULT_FLAGS = NK_WINDOW_TITLE | NK_WINDOW_BORDER
 			| NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE;
 	}
+}
 
-	struct NuklearProxy
+final class NuklearContext
+{
+	mixin NuklearWrappers;
+
+	auto opDispatch(string name, A...)(A args)
 	{
-		auto opDispatch(string name, A...)(A args)
+		return mixin(`nk_` ~ name)(ctx, args);
+	}
+
+	void label(string text, uint align_ = NK_TEXT_LEFT)
+	{
+		label(text, align_, _ctx.style.text.color);
+	}
+
+	void label(string text, uint align_, nk_color color)
+	{
+		this.text_colored(text.ptr, cast(int)text.length, align_, color);
+	}
+
+	bool button(string text)
+	{
+		return !!this.button_text(text.ptr, cast(uint)text.length);
+	}
+
+	bool button(string text, uint align_, nk_symbol_type symbol)
+	{
+		return !!this.button_symbol_text(symbol, text.ptr, cast(uint)text.length, align_);
+	}
+
+	void tooltip(string text)
+	{
+		nk_tooltip(&_ctx, text.toStringz);
+	}
+
+	bool tabSelector(string[] tabs, ref ubyte index,
+			void delegate(ref LayoutRowTemplate) dg = null, void delegate() draw = null)
+	{
+
+		bool res, extra = dg && draw;
+
+		scope s1 = new Style(&_ctx.style.button.rounding, 0);
+		scope s2 = new Style(&_ctx.style.window.spacing, nk_vec2(0, 0));
+
 		{
-			return mixin(`nk_` ~ name)(ctx, args);
-		}
+			scope r = new LayoutRowTemplate(0);
 
-		void label(string text, uint align_ = NK_TEXT_LEFT, nk_color color = ctx.style.text.color)
-		{
-			this.text_colored(text.ptr, cast(int)text.length, align_, color);
-		}
-
-		bool button(string text)
-		{
-			return !!this.button_text(text.ptr, cast(uint)text.length);
-		}
-
-		bool button(string text, uint align_, nk_symbol_type symbol)
-		{
-			return !!this.button_symbol_text(symbol, text.ptr, cast(uint)text.length, align_);
-		}
-
-		void tooltip(string text)
-		{
-			nk_tooltip(ctx, text.toStringz);
-		}
-
-		bool tabSelector(string[] tabs, ref ubyte index,
-				void delegate(ref LayoutRowTemplate) dg = null, void delegate() draw = null)
-		{
-
-			bool res, extra = dg && draw;
-
-			auto s1 = Style(&ctx.style.button.rounding, 0);
-			auto s2 = Style(&ctx.style.window.spacing, nk_vec2(0, 0));
-
+			with (r)
 			{
-				auto r = LayoutRowTemplate(0);
+				foreach (t; tabs)
+					static_(widthFor(t) + _ctx.style.button.padding.x * 3); // TODO: WHY 3 ????
 
-				with (r)
-				{
-					foreach (t; tabs)
-						static_(widthFor(t) + ctx.style.button.padding.x * 3); // TODO: WHY 3 ????
-
-					if (extra)
-						dg(r);
-				}
-			}
-
-			foreach (idx, t; tabs)
-			{
-				auto s3 = idx == index ? Style(&ctx.style.button.normal, ctx.style.button.active)
-					: Style.init;
-
-				if (button(t))
-				{
-					res = true;
-					index = cast(ubyte)idx;
-				}
-			}
-
-			if (extra)
-				draw();
-
-			return res;
-		}
-
-		void coloredText(CharColor[] line)
-		{
-			assert(line.length);
-
-			if (auto widget = Widget.create)
-			{
-				float x = 0, y = (widget.space.h - ctx.style.font.height) / 2;
-
-				foreach (g; line.chunkBy!((a, b) => a.color == b.color)
-						.map!array)
-				{
-					auto c = g[0].color;
-					auto str = g.map!(a => a.c).toUTF8;
-
-					auto rect = nk_rect(widget.space.x + x, widget.space.y + y,
-							widget.space.w, ctx.style.font.height);
-					auto color = nk_rgba(c.r, c.g, c.b, c.a);
-
-					nk_draw_text(widget.canvas, rect, str.ptr, cast(uint)str.length,
-							ctx.style.font, ctx.style.window.background, color);
-					x += widthFor(str);
-				}
+				if (extra)
+					dg(r);
 			}
 		}
 
-		const buttonWidth(string text)
+		foreach (idx, t; tabs)
 		{
-			return widthFor(text) + (
-					ctx.style.button.rounding + ctx.style.button.border + ctx
-					.style.button.padding.x) * 2;
+			auto value = idx == index ? _ctx.style.button.active : _ctx.style.button.normal;
+			scope s3 = new Style(&_ctx.style.button.normal, value);
+
+			if (button(t))
+			{
+				res = true;
+				index = cast(ubyte)idx;
+			}
 		}
 
-		const editHeight()
-		{
-			return fontHeight + (ctx.style.edit.padding.y + ctx.style.edit.border) * 2;
-		}
+		if (extra)
+			draw();
 
-		const comboHeight()
-		{
-			return fontHeight + ctx.style.combo.button.padding.y * 2;
-		}
+		return res;
+	}
 
-		const fontHeight()
-		{
-			return ctx.style.font.height;
-		}
+	const widthFor(string text)
+	{
+		auto font = _ctx.style.font;
 
-		const maxColumns(uint elem)
-		{
-			auto n = nk.window_get_content_region_size().x / (elem + ctx.style.window.spacing.x);
-			return max(cast(uint)n, 1);
-		}
+		return cast(ushort)font.width(cast(nk_handle)font.userdata,
+				font.height, text.ptr, cast(int)text.length);
+	}
 
-		const usableHeight()
-		{
-			return nk.window_get_content_region_size().y - ctx.current.layout.footer_height; // TODO: SEEMS THERE'S ANOTHER METHOD OF CALCULATION USABLE HEIGHT
-		}
+	void coloredText(CharColor[] line)
+	{
+		assert(line.length);
 
-		const rowHeight()
+		if (auto widget = new Widget)
 		{
-			return ctx.current.layout.row.min_height;
-		}
+			float x = 0, y = (widget.space.h - _ctx.style.font.height) / 2;
 
-		bool isWidgetHovered()
-		{
-			return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
-		}
+			foreach (g; line.chunkBy!((a, b) => a.color == b.color)
+					.map!array)
+			{
+				auto c = g[0].color;
+				auto str = g.map!(a => a.c).toUTF8;
 
-		static uniqueId(string File = __FILE__, uint Line = __LINE__)()
-		{
-			enum ID = File ~ ':' ~ Line.to!string;
-			enum R = `NK_ID_` ~ ID.crc32Of.crcHexString;
+				auto rect = nk_rect(widget.space.x + x, widget.space.y + y,
+						widget.space.w, _ctx.style.font.height);
+				auto color = nk_rgba(c.r, c.g, c.b, c.a);
 
-			return R;
+				nk_draw_text(widget.canvas, rect, str.ptr, cast(uint)str.length,
+						_ctx.style.font, _ctx.style.window.background, color);
+				x += widthFor(str);
+			}
 		}
 	}
 
-	static NuklearProxy nk;
+	const buttonWidth(string text)
+	{
+		return widthFor(text) + (
+				_ctx.style.button.rounding + _ctx.style.button.border + _ctx.style.button.padding.x)
+			* 2;
+	}
+
+	const editHeight()
+	{
+		return fontHeight + (_ctx.style.edit.padding.y + _ctx.style.edit.border) * 2;
+	}
+
+	const comboHeight()
+	{
+		return fontHeight + _ctx.style.combo.button.padding.y * 2;
+	}
+
+	const fontHeight()
+	{
+		return _ctx.style.font.height;
+	}
+
+	const maxColumns(uint elem)
+	{
+		auto n = nk.window_get_content_region_size().x / (elem + _ctx.style.window.spacing.x);
+		return max(cast(uint)n, 1);
+	}
+
+	const usableHeight()
+	{
+		return nk.window_get_content_region_size().y - _ctx.current.layout.footer_height; // TODO: SEEMS THERE'S ANOTHER METHOD OF CALCULATION USABLE HEIGHT
+	}
+
+	const rowHeight()
+	{
+		return _ctx.current.layout.row.min_height;
+	}
+
+	bool isWidgetHovered()
+	{
+		return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
+	}
+
+	static uniqueId(string File = __FILE__, uint Line = __LINE__)()
+	{
+		enum ID = File ~ ':' ~ Line.to!string;
+		enum R = `NK_ID_` ~ ID.crc32Of.crcHexString;
+
+		return R;
+	}
+
+	@property ctx() inout
+	{
+		return &_ctx;
+	}
+
+private:
+	@property nk() inout
+	{
+		return cast()this;
+	}
+
+	nk_context _ctx;
 }
 
 struct StringSplitter

@@ -17,7 +17,7 @@ struct RoChat
 				auto h = nk.usableHeight;
 
 				h -= editHeight;
-				h -= ctx.style.window.spacing.y;
+				h -= nk.ctx.style.window.spacing.y;
 
 				nk.layout_row_dynamic(h, 1);
 			}
@@ -47,7 +47,7 @@ struct RoChat
 	}
 
 private:
-	mixin NuklearBase;
+	mixin Nuklear;
 
 	void processEdit()
 	{

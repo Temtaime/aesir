@@ -1,13 +1,6 @@
 module rocl.controls.charinfo;
 
-import
-		perfontain,
-		perfontain.math,
-
-		rocl.game,
-		rocl.controls,
-		rocl.entity.visual;
-
+import perfontain, perfontain.math, rocl.game, rocl.controls, rocl.entity.visual;
 
 final class CharInfo : RCounted
 {
@@ -41,9 +34,9 @@ final class CharInfo : RCounted
 	{
 		removeCast;
 
-		if(dur)
+		if (dur)
 		{
-			_cast = new CastBar(dur);
+			//_cast = new CastBar(dur);
 
 			update;
 			_ent.act(Action.skill, enemy ? Action.readyFight : Action.idle, cast(ushort)dur);
@@ -80,46 +73,66 @@ final class CharInfo : RCounted
 	{
 		auto z = _ent.bbox * PE.scene.viewProject;
 
-		if(_msg || _cast)
-		{
-			auto pos = project(z.max - Vector3(z.size.x / 2, 0, 0), PE.window.size).xy.Vector2s;
+		// if(_msg || _cast)
+		// {
+		// 	auto pos = project(z.max - Vector3(z.size.x / 2, 0, 0), PE.window.size).xy.Vector2s;
 
-			if(_cast)
-			{
-				_cast.pos = pos - Vector2s(_cast.size.x / 2, _cast.size.y);
-				pos.y -= _cast.size.y + 1;
-			}
+		// 	if(_cast)
+		// 	{
+		// 		_cast.pos = pos - Vector2s(_cast.size.x / 2, _cast.size.y);
+		// 		pos.y -= _cast.size.y + 1;
+		// 	}
 
-			if(_msg)
-			{
-				_msg.pos = pos - Vector2s(_msg.size.x / 2, _msg.size.y);
-			}
-		}
+		// 	if(_msg)
+		// 	{
+		// 		_msg.pos = pos - Vector2s(_msg.size.x / 2, _msg.size.y);
+		// 	}
+		// }
 
-		if(_skTimer && _skTimer.removed)
+		if (_skTimer && _skTimer.removed)
 		{
 			_skTimer = null;
 		}
 
-		if(_hp)
-		{
-			auto pos = project(z.min + Vector3(z.size.x / 2, 0, 0), PE.window.size).xy.Vector2s;
+		// if (_hp)
+		// {
+		// 	auto pos = project(z.min + Vector3(z.size.x / 2, 0, 0), PE.window.size).xy.Vector2s;
 
-			if(_hp)
-			{
-				_hp.pos = pos + Vector2s(_hp.size.x / -2, _hp.size.y);
-			}
-		}
+		// 	if (_hp)
+		// 	{
+		// 		_hp.pos = pos + Vector2s(_hp.size.x / -2, _hp.size.y);
+		// 	}
+		// }
 	}
 
-	@property hp(uint v) { makeHpBar; _hp.hp = v; }
-	@property sp(uint v) { makeHpBar; _hp.sp = v; }
-	@property maxHp(uint v) { makeHpBar; _hp.maxHp = v; }
-	@property maxSp(uint v) { makeHpBar; _hp.maxSp = v; }
+	@property hp(uint v)
+	{
+		makeHpBar;
+		_hp.hp = v;
+	}
+
+	@property sp(uint v)
+	{
+		makeHpBar;
+		_hp.sp = v;
+	}
+
+	@property maxHp(uint v)
+	{
+		makeHpBar;
+		_hp.maxHp = v;
+	}
+
+	@property maxSp(uint v)
+	{
+		makeHpBar;
+		_hp.maxSp = v;
+	}
+
 private:
 	void makeHpBar()
 	{
-		if(!_hp)
+		if (!_hp)
 		{
 			_hp = new HpBar;
 		}
@@ -127,7 +140,7 @@ private:
 
 	void removeCast()
 	{
-		if(_castTimer)
+		if (_castTimer)
 		{
 			// _cast.deattach;
 			// _cast = null;
@@ -139,10 +152,10 @@ private:
 
 	void removeMsg()
 	{
-		if(_msgTimer)
+		if (_msgTimer)
 		{
 			//_msg.deattach;
-			_msg = null;
+			//_msg = null;
 
 			_msgTimer.removed = true;
 			_msgTimer = null;
@@ -152,12 +165,9 @@ private:
 	Entity _ent;
 	HpBar _hp;
 
-	GUIElement
-				_msg,
-				_cast;
+	// GUIElement
+	// 			_msg,
+	// 			_cast;
 
-	Timer *
-			_skTimer,
-			_msgTimer,
-			_castTimer;
+	Timer* _skTimer, _msgTimer, _castTimer;
 }

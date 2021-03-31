@@ -5,7 +5,7 @@ struct ColorBox
 {
 	void draw()
 	{
-		if (auto group = Group(nk.uniqueId))
+		if (auto group = nk().new NuklearContext.Group(nk.uniqueId))
 		{
 			//auto s1 = Style(&ctx.style.window.spacing, nk_vec2(0, 0));
 
@@ -31,11 +31,11 @@ struct ColorBox
 	}
 
 private:
-	mixin NuklearBase;
+	mixin Nuklear;
 
 	auto makeLines(CharColor[] line)
 	{
-		return StringSplitter(a => widthFor(a)).split(line, _width);
+		return StringSplitter(a => nk.widthFor(a)).split(line, _width);
 	}
 
 	ushort _width;

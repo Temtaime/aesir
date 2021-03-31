@@ -1,20 +1,9 @@
 module rocl.controls.hotkeys;
 
-import
-		std.meta,
-		std.array,
-		std.algorithm,
+import std.meta, std.array, std.algorithm, perfontain, ro.conv.gui, rocl.game,
+	rocl.network, rocl.controls;
 
-		perfontain,
-
-		ro.conv.gui,
-
-		rocl.game,
-		rocl.network,
-		rocl.controls;
-
-
-class WinHotkeys : GUIElement
+class WinHotkeys //: GUIElement
 {
 	this()
 	{
@@ -56,39 +45,39 @@ class WinHotkeys : GUIElement
 		super.draw(p);
 	}*/
 
-	override void onMoved()
-	{
-		auto p = PE.window.mpos - pos - Vector2s(SP);
+	// override void onMoved()
+	// {
+	// 	auto p = PE.window.mpos - pos - Vector2s(SP);
 
-		auto ux = p.x % KS;
-		auto uy = p.y % KS;
+	// 	auto ux = p.x % KS;
+	// 	auto uy = p.y % KS;
 
-		if(ux >= 1 && ux <= 24 && uy >= 1 && uy <= 24)
-		{
-			_cur = p / KS;
+	// 	if(ux >= 1 && ux <= 24 && uy >= 1 && uy <= 24)
+	// 	{
+	// 		_cur = p / KS;
 
-			if(_cur.x < 9 && _cur.y < 4)
-			{
-				return;
-			}
-		}
+	// 		if(_cur.x < 9 && _cur.y < 4)
+	// 		{
+	// 			return;
+	// 		}
+	// 	}
 
-		_cur.x = -1;
-	}
+	// 	_cur.x = -1;
+	// }
 
-	override void onHover(bool b)
-	{
-		if(!b)
-		{
-			_cur.x = -1;
-		}
-	}
+	// override void onHover(bool b)
+	// {
+	// 	if(!b)
+	// 	{
+	// 		_cur.x = -1;
+	// 	}
+	// }
 
 	void add(ref PkHotkey h, Vector2s p)
 	{
-		if(h.isSkill)
+		if (h.isSkill)
 		{
-			if(auto s = RO.status.skillOf(cast(ushort)h.id))
+			if (auto s = RO.status.skillOf(cast(ushort)h.id))
 			{
 				//add(new SkillIcon(this, s), p);
 			}
@@ -97,7 +86,7 @@ class WinHotkeys : GUIElement
 		{
 			auto s = RO.status.items.get(a => a.id == h.id);
 
-			if(!s.empty)
+			if (!s.empty)
 			{
 				//add(new ItemIcon(this, s.front), p);
 			}
@@ -164,9 +153,7 @@ private:
 		return p * KS + Vector2s(SP + 1);
 	}
 
-	enum
-			SP = 3,
-			KS = SP + 26;
+	enum SP = 3, KS = SP + 26;
 
 	Vector2s _cur = Vector2s(-1);
 }

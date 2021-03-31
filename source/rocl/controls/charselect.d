@@ -5,70 +5,70 @@ import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
 
 final:
 
-class WinCharSelect : GUIWindow
+// class WinCharSelect //: GUIWindow
+// {
+// 	this(in PkCharData* c)
+// 	{
+// 		super(MSG_CHAR_SELECT, Vector2s(400));
+
+// 		{
+// 			//auto v = PE.window.size;
+// 			//pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
+// 		}
+
+// 		{
+// 			string[2][] stats;
+
+// 			void stat(T)(string name, T v)
+// 			{
+// 				auto s = v.to!string;
+
+// 				static if (isIntegral!T)
+// 				{
+// 					s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
+// 				}
+
+// 				stats ~= [name, s];
+// 			}
+
+// 			//stat(`Name`, c.name.charsToString);
+// 			stat(`STR`, c.str);
+
+// 			stat(`Job`, `???`);
+// 			stat(`AGI`, c.agi);
+
+// 			stat(`Lv.`, c.baseLvl);
+// 			stat(`VIT`, c.vit);
+
+// 			stat(`EXP`, c.baseExp);
+// 			stat(`INT`, c.int_);
+
+// 			stat(`HP`, c.hp);
+// 			stat(`DEX`, c.dex);
+
+// 			stat(`SP`, c.sp);
+// 			stat(`LUK`, c.luk);
+
+// 			addLayout(new DynamicRowLayout(4));
+
+// 			foreach (s; stats)
+// 			{
+// 				new GUIStaticText(curLayout, s.front);
+// 				new GUIStaticText(curLayout, s.back);
+// 			}
+// 		}
+
+// 		addLayout(new DynamicRowLayout(2));
+
+// 		new Button(curLayout, MSG_ENTER, &RO.action.onCharSelected);
+// 		new Button(curLayout, MSG_CREATE, &RO.action.onCharCreate);
+// 	}
+// }
+
+class StatInfo //: GUIElement
 {
-	this(in PkCharData* c)
-	{
-		super(MSG_CHAR_SELECT, Vector2s(400));
-
-		{
-			//auto v = PE.window.size;
-			//pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
-		}
-
-		{
-			string[2][] stats;
-
-			void stat(T)(string name, T v)
-			{
-				auto s = v.to!string;
-
-				static if (isIntegral!T)
-				{
-					s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
-				}
-
-				stats ~= [name, s];
-			}
-
-			//stat(`Name`, c.name.charsToString);
-			stat(`STR`, c.str);
-
-			stat(`Job`, `???`);
-			stat(`AGI`, c.agi);
-
-			stat(`Lv.`, c.baseLvl);
-			stat(`VIT`, c.vit);
-
-			stat(`EXP`, c.baseExp);
-			stat(`INT`, c.int_);
-
-			stat(`HP`, c.hp);
-			stat(`DEX`, c.dex);
-
-			stat(`SP`, c.sp);
-			stat(`LUK`, c.luk);
-
-			addLayout(new DynamicRowLayout(4));
-
-			foreach (s; stats)
-			{
-				new GUIStaticText(curLayout, s.front);
-				new GUIStaticText(curLayout, s.back);
-			}
-		}
-
-		addLayout(new DynamicRowLayout(2));
-
-		new Button(curLayout, MSG_ENTER, &RO.action.onCharSelected);
-		new Button(curLayout, MSG_CREATE, &RO.action.onCharCreate);
-	}
-}
-
-class StatInfo : GUIElement
-{
-	this(GUIElement p, string name, string value)
-	{
+	//this(GUIElement p, string name, string value)
+	//{
 		// super(p, Vector2s(155, PE.fonts.base.height));
 
 		// {
@@ -89,5 +89,5 @@ class StatInfo : GUIElement
 		// 	e = new GUIStaticText(this, value);
 		// 	e.pos.x = 51;
 		// }
-	}
+//	}
 }

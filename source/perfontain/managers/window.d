@@ -151,7 +151,7 @@ package(perfontain):
 
 	auto ctx()
 	{
-		return PE.gui._nk;
+		return PE.gui.ctx.ctx;
 	}
 
 	auto isGuiHovered()
@@ -341,7 +341,7 @@ void showErrorMessage(string s)
 
 int nk_sdl_handle_event(SDL_Event* evt)
 {
-	nk_context* ctx = PE.gui._nk;
+	nk_context* ctx = PE.gui.ctx.ctx;
 
 	if (evt.type == SDL_KEYUP || evt.type == SDL_KEYDOWN)
 	{

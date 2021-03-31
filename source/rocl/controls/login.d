@@ -12,7 +12,7 @@ final class WinLogin : RCounted
 	}
 
 private:
-	mixin NuklearBase;
+	mixin Nuklear;
 
 	@property ref accounts()
 	{

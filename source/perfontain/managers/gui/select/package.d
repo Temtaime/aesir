@@ -1,14 +1,8 @@
 module perfontain.managers.gui.select;
 
-import
-		std,
+import std, perfontain;
 
-		perfontain;
-
-public import
-				perfontain.managers.gui.select.box,
-				perfontain.managers.gui.select.popup;
-
+public import perfontain.managers.gui.select.popup;
 
 // class Selector : GUIElement
 // {

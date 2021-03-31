@@ -76,7 +76,7 @@ enum DamageType
 	Skill,
 }
 
-class Damage : GUIElement
+class Damage //: GUIElement
 {
 	this(Vector3 pos, uint n, DamageType tp, uint t)
 	{
