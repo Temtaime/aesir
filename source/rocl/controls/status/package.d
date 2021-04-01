@@ -12,12 +12,12 @@ struct WinStatus
 		auto name = MSG_CHARACTER.toStringz;
 		const collapse = nk.window_find(name) is null;
 
-		if (auto win = Window(MSG_CHARACTER, nk_rect(x, 0, sz.x, sz.y)))
+		if (auto win = Window(nk, MSG_CHARACTER, nk_rect(x, 0, sz.x, sz.y)))
 		{
-			if (auto tree = Tree(MSG_EQUIPMENT, NK_TREE_TAB, NK_MAXIMIZED))
+			if (auto tree = Tree(nk, MSG_EQUIPMENT, NK_TREE_TAB, NK_MAXIMIZED))
 				equip.draw;
 
-			if (auto tree = Tree(MSG_STATS, NK_TREE_TAB, NK_MAXIMIZED))
+			if (auto tree = Tree(nk, MSG_STATS, NK_TREE_TAB, NK_MAXIMIZED))
 				stats.draw;
 		}
 
@@ -28,7 +28,7 @@ struct WinStatus
 	EquipTab equip;
 	StatsTab stats;
 private:
-	//mixin NuklearBase;
+	mixin Nuklear;
 }
 
 struct EquipTab
@@ -43,9 +43,9 @@ struct EquipTab
 			Slot(EQP_ACC_R, MSG_ACC), Slot(EQP_ACC_L, MSG_ACC)
 		];
 
-		nk.layout_row_dynamic(24 + ctx.style.combo.content_padding.y * 2, 2);
+		nk.layout_row_dynamic(24 + nk.ctx.style.combo.content_padding.y * 2, 2);
 
-		auto s1 = Style(&ctx.style.combo.button_padding.y, 8); // make scroll arrow a bit smaller
+		//auto s1 = Style(nk, &nk.ctx.style.combo.button_padding.y, 8); // make scroll arrow a bit smaller
 
 		foreach (s; slots)
 		{
@@ -57,12 +57,12 @@ struct EquipTab
 				auto m = items[idx];
 				auto tex = RO.gui.iconCache.get(m);
 
-				if (auto combo = Combo(m.data.name, tex))
+				if (auto combo = Combo(nk, m.data.name, tex))
 					processItems(s, combo, items, m);
 			}
 			else
 			{
-				if (auto combo = Combo(s.name))
+				if (auto combo = Combo(nk, s.name))
 					processItems(s, combo, items, null);
 			}
 		}
@@ -88,7 +88,7 @@ struct EquipTab
 	}
 
 private:
-	//mixin NuklearBase;
+	mixin Nuklear;
 
 	struct Slot
 	{
@@ -172,13 +172,13 @@ struct StatsTab
 	}
 
 private:
-	//mixin NuklearBase;
+	mixin Nuklear;
 
 	void makeLayout(bool extra)
 	{
 		const w = 30;
 
-		with (LayoutRowTemplate(0))
+		with (LayoutRowTemplate(nk, 0))
 		{
 			foreach (i; 0 .. extra ? 3 : 2)
 			{

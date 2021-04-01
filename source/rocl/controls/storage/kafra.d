@@ -11,7 +11,7 @@ final class WinKafra : ItemView
 		if (!_maxAmount)
 			return;
 
-		if (auto win = Window(MSG_STORAGE, nk_rect(300, 300, 350, 350),
+		if (auto win = Window(nk, MSG_STORAGE, nk_rect(300, 300, 350, 350),
 				Window.DEFAULT_FLAGS & ~NK_WINDOW_MINIMIZABLE | NK_WINDOW_CLOSABLE))
 		{
 			drawImpl;

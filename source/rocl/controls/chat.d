@@ -9,7 +9,7 @@ struct RoChat
 		auto sz = Vector2s(600, 200);
 		auto pos = PE.window.size - sz;
 
-		if (auto win = Window(MSG_CHAT, nk_rect(pos.x, pos.y, sz.x, sz.y)))
+		if (auto win = Window(nk, MSG_CHAT, nk_rect(pos.x, pos.y, sz.x, sz.y)))
 		{
 			auto editHeight = nk.editHeight;
 
@@ -30,7 +30,7 @@ struct RoChat
 				nk.group_set_scroll(MSG_CHAT.toStringz, 0, 100_000);
 			}
 
-			with (LayoutRowTemplate(editHeight))
+			with (LayoutRowTemplate(nk, editHeight))
 			{
 				dynamic();
 				static_(nk.buttonWidth(MSG_SUBMIT));
@@ -66,7 +66,7 @@ private:
 	}
 
 	int _len;
-	char[255] _text;
+	char[256] _text;
 
 	bool _scroll;
 	ColorBox _box;

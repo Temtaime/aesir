@@ -2,7 +2,7 @@ module rocl.controls.shops;
 import std.math, std.meta, std.conv, std.ascii, std.range, std.stdio,
 	std.string, std.algorithm, perfontain, ro.db, ro.conv, ro.conv.gui,
 	ro.conv.item, rocl, rocl.game, rocl.paths, rocl.status,
-	rocl.status.helpers, rocl.network, rocl.controls;
+	rocl.status.helpers, rocl.network, rocl.controls, perfontain: Group;
 
 auto price(uint p)
 {
@@ -45,15 +45,15 @@ final class WinShop : RCounted
 
 		auto flags = Window.DEFAULT_FLAGS & ~NK_WINDOW_MINIMIZABLE | NK_WINDOW_CLOSABLE;
 
-		if (auto win = Window(MSG_TRADING, nk_rect(pos.x, pos.y, sz.x, sz.y), flags))
+		if (auto win = Window(nk, MSG_TRADING, nk_rect(pos.x, pos.y, sz.x, sz.y), flags))
 		{
 			drawSelector;
 
 			{
-				auto height = nk.usableHeight - (nk.rowHeight + ctx.style.window.spacing.y) * 2;
+				auto height = nk.usableHeight - (nk.rowHeight + nk.ctx.style.window.spacing.y) * 2;
 				nk.layout_row_dynamic(height, 1);
 
-				if (auto group = Group(nk.uniqueId))
+				if (auto group = Group(nk, nk.uniqueId))
 					drawTab;
 			}
 
@@ -82,13 +82,13 @@ final class WinShop : RCounted
 	}
 
 private:
-	//mixin NuklearBase;
+	mixin Nuklear;
 
 	void drawFooter()
 	{
 		auto msg = _tab ? MSG_SELL : MSG_BUY;
 
-		with (LayoutRowTemplate(0))
+		with (LayoutRowTemplate(nk, 0))
 		{
 			dynamic;
 			static_(nk.buttonWidth(msg));
@@ -124,7 +124,7 @@ private:
 
 	void drawTab()
 	{
-		with (LayoutRowTemplate(36))
+		with (LayoutRowTemplate(nk, 36))
 		{
 			static_(36);
 			dynamic();

@@ -1,11 +1,11 @@
 module rocl.controls.colorbox;
-import std, perfontain;
+import std, perfontain, perfontain : Group;
 
 struct ColorBox
 {
 	void draw()
 	{
-		if (auto group = nk().new NuklearContext.Group(nk.uniqueId))
+		if (auto group = Group(nk, nk.uniqueId))
 		{
 			//auto s1 = Style(&ctx.style.window.spacing, nk_vec2(0, 0));
 

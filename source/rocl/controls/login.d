@@ -37,7 +37,7 @@ private:
 
 		auto rect = nk_rect((ws.x - sz.x) / 2, ws.y * 2 / 3 - sz.y / 2, sz.x, sz.y);
 
-		return Window(title, rect,
+		return Window(nk, title, rect,
 				Window.DEFAULT_FLAGS & ~NK_WINDOW_MINIMIZABLE | NK_WINDOW_CLOSABLE);
 	}
 
@@ -80,7 +80,7 @@ private:
 
 			nk.label(MSG_USERNAME ~ ':', NK_TEXT_CENTERED);
 
-			if (auto combo = Combo(accounts[_selected].user))
+			if (auto combo = Combo(nk, accounts[_selected].user))
 			{
 				nk.layout_row_dynamic(combo.height, 1);
 
@@ -89,7 +89,7 @@ private:
 
 				enum X = `x`;
 
-				with (LayoutRowTemplate(combo.height))
+				with (LayoutRowTemplate(nk, combo.height))
 				{
 					dynamic;
 					static_(nk.buttonWidth(X));

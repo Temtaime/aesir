@@ -310,13 +310,13 @@ abstract class Icon
 {
 	this()
 	{
-		_widget = Widget.create;
+		_widget = Widget(nk);
 	}
 
 	void draw();
 protected:
 	mixin Nuklear;
-	mixin publicProperty!(NuklearContext.Widget, `widget`);
+	mixin publicProperty!(Widget, `widget`);
 
 	bool draw(Texture tex)
 	{

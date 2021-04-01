@@ -11,8 +11,7 @@ struct NpcController
 
 		auto rect = nk_rect(300, 300, 300, 300);
 
-		if (auto win = nk().new NuklearContext.Window(nk.uniqueId, rect,
-				NK_WINDOW_SCALABLE | NK_WINDOW_MOVABLE))
+		if (auto win = Window(nk, nk.uniqueId, rect, NK_WINDOW_SCALABLE | NK_WINDOW_MOVABLE))
 		{
 			const buttons = _next || _close;
 
@@ -32,7 +31,7 @@ struct NpcController
 
 			if (buttons)
 			{
-				with (LayoutRowTemplate(0))
+				with (LayoutRowTemplate(nk, 0))
 				{
 					dynamic;
 					static_(80);
@@ -65,7 +64,7 @@ struct NpcController
 			{
 				auto r = nk_rect(rect.w + 10, rect.h + 10, 200, 200);
 
-				if (auto popup = Popup(nk.uniqueId, r))
+				if (auto popup = Popup(nk, nk.uniqueId, r))
 				{
 					nk.layout_row_dynamic(0, 1);
 

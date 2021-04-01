@@ -49,6 +49,16 @@ final class GuiManager
 		//inv.destroy;
 	}
 
+	void removeCharSelect()
+	{
+
+	}
+
+	void createCharSelect(in PkCharData* data)
+	{
+
+	}
+
 	void draw()
 	{
 		if (login)
@@ -147,7 +157,7 @@ final class GuiManager
 	//mixin MakeWindow!(WinStorage, `store`);
 	//mixin MakeWindow!(WinTrading, `trading`);
 	//mixin MakeWindow!(WinCreation, `creation`);
-	mixin MakeWindow!(WinSettings, `settings`);
+	//mixin MakeWindow!(WinSettings, `settings`);
 	//mixin MakeWindow!(WinCharSelect, `charSelect`);
 	//mixin MakeWindow!(WinHotkeySettings, `hotkeySettings`);
 private:

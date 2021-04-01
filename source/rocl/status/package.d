@@ -114,10 +114,10 @@ final class Skiller : RCounted
 
 	~this()
 	{
-		if (_bg)
-		{
-			//_bg.deattach;
-		}
+		// if (_bg)
+		// {
+		// 	//_bg.deattach;
+		// }
 	}
 
 	void use()

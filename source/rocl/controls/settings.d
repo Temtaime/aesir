@@ -1,14 +1,12 @@
 module rocl.controls.settings;
-
 import std.meta, std.array, std.algorithm, perfontain, perfontain.opengl,
-
 	ro.conv.gui, rocl, rocl.rofs, rocl.game, rocl.controls;
 
 final class WinSettings //: GUIWindow
 {
 	this(bool viewer = false)
 	{
-		super(MSG_SETTINGS, Vector2s(340, 255));
+		//super(MSG_SETTINGS, Vector2s(340, 255));
 
 		struct S
 		{
@@ -37,7 +35,7 @@ final class WinSettings //: GUIWindow
 				S(`MSG_VSYNC`, `PE.settings.vsync`),
 			];
 
-		addLayout(new DynamicRowLayout(2));
+		//addLayout(new DynamicRowLayout(2));
 
 		foreach (i, c; aliasSeqOf!Arr)
 		{
@@ -45,33 +43,33 @@ final class WinSettings //: GUIWindow
 			{
 				//t.add(new GUIStaticText(null, mixin(c.caption)));
 
-				static if (c.values)
-				{
-					string[] arr;
+				// static if (c.values)
+				// {
+				// 	string[] arr;
 
-					foreach (u; aliasSeqOf!(Arr[i].values))
-					{
-						arr ~= mixin(u);
-					}
+				// 	foreach (u; aliasSeqOf!(Arr[i].values))
+				// 	{
+				// 		arr ~= mixin(u);
+				// 	}
 
-					new GUIStaticText(curLayout, mixin(c.caption));
-					auto e = new TextCombo(curLayout, arr, mixin(c.var));
-				}
-				else
-				{
-					auto e = new CheckBox(curLayout, mixin(c.caption), mixin(c.var));
-				}
+				// 	new GUIStaticText(curLayout, mixin(c.caption));
+				// 	auto e = new TextCombo(curLayout, arr, mixin(c.var));
+				// }
+				// else
+				// {
+				// 	auto e = new CheckBox(curLayout, mixin(c.caption), mixin(c.var));
+				// }
 
-				e.onChange = (a) {
-					mixin(c.var ~ `= cast(typeof( ` ~ c.var ~ `))a;`);
-					return true;
-				};
+				// e.onChange = (a) {
+				// 	mixin(c.var ~ `= cast(typeof( ` ~ c.var ~ `))a;`);
+				// 	return true;
+				// };
 			}
 		}
 
 		if (viewer)
 		{
-			GUIElement[] arr;
+			//GUIElement[] arr;
 
 			// auto maps = (cast(RoFileSystem)PEfs).grfs
 			// 	.map!(a => a.files.byKey)

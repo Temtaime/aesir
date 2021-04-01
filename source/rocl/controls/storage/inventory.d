@@ -8,7 +8,7 @@ final class WinInventory : ItemView
 {
 	void draw()
 	{
-		if (auto win = Window(MSG_INVENTORY, nk_rect(0, 0, 350, 150)))
+		if (auto win = Window(nk, MSG_INVENTORY, nk_rect(0, 0, 350, 150)))
 		{
 			drawImpl;
 		}
@@ -29,7 +29,7 @@ protected:
 		return RO.status.items.arr[];
 	}
 
-	override void onIconDraw(in ref NuklearContext.Widget w, Item m)
+	override void onIconDraw(in ref Widget w, Item m)
 	{
 		if (RO.gui.kafra.isActive)
 		{
