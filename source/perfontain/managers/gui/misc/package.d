@@ -87,7 +87,7 @@ final class NuklearContext
 	{
 		assert(line.length);
 
-		if (auto widget = new Widget)
+		if (auto widget = Widget(nk))
 		{
 			float x = 0, y = (widget.space.h - _ctx.style.font.height) / 2;
 

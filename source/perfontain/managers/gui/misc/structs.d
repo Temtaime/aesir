@@ -3,6 +3,7 @@ import std, perfontain, std.digest.crc, perfontain.managers.gui.misc;
 
 mixin template NuklearStruct(string Dtor, bool Cond, bool DtorOnCond = true)
 {
+	@disable this();
 	@disable this(this);
 
 	static if (Cond)

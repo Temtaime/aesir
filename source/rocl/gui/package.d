@@ -51,16 +51,19 @@ final class GuiManager
 
 	void removeCharSelect()
 	{
-
+		_cd = null;
 	}
 
 	void createCharSelect(in PkCharData* data)
 	{
-
+		_cd = data;
 	}
 
 	void draw()
 	{
+		if (_cd)
+			charSelect.draw(_cd);
+
 		if (login)
 			login.draw;
 		else
@@ -147,6 +150,7 @@ final class GuiManager
 	WinStatus status;
 	WinHotkeys hotkeys;
 	IconCache iconCache;
+	WinCharSelect charSelect;
 
 	RC!WinShop shop;
 	RC!WinLogin login;
@@ -162,4 +166,6 @@ final class GuiManager
 	//mixin MakeWindow!(WinHotkeySettings, `hotkeySettings`);
 private:
 	mixin publicProperty!(bool, `isGame`);
+
+	const(PkCharData)* _cd;
 }

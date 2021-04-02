@@ -5,89 +5,96 @@ import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
 
 final:
 
-// class WinCharSelect //: GUIWindow
-// {
-// 	this(in PkCharData* c)
-// 	{
-// 		super(MSG_CHAR_SELECT, Vector2s(400));
+struct WinCharSelect //: GUIWindow
+{
+	void draw(in PkCharData* c)
+	{
+		auto rc = nk_rect(200, 200, 400, 400);
 
-// 		{
-// 			//auto v = PE.window.size;
-// 			//pos = Vector2s(v.x * 2 / 3 - size.x / 2, v.y / 3 - size.y);
-// 		}
+		if (auto win = Window(nk, MSG_CHAR_SELECT, rc))
+		{
+			nk.layout_row_dynamic(0, 2);
 
-// 		{
-// 			string[2][] stats;
+			if (nk.button(MSG_ENTER))
+				RO.action.onCharSelected;
 
-// 			void stat(T)(string name, T v)
-// 			{
-// 				auto s = v.to!string;
+			if (nk.button(MSG_CREATE))
+				RO.action.onCharCreate;
 
-// 				static if (isIntegral!T)
-// 				{
-// 					s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
-// 				}
+			nk.layout_row_dynamic(0, 4);
 
-// 				stats ~= [name, s];
-// 			}
+			foreach (s; stats(c))
+			{
+				nk.label(s.front);
+				nk.label(s.back);
+			}
+		}
+	}
 
-// 			//stat(`Name`, c.name.charsToString);
-// 			stat(`STR`, c.str);
+private:
+	mixin Nuklear;
 
-// 			stat(`Job`, `???`);
-// 			stat(`AGI`, c.agi);
+	auto stats(in PkCharData* c)
+	{
+		string[2][] stats;
 
-// 			stat(`Lv.`, c.baseLvl);
-// 			stat(`VIT`, c.vit);
+		void stat(T)(string name, T v)
+		{
+			auto s = v.to!string;
 
-// 			stat(`EXP`, c.baseExp);
-// 			stat(`INT`, c.int_);
+			static if (isIntegral!T)
+			{
+				s = s.as!ubyte.retro.chunks(3).join(' ').retro.array.assumeUTF;
+			}
 
-// 			stat(`HP`, c.hp);
-// 			stat(`DEX`, c.dex);
+			stats ~= [name, s];
+		}
 
-// 			stat(`SP`, c.sp);
-// 			stat(`LUK`, c.luk);
+		stat(`Name`, c.name);
+		stat(`STR`, c.str);
 
-// 			addLayout(new DynamicRowLayout(4));
+		stat(`Job`, `???`);
+		stat(`AGI`, c.agi);
 
-// 			foreach (s; stats)
-// 			{
-// 				new GUIStaticText(curLayout, s.front);
-// 				new GUIStaticText(curLayout, s.back);
-// 			}
-// 		}
+		stat(`Lv.`, c.baseLvl);
+		stat(`VIT`, c.vit);
 
-// 		addLayout(new DynamicRowLayout(2));
+		stat(`EXP`, c.baseExp);
+		stat(`INT`, c.int_);
 
-// 		new Button(curLayout, MSG_ENTER, &RO.action.onCharSelected);
-// 		new Button(curLayout, MSG_CREATE, &RO.action.onCharCreate);
-// 	}
-// }
+		stat(`HP`, c.hp);
+		stat(`DEX`, c.dex);
+
+		stat(`SP`, c.sp);
+		stat(`LUK`, c.luk);
+
+		return stats;
+	}
+}
 
 class StatInfo //: GUIElement
 {
 	//this(GUIElement p, string name, string value)
 	//{
-		// super(p, Vector2s(155, PE.fonts.base.height));
+	// super(p, Vector2s(155, PE.fonts.base.height));
 
-		// {
-		// 	auto q = new GUIQuad(this, Color(200, 200, 230, 200));
-		// 	q.size = Vector2s(48, size.y);
+	// {
+	// 	auto q = new GUIQuad(this, Color(200, 200, 230, 200));
+	// 	q.size = Vector2s(48, size.y);
 
-		// 	q = new GUIQuad(this, Color(240, 240, 240, 200));
-		// 	q.size = Vector2s(size.x - 48, size.y);
-		// 	q.moveX(POS_MAX);
-		// }
+	// 	q = new GUIQuad(this, Color(240, 240, 240, 200));
+	// 	q.size = Vector2s(size.x - 48, size.y);
+	// 	q.moveX(POS_MAX);
+	// }
 
-		// {
-		// 	FontInfo fi = {flags: FONT_BOLD};
+	// {
+	// 	FontInfo fi = {flags: FONT_BOLD};
 
-		// 	auto e = new GUIStaticText(this, name, fi);
-		// 	e.pos.x = 3;
+	// 	auto e = new GUIStaticText(this, name, fi);
+	// 	e.pos.x = 3;
 
-		// 	e = new GUIStaticText(this, value);
-		// 	e.pos.x = 51;
-		// }
-//	}
+	// 	e = new GUIStaticText(this, value);
+	// 	e.pos.x = 51;
+	// }
+	//	}
 }
