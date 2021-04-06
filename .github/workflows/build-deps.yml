@@ -1,0 +1,23 @@
+name: Build deps
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  BUILD_CMD: -fno-stack-protector -O3 -msse3 -DNDEBUG main.c
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: libsdl-org/SDL
+
+      - run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
