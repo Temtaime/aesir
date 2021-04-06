@@ -76,7 +76,6 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.dub_compiler == 'ldc-latest' && matrix.dub_build == 'release-nobounds' }}
         with:
           files: |
-            bin/aesir.json
-            bin/perfontain*
+            bin/${{ matrix.os }}.7z
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
