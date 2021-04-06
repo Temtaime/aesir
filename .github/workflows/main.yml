@@ -72,6 +72,6 @@ jobs:
         with:
           files: |
             bin/aesir.json
-            bin/perfontain.exe
+            bin/perfontain*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
