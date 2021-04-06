@@ -84,6 +84,7 @@ jobs:
         id: create_tag
         env:
           WITH_V: true
+          DEFAULT_BUMP: patch
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v2

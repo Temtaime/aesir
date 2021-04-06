@@ -47,27 +47,30 @@ final class RoFileSystem : FileSystem
 		assert(0);
 	}
 
-protected:
-	override void doRead(string name, Rdg dg)
+	override ubyte[] get(string name, string f = __FILE__, uint l = __LINE__)
 	{
-		if (auto data = _zip.get(name).ifThrown(null))
+		debug
 		{
-			return dg(data, false);
+		}
+		else
+		{
+			if (auto data = _zip.get(name).ifThrown(null))
+				return data;
 		}
 
 		try
 		{
-			return super.doRead(`tmp/` ~ name, dg);
+			return super.get(`tmp/` ~ name, f, l);
 		}
 		catch (Exception)
 		{
-			return super.doRead(name, dg);
+			return super.get(name, f, l);
 		}
 	}
 
-	override void doWrite(string name, Wdg dg, ubyte t)
+	override void put(string name, in void[] data, ubyte t = FS_DISK)
 	{
-		super.doWrite(`tmp/` ~ name, dg, t);
+		super.put(`tmp/` ~ name, data, t);
 	}
 
 private:
