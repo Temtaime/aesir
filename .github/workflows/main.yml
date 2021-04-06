@@ -81,6 +81,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: anothrNick/github-tag-action@1.26.0
+        id: create_tag
         env:
           WITH_V: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -94,7 +95,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v1
         with:
-          files: |
-            bin/perfontain.7z
+          tag_name: ${{ steps.create_tag.outputs.new_tag }}
+          files: bin/perfontain.7z
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
