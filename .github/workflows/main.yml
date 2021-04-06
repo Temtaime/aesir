@@ -70,6 +70,12 @@ jobs:
 
       - run: dub build -b ${{ matrix.dub_build }} -a x86_64
 
+      - uses: phish108/autotag-action@1.1.37
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          with-v: true
+          dry-run: true
+
       - uses: softprops/action-gh-release@v1
         if: ${{ matrix.os == 'windows-latest' && matrix.dub_compiler == 'ldc-latest' && matrix.dub_build == 'release-nobounds' }}
         with:
