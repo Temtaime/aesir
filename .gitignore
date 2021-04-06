@@ -1,26 +1,25 @@
-bin/tmp
-bin/data/font
-bin/data/ro.db
-bin/perfontain*
+/bin/tmp/
+/bin/data/font
+/bin/data/ro.db
+/bin/perfontain*
 
-utils/deps
+/source/rocl/network/packets.d
+/source/perfontain/shader/grammar.d
+/source/perfontain/opengl/functions.d
 
-libs
-.dub
+/libs/
+/utils/deps/
 
-source/rocl/network/packets.d
-source/perfontain/opengl/functions.d
-source/perfontain/shader/grammar.d
-source/perfontain/managers/gui/images.d
+/utils/gui/gen*
+/utils/opengl/gen*
+/utils/packets/gen*
+/utils/shaders/gen*
 
-utils/gui/gen*
-utils/opengl/gen*
-utils/packets/gen*
-utils/shaders/gen*
+/bin/start.bat
+/bin/atlas.png
+/bin/aesir.json
 
-start.bat
-atlas.png
-aesir.json
+.dub/
 dub.selections.json
 
 *.grf
