@@ -24,7 +24,7 @@ jobs:
           mkdir build
           cd build
 
-          cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang -DCMAKE_BUILD_TYPE=Release -D3DNOW=OFF -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON \
+          cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang -DCMAKE_BUILD_TYPE=Release \
             -DSDL_ATOMIC_ENABLED_BY_DEFAULT=OFF \
             -DSDL_AUDIO_ENABLED_BY_DEFAULT=OFF \
             -DSDL_RENDER_ENABLED_BY_DEFAULT=OFF \
@@ -41,6 +41,8 @@ jobs:
             -DSDL_DLOPEN_ENABLED_BY_DEFAULT=OFF \
             -DSDL_SENSOR_ENABLED_BY_DEFAULT=OFF \
             -DSDL_LOCALE_ENABLED_BY_DEFAULT=OFF \
+            \
+            -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -D3DNOW=OFF -DVIDEO_VULKAN=OFF \
             ..
 
           cmake -LA ..
