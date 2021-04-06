@@ -22,5 +22,5 @@ jobs:
       - run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -D3DNOW=OFF -DBUILD_SHARED_LIBS=OFF ..
+          cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang -DCMAKE_BUILD_TYPE=Release -D3DNOW=OFF -DBUILD_SHARED_LIBS=OFF -DSDL_SUBSYSTEMS=Video ..
           cmake -LA ..
