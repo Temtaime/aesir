@@ -1,14 +1,7 @@
 name: Build deps
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
-
-env:
-  BUILD_CMD: -fno-stack-protector -O3 -msse3 -DNDEBUG main.c
 
 jobs:
   build-linux:
@@ -52,3 +45,22 @@ jobs:
         with:
           path:
             build/libSDL2.a
+
+  commit:
+    runs-on: ubuntu-20.04
+    needs: [ build-linux ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - uses: actions/download-artifact@v2
+
+      - run: |
+          mv artifact/libSDL2.a utils/deps/libsdl_x64.a
+
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -u
+          git commit -m generated
+          git push
