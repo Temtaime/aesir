@@ -10,13 +10,13 @@ abstract class Converter(T)
 {
 	this(in ubyte[16] hash)
 	{
-		_saveHash = hash[].toHexString; // TODO: SLICE: PHOBOS BUG ????
+		_saveHash = hash.toHexString;
 	}
 
 	T convert()
 	{
 		assert(_saveHash);
-		auto p = format(`converted/%s`, _saveHash);
+		auto p = `converted/` ~ _saveHash;
 
 		try
 		{
