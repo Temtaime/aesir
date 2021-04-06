@@ -31,7 +31,13 @@ jobs:
         with:
           compiler: ldc-latest
 
+      - working-directory: utils/opengl
+        run: dub run
+
       - working-directory: utils/packets
+        run: dub run
+
+      - working-directory: utils/shaders
         run: dub run
 
       - run: |
