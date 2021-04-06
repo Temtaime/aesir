@@ -1,8 +1,8 @@
 module ro.conv;
 import std.file, std.format, std.path, std.conv, std.range, std.getopt,
-	std.process, std.digest.md, core.memory, perfontain, perfontain.misc, ro.conv.asp,
-	ro.conv.map, ro.conv.gui, ro.conv.all, ro.conv.item, ro.conv.effect,
-	rocl.rofs, rocl.game, ro.paths;
+	std.process, std.digest.md, core.memory, perfontain, perfontain.misc,
+	ro.conv.asp, ro.conv.map, ro.conv.gui, ro.conv.all, ro.conv.item,
+	ro.conv.effect, rocl.rofs, rocl.game, ro.paths;
 
 package:
 
@@ -10,7 +10,7 @@ abstract class Converter(T)
 {
 	this(in ubyte[16] hash)
 	{
-		_saveHash = hash.toHexString;
+		_saveHash = hash[].toHexString; // TODO: SLICE: PHOBOS BUG ????
 	}
 
 	T convert()

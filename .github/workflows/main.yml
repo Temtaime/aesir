@@ -95,7 +95,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.create_tag.outputs.new_tag }}
           files: bin/perfontain.7z
+          tag_name: ${{ steps.create_tag.outputs.new_tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
