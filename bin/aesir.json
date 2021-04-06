@@ -1,5 +1,8 @@
 {
 	"lang": "en",
 	"server": "127.0.0.1:6900",
-	"grfs": [ "rdata.grf", "data.grf" ]
+	"grfs": [
+		"rdata.grf",
+		"data.grf"
+	]
 }
