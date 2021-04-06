@@ -50,6 +50,11 @@ final class RoFileSystem : FileSystem
 protected:
 	override void doRead(string name, Rdg dg)
 	{
+		if (auto data = _zip.get(name).ifThrown(null))
+		{
+			return dg(data, false);
+		}
+
 		try
 		{
 			return super.doRead(`tmp/` ~ name, dg);
