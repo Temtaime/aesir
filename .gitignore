@@ -1,6 +1,4 @@
 /bin/tmp/
-/bin/data/font
-/bin/data/ro.db
 /bin/perfontain*
 
 /source/rocl/network/packets.d
@@ -8,7 +6,6 @@
 /source/perfontain/opengl/functions.d
 
 /libs/
-/utils/deps/
 
 /utils/gui/gen*
 /utils/opengl/gen*
