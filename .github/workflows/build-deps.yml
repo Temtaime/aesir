@@ -20,7 +20,8 @@ jobs:
           repository: libsdl-org/SDL
 
       - run: |
-          sudo apt install -y libasound2-dev libxi-dev
+          sudo apt install -y ninja-build libxi-dev
+
           mkdir build
           cd build
 
