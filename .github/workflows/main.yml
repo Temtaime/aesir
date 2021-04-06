@@ -68,19 +68,23 @@ jobs:
       - run: dub build -b ${{ matrix.dub_build }} -a x86_64
 
       - uses: actions/upload-artifact@v2
-        if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.dub_compiler == 'ldc-latest' && matrix.dub_build == 'release-nobounds' }}
+        if: ${{ matrix.dub_compiler == 'ldc-latest' && matrix.dub_build == 'release-nobounds' }}
         with:
           path:
             bin/perfontain*
 
   release:
-    if: startsWith(github.ref, 'refs/tags/')
-
     runs-on: ubuntu-20.04
     needs: [ build ]
 
     steps:
       - uses: actions/checkout@v2
+
+      - uses: anothrNick/github-tag-action@1.26.0
+        env:
+          WITH_V: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/download-artifact@v2
 
       - working-directory: bin
