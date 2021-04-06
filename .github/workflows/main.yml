@@ -32,9 +32,7 @@ jobs:
           compiler: ldc-latest
 
       - working-directory: utils/packets
-        run: |
-          dub run
-          
-          
-          
-          
+        run: dub run
+
+      - run: |
+          dub build -b release-nobounds -a ${{ matrix.dub_arch }}
