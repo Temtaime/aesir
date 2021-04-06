@@ -24,7 +24,7 @@ jobs:
           mkdir build
           cd build
 
-          cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang -DCMAKE_BUILD_TYPE=Release \
+          cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang -DCMAKE_BUILD_TYPE=Release \
             -DSDL_ATOMIC_ENABLED_BY_DEFAULT=OFF \
             -DSDL_AUDIO_ENABLED_BY_DEFAULT=OFF \
             -DSDL_RENDER_ENABLED_BY_DEFAULT=OFF \
@@ -45,8 +45,7 @@ jobs:
             -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -D3DNOW=OFF -DVIDEO_VULKAN=OFF \
             ..
 
-          make
-          ls -l
+          ninja
 
       - uses: actions/upload-artifact@v2
         with:
