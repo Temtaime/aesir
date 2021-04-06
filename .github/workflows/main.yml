@@ -68,5 +68,13 @@ jobs:
       - working-directory: utils/shaders
         run: dub run
 
-      - run: |
-          dub build -b ${{ matrix.dub_build }} -a x86_64
+      - run: dub build -b ${{ matrix.dub_build }} -a x86_64
+
+      - uses: softprops/action-gh-release@v1
+        if: ${{ matrix.os == 'windows-latest' && matrix.dub_compiler == 'ldc-latest' && matrix.dub_build == 'release-nobounds' }}
+        with:
+          files: |
+            bin/aesir.json
+            bin/perfontain.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
