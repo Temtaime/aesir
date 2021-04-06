@@ -37,7 +37,7 @@ jobs:
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
         run: |
-          sudo apt install -y libasound2-dev libxi-dev
+          sudo apt install -y libasound2-dev libxi-dev binutils-gold
           sudo update-alternatives --set ld /usr/bin/ld.gold
 
       - working-directory: utils/opengl
