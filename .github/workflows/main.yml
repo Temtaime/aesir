@@ -14,13 +14,31 @@ jobs:
       matrix:
         include:
           - os: ubuntu-20.04
+            dub_build: debug
             dub_compiler: dmd-latest
           - os: windows-latest
+            dub_build: debug
             dub_compiler: dmd-latest
 
           - os: ubuntu-20.04
+            dub_build: debug
             dub_compiler: ldc-latest
           - os: windows-latest
+            dub_build: debug
+            dub_compiler: ldc-latest
+
+          - os: ubuntu-20.04
+            dub_build: release-nobounds
+            dub_compiler: dmd-latest
+          - os: windows-latest
+            dub_build: release-nobounds
+            dub_compiler: dmd-latest
+
+          - os: ubuntu-20.04
+            dub_build: release-nobounds
+            dub_compiler: ldc-latest
+          - os: windows-latest
+            dub_build: release-nobounds
             dub_compiler: ldc-latest
 
     runs-on: ${{ matrix.os }}
@@ -51,4 +69,4 @@ jobs:
         run: dub run
 
       - run: |
-          dub build -b release-nobounds -a x86_64
+          dub build -b ${{ matrix.dub_build }} -a x86_64
