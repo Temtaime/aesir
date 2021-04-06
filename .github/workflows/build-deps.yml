@@ -45,5 +45,5 @@ jobs:
             -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -D3DNOW=OFF -DVIDEO_VULKAN=OFF \
             ..
 
-          cmake -LA ..
           make
+          ls -l
