@@ -26,6 +26,7 @@ jobs:
 
           cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang -DCMAKE_BUILD_TYPE=Release -D3DNOW=OFF -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON \
             -DSDL_ATOMIC_ENABLED_BY_DEFAULT=OFF \
+            -DSDL_AUDIO_ENABLED_BY_DEFAULT=OFF \
             -DSDL_RENDER_ENABLED_BY_DEFAULT=OFF \
             -DSDL_EVENTS_ENABLED_BY_DEFAULT=OFF \
             -DSDL_JOYSTICK_ENABLED_BY_DEFAULT=OFF \
@@ -43,3 +44,4 @@ jobs:
             ..
 
           cmake -LA ..
+          make
