@@ -13,12 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - arch: x64
-            dub_arch: x86_64
-            os: windows-latest
-          - arch: x64
-            dub_arch: x86_64
-            os: ubuntu-20.04
+          - os: ubuntu-20.04
+          - os: windows-latest
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -29,10 +25,10 @@ jobs:
 
       - uses: dlang-community/setup-dlang@v1
         with:
-          compiler: ldc-latest
+          compiler: ldc-1.23.0
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
-        run: sudo apt install -y libasound2-dev libxi-dev #libX11-devel libXi-devel alsa-lib-devel mesa-libGL-devel libstdc++-static
+        run: sudo apt install -y libasound2-dev libxi-dev
 
       - working-directory: utils/opengl
         run: dub run
@@ -44,4 +40,4 @@ jobs:
         run: dub run
 
       - run: |
-          dub build -b release-nobounds -a ${{ matrix.dub_arch }}
+          dub build -b release-nobounds -a x86_64
