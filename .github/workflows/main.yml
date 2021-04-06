@@ -41,4 +41,7 @@ jobs:
         run: dub run
 
       - run: |
+          wget -q https://cloud.acomirei.cc/s/6Y0T4jvdkvYEIRc/download?files=deps.7z
+          7z x deps.7z -o utils
+          ls utils
           dub build -b release-nobounds -a ${{ matrix.dub_arch }}
