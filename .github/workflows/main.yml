@@ -39,7 +39,7 @@ jobs:
         run: |
           sudo apt install -y libasound2-dev libxi-dev
           ls -l /usr/bin/ld*
-          sudo update-alternatives --set ld /usr/bin/ld.lld
+          sudo update-alternatives --config ld
 
       - working-directory: utils/opengl
         run: dub run
