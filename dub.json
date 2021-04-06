@@ -9,8 +9,8 @@
 		}
 	},
 	"dependencies": {
-		"stb": ">=2.0.0",
-		"utile": ">=1.2.5",
+		"stb": ">=2.0.1",
+		"utile": ">=1.2.1",
 		"pegged": ">=0.4.5-beta.2",
 		"derelict-sdl2": ">=3.1.0-alpha.4"
 	},
