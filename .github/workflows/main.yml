@@ -71,6 +71,7 @@ jobs:
       - run: dub build -b ${{ matrix.dub_build }} -a x86_64
 
       - uses: phish108/autotag-action@1.1.37
+        if: "!startsWith(github.ref, 'refs/tags/')"
         env:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           with-v: true
