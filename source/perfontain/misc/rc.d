@@ -24,8 +24,11 @@ class RCounted
 		version (LOG_RC)
 			logger(`%s destroying`, this);
 
-		debug if (!_wasFreed)
-			logger.error(`%s was never acquired`, this);
+		debug
+		{
+			if (!_wasFreed)
+				logger.error(`%s was never acquired`, this);
+		}
 	}
 
 final:
@@ -36,13 +39,20 @@ final:
 
 	void acquire()
 	{
-		assert(!_wasFreed);
+		debug
+		{
+			assert(!_wasFreed);
+		}
+
 		_refs++;
 
 		version (LOG_RC)
 			logger(`%s, %u refs`, this, _refs);
 
-		debug rcLeaks[cast(void*)this]++;
+		debug
+		{
+			rcLeaks[cast(void*)this]++;
+		}
 	}
 
 	void release()

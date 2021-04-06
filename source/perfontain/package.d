@@ -89,7 +89,11 @@ final class Engine
 		// }
 
 		dtors;
-		logLeaks;
+
+		debug
+		{
+			logLeaks;
+		}
 	}
 
 	void create(string title)
