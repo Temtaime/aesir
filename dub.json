@@ -11,7 +11,7 @@
 	"dependencies": {
 		"stb": "2.0.0",
 		"utile": "1.2.5",
-		"pegged": "0.4.5-beta.2",
+		"pegged": "0.4.4",
 		"derelict-sdl2": ">=3.1.0-alpha.4"
 	},
 	"subConfigurations": {
@@ -21,17 +21,16 @@
 		"source/perfontain/shader/res"
 	],
 	"libs": [
-		"sdl_mixer_x64",
 		"sdl_x64",
-		"sdl_ttf_x64",
 		"lispsm_x64",
-		"nuklear_x64"
+		"nuklear_x64",
+		"sdl_ttf_x64",
+		"sdl_mixer_x64"
 	],
 	"dflags": [
 		"-preview=intpromote"
 	],
 	"dflags-ldc": [
-		"-allinst",
 		"-ffast-math",
 		"-enable-cross-module-inlining"
 	],
@@ -43,11 +42,11 @@
 		"stdc++"
 	],
 	"lflags-linux": [
-		"-Lutils/deps",
-		"-s"
+		"-s",
+		"-Lutils/deps"
 	],
 	"lflags-windows": [
-		"/LIBPATH:utils/deps",
-		"/manifest:embed"
+		"/manifest:embed",
+		"/LIBPATH:utils/deps"
 	],
 }
