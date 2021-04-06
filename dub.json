@@ -31,13 +31,12 @@
 		"-preview=intpromote"
 	],
 	"dflags-ldc": [
-		"-ffast-math",
-		"-enable-cross-module-inlining"
+		"-ffast-math"
 	],
 	"libs-linux": [
+		"Xi",
 		"X11",
 		"Xext",
-		"Xi",
 		"asound",
 		"stdc++"
 	],
