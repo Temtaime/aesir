@@ -32,7 +32,7 @@ jobs:
           compiler: ldc-latest
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
-        run: sudo apt install -y libX11-devel libXi-devel alsa-lib-devel mesa-libGL-devel libstdc++-static
+        run: sudo apt install -y libasound2-dev #libX11-devel libXi-devel alsa-lib-devel mesa-libGL-devel libstdc++-static
 
       - working-directory: utils/opengl
         run: dub run
