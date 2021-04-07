@@ -77,7 +77,7 @@ final class Engine
 
 		if (!settings)
 		{
-			settings = new SettingsManager;
+			settings = new SettingsManager; 
 		}
 	}
 

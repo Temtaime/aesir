@@ -44,6 +44,7 @@
 		"gdi32",
 		"imm32",
 		"ole32",
+		"winmm",
 		"user32",
 		"version",
 		"oleaut32",
