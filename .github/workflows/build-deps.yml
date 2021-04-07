@@ -64,7 +64,8 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path:
-            build/*SDL2.*
+            build/SDL2.lib
+            build/libSDL2.a
 
   commit:
     runs-on: ubuntu-20.04
