@@ -2,6 +2,9 @@ name: CI
 
 on:
   push:
+    paths:
+      - 'utils/**'
+      - 'source/**'
   workflow_dispatch:
 
 jobs:

@@ -8,9 +8,15 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - id: sdl_version
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: libsdl-org/SDL
+
       - uses: actions/checkout@v2
         with:
           repository: libsdl-org/SDL
+          ref: ${{ steps.sdl_version.outputs.release }}
 
       - run: |
           sudo apt install -y ninja-build libxi-dev libgl1-mesa-dev
@@ -32,6 +38,8 @@ jobs:
             -DSDL_FILESYSTEM_ENABLED_BY_DEFAULT=OFF \
             -DSDL_SENSOR_ENABLED_BY_DEFAULT=OFF \
             -DSDL_LOCALE_ENABLED_BY_DEFAULT=OFF \
+            \
+            -D3DNOW=OFF -DASSERTIONS=disabled -DSSEMATH=ON \
             \
             -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF \
             ..
