@@ -11,7 +11,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-20.04, windows-latest ]
+        include:
+          - os: ubuntu-20.04
+            compiler: clang
+          - os: windows-latest
+            compiler: clang-cl
 
     runs-on: ${{ matrix.os }}
 
@@ -38,7 +42,7 @@ jobs:
 
       - working-directory: build
         run: >
-          cmake -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang -DCMAKE_BUILD_TYPE=Release
+          cmake -G Ninja -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_BUILD_TYPE=Release
           -DSDL_ATOMIC_ENABLED_BY_DEFAULT=OFF
           -DSDL_AUDIO_ENABLED_BY_DEFAULT=OFF
           -DSDL_RENDER_ENABLED_BY_DEFAULT=OFF
@@ -51,7 +55,7 @@ jobs:
           -DSDL_FILESYSTEM_ENABLED_BY_DEFAULT=OFF
           -DSDL_SENSOR_ENABLED_BY_DEFAULT=OFF
           -DSDL_LOCALE_ENABLED_BY_DEFAULT=OFF
-          -D3DNOW=OFF -DASSERTIONS=disabled
+          -D3DNOW=OFF -DMMX=OFF -DSSE=OFF -DSSE2=OFF -DASSERTIONS=disabled
           -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF -DDIRECTX=OFF
           ..
 
