@@ -4,9 +4,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
+  build:
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-20.04, windlws-latest ]
 
+    runs-on: ${{ matrix.os }}
     steps:
       - id: sdl_version
         uses: oprypin/find-latest-tag@v1
@@ -18,9 +23,14 @@ jobs:
           repository: libsdl-org/SDL
           ref: ${{ steps.sdl_version.outputs.tag }}
 
-      - run: |
-          sudo apt install -y ninja-build libxi-dev libgl1-mesa-dev
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
 
+      - if: ${{ matrix.os == 'ubuntu-20.04' }}
+        run: sudo apt install -y ninja-build libxi-dev libgl1-mesa-dev
+
+      - run: |
           mkdir build
           cd build
 
@@ -39,7 +49,7 @@ jobs:
             -DSDL_SENSOR_ENABLED_BY_DEFAULT=OFF \
             -DSDL_LOCALE_ENABLED_BY_DEFAULT=OFF \
             \
-            -D3DNOW=OFF -DASSERTIONS=disabled -DSSEMATH=ON \
+            -D3DNOW=OFF -DMMX=OFF -DSSE=OFF -DSSE2=OFF -DASSERTIONS=disabled \
             \
             -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF \
             ..
@@ -53,7 +63,7 @@ jobs:
 
   commit:
     runs-on: ubuntu-20.04
-    needs: [ build-linux ]
+    needs: [ build ]
     steps:
       - uses: actions/checkout@v2
         with:
