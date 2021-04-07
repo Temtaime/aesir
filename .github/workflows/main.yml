@@ -94,6 +94,7 @@ jobs:
 
       - working-directory: bin
         run: |
+          mv aesir.sample.json aesir.json
           7z a resources.zip data
           7z a perfontain.7z viewer.bat aesir.json resources.zip ../artifact/*
 

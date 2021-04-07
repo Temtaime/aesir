@@ -13,8 +13,10 @@ jobs:
       matrix:
         include:
           - os: ubuntu-20.04
+            lib: libSDL2.lib
             compiler: clang
           - os: windows-latest
+            lib: SDL2.lib
             compiler: cl
 
     runs-on: ${{ matrix.os }}
@@ -64,8 +66,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path:
-            build/SDL2.lib
-            build/libSDL2.a
+            build/${{ matrix.lib }}
 
   commit:
     runs-on: ubuntu-20.04
