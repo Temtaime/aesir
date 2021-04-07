@@ -5,6 +5,7 @@ on:
     paths:
       - 'utils/**'
       - 'source/**'
+      - .github/workflows/main.yml
   workflow_dispatch:
 
 jobs:

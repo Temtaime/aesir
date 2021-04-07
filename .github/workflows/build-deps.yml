@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-20.04
-            lib: libSDL2.lib
+            lib: libSDL2.a
             compiler: clang
           - os: windows-latest
             lib: SDL2.lib
