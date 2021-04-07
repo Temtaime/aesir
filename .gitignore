@@ -14,6 +14,7 @@
 
 /bin/start.bat
 /bin/atlas.png
+/bin/aesir.json
 
 .dub/
 dub.selections.json
