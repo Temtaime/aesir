@@ -33,10 +33,10 @@ jobs:
             -DSDL_SENSOR_ENABLED_BY_DEFAULT=OFF \
             -DSDL_LOCALE_ENABLED_BY_DEFAULT=OFF \
             \
-            -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -D3DNOW=OFF -DSSEMATH=ON -DVIDEO_VULKAN=OFF \
+            -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGL=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF \
             ..
 
-          ninja
+          ninja -v
 
       - uses: actions/upload-artifact@v2
         with:
