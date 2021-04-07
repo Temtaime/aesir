@@ -56,13 +56,10 @@ jobs:
           -DSDL_SENSOR_ENABLED_BY_DEFAULT=OFF
           -DSDL_LOCALE_ENABLED_BY_DEFAULT=OFF
           -D3DNOW=OFF -DMMX=OFF -DSSE=OFF -DSSE2=OFF -DASSERTIONS=disabled
-          -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF -DDIRECTX=OFF
+          -DBUILD_SHARED_LIBS=OFF -DFORCE_STATIC_VCRT=ON -DSDL_STATIC_PIC=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF -DDIRECTX=OFF
           ..
 
-          cmake -LA ..
-
-      - working-directory: build
-        run: ninja -v
+          ninja -v
 
       - uses: actions/upload-artifact@v2
         with:
