@@ -46,7 +46,6 @@ jobs:
         run: >
           cmake -G Ninja -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_BUILD_TYPE=Release
           -DSDL_ATOMIC_ENABLED_BY_DEFAULT=OFF
-          -DSDL_AUDIO_ENABLED_BY_DEFAULT=OFF
           -DSDL_RENDER_ENABLED_BY_DEFAULT=OFF
           -DSDL_HAPTIC_ENABLED_BY_DEFAULT=OFF
           -DSDL_POWER_ENABLED_BY_DEFAULT=OFF

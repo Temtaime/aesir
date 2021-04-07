@@ -40,6 +40,15 @@
 		"asound",
 		"stdc++"
 	],
+	"libs-windows": [
+		"gdi32",
+		"imm32",
+		"ole32",
+		"user32",
+		"version",
+		"oleaut32",
+		"setupapi"
+	],
 	"lflags-linux": [
 		"-s",
 		"-Lutils/deps"
