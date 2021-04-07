@@ -37,7 +37,7 @@ jobs:
           arch: x64
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
-        run: sudo apt install -y ninja-build libxi-dev libgl1-mesa-dev
+        run: sudo apt install -y ninja-build libxi-dev libgl1-mesa-dev libasound2-dev
 
       - run: |
           mkdir build
