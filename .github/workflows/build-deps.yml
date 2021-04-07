@@ -9,14 +9,15 @@ jobs:
 
     steps:
       - id: sdl_version
-        uses: pozetroninc/github-action-get-latest-release@master
+        uses: oprypin/find-latest-tag@v1
         with:
+          releases-only: true
           repository: libsdl-org/SDL
 
       - uses: actions/checkout@v2
         with:
           repository: libsdl-org/SDL
-          ref: ${{ steps.sdl_version.outputs.release }}
+          ref: ${{ steps.sdl_version.outputs.tag }}
 
       - run: |
           sudo apt install -y ninja-build libxi-dev libgl1-mesa-dev
