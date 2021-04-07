@@ -13,7 +13,7 @@ jobs:
           repository: libsdl-org/SDL
 
       - run: |
-          sudo apt install -y ninja-build libxi-dev
+          sudo apt install -y ninja-build libxi-dev libgl1-mesa-dev
 
           mkdir build
           cd build
@@ -33,7 +33,7 @@ jobs:
             -DSDL_SENSOR_ENABLED_BY_DEFAULT=OFF \
             -DSDL_LOCALE_ENABLED_BY_DEFAULT=OFF \
             \
-            -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGL=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF \
+            -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF \
             ..
 
           ninja -v
