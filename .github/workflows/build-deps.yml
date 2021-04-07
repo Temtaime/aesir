@@ -11,7 +11,6 @@ jobs:
       - id: sdl_version
         uses: oprypin/find-latest-tag@v1
         with:
-          releases-only: true
           repository: libsdl-org/SDL
 
       - uses: actions/checkout@v2
