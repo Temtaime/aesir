@@ -59,13 +59,15 @@ jobs:
           -DBUILD_SHARED_LIBS=OFF -DSDL_STATIC_PIC=ON -DVIDEO_OPENGLES=OFF -DVIDEO_VULKAN=OFF -DDIRECTX=OFF
           ..
 
+          cmake -LA ..
+
       - working-directory: build
         run: ninja -v
 
       - uses: actions/upload-artifact@v2
         with:
           path:
-            build/libSDL2.a
+            build/*SDL2.*
 
   commit:
     runs-on: ubuntu-20.04
@@ -78,6 +80,7 @@ jobs:
       - uses: actions/download-artifact@v2
 
       - run: |
+          mv artifact/SDL2.lib utils/deps/sdl_x64.lib
           mv artifact/libSDL2.a utils/deps/libsdl_x64.a
 
           git config user.name github-actions
