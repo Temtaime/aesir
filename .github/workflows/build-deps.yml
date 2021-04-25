@@ -45,7 +45,7 @@ jobs:
       - working-directory: build
         run: >
           cmake -G Ninja -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_BUILD_TYPE=Release
-          -DSDL_VIDEO_STATIC_ANGLE
+          -DCMAKE_C_FLAGS=-DSDL_VIDEO_STATIC_ANGLE
           -DSDL_ATOMIC_ENABLED_BY_DEFAULT=OFF
           -DSDL_RENDER_ENABLED_BY_DEFAULT=OFF
           -DSDL_HAPTIC_ENABLED_BY_DEFAULT=OFF
