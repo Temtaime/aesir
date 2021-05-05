@@ -6,7 +6,7 @@ final class Sampler : RCounted
 {
 	this()
 	{
-		glCreateSamplers(1, &_id);
+		glGenSamplers(1, &_id);
 	}
 
 	~this()

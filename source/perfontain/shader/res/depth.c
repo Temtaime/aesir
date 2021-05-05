@@ -1,3 +1,5 @@
+import header
+
 TEXTURED_SHADOWS
 	use PASS_DATA
 import misc
@@ -12,7 +14,7 @@ vertex:
 	{
 		TEXTURED_SHADOWS
 			DO_DATA_PASS
-			vert.texCoord = pe_tex_coord;
+			texCoord = pe_tex_coord;
 
 		gl_Position = TRANS.mvp * vec4(pe_vertex, 1.);
 	}

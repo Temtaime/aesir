@@ -1,15 +1,12 @@
 module perfontain.vao;
 
-import
-		perfontain,
-		perfontain.opengl;
-
+import perfontain, perfontain.opengl;
 
 final class ArrayBuffer : RCounted
 {
 	this()
 	{
-		glCreateVertexArrays(1, &_id);
+		glGenVertexArrays(1, &_id);
 	}
 
 	~this()
@@ -31,7 +28,7 @@ final class ArrayBuffer : RCounted
 private:
 	static bind(uint v)
 	{
-		if(set(PEstate._vao, v))
+		//if (set(PEstate._vao, v))
 		{
 			glBindVertexArray(v);
 		}

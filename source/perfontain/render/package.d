@@ -1,15 +1,10 @@
 module perfontain.render;
 
-import
-		perfontain,
-		perfontain.misc.vmem;
-
+import perfontain, perfontain.misc.vmem;
 
 struct RegionIV
 {
-	const(AllocRegion)*
-						index,
-						vertex;
+	const(AllocRegion)* index, vertex;
 }
 
 final class IndexVertex : RCounted
@@ -22,18 +17,21 @@ final class IndexVertex : RCounted
 
 	void bind()
 	{
-		if(!_vao)
+		if (_vao)
+			_vao.bind;
+		else
 		{
 			_vao = new ArrayBuffer;
 			_vao.bind;
 
-			_va.vbo.bind;
-			_ia.vbo.bind;
-
-			_vao.unbind;
+			_va.vbo.enable;
+			_ia.vbo.enable;
 		}
+	}
 
-		_vao.bind;
+	void unbind()
+	{
+		_vao.unbind;
 	}
 
 	auto alloc(ref in SubMeshData sd)
@@ -41,8 +39,7 @@ final class IndexVertex : RCounted
 		auto index = _ia.alloc(sd.indices.toByte);
 		auto vertex = _va.alloc(sd.vertices.toByte);
 
-		vertex.onMove =
-		{
+		vertex.onMove = {
 			index.value = vertex.start / _va.vbo.alignment;
 			_ia.update(index);
 		};
@@ -65,9 +62,7 @@ final class IndexVertex : RCounted
 	}
 
 private:
-	RC!VMemAlloc
-					_ia,
-					_va;
+	RC!VMemAlloc _ia, _va;
 
 	RC!ArrayBuffer _vao;
 }

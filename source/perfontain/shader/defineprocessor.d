@@ -1,20 +1,8 @@
 module perfontain.shader.defineprocessor;
 
-import
-		std.stdio,
-		std.array,
-		std.range,
-		std.regex,
-		std.string,
-		std.algorithm,
-		std.functional,
-
-		pegged.grammar,
-
-		perfontain,
-		perfontain.shader.grammar,
-		perfontain.shader.resource;
-
+import std.stdio, std.array, std.range, std.regex, std.string, std.algorithm,
+	std.functional, pegged.grammar, perfontain, perfontain.shader.grammar,
+	perfontain.shader.resource;
 
 struct DefineProcessor
 {
@@ -25,7 +13,7 @@ struct DefineProcessor
 		auto arr = dataOf(n);
 		alias pred = a => a.name == `EXGL.Shader`;
 
-		foreach(ref p; arr.filter!pred)
+		foreach (ref p; arr.filter!pred)
 		{
 			auto old = defs.dup;
 			auto t = p.matches.front;
@@ -43,7 +31,7 @@ struct DefineProcessor
 private:
 	static dataOf(string n)
 	{
-		if(auto p = n in _shaders)
+		if (auto p = n in _shaders)
 		{
 			return *p;
 		}
@@ -56,28 +44,24 @@ private:
 
 	auto entab(R)(R r, bool tab)
 	{
-		return r
-				.map!(a => gen(a))
-				.join("\n")
-				.splitLines
-				.filter!(a => a.length)
-				.map!(a => (tab ? "\t" : null) ~ a)
-				.join("\n");
+		return r.map!(a => gen(a)).join("\n").splitLines
+			.filter!(a => a.length)
+			.map!(a => (tab ? "\t" : null) ~ a)
+			.join("\n");
 	}
 
 	auto expand(string s)
 	{
-		while(true)
+		while (true)
 		{
 			auto n = s;
 
-			defs
-				.byKeyValue
+			defs.byKeyValue
 				.array
 				.sort!((a, b) => a.key.length > b.key.length)
 				.each!(a => n = n.replace(a.key, a.value));
 
-			if(n == s)
+			if (n == s)
 			{
 				break;
 			}
@@ -90,16 +74,16 @@ private:
 
 	string gen(ref in ParseTree p, bool tab = true)
 	{
-		switch(p.name)
+		switch (p.name)
 		{
 		case `EXGL.Cond`:
 			auto r = !!(p.children.front.matches.front in defs) ^ (p.matches.front == `!`);
 
-			if(r)
+			if (r)
 			{
 				return gen(p.children[1], false);
 			}
-			else if(p.children.length > 2)
+			else if (p.children.length > 2)
 			{
 				return gen(p.children.back, false);
 			}
@@ -108,12 +92,9 @@ private:
 
 		case `EXGL.Vsfs`:
 			auto v = !!(`VERTEX_SHADER` in defs);
+			auto s = p.matches.back;
 
-			auto	s = p.matches.front,
-					d = gen(p.children.front),
-					n = p.matches.back;
-
-			return format("%s %s\n{\n%s\n} %s;", v ? `out` : `in`, s, d, n);
+			return format("%s %s", v ? `out` : `in`, s);
 
 		case `EXGL.Import`:
 			return entab(dataOf(p.matches.front), false);

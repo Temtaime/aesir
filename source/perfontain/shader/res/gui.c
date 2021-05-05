@@ -1,3 +1,5 @@
+import header
+
 use PASS_DATA
 use PASS_DRAW_ID
 
@@ -13,8 +15,8 @@ vertex:
 	{
 		DO_DATA_PASS
 
-		vert.color = pe_color;
-		vert.texCoord = pe_vertex.zw;
+		color = pe_color;
+		texCoord = pe_vertex.zw;
 
 		gl_Position = TRANS.mvp * vec4(pe_vertex.xy, 0., 1.);
 	}
@@ -29,7 +31,7 @@ fragment:
 		if(coord.x < TRANS.scissor.x || coord.x >= TRANS.scissor.z || coord.y < TRANS.scissor.y || coord.y >= TRANS.scissor.w)
 			discard;
 
-		vec4 c = SAMPLE_TEX * vert.color;
+		vec4 c = SAMPLE_TEX * color;
 
 		if(c.a < .05)
 			discard;

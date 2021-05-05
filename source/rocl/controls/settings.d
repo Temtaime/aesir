@@ -24,11 +24,7 @@ final class WinSettings //: GUIWindow
 						]),
 				S(`MSG_LIGHTING`, `PE.settings.lights`, [
 						`MSG_NO`, `MSG_DIFFUSE`, `MSG_FULL`
-						]),
-				S(`MSG_RENDER_QUALITY`, `PE.settings.useBindless`,
-						[`MSG_MIDDLE`, `MSG_HIGH`], `GL_ARB_bindless_texture`),
-
-				S(`MSG_FOG`, `PE.settings.fog`),
+						]), S(`MSG_FOG`, `PE.settings.fog`),
 
 				S(`MSG_FULLSCREEN`, `PE.settings.fullscreen`),
 				S(`MSG_ANTIALIASING`, `PE.settings.msaa`),

@@ -46,9 +46,9 @@ final class ShadowManager
 		}
 	}
 
-	const tex()
+	auto tex()
 	{
-		return _sm.tex;
+		return _sm.attachments[0];
 	}
 
 	const textured()

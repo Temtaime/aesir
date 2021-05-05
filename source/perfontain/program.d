@@ -27,7 +27,7 @@ final class Program : RCounted
 			glAttachShader(_id, s.id);
 		}
 
-		glLinkProgram(_id);
+		doLink;
 
 		foreach (s; shaders)
 		{
@@ -35,6 +35,7 @@ final class Program : RCounted
 		}
 
 		parseAttribs;
+		logger(_attribs);
 
 		static immutable Attrs = [
 			tuple(`pe_transforms.pe_shadow_matrix`, PROG_DATA_SM_MAT),
@@ -124,17 +125,14 @@ final class Program : RCounted
 			bool b = !s.data;
 
 			if (b)
-			{
 				s.data = new VertexBuffer(-1, dynamic ? VBO_DYNAMIC : 0);
-			}
 
 			s.data.realloc(cast(uint)data.length, data.ptr);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, s.idx, s.data.id);
 
-			if (b)
-			{
-				glShaderStorageBlockBinding(_id, s.loc, s.idx);
-			}
+			// FIXME gles
+			//if (b)
+			//	glShaderStorageBlockBinding(_id, s.loc, s.idx);
 		}
 	}
 
@@ -150,6 +148,25 @@ final class Program : RCounted
 
 private:
 	mixin publicProperty!(ubyte, `flags`);
+
+	void doLink()
+	{
+		glLinkProgram(_id);
+
+		int ok;
+		glGetProgramiv(_id, GL_LINK_STATUS, &ok);
+
+		if (ok)
+			return;
+
+		int len;
+		glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &len);
+
+		auto msg = new char[len];
+		glGetProgramInfoLog(_id, len, null, msg.ptr);
+
+		throwError!`cannot link program: %s`(msg[0 .. $ - 1].assumeUnique);
+	}
 
 	void parseAttribs()
 	{
@@ -198,27 +215,38 @@ private:
 
 	void parseBlock(uint idx)
 	{
-		int cnt, nameLen;
+		int cnt;
 
-		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,
-				[GL_NUM_ACTIVE_VARIABLES].ptr, 1, null, &cnt);
-
-		if (!cnt)
 		{
-			return;
+			const param = GL_NUM_ACTIVE_VARIABLES;
+			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1, &param, 1, null, &cnt);
 		}
 
-		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,
-				[GL_NAME_LENGTH].ptr, 1, null, &nameLen);
+		if (!cnt)
+			return;
 
-		auto block = new char[nameLen];
-		glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen,
-				cast(uint*)&nameLen, block.ptr);
-		block.length = nameLen;
+		string block;
+
+		{
+			int nameLen;
+
+			const param = GL_NAME_LENGTH;
+			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,
+					&param, 1, null, &nameLen);
+
+			auto tmp = new char[nameLen];
+			glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen, null, tmp.ptr);
+
+			block = tmp[0 .. $ - 1].assumeUnique;
+		}
 
 		auto vars = new int[cnt];
-		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,
-				[GL_ACTIVE_VARIABLES].ptr, cnt, null, vars.ptr);
+
+		{
+			const param = GL_ACTIVE_VARIABLES;
+			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,
+					&param, cnt, null, vars.ptr);
+		}
 
 		foreach (var; vars)
 		{
@@ -228,11 +256,13 @@ private:
 			int[N] arr;
 			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, Query.ptr, N, null, arr.ptr);
 
+			uint nameLen;
 			auto varName = new char[arr[0]];
-			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0],
-					cast(uint*)&nameLen, varName.ptr);
 
-			_attribs[format(`%s.%s`, block, varName[0 .. nameLen])] = Attrib(arr[1], arr[2]);
+			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0], null, varName.ptr);
+
+			auto elem = varName[0 .. $ - 1];
+			_attribs[format(`%s.%s`, block, elem)] = Attrib(arr[1], arr[2]);
 		}
 	}
 
@@ -241,6 +271,9 @@ private:
 		//if(set(PEstate._prog, id))
 		{
 			glUseProgram(id);
+
+			//foreach(p; _unis)
+			//p.data.bind;
 		}
 	}
 
@@ -261,6 +294,7 @@ private:
 		{
 			logger.warning("can't get %s location for `%s' variable", ssb
 					? `SSBO` : `uniform`, name);
+			_attribs.logger;
 		}
 		else
 		{
@@ -270,11 +304,20 @@ private:
 			if (ssb)
 			{
 				auto prop = GL_BUFFER_DATA_SIZE;
+
 				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1,
 						&prop, 1, null, &s.len);
 
-				s.idx = cast(byte)bsf(~_ssbo);
-				btc(&_ssbo, s.idx);
+				int idx;
+
+				prop = GL_BUFFER_BINDING;
+				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1,
+						&prop, 1, null, &idx);
+
+				s.idx = cast(ubyte)idx;
+				//s.idx = 0;
+				//s.idx = cast(byte)bsf(~_ssbo);
+				//btc(&_ssbo, s.idx);
 			}
 		}
 
@@ -289,7 +332,6 @@ private:
 		RC!VertexBuffer data;
 
 		int loc, len;
-
 		byte idx = -1;
 	}
 

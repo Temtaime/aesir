@@ -7,6 +7,8 @@ struct ProgramCreator
 	this(string n)
 	{
 		logger.info2(`creating %s shader`, _name = n);
+
+		define(`VIEWPORT_SIZE`, PEwindow._size);
 	}
 
 	void define(string s)
@@ -29,16 +31,19 @@ struct ProgramCreator
 		_dp.defs[s] = format(`vec3(%(%s, %))`, v.flat);
 	}
 
+	void define(string s, ref in Vector2s v)
+	{
+		_dp.defs[s] = format(`ivec2(%(%s, %))`, v.flat);
+	}
+
 	auto create()
 	{
 		RCArray!Shader res;
-
-		auto h = header;
 		auto aa = _dp.process(_name);
 
 		foreach (t, s; aa)
 		{
-			auto data = replace(h ~ s ~ "\n", "\n", "\r\n");
+			auto data = replace(s ~ "\n", "\n", "\r\n");
 
 			debug
 			{
@@ -54,25 +59,6 @@ struct ProgramCreator
 	}
 
 private:
-	auto header()
-	{
-		auto res = format("#version %u\n", OPENGL_VERSION * 10);
-
-		foreach (ex; PERF_EXTENSIONS)
-			if (mixin(ex))
-			{
-				define(ex[7 .. $].toUpper);
-
-				res ~= format("#extension %s : require\n", ex);
-			}
-
-		res ~= "#extension GL_ARB_shader_image_load_store : require\n";
-		res ~= "#extension GL_ARB_shading_language_420pack : require\n";
-		res ~= "#extension GL_ARB_shader_storage_buffer_object : require\n";
-
-		return res ~ "\n";
-	}
-
 	string _name;
 	DefineProcessor _dp;
 }

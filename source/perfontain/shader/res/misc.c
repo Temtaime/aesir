@@ -1,23 +1,3 @@
-PASS_DATA
-	vsfs VertexData
-	{
-		PASS_NORMALS
-			vec3 norm;
-		SHADOWS_ENABLED
-			vec4 shadowPos;
-		LIGHTING_FULL
-			vec4 pos;
-		BINDLESS_TEXTURE
-			flat uvec2 tex;
-		TRANS_GUI
-			vec4 color;
-		vec2 texCoord;
-
-		PASS_DRAW_ID
-			SHADER_DRAW_PARAMETERS
-				flat int idx;
-	} vert;
-
 PASS_DRAW_ID
 	use DECL_TRANS
 VERTEX_SHADER
@@ -36,66 +16,42 @@ DECL_TRANS
 			vec4 color;
 		TRANS_GUI
 			ivec4 scissor;
-
-		LIGHTING_FULL
-			int lightStart, lightEnd;
 	};
 
-	layout(std430) readonly buffer pe_transforms
+	layout(binding = 0) buffer pe_transforms
 	{
 		SHADOWS_ENABLED
 			mat4 pe_shadow_matrix;
 		TransformInfo transforms[];
 	};
 
+PASS_DATA
+	PASS_NORMALS
+		vsfs vec3 norm;
+	SHADOWS_ENABLED
+		vsfs vec4 shadowPos;
+	LIGHTING_FULL
+		vsfs vec4 pos;
+	TRANS_GUI
+		vsfs vec4 color;
+
+	vsfs vec2 texCoord;
+
+	PASS_DRAW_ID
+		vsfs flat int draw_idx;
+
 	TRANS = transforms[DRAW_ID]
 
 VERTEX_SHADER
-	BINDLESS_TEXTURE
-		layout(std430) readonly buffer pe_submeshes
-		{
-			uvec4 submeshes[];
-		};
-
-	SHADER_DRAW_PARAMETERS
-		BINDLESS_TEXTURE
-			PASS_DATA
-				DRAW_ID = int(sm.z)
-			else
-				DRAW_ID = int(submeshes[gl_DrawIDARB].z)
-		else
-			uniform int pe_base_draw_id;
-			DRAW_ID = (gl_DrawIDARB + pe_base_draw_id)
-	else
-		DRAW_ID = pe_object_id
-
-	out gl_PerVertex { vec4 gl_Position; };
-
-	BINDLESS_TEXTURE
-		DO_DATA_PASS = uvec4 sm = submeshes[gl_DrawIDARB]; vert.tex = sm.xy;
+	uniform int pe_base_draw_id;
+	DRAW_ID = (gl_DrawID + pe_base_draw_id)
 
 	PASS_DRAW_ID
-		SHADER_DRAW_PARAMETERS
-			DO_DATA_PASS += vert.idx = DRAW_ID;
-
-	!SHADER_DRAW_PARAMETERS
-		uniform int pe_object_id;
+		DO_DATA_PASS += draw_idx = DRAW_ID;
 
 FRAGMENT_SHADER
 	PASS_DATA
-		!BINDLESS_TEXTURE
-			uniform sampler2D pe_texture;
+		uniform sampler2D pe_texture;
 
-	SHADER_DRAW_PARAMETERS
-		DRAW_ID = vert.idx
-	else
-		DRAW_ID = pe_object_id
-
-	BINDLESS_TEXTURE
-		SAMPLE_TEX = texture(sampler2D(vert.tex), vert.texCoord)
-	else
-		SAMPLE_TEX = texture(pe_texture, vert.texCoord)
-
-	PASS_DRAW_ID
-		!SHADER_DRAW_PARAMETERS
-			uniform int pe_object_id;
+	DRAW_ID = draw_idx
+	SAMPLE_TEX = texture(pe_texture, texCoord)

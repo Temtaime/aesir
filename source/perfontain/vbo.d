@@ -13,7 +13,7 @@ final class VertexBuffer : RCounted
 	{
 		{
 			uint b;
-			glCreateBuffers(1, &b);
+			glGenBuffers(1, &b);
 			id = b;
 		}
 
@@ -33,27 +33,26 @@ final class VertexBuffer : RCounted
 
 	void update(in void[] data, uint start)
 	{
-		glNamedBufferSubData(id, start, data.length, data.ptr);
+		bind;
+		glBufferSubData(typeGL, start, data.length, data.ptr);
 	}
 
 	void realloc(uint len, in void* ptr = null)
 	{
-		glNamedBufferData(id, _length = len, ptr, _flags & VBO_DYNAMIC
+		bind;
+		glBufferData(typeGL, _length = len, ptr, _flags & VBO_DYNAMIC
 				? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 	}
 
-	void bind()
+	void enable()
 	{
+		bind;
+
 		if (untyped)
-		{
-			return glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-		}
-
-		glBindBuffer(GL_ARRAY_BUFFER, id);
-
-		ubyte ptr, size = _type.vertexSize;
+			return;
 
 		auto arr = renderLoc[_type];
+		ubyte ptr, size = _type.vertexSize;
 
 		foreach (i, v; arr)
 		{
@@ -68,6 +67,16 @@ final class VertexBuffer : RCounted
 
 	const uint id;
 private:
+	void bind()
+	{
+		glBindBuffer(typeGL, id);
+	}
+
+	auto typeGL()
+	{
+		return untyped ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER;
+	}
+
 	mixin publicProperty!(byte, `type`);
 	mixin publicProperty!(uint, `length`);
 

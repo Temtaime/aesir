@@ -1,9 +1,42 @@
 module perfontain.math.quaternion;
 
-mixin template QuaternionImpl() {
+mixin template QuaternionImpl()
+{
 	private alias V3 = Vector!(T, 3);
 
-	static fromMatrix()(auto ref in Matrix!(T, 4) m) {
+	// static lookAt(V3 source, V3 dest, V3 up)
+	// {
+	// 	T dot = source * dest;
+
+	// 	if (approxEqual(dot, -1))
+	// 		assert(false); //return new Quaternion(up, MathHelper.ToRadians(180.0f));
+
+	// 	if (approxEqual(dot, 1))
+	// 		assert(false); //return Matrix.init;
+
+	// 	auto rotAngle = acos(dot);
+	// 	auto rotAxis = source ^ dest;
+
+	// 	return fromAxis(rotAxis.normalize, rotAngle);
+	// }
+
+	static lookAt(V3 dir, V3 front, V3 up)
+	{
+		//compute rotation axis
+		V3 rotAxis = front ^ dir; /* front.cross(toVector).normalized();
+		if (rotAxis.squaredNorm() == 0)
+			rotAxis = up;*/
+
+		//find the angle around rotation axis
+		T dot = front * dir;
+		T ang = acos(dot);
+
+		//convert axis angle to quaternion
+		return fromAxis(rotAxis, ang);
+	}
+
+	static fromMatrix()(auto ref in Matrix!(T, 4) m)
+	{
 		/*Matrix ret = void;
 
 		auto m0 = m[0][0];
@@ -28,39 +61,37 @@ mixin template QuaternionImpl() {
 		auto tr = m.tr;
 		assert(tr > 0 && !valueEqual(tr, 0), `can't create quaternion from matrix`);
 
-		auto	a = m[2][1] - m[1][2],
-				b = m[0][2] - m[2][0],
-				c = m[1][0] - m[0][1],
-				s = .5 / sqrt(tr);
+		auto a = m[2][1] - m[1][2], b = m[0][2] - m[2][0], c = m[1][0] - m[0][1], s = .5 / sqrt(tr);
 
 		return Matrix(V3(a, b, c) * s, .25 / s);
 	}
 
-	static fromAxis()(auto ref in V3 axis, float angle) {
-		angle *= .5;
+	static fromAxis()(auto ref in V3 axis, float angle)
+	{
+		angle /= 2;
 		return Matrix(axis * angle.sin, angle.cos);
 	}
 
-	@property const {
-		Matrix inversed() { return Matrix(-p, w); }
+	@property const
+	{
+		Matrix inversed()
+		{
+			return Matrix(-p, w);
+		}
 	}
 
-	ref inverse() { p = -p; return this; }
+	ref inverse()
+	{
+		p = -p;
+		return this;
+	}
 
-	auto toMatrix() const {
+	auto toMatrix() const
+	{
 		Matrix!(T, 4) res;
 
-		auto	xx = x * x,
-				xy = x * y,
-				xz = x * z,
-				xw = x * w,
-
-				yy = y * y,
-				yz = y * z,
-				yw = y * w,
-
-				zz = z * z,
-				zw = z * w;
+		auto xx = x * x, xy = x * y, xz = x * z, xw = x * w, yy = y * y, yz = y * z,
+			yw = y * w, zz = z * z, zw = z * w;
 
 		res[0][0] = 1 - 2 * (yy + zz);
 		res[0][1] = 2 * (xy + zw);

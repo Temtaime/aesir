@@ -1,76 +1,87 @@
 use PASS_DATA
-use PASS_DRAW_ID
-use TRANS_COLOR
+use MODEL_MAT
+use PASS_NORMALS
+use LIGHTING_FULL
 
-SHADOWS_ENABLED
-	use MODEL_MAT
-LIGHTING_FULL
-	use MODEL_MAT
-
-LIGHTING_ENABLED
-	use PASS_NORMALS
-SHADOWS_USE_NORMALS
-	use PASS_NORMALS
-
+import header
 import misc
 
 vertex:
 	layout(location = 0) in vec3 pe_vertex;
-
-	PASS_NORMALS
-		layout(location = 1) in vec3 pe_normal;
-
+	layout(location = 1) in vec3 pe_normal;
 	layout(location = 2) in vec2 pe_tex_coord;
 
 	void main()
 	{
-		DO_DATA_PASS
-		vec4 v = vec4(pe_vertex, 1.);
+		vec4 v = vec4(pe_vertex, 1.0);
+		vec4 p = TRANS.model * v;
 
-		MODEL_MAT
-			vec4 pos = TRANS.model * v;
+		texCoord = pe_tex_coord;
+		norm = vec3(TRANS.normal * vec4(pe_normal, 0.0));
 
-		PASS_NORMALS
-			vert.norm = vec3(TRANS.normal * vec4(pe_normal, 0.));
-
-		SHADOWS_ENABLED
-			vert.shadowPos = pe_shadow_matrix * pos;
-
-		LIGHTING_FULL
-			vert.pos = pos;
-
-		vert.texCoord = pe_tex_coord;
-
+		pos = p;
 		gl_Position = TRANS.mvp * v;
 	}
 
 fragment:
-	SHADOWS_ENABLED
-		import shadows
-	LIGHTING_ENABLED
-		import lighting
+	precision highp usampler2D;
+
+	struct LightSource
+	{
+		vec4 pos;
+		vec3 color;
+	};
+
+	layout(binding = 1) buffer pe_lights
+	{
+		LightSource lights[];
+	};
+
+	layout(binding = 1) uniform usampler2D lights_tex;
 
 	out vec4 pe_frag_color;
 
-	void main()
+	void calcLights(inout vec3 c)
 	{
-		vec4 c = SAMPLE_TEX;
+		vec3 nn = normalize(norm);
+		vec3 res = LIGHT_AMBIENT + LIGHT_DIFFUSE * max(dot(nn, LIGHT_DIR), 0.0);
 
-		if(c.a < .05)
+		vec3 P = vec3(pos.xyz / pos.w);
+
+		vec2 uv = gl_FragCoord.xy / vec2(textureSize(lights_tex, 0));
+		uint pix = texture(lights_tex, uv).r;
+
+		for(int i = 0; i < 4; i++)
+		{
+			uint k = pix & 0xFFu;
+
+			if(k == 0u)
+				break;
+
+			pix >>= 8;
+			LightSource p = lights[k - 1u];
+
+			vec3 q = P - p.pos.xyz;
+
+			float d = length(q);
+			float t = smoothstep(0.0, p.pos.w, d);
+
+			res += clamp(p.color * max(1.0 / (t * t) - 1.0, 0.0) * dot(nn, normalize(q)), 0.0, 1.5);
+		}
+
+		c *= res;
+	}
+
+	void main (void)
+	{
+		vec4 u = SAMPLE_TEX;
+
+		if(u.a < .05)
 		{
 			discard;
 		}
 
-		c *= TRANS.color;
+		calcLights(u.rgb);
 
-		LIGHTING_ENABLED
-			calcLights(c.rgb);
-
-		SHADOWS_ENABLED
-			calcShadows(vert.shadowPos, 0.0, c.rgb);
-
-		USE_FOG
-			c.rgb = mix(c.rgb, FOG_COLOR, smoothstep(FOG_NEAR, FOG_FAR, gl_FragCoord.z / gl_FragCoord.w));
-
-		pe_frag_color = c;
+		pe_frag_color = u;
 	}

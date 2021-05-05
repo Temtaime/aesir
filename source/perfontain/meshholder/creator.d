@@ -10,7 +10,7 @@ enum
 
 HolderCreator makeHolderCreator(in MeshInfo[] meshes, ubyte type, ubyte flags)
 {
-	if (PE.settings.useBindless)
+	if (false)
 	{
 		return new BindlessHolderCreator(meshes, type, flags);
 	}

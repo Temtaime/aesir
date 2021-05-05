@@ -1,19 +1,5 @@
 import std;
 
-auto extensionsUsed = [
-	[`GL_ARB_direct_state_access`, `required`],
-	[`GL_ARB_shader_storage_buffer_object`, `required`],
-	//[ `GL_EXT_texture_compression_dxt1`, `required` ],
-
-	[`GL_ARB_shader_draw_parameters`], // 7700, 410
-
-	[
-		`GL_ARB_bindless_texture`, `glGetTextureSamplerHandleARB`,
-		`glMakeTextureHandleResidentARB`, `glMakeTextureHandleNonResidentARB`,
-		`glProgramUniformHandleui64ARB`, `glIsTextureHandleResidentARB`
-	], // 7700, 630
-];
-
 immutable dirsToSearch = [`.`, `misc`, `nodes`, `managers`, `math`];
 
 auto toLoadFormat(string s)
@@ -45,20 +31,29 @@ void main()
 		[`GLsync`, `size_t`]
 	];
 
-	auto arr = [`glext.h`, `glcorearb.h`].map!(a => a.readText.splitLines).join;
+	auto files = [
+		`include\GLES2\gl2.h`, `include\GLES2\gl2ext.h`,
+		`include\GLES2\gl2ext_angle.h`, `include\GLES3\gl3.h`,
+		`include\GLES3\gl31.h`
+	].map!readText;
 
-	auto fs = arr.map!(a => a.strip)
-		.filter!(a => a.startsWith(`GLAPI`))
-		.map!(a => a.replace(`GLAPI `, ``))
-		.map!(a => a.replace(`APIENTRY `, ``))
-		.map!(a => a.replace(regex(`^const `), ``)) // FIXME
-		
-		.map!(a => a.replace(`const*`, `*`))
-		.map!(a => a.replace(regex(`\s*\w+(,|\))`, `g`), `$1`))
-		.map!(a => a.replace(`const`, `in`))
-		.map!(a => a.replace(regex(`\s*\*\s*`, `g`), `*`))
-		.map!(a => a.replace(regex(`(\S+)\s*\b(\w+)\s*(.+);`), `$1 function$3 $2;`))
-		.array;
+	string[] fs;
+
+	foreach (s; files)
+	{
+		auto matches = s.matchAll(regex(`^\s*GL_APICALL\s+(.+?);`, `sm`))
+			.map!(a => a.captures[1].splitLines.join);
+
+		fs ~= matches.map!(a => a.replace(`GL_APIENTRY `, ``))
+			.map!(a => a.replace(regex(`^const `), ``))
+			.map!(a => a.replace(`const*`, `*`))
+			.map!(a => a.replace(regex(`const\s+(\w+)\s*\*\s*const`, `g`), `in $1`))
+			.map!(a => a.replace(regex(`\s*\w+(,|\))`, `g`), `$1`))
+			.map!(a => a.replace(`const`, `in`))
+			.map!(a => a.replace(regex(`\s*\*\s*`, `g`), `*`))
+			.map!(a => a.replace(regex(`(\S+)\s*\b(\w+)\s*(.+)$`), `$1 function$3 $2;`))
+			.array;
+	}
 
 	string[string] fa;
 	string[string] fd;
@@ -80,14 +75,15 @@ void main()
 		fa[n] = s;
 	}
 
-	foreach (s; arr)
+	foreach (s; files)
 	{
-		auto m = s.match(regex(`^#define\s+(\w+)\s+((?:0x)?[\da-f]+)\s*$`, `im`)).captures;
+		auto matches = s.matchAll(regex(`^#define\s+(\w+)\s+((?:0x)?[\da-f]+)\s*$`, `im`));
 
-		if (m.length && !m[1].startsWith(`GL_ARB`))
-		{
-			fd[m[1]] = m[2];
-		}
+		foreach (m; matches)
+			if (m.length && !m[1].startsWith(`GL_ARB`))
+			{
+				fd[m[1]] = m[2];
+			}
 	}
 
 	auto s = dirEntries(dir, `*.d`, SpanMode.depth).filter!(a => a != `opengl.d`)
@@ -103,22 +99,17 @@ void main()
 	}
 
 	auto o = File(file, `wb`);
-	auto un = extensionsUsed.filter!(a => a.back != `required`);
 
-	o.writeln("module perfontain.opengl.functions;\n");
+	o.writeln("module perfontain.opengl.functions;");
 	o.writeln("import\tstd.meta,
 		std.conv,
 
 		utile.except,
 		derelict.sdl2.sdl,
 
-		perfontain.opengl;\n\n");
+		perfontain.opengl;
 
-	o.writeln("alias PERF_EXTENSIONS = AliasSeq!(" ~ un.map!(a => "`" ~ a.front ~ "`")
-			.join(`, `) ~ ");\n");
-	o.writeln("__gshared bool\t" ~ extensionsUsed.map!(a => a.front).join(",\n\t\t\t\t") ~ ";\n");
-
-	o.writeln("enum : uint\n{");
+enum : uint\n{");
 
 	foreach (k, v; fd)
 	{
@@ -134,55 +125,31 @@ void main()
 		}
 	}
 
-	o.write("}\n\nvoid hookGL()\n{");
+	o.writeln("}\n\nvoid hookGL()\n{");
+	o.writeln(uf.map!(a => a.toLoadFormat).join("\n"));
 
-	{
-		o.writeln(extensionsUsed.filter!(a => a.back == `required`)
-				.map!(a => "\n\tSDL_GL_ExtensionSupported(`" ~ a.front
-					~ "`) || throwError(`extension %s is unsupported`, `" ~ a.front ~ "`);")
-				.join);
-
-		o.writeln;
-	}
-
-	{
-		auto exts = extensionsUsed.map!(a => a[1 .. $]).join;
-
-		o.writeln(uf.filter!(a => !exts.canFind(a))
-				.map!(a => a.toLoadFormat)
-				.join("\n"));
-	}
-
-	o.writeln("\n" ~ un.map!(a => a.length > 1
-			? "\n\tif((" ~ a.front ~ " = !!SDL_GL_ExtensionSupported(`" ~ a.front
-			~ "`)) == true)\n\t{\n" ~ a[1 .. $].filter!(a => uf.canFind(a))
-			.map!(a => "\t" ~ a.toLoadFormat ~ "\n")
-			.join ~ "\t}" : "\t" ~ a.front ~ " = !!SDL_GL_ExtensionSupported(`" ~ a.front ~ "`);").join(
-			"\n"));
-
-	o.writeln("
-	debug
-	{
-		enableDebug;
-	}
-}
+	o.writeln("}
 
 debug
 {
-" ~ uf.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) out { checkError(`%1$s`, f, l); } body { return _%1$s(args); }",
-			a)).join("\n") ~ "
+" ~ uf.filter!(a => a != `glGetError`)
+			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) in { traceGL(`%1$s`, f, l, args); } out { checkError(`%1$s`, f, l, args); } body { return _%1$s(args); }",
+				a))
+			.join("\n") ~ "
+
+	alias glGetError = _glGetError;
 }
 else
 {
 " ~ uf.map!(a => format("\talias %1$s = _%1$s;", a)).join("\n") ~ "
 }
 
+private:
+
 __gshared extern(System) @nogc nothrow\n{");
 	o.writeln(uf.map!(a => "\t" ~ fa[a].replace(regex(`(\w+);$`), `_$1;`)).join("\n"));
 
 	o.writeln("}
-
-//private:
 
 auto load(in char* name)
 {

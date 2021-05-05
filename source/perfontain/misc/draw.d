@@ -37,76 +37,59 @@ final class DrawAllocator : RCounted
 
 		pg.bind;
 		iv.bind;
+		scope (exit)
+			iv.unbind;
 
+		uint k;
 		const off = nodes[0].mh.reg.index.start;
 
-		if (GL_ARB_shader_draw_parameters)
+		if (bind)
 		{
-			uint k;
-
-			if (bind)
-			{
-				foreach (arr; SubMeshRange(nodes).chunkBy!((a, b) => a.tex is b.tex))
-				{
-					uint cnt;
-					pg.send(`pe_base_draw_id`, k);
-
-					uint[] counts;
-					size_t[] starts;
-
-					foreach (sm; arr)
-					{
-						if (!cnt)
-							sm.tex.bind(0);
-
-						cnt++;
-						counts ~= sm.len;
-						starts ~= off + sm.start * 4;
-					}
-
-					glMultiDrawElements(GL_TRIANGLES, counts.ptr,
-							GL_UNSIGNED_INT, cast(void**)starts.ptr, cnt);
-					k += cnt;
-				}
-			}
-			else
-			{
-				auto counts = ScopeArray!uint(submeshes);
-				auto starts = ScopeArray!size_t(submeshes);
-
-				foreach (sm; SubMeshRange(nodes))
-				{
-					counts[k] = sm.len;
-					starts[k++] = off + sm.start * 4;
-
-					_drawnTriangles += sm.len / 3;
-				}
-
-				glMultiDrawElements(GL_TRIANGLES, counts[].ptr,
-						GL_UNSIGNED_INT, cast(void**)starts[].ptr, submeshes);
-			}
-
-			assert(k == submeshes);
-		}
-		else
-		{
-			int node = -1; // TODO: REFACTOR
-
 			foreach (arr; SubMeshRange(nodes).chunkBy!((a, b) => a.tex is b.tex))
 			{
-				if (bind)
-					arr.front.tex.bind(0);
+				uint cnt;
+				pg.send(`pe_base_draw_id`, k);
+
+				uint[] counts;
+				size_t[] starts;
 
 				foreach (sm; arr)
 				{
-					if (node != sm.node)
-						pg.send(`pe_object_id`, node = sm.node);
+					if (!cnt) {
+						auto tex = sm.tex;
 
-					glDrawElements(GL_TRIANGLES, sm.len, GL_UNSIGNED_INT,
-							cast(void*)(off + sm.start * 4));
+						if(tex)
+						tex.bind(0);
+					}
+
+					cnt++;
+					counts ~= sm.len;
+					starts ~= off + sm.start * 4;
 				}
+
+				glMultiDrawElementsANGLE(GL_TRIANGLES, counts.ptr,
+						GL_UNSIGNED_INT, cast(void**)starts.ptr, cnt);
+				k += cnt;
 			}
 		}
+		else
+		{
+			auto counts = ScopeArray!uint(submeshes);
+			auto starts = ScopeArray!size_t(submeshes);
+
+			foreach (sm; SubMeshRange(nodes))
+			{
+				counts[k] = sm.len;
+				starts[k++] = off + sm.start * 4;
+
+				_drawnTriangles += sm.len / 3;
+			}
+
+			glMultiDrawElementsANGLE(GL_TRIANGLES, counts[].ptr,
+					GL_UNSIGNED_INT, cast(void**)starts[].ptr, submeshes);
+		}
+
+		assert(k == submeshes);
 	}
 
 	RC!IndexVertex iv;
@@ -131,7 +114,7 @@ private:
 			auto mesh = node.mh.meshes[node.id];
 
 			auto sub = cast()mesh.subs[_sub];
-			auto tex = cast()node.mh.texs[sub.tex];
+			auto tex = cast()(node.mh.texs.length ? node.mh.texs[sub.tex] : null);
 
 			return tuple!(`tex`, `start`, `len`, `node`)(tex, sub.start, sub.len, _node);
 		}

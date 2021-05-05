@@ -1,28 +1,54 @@
 module perfontain.camera;
-
-import
-		std.stdio,
-		std.array,
-		std.algorithm,
-
-		perfontain,
-		perfontain.misc,
-		perfontain.math.matrix,
-		perfontain.signals,
-		perfontain.misc.rc;
-
+import std.stdio, std.array, std.algorithm, perfontain, perfontain.misc,
+	perfontain.math.matrix, perfontain.signals, perfontain.misc.rc;
 
 abstract class CameraBase : RCounted
 {
 	@property
 	{
-		bool cursor() { return true; }
+		bool cursor()
+		{
+			return true;
+		}
 
-		Vector3 pos() { return _pos; }
-		void pos(/*ref */in Vector3) {}
+		Vector3 pos()
+		{
+			return _pos;
+		}
+
+		void pos( /*ref */  in Vector3)
+		{
+		}
 	}
 
-//package:
+	auto planeForZ(float z)
+	{
+		auto fov = 45;
+		auto aspect = float(PE.window._size.x) / PE.window._size.y;
+
+		auto M_PI = 3.1415;
+		import std.math;
+
+		float halfAngle = 0.5f * M_PI * fov / 180.0f;
+		float f = 1 / cast(float)tan(halfAngle);
+		auto base = Vector3(z * aspect / f, z / f, z);
+
+		Vector3[4] p;
+
+		auto dd = Vector3(-0.707107, 0.000000, -0.707107);
+
+		auto sideDir = Vector3(0.000000, 1.000000, 0.000000);
+		auto upDir = Vector3(0.707107, 0.000000, -0.707107);
+
+		p[0] = pos + dd * base.z + sideDir * base.x + upDir * base.y;
+		p[1] = pos + dd * base.z + sideDir * base.x - upDir * base.y; //Vector3D (  base.x, -base.y, base.z );
+		p[2] = pos + dd * base.z - sideDir * base.x - upDir * base.y; //Vector3D ( -base.x, -base.y, base.z );
+		p[3] = pos + dd * base.z - sideDir * base.x + upDir * base.y; //Vector3D ( -base.x,  base.y, base.z );
+
+		return p;
+	}
+
+	//package:
 	void recalcUDir()
 	{
 		_udir = direction(Vector2(_dir.x, -_dir.z));
@@ -62,21 +88,20 @@ class CameraFPS : CameraBase
 		//override bool cursor() { return fixed; }
 	}
 
-	immutable	moveSpeed = 0.1f,
-				rotateSpeed = 0.3f;
+	immutable moveSpeed = 0.1f, rotateSpeed = 0.3f;
 
 	bool fixed;
 package:
 	bool onButton(ubyte k, bool st)
 	{
-		if(fixed)
+		if (fixed)
 		{
 			return false;
 		}
 
-		if(k == MOUSE_LEFT)
+		if (k == MOUSE_LEFT)
 		{
-			if(st)
+			if (st)
 			{
 				_mp = PE.onMoveDelta.add(&onMove);
 			}
@@ -102,7 +127,7 @@ package:
 
 	void onTick(uint d)
 	{
-		if(fixed || !_mp)
+		if (fixed || !_mp)
 		{
 			return;
 		}
@@ -112,31 +137,31 @@ package:
 		bool l = PEwindow.keys.canFind(SDLK_LEFT);
 		bool r = PEwindow.keys.canFind(SDLK_RIGHT), u;
 
-		if(f)
+		if (f)
 		{
 			u = true;
 			_pos += _dir * d * moveSpeed;
 		}
 
-		if(b)
+		if (b)
 		{
 			u = true;
 			_pos -= _dir * d * moveSpeed;
 		}
 
-		if(l)
+		if (l)
 		{
 			u = true;
 			_pos -= _dir ^ AXIS_Y * d * moveSpeed;
 		}
 
-		if(r)
+		if (r)
 		{
 			u = true;
 			_pos += _dir ^ AXIS_Y * d * moveSpeed;
 		}
 
-		if(u)
+		if (u)
 		{
 			recalcRes;
 		}
@@ -171,7 +196,11 @@ class CameraRO : CameraBase // TODO: NAME ???
 	@property
 	{
 		//override Vector3 pos() { return _t; }
-		override void pos(in Vector3 p) { _t = p; recalcRes; }
+		override void pos(in Vector3 p)
+		{
+			_t = p;
+			recalcRes;
+		}
 	}
 
 	immutable rotateSpeed = 0.4f;
@@ -181,9 +210,9 @@ package:
 
 	bool onButton(ubyte k, bool st)
 	{
-		if(k == MOUSE_RIGHT)
+		if (k == MOUSE_RIGHT)
 		{
-			if(st)
+			if (st)
 			{
 				_x = PE.window.mpos.x;
 				_move = PE.onMove.add(&onMove);
@@ -222,10 +251,7 @@ package:
 		recalcInversed;
 	}
 
-	RC!ConnectionPoint
-						_move,
-						_wheel,
-						_button;
+	RC!ConnectionPoint _move, _wheel, _button;
 	Vector3 _t;
 	ushort _x;
 

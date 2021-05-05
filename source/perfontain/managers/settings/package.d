@@ -37,11 +37,6 @@ final class SettingsManager
 		}
 	}
 
-	void disableUnsupported()
-	{
-		useBindless &= GL_ARB_bindless_texture;
-	}
-
 	~this()
 	{
 		JSONValue json;
@@ -59,10 +54,10 @@ final class SettingsManager
 	mixin Setting!(bool, `vsync`, true);
 	mixin Setting!(bool, `msaa`, false);
 	mixin Setting!(bool, `fullscreen`, false);
-	mixin Setting!(bool, `useBindless`, false);
 
 	mixin Setting!(Lights, `lights`, Lights.global);
-	mixin Setting!(Shadows, `shadows`, Shadows.medium);
+	mixin Setting!(Shadows, `shadows`, Shadows.none);
+
 	mixin Setting!(Tuple!(string, `user`, string, `pass`)[], `accounts`, null);
 private:
 	static settingNames() // TODO: BUGREPORT

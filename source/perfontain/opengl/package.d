@@ -1,51 +1,71 @@
 module perfontain.opengl;
-import std.conv, std.algorithm, utile.logger;
-
+import std, utile.logger, utile.except;
 public import perfontain.opengl.functions;
 
-debug:
-package:
+debug : package:
+
+enum ENABLED_DEBUG = [
+		GL_DEBUG_TYPE_ERROR_KHR, GL_DEBUG_TYPE_PORTABILITY_KHR,
+		GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR,
+		GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_KHR
+	];
 
 void enableDebug()
 {
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, null, false);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR);
+	glDebugMessageControlKHR(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, null, false);
 
-	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DONT_CARE, 0, null, true);
-	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_PORTABILITY, GL_DONT_CARE, 0, null, true);
-	//glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_PERFORMANCE, GL_DONT_CARE, 0, null, true);
-	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,
-			GL_DONT_CARE, 0, null, true);
-	glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
-			GL_DONT_CARE, 0, null, true);
+	foreach (type; ENABLED_DEBUG)
+		glDebugMessageControlKHR(GL_DONT_CARE, type, GL_DONT_CARE, 0, null, true);
 
-	glDebugMessageCallback(&debugCallback, null);
+	glDebugMessageCallbackKHR(&debugCallback, null);
 }
 
-void checkError(string func, string file, uint line)
+string dumpArgs(A...)(A args)
 {
-	if (error.length)
-	{
-		if (!errors.canFind(error))
-		{
-			errors ~= error;
-			logger.warning(`[%s:%u]: %s - %s`, file, line, func, error);
-		}
+	string dump;
 
-		error = null;
+	foreach (e; args)
+	{
+		dump ~= dump ? `, ` : null;
+
+		static if (isPointer!(typeof(e)))
+			dump ~= format(`0x%X`, cast(size_t)e);
+		else
+			dump ~= e.to!string;
 	}
+
+	return dump;
+}
+
+void traceGL(A...)(string func, string file, uint line, A args)
+{
+	//logger.info3(`[trace] %s(%s)`, func, dumpArgs(args));
+}
+
+void checkError(A...)(string func, string file, uint line, A args)
+{
+	auto err = glGetError();
+
+	if (err)
+		logger.error(`[%s:%u] %s(%s) - ERROR 0x%X`, file, line, func, dumpArgs(args), err);
+	// if (error.length)
+	// {
+	// 	//if (!errors.canFind(error))
+	// 	{
+	// 		//	errors ~= error;
+	// 		logger.warning(`[%s:%u]: %s %s`, file, line, func, error);
+	// 	}
+
+	// 	error = null;
+	// }
 }
 
 private:
 
 extern (System) void debugCallback(uint source, uint type, uint id, uint severity,
-		uint length, in char* message, in void* userParam) nothrow
+		uint length, in char* message, in void* userParam)
 {
-	error = message.to!string;
-}
-
-__gshared
-{
-	string error;
-	string[] errors;
+	auto s = message[0 .. length];
+	logger.warning(`[debug] ERROR 0x%X - %s`, id, s);
 }

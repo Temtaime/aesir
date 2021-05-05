@@ -1,9 +1,8 @@
 module rocl.game;
-
-import std, perfontain, perfontain.misc, perfontain.misc.report, ro.db, ro.str,
-	ro.conv, rocl.loaders.asp, rocl, rocl.gui, rocl.status, rocl.entity,
-	rocl.network, rocl.controls, rocl.resources, rocl.controller.npc,
-	rocl.controller.item, rocl.controller.action, rocl.controller.effect, rocl.rofs;
+import std, perfontain, perfontain.misc, ro.db, ro.str, ro.conv,
+	rocl.loaders.asp, rocl, rocl.gui, rocl.status, rocl.entity, rocl.network,
+	rocl.controls, rocl.resources, rocl.controller.npc, rocl.controller.item,
+	rocl.controller.action, rocl.controller.effect, rocl.rofs;
 
 @property ROfs()
 {
@@ -104,7 +103,7 @@ package:
 private:
 	void mapViewer()
 	{
-		ROres.load(`prontera`);
+		ROres.load(`niflheim`);
 
 		//PE.hotkeys.add(Hotkey({ log(`lispsm %s`, PE.shadows.lispsm ^= true); }, SDLK_LCTRL, SDLK_a));
 		debug
@@ -144,9 +143,15 @@ private:
 		catch (Exception e)
 		{
 			//errorReport(e);
-			showErrorMessage(
-					"Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: "
-					~ e.msg);
+			debug
+			{
+				logger(e);
+			}
+			else
+				showErrorMessage(
+						"Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: "
+						~ e.msg);
+
 			return false;
 		}
 

@@ -6,7 +6,9 @@ enum
 	// core
 	MSAA_LEVEL = 4,
 
-	OPENGL_VERSION = 33,
+	ANGLE_DIR = `angle`,
+	OPENGL_VERSION = 31,
+
 	MAX_LAYERS = 4,
 
 	IDLE_FPS = 20,

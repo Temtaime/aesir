@@ -1,9 +1,6 @@
-import
-		pegged.grammar;
+import pegged.grammar;
 
-
-enum EXGL =
-`
+enum EXGL = `
 EXGL:
 	Main		< Element{extract}+ eoi
 
@@ -14,7 +11,7 @@ EXGL:
 
 	Cond		< '!'? Name Block (:Idented("else") Block)?
 	Shader		< ;identifier ':' Block{extract}
-	Vsfs		< :"vsfs" ;identifier :Idented('{') Block Idented('}' ^identifier :';'){extract}
+	Vsfs		< :"vsfs" ;Data
 
 	Assign		< ;Name '+'? '=' ;Data
 	Import		< :"import" ;identifier
@@ -28,8 +25,7 @@ EXGL:
 	Spacing		<- (' ' / eol)*
 `;
 
-enum Extra =
-`
+enum Extra = `
 auto endBlock(ParseTree p)
 {
 	ident -= p.successful;
@@ -60,5 +56,6 @@ private __gshared byte ident;
 
 void main()
 {
-	asModule!(Memoization.no)(`perfontain.shader.grammar`, `../../source/perfontain/shader/grammar`, EXGL, Extra);
+	asModule!(Memoization.no)(`perfontain.shader.grammar`,
+			`../../source/perfontain/shader/grammar`, EXGL, Extra);
 }

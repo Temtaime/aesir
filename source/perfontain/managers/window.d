@@ -1,7 +1,6 @@
 module perfontain.managers.window;
 import std, perfontain.misc, perfontain, perfontain.math.matrix,
 	perfontain.opengl, utile.except, nuklear;
-
 public import derelict.sdl2.sdl;
 
 enum : ubyte
@@ -17,8 +16,12 @@ class WindowManager
 {
 	void create(string title)
 	{
+		environment[`ANGLE_DEFAULT_PLATFORM`] = `vulkan`;
+		environment[`PATH`] = buildPath(thisExePath.dirName, ANGLE_DIR)
+			~ pathSeparator ~ environment[`PATH`];
+
 		!SDL_Init(SDL_INIT_VIDEO) || throwSDLError;
-		!SDL_GL_LoadLibrary(null) || throwSDLError;
+		!SDL_GL_LoadLibrary(null) || throwSDLError; // TODO: remove ?
 
 		{
 			SDL_DisplayMode mode;
@@ -42,28 +45,29 @@ class WindowManager
 		!SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8) || throwSDLError;
 		!SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8) || throwSDLError;
 		!SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24) || throwSDLError;
+		!SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) || throwSDLError;
 
-		if (PE.settings.msaa)
-		{
-			!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1) || throwSDLError;
-			!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAA_LEVEL) || throwSDLError;
-		}
+		// if (PE.settings.msaa)
+		// {
+		// 	!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1) || throwSDLError;
+		// 	!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAA_LEVEL) || throwSDLError;
+		// }
 
 		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION / 10) || throwSDLError;
 		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION % 10) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE)
+		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES)
 			|| throwSDLError;
 
-		{
-			auto flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
+		// {
+		// 	auto flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
 
-			debug
-			{
-				flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
-			}
+		// 	debug
+		// 	{
+		// 		flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
+		// 	}
 
-			!SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, flags) || throwSDLError;
-		}
+		// 	!SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, flags) || throwSDLError;
+		// }
 
 		{
 			auto f = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
@@ -75,18 +79,14 @@ class WindowManager
 
 			_win = SDL_CreateWindow(title.toStringz, SDL_WINDOWPOS_CENTERED,
 					SDL_WINDOWPOS_CENTERED, _size.x, _size.y, f);
+
 			_win || throwSDLError;
 		}
 
 		_ctx = SDL_GL_CreateContext(_win);
-		_ctx || throwSDLError;
 
-		{
-			int v;
-			!SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &v) || throwSDLError;
-
-			PE._msaaLevel = v > 1 ? cast(ubyte)v : 0;
-		}
+		hookGL;
+		SDL_GL_SetSwapInterval(0);
 
 		//SDL_StopTextInput();
 		SDL_SetWindowMinimumSize(_win, 640, 480);
@@ -288,14 +288,13 @@ package(perfontain):
 	}
 
 private:
-
 	mixin publicProperty!(uint[], `keys`);
 
 	void onVSync(bool v)
 	{
 		//if(!v || SDL_GL_SetSwapInterval(-1))
 		{
-			!SDL_GL_SetSwapInterval(v) || throwSDLError;
+			//!SDL_GL_SetSwapInterval(v) || throwSDLError;
 		}
 	}
 

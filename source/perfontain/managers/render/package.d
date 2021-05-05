@@ -87,36 +87,7 @@ private:
 			_pg.ssbo(`pe_transforms`, tmp[]);
 		}
 
-		if (GL_ARB_bindless_texture)
-		{
-			uint k;
-			auto tmp = ScopeArray!ubyte(subs * 16);
-
-			foreach (i, ref n; nodes)
-			{
-				auto m = &n.mh;
-				auto r = cast(uint)i;
-
-				foreach (ref sm; m.meshes[n.id].subs)
-				{
-					auto tex = m.texs[sm.tex];
-					auto h = tex.handle;
-
-					PE.textures.use(tex);
-
-					tmp[k .. k + 8][] = h.toByte;
-					tmp[k + 8 .. k + 12][] = r.toByte;
-					tmp[k + 12 .. k + 16][] = 0;
-
-					k += 16;
-				}
-			}
-
-			assert(k == tmp.length);
-
-			_pg.ssbo(`pe_submeshes`, tmp[]);
-		}
-		else if (!_rt || PE.shadows.textured)
+		//if (!_rt || PE.shadows.textured)
 		{
 			//nodes[0].mh.texs[0].bind(0);
 			bindTextures = true;

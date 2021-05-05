@@ -1,12 +1,9 @@
 module perfontain;
-
 import std.utf, std.file, std.path, std.conv, std.array, std.range, std.stdio,
 	std.traits, std.string, std.encoding, std.exception, std.algorithm : filter, map;
 
-import core.time, core.thread, core.memory, perfontain.misc,
-	perfontain.misc.report, perfontain.managers.state, perfontain.opengl,
-
-	perfontain.sampler, perfontain.filesystem, perfontain.managers.audio,
+import core.time, core.thread, core.memory, perfontain.misc, perfontain.managers.state,
+	perfontain.opengl, perfontain.sampler, perfontain.filesystem, perfontain.managers.audio,
 	perfontain.math.frustum, perfontain.managers.shadow, perfontain.managers.sampler;
 
 public import perfontain.misc, perfontain.misc.rc, perfontain.misc.dxt, perfontain.meshholder,
@@ -77,7 +74,7 @@ final class Engine
 
 		if (!settings)
 		{
-			settings = new SettingsManager; 
+			settings = new SettingsManager;
 		}
 	}
 
@@ -104,49 +101,10 @@ final class Engine
 		window.create(title);
 
 		logger.info2(`[gpu info]`);
-
-		{
-			_glGetString = cast(typeof(_glGetString))load(`glGetString`);
-			_glGetStringi = cast(typeof(_glGetStringi))load(`glGetStringi`);
-			_glGetIntegerv = cast(typeof(_glGetIntegerv))load(`glGetIntegerv`); // TODO: REMOVE
-
-			auto vendor = glGetString(GL_VENDOR).fromStringz.idup, version_ = glGetString(GL_VERSION).fromStringz.idup,
-				renderer = glGetString(GL_RENDERER).fromStringz.idup,
-				glsl = glGetString(GL_SHADING_LANGUAGE_VERSION).fromStringz.idup;
-
-			logger.info3(`opengl vendor: %s`, vendor);
-			logger.info3(`opengl version: %s`, version_);
-			logger.info3(`opengl renderer: %s`, renderer);
-			logger.info3(`opengl sl version: %s`, glsl);
-
-			debug
-			{
-			}
-			else
-			{
-				//configReport(vendor, version_, renderer, glsl);
-			}
-
-			hookGL;
-		}
-
-		GL_ARB_bindless_texture = false;
-		GL_ARB_shader_draw_parameters = false;
-
-		// can't use bindless without draw parameters
-		GL_ARB_bindless_texture &= GL_ARB_shader_draw_parameters;
-
-		foreach (s; PERF_EXTENSIONS)
-		{
-			if (mixin(s))
-			{
-				logger.info(`%s : supported`, s);
-			}
-			else
-			{
-				logger.warning(`%s : unsupported`, s);
-			}
-		}
+		logger.info3(`opengl vendor: %s`, glGetString(GL_VENDOR).fromStringz);
+		logger.info3(`opengl version: %s`, glGetString(GL_VERSION).fromStringz);
+		logger.info3(`opengl renderer: %s`, glGetString(GL_RENDERER).fromStringz);
+		logger.info3(`opengl sl version: %s`, glGetString(GL_SHADING_LANGUAGE_VERSION).fromStringz);
 
 		{
 			int v;
@@ -178,8 +136,6 @@ final class Engine
 		ctors;
 		onResize(PE.window.size);
 
-		settings.disableUnsupported;
-
 		{
 
 			/*auto s = `hello WORLD`;
@@ -200,11 +156,11 @@ final class Engine
 		{
 			glEnable(GL_DEPTH_TEST);
 
-			shadows.process;
+			//shadows.process;
 			scene.draw;
 
-			glDisable(GL_DEPTH_TEST);
-			gui.draw;
+			//glDisable(GL_DEPTH_TEST);
+			//gui.draw;
 
 			PEwindow.swapBuffers;
 		}

@@ -55,7 +55,6 @@
 		"-Lutils/deps"
 	],
 	"lflags-windows": [
-		"/manifest:embed",
 		"/LIBPATH:utils/deps"
-	],
+	]
 }

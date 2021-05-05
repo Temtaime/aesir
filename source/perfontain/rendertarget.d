@@ -1,21 +1,43 @@
 module perfontain.rendertarget;
 
-import
-		perfontain,
-		perfontain.opengl;
-
+import perfontain, perfontain.opengl;
 
 final class RenderTarget : RCounted
 {
 	this(Texture t)
 	{
-		glCreateFramebuffers(1, &_id);
+		this();
 
-		glNamedFramebufferTexture(_id, GL_DEPTH_ATTACHMENT, (_tex = t).id, 0);
-		glNamedFramebufferDrawBuffer(_id, GL_NONE);
+		_attachments ~= t;
 
-		auto st = glCheckNamedFramebufferStatus(_id, GL_FRAMEBUFFER);
-		st == GL_FRAMEBUFFER_COMPLETE_EXT || throwError!`FBO status is 0x%X`(st);
+		add(GL_DEPTH_ATTACHMENT, t);
+
+		finish;
+
+		// FIXME gles
+		//glFramebufferDrawBuffer(GL_FRAMEBUFFER, GL_NONE);
+
+	}
+
+	this()
+	{
+		glGenFramebuffers(1, &_id);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
+	}
+
+	void add(uint pos, Texture tex)
+	{
+		_pos ~= pos;
+		_attachments ~= tex;
+		glFramebufferTexture2D(GL_FRAMEBUFFER, pos, GL_TEXTURE_2D, tex.id, 0);
+	}
+
+	void finish()
+	{
+		auto st = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		st == GL_FRAMEBUFFER_COMPLETE || throwError!`FBO status is 0x%X`(st);
+
+		unbind;
 	}
 
 	~this()
@@ -25,20 +47,24 @@ final class RenderTarget : RCounted
 
 	void bind()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, _id);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
+
+		//glDrawBuffers(cast(uint)_pos.length, _pos.ptr);
 	}
 
 	static unbind()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
 
-	Texture tex() const
+	auto attachments()
 	{
-		return cast(Texture)_tex;
+		return _attachments[];
 	}
 
 package:
 	uint _id;
-	RC!Texture _tex;
+
+	uint[] _pos;
+	RCArray!Texture _attachments;
 }

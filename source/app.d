@@ -1,5 +1,5 @@
 import core.sys.windows.windows, core.sys.posix.sys.resource, perfontain,
-	perfontain.misc.report, ro.conv, rocl.rofs, rocl.game;
+	ro.conv, rocl.rofs, rocl.game;
 
 version (Windows)
 {

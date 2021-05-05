@@ -17,5 +17,5 @@ float lkup(vec3 coord)
 
 void calcShadows(vec4 pos, float value, inout vec3 color)
 {
-	color = mix(color, color * lkup(pos.xyz / pos.w), shadowFactor - min(value / 20, shadowFactor));
+	color = mix(color, color * lkup(pos.xyz / pos.w), shadowFactor - min(value / 20., shadowFactor));
 }
