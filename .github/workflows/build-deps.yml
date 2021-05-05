@@ -57,6 +57,7 @@ jobs:
           -D3DNOW=OFF -DMMX=OFF -DSSE=OFF -DSSE2=OFF -DASSERTIONS=disabled
           -DBUILD_SHARED_LIBS=OFF -DFORCE_STATIC_VCRT=ON -DSDL_STATIC_PIC=ON -DLIBC=ON -DVIDEO_OPENGL=OFF -DVIDEO_VULKAN=OFF -DVIDEO_DUMMY=OFF -DDIRECTX=OFF
           ..
+
           ninja -v
       - uses: actions/upload-artifact@v2
         with:
