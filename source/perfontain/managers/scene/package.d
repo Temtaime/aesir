@@ -229,7 +229,9 @@ package(perfontain):
 			}
 		}
 
-		draw(_geometry, _gbuffer, _camera.view * proj);
+		auto mm = _camera.view * proj;
+
+		draw(_geometry, _gbuffer, mm);
 
 		if (false)
 		{
@@ -254,7 +256,7 @@ package(perfontain):
 			//_ind.bind(0);
 			glBindImageTexture(0, _ind.id, 0, false, 0, GL_WRITE_ONLY, GL_R32UI);
 
-			_comp.send(`proj_view_inversed`, (camera.view * proj).inversed);
+			_comp.send(`proj_view_inversed`, mm.inversed);
 			_gbuffer.attachments[0].bind(0);
 			//glBindImageTexture(1, _gbuffer.attachments[0].id, 0, false, 0, GL_WRITE_ONLY, GL_R32F);
 

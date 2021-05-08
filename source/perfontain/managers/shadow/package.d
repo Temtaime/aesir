@@ -12,6 +12,22 @@ final class ShadowManager
 		_bias = Matrix4.scale(VEC3_2) * Matrix4.translate(VEC3_2);
 	}
 
+	auto makeMatrix()
+	{
+		auto s = PE.scene;
+
+		SceneData sd = {
+			view: s.camera.view, viewProjInversed: (s.camera.view * s.proj)
+				.inverse, box: s.scene.node.bbox, cameraPos: s.camera._pos,
+			cameraDir: s.camera._dir, lightDir: s.scene.lightDir,
+		};
+
+		Matrix4 view = void, proj = void;
+
+		calculateShadowMatrices(&sd, view.ptr, proj.ptr, lispsm);
+		return view * proj;
+	}
+
 	void process()
 	{
 		if (level)
