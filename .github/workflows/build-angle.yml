@@ -1,0 +1,38 @@
+name: Build angle
+
+on:
+  push:
+    paths:
+      - .github/workflows/build-angle.yml
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - run: |
+          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git
+          git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
+          $env:DEPOT_TOOLS_WIN_TOOLCHAIN=0
+          $env:PATH += ";$pwd\depot_tools"
+
+          cd angle
+          python scripts/bootstrap.py
+          gclient sync
+          git checkout master
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: angle/out/debug
