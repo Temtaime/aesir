@@ -50,12 +50,12 @@ jobs:
         run: |
           ${{ matrix.SETUP_ENV }}
 
-          gn gen out/Release --args="is_clang=true is_component_build=false angle_enable_null=false is_debug=false is_official_build=true chrome_pgo_phase=0 use_thin_lto=true init_stack_vars=false"
+          gn gen out/Release --args="is_clang=true is_cfi=false is_component_build=false angle_enable_null=false is_debug=false is_official_build=true chrome_pgo_phase=0 use_thin_lto=true init_stack_vars=false"
           cd out/Release
           ninja libEGL
 
           cd ../..
-          gn gen out/Debug --args="is_clang=true is_component_build=false angle_enable_null=false"
+          gn gen out/Debug --args="is_clang=true is_cfi=false is_component_build=false angle_enable_null=false"
           cd out/Debug
           ninja libEGL
 
