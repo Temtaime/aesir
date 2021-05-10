@@ -22,8 +22,8 @@ jobs:
           arch: x64
 
       - run: |
-          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git
-          git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          git clone -b chromium/4502 --depth=1 https://chromium.googlesource.com/angle/angle.git
+          git clone -b chromium/4502 --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 
           $env:DEPOT_TOOLS_WIN_TOOLCHAIN=0
           $env:PATH += ";$pwd\depot_tools"
@@ -32,6 +32,16 @@ jobs:
           python scripts/bootstrap.py
           gclient sync
           git checkout master
+          #git apply -p1 ../angle_fixes.patch
+
+          gn gen out/Release --args="is_clang=true is_component_build=false angle_enable_null=false is_debug=false is_official_build=true chrome_pgo_phase=0 use_thin_lto=true init_stack_vars=false"
+          cd out/Release
+          ninja libEGL
+
+          cd ../..
+          gn gen out/Debug --args="is_clang=true is_component_build=false angle_enable_null=false"
+          cd out/Debug
+          ninja libEGL
 
       - uses: actions/upload-artifact@v2
         with:
