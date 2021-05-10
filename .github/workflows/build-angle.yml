@@ -31,7 +31,7 @@ jobs:
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
         run: |
           export DEPOT_TOOLS_WIN_TOOLCHAIN=0
-          export PATH="$PATH:$pwd/depot_tools"
+          export PATH="$PATH:$PWD/depot_tools"
 
       - if: ${{ matrix.os == 'windows-latest' }}
         run: |
