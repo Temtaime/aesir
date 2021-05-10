@@ -12,7 +12,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: ubuntu-20.04
+            ext: so
           - os: windows-latest
+            ext: dll
 
     runs-on: ${{ matrix.os }}
 
@@ -25,10 +28,19 @@ jobs:
           git clone --depth=1 https://chromium.googlesource.com/angle/angle.git
           git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 
+      - if: ${{ matrix.os == 'ubuntu-20.04' }}
+        run:
+          export DEPOT_TOOLS_WIN_TOOLCHAIN=0
+          export PATH="$PATH:$pwd/depot_tools"
+          ./angle/build/install-build-deps.sh
+
+      - if: ${{ matrix.os == 'windows-latest' }}
+        run:
           $env:DEPOT_TOOLS_WIN_TOOLCHAIN=0
           $env:PATH += ";$pwd\depot_tools"
 
-          cd angle
+      - working-directory: angle
+        run: |
           python scripts/bootstrap.py
           gclient sync
           git checkout master
@@ -46,7 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path: |
-            angle/out/Debug/libEGL.dll
-            angle/out/Debug/libGLESv2.dll
-            angle/out/Release/libEGL.dll
-            angle/out/Release/libGLESv2.dll
+            angle/out/Debug/libEGL.${{ matrix.ext }}
+            angle/out/Debug/libGLESv2.${{ matrix.ext }}
+            angle/out/Release/libEGL.${{ matrix.ext }}
+            angle/out/Release/libGLESv2.${{ matrix.ext }}
