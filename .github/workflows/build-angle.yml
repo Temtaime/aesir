@@ -6,6 +6,9 @@ on:
       - .github/workflows/build-angle.yml
   workflow_dispatch:
 
+env:
+  COMMON_OPTS: is_clang=true is_cfi=false is_component_build=false angle_enable_null=false symbol_level=0
+
 jobs:
   build:
     strategy:
@@ -42,20 +45,20 @@ jobs:
           git apply -p1 ../utils/angle_fixes.patch
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
+        working-directory: angle
         run:
-          ./angle/build/install-build-deps.sh || true
-          #sudo apt install -y ninja-build
+          ./build/install-build-deps.sh || true
 
       - working-directory: angle
         run: |
           ${{ matrix.SETUP_ENV }}
 
-          gn gen out/Release --args="is_clang=true enable_stripping=true is_cfi=false is_component_build=false angle_enable_null=false is_debug=false is_official_build=true chrome_pgo_phase=0 use_thin_lto=true init_stack_vars=false"
+          gn gen out/Release --args="${{ env.COMMON_OPTS }} is_debug=false is_official_build=true chrome_pgo_phase=0 use_thin_lto=true init_stack_vars=false"
           cd out/Release
           ninja libEGL
 
           cd ../..
-          gn gen out/Debug --args="is_clang=true enable_stripping=true is_cfi=false is_component_build=false angle_enable_null=false"
+          gn gen out/Debug --args="${{ env.COMMON_OPTS }}"
           cd out/Debug
           ninja libEGL
 
@@ -78,14 +81,13 @@ jobs:
       - uses: actions/download-artifact@v2
 
       - run: |
-          mkdir -p bin/angle
-          mkdir -p bin/angle_debug
+          strip -s artifact/*/*.so
 
           mv artifact/Release/* bin/angle
-          mv artifact/Debug/* bin/angle_debug
+          mv artifact/Debug/*   bin/angle_debug
 
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .
+          git add -u
           git commit -m generated
           git push
