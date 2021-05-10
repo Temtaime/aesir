@@ -45,4 +45,8 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          path: angle/out/debug
+          path: |
+            angle/out/Debug/libEGL.dll
+            angle/out/Debug/libGLESv2.dll
+            angle/out/Release/libEGL.dll
+            angle/out/Release/libGLESv2.dll
