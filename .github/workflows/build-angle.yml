@@ -32,7 +32,6 @@ jobs:
         run: |
           export DEPOT_TOOLS_WIN_TOOLCHAIN=0
           export PATH="$PATH:$pwd/depot_tools"
-          ./angle/build/install-build-deps.sh
 
       - if: ${{ matrix.os == 'windows-latest' }}
         run: |
@@ -46,6 +45,12 @@ jobs:
           git checkout master
           #git apply -p1 ../angle_fixes.patch
 
+      - if: ${{ matrix.os == 'ubuntu-20.04' }}
+        run:
+          ./angle/build/install-build-deps.sh
+
+      - working-directory: angle
+        run: |
           gn gen out/Release --args="is_clang=true is_component_build=false angle_enable_null=false is_debug=false is_official_build=true chrome_pgo_phase=0 use_thin_lto=true init_stack_vars=false"
           cd out/Release
           ninja libEGL
