@@ -1,6 +1,6 @@
-diff -ruw a/src/libANGLE/Display.cpp b/src/libANGLE/Display.cpp
---- a/src/libANGLE/Display.cpp	2021-05-09 21:00:24.434527200 +0300
-+++ b/src/libANGLE/Display.cpp	2021-05-09 21:17:23.252423900 +0300
+diff -ru a/src/libANGLE/Display.cpp b/src/libANGLE/Display.cpp
+--- a/src/libANGLE/Display.cpp	2021-05-10 15:23:11.067594803 +0300
++++ b/src/libANGLE/Display.cpp	2021-05-10 15:23:56.071896396 +0300
 @@ -164,6 +164,11 @@
  #if defined(ANGLE_ENABLE_OPENGL)
      if (angleDefaultEnv == "gl")
@@ -8,7 +8,7 @@ diff -ruw a/src/libANGLE/Display.cpp b/src/libANGLE/Display.cpp
 +        return EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE;
 +    }
 +
-+	if (angleDefaultEnv == "gles")
++    if (angleDefaultEnv == "gles")
 +    {
          return EGL_PLATFORM_ANGLE_TYPE_OPENGLES_ANGLE;
      }
