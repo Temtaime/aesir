@@ -30,19 +30,21 @@ jobs:
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
         run: |
-          export DEPOT_TOOLS_WIN_TOOLCHAIN=0
           export PATH="$PWD/depot_tools:$PATH"
-          echo $PATH
+
+          python scripts/bootstrap.py
+          gclient sync
 
       - if: ${{ matrix.os == 'windows-latest' }}
         run: |
           $env:DEPOT_TOOLS_WIN_TOOLCHAIN=0
           $env:PATH += ";$pwd\depot_tools"
 
-      - working-directory: angle
-        run: |
           python scripts/bootstrap.py
           gclient sync
+
+      - working-directory: angle
+        run: |
           git checkout master
           #git apply -p1 ../angle_fixes.patch
 
