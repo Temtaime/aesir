@@ -22,8 +22,8 @@ jobs:
           arch: x64
 
       - run: |
-          git clone -b chromium/4502 --depth=1 https://chromium.googlesource.com/angle/angle.git
-          git clone -b chromium/4502 --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git
+          git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 
           $env:DEPOT_TOOLS_WIN_TOOLCHAIN=0
           $env:PATH += ";$pwd\depot_tools"
