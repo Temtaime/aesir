@@ -20,6 +20,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - uses: actions/checkout@v2
+
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
@@ -48,7 +50,7 @@ jobs:
       - working-directory: angle
         run: |
           git checkout master
-          #git apply -p1 ../angle_fixes.patch
+          git apply -p1 ../utils/angle_fixes.patch
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
         run:
@@ -72,3 +74,26 @@ jobs:
             angle/out/Debug/libGLESv2.${{ matrix.ext }}
             angle/out/Release/libEGL.${{ matrix.ext }}
             angle/out/Release/libGLESv2.${{ matrix.ext }}
+
+  commit:
+    runs-on: ubuntu-20.04
+    needs: [ build ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - uses: actions/download-artifact@v2
+
+      - run: |
+          mkdir -p bin/angle
+          mkdir -p bin/angle_debug
+
+          mv artifact/Release/* bin/angle
+          mv artifact/Debug/* bin/angle_debug
+
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add
+          git commit -m generated
+          git push
