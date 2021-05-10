@@ -57,6 +57,7 @@ jobs:
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
         run: |
+          sudo apt update
           sudo apt install -y libasound2-dev libxi-dev
           sudo rm /usr/bin/ld
           sudo ln -s /usr/bin/ld.lld-11 /usr/bin/ld

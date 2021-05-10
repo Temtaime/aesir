@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  COMMON_OPTS: is_clang=true is_cfi=false is_component_build=false angle_enable_null=false symbol_level=0
+  COMMON_OPTS: is_clang=true is_component_build=false is_cfi=false symbol_level=0 angle_enable_null=false
 
 jobs:
   build:
