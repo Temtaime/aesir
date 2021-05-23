@@ -51,7 +51,7 @@ VERTEX_SHADER
 
 FRAGMENT_SHADER
 	PASS_DATA
-		uniform sampler2D pe_texture;
+		uniform sampler2D pe_tex_main;
 
 	DRAW_ID = draw_idx
-	SAMPLE_TEX = texture(pe_texture, texCoord)
+	SAMPLE_TEX = texture(pe_tex_main, texCoord)

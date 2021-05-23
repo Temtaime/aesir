@@ -203,10 +203,16 @@ package(perfontain):
 
 		_gbuffer = new RenderTarget;
 
-		auto tex = new Texture(TEX_SHADOW_MAP, PEwindow._size, s);
-		_gbuffer.add(GL_DEPTH_ATTACHMENT, tex);
+		{
+			auto tex = new Texture(TEX_SHADOW_MAP, PEwindow._size, s);
+			_gbuffer.add(GL_DEPTH_ATTACHMENT, tex);
+
+			_comp.add(ShaderTexture.depth, tex);
+		}
 
 		_ind = new Texture(TEX_RED_UINT, PEwindow._size, s);
+
+		_prog.add(ShaderTexture.lights, _ind);
 
 		_gbuffer.finish;
 	}
@@ -215,24 +221,24 @@ package(perfontain):
 
 	void draw()
 	{
+		if (_scene is null)
+			return;
+
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(true);
 
-		if (_scene)
+		if (!_geometry)
 		{
-			if (!_geometry)
-			{
 
-				makePrepass;
-			}
+			makePrepass;
 		}
 
 		auto mm = _camera.view * proj;
 
 		draw(_geometry, _gbuffer, mm);
 
-		if (true)
+		if (false)
 		{
 			int x, y, z, maxInvocations;
 
@@ -248,9 +254,9 @@ package(perfontain):
 				k = next;
 			}
 
-			logger(`Max invocations: %u`, maxInvocations);
-			logger(`Workgroup capacity: [ %u %u %u ]`, x, y, z);
-			logger(`Using blocks of %ux%1$u size`, k);
+			// logger(`Max invocations: %u`, maxInvocations);
+			// logger(`Workgroup capacity: [ %u %u %u ]`, x, y, z);
+			// logger(`Using blocks of %ux%1$u size`, k);
 		}
 
 		{
@@ -265,7 +271,7 @@ package(perfontain):
 			glBindImageTexture(0, _ind.id, 0, false, 0, GL_WRITE_ONLY, GL_R32UI);
 
 			_comp.send(`proj_view_inversed`, mm.inversed);
-			_gbuffer.attachments[0].bind(0);
+			//_gbuffer.attachments[0].bind(0);
 			//glBindImageTexture(1, _gbuffer.attachments[0].id, 0, false, 0, GL_WRITE_ONLY, GL_R32F);
 
 			enum N = 32;
@@ -300,7 +306,7 @@ package(perfontain):
 
 		//_comp.unbind;
 
-		_ind.bind(1);
+		//_ind.bind(1);
 
 		//_ind.bind(0);
 		//_ind.toImage.saveToFile(`res_gg.png`);

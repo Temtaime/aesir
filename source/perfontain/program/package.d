@@ -1,5 +1,6 @@
 module perfontain.program;
 import std, core.bitop, perfontain.opengl, perfontain, utile.except, utile.logger;
+public import perfontain.program.props;
 
 enum
 {
@@ -22,20 +23,12 @@ final class Program : RCounted
 	{
 		_id = glCreateProgram();
 
-		foreach (s; shaders)
-		{
-			glAttachShader(_id, s.id);
-		}
-
+		shaders.each!(a => glAttachShader(_id, a.id));
 		doLink;
-
-		foreach (s; shaders)
-		{
-			glDetachShader(_id, s.id);
-		}
+		shaders.each!(a => glDetachShader(_id, a.id));
 
 		parseAttribs;
-		logger(_attribs);
+		//logger(_attribs);
 
 		static immutable Attrs = [
 			tuple(`pe_transforms.pe_shadow_matrix`, PROG_DATA_SM_MAT),
@@ -67,11 +60,42 @@ final class Program : RCounted
 			btr(&_ssbo, u.idx);
 		}
 
+		_texs.each!(a => a.destroy);
+
 		glDeleteProgram(_id);
 	}
 
 	void bind()
 	{
+		debug
+		{
+			foreach (name, attr; _attribs)
+			{
+				if (isSampler(attr.type))
+				{
+					const idx = SHADER_TEX_NAMES.countUntil(name);
+					assert(idx >= 0, format!`unknown texture %s`(name));
+
+					const id = cast(ShaderTexture)idx;
+					assert(id == ShaderTexture.main || _texs.keys.canFind(id), format!`texture %s was not bound`(name));
+				}
+			}
+		}
+
+		if (_init)
+		{
+			_init = false;
+
+			foreach (id, tex; _texs)
+			{
+				const name = SHADER_TEX_NAMES[id];
+				assert(_attribs.keys.canFind(name), format!`extra texture %s`(name));
+
+				send(name, id);
+				tex.bind(id);
+			}
+		}
+
 		bind(_id);
 	}
 
@@ -146,6 +170,11 @@ final class Program : RCounted
 		assert(false);
 	}
 
+	void add(ShaderTexture id, Texture tex)
+	{
+		_texs[id] = new RC!Texture(tex);
+	}
+
 private:
 	mixin publicProperty!(ubyte, `flags`);
 
@@ -172,8 +201,7 @@ private:
 	{
 		enum Attribs = [
 				tuple(GL_ACTIVE_UNIFORMS, GL_ACTIVE_UNIFORM_MAX_LENGTH, `glGetActiveUniform`),
-				tuple(GL_ACTIVE_ATTRIBUTES, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,
-						`glGetActiveAttrib`),
+				tuple(GL_ACTIVE_ATTRIBUTES, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, `glGetActiveAttrib`),
 			];
 
 		static foreach (e; Attribs)
@@ -191,9 +219,7 @@ private:
 					int size;
 					uint type;
 
-					mixin(
-							e[2]
-							~ `(_id, i, cast(uint)name.length, cast(uint*)&nameLen, &size, &type, name.ptr);`);
+					mixin(e[2] ~ `(_id, i, cast(uint)name.length, cast(uint*)&nameLen, &size, &type, name.ptr);`);
 
 					_attribs[name[0 .. nameLen].idup] = Attrib(type, size);
 				}
@@ -231,8 +257,7 @@ private:
 			int nameLen;
 
 			const param = GL_NAME_LENGTH;
-			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,
-					&param, 1, null, &nameLen);
+			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1, &param, 1, null, &nameLen);
 
 			auto tmp = new char[nameLen];
 			glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen, null, tmp.ptr);
@@ -244,8 +269,7 @@ private:
 
 		{
 			const param = GL_ACTIVE_VARIABLES;
-			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1,
-					&param, cnt, null, vars.ptr);
+			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1, &param, cnt, null, vars.ptr);
 		}
 
 		foreach (var; vars)
@@ -285,15 +309,13 @@ private:
 		}
 
 		auto n = name.toStringz;
-		int loc = ssb ? glGetProgramResourceIndex(_id, GL_SHADER_STORAGE_BLOCK, n) : glGetUniformLocation(_id,
-				n);
+		int loc = ssb ? glGetProgramResourceIndex(_id, GL_SHADER_STORAGE_BLOCK, n) : glGetUniformLocation(_id, n);
 
 		UniformData* s;
 
 		if (loc < 0)
 		{
-			logger.warning("can't get %s location for `%s' variable", ssb
-					? `SSBO` : `uniform`, name);
+			logger.warning("can't get %s location for `%s' variable", ssb ? `SSBO` : `uniform`, name);
 			_attribs.logger;
 		}
 		else
@@ -305,14 +327,12 @@ private:
 			{
 				auto prop = GL_BUFFER_DATA_SIZE;
 
-				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1,
-						&prop, 1, null, &s.len);
+				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1, &prop, 1, null, &s.len);
 
 				int idx;
 
 				prop = GL_BUFFER_BINDING;
-				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1,
-						&prop, 1, null, &idx);
+				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1, &prop, 1, null, &idx);
 
 				s.idx = cast(ubyte)idx;
 				//s.idx = 0;
@@ -327,6 +347,12 @@ private:
 		return s;
 	}
 
+	static isSampler(uint id)
+	{
+		static immutable uint[] samplers = [GL_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_2D];
+		return samplers.canFind(id);
+	}
+
 	struct UniformData
 	{
 		RC!VertexBuffer data;
@@ -338,7 +364,10 @@ private:
 	__gshared size_t _ssbo;
 
 	uint _id;
+	bool _init = true;
 
 	Attrib[string] _attribs;
+
 	UniformData*[string] _unis;
+	RC!Texture*[ShaderTexture] _texs;
 }

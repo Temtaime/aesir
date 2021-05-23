@@ -24,8 +24,6 @@ vertex:
 	}
 
 fragment:
-	precision highp usampler2D;
-
 	struct LightSource
 	{
 		vec4 pos;
@@ -37,9 +35,20 @@ fragment:
 		LightSource lights[];
 	};
 
-	layout(binding = 1) uniform usampler2D lights_tex;
+	uniform highp usampler2D pe_tex_lights;
 
 	out vec4 pe_frag_color;
+
+	void calcLight(vec3 nn, vec3 P, inout vec3 res, uint idx)
+	{
+		LightSource p = lights[idx];
+
+		vec3 q = P - p.pos.xyz;
+		float d = length(q);
+		float t = smoothstep(0.0, p.pos.w, d);
+
+		res += clamp(p.color * max(1.0 / (t * t) - 1.0, 0.0) * dot(nn, normalize(q)), 0.0, 1.5);
+	}
 
 	void calcLights(inout vec3 c)
 	{
@@ -48,31 +57,24 @@ fragment:
 
 		vec3 P = vec3(pos.xyz / pos.w);
 
-		vec2 uv = gl_FragCoord.xy / vec2(textureSize(lights_tex, 0));
-		uint pix = texture(lights_tex, uv).r;
+		vec2 uv = gl_FragCoord.xy / vec2(VIEWPORT_SIZE);
+		uint value = texture(pe_tex_lights, uv).r;
 
 		for(int i = 0; i < 4; i++)
 		{
-			uint k = pix & 0xFFu;
+			uint k = value & 0xFFu;
 
 			if(k == 0u)
 				break;
 
-			pix >>= 8;
-			LightSource p = lights[k - 1u];
-
-			vec3 q = P - p.pos.xyz;
-
-			float d = length(q);
-			float t = smoothstep(0.0, p.pos.w, d);
-
-			res += clamp(p.color * max(1.0 / (t * t) - 1.0, 0.0) * dot(nn, normalize(q)), 0.0, 1.5);
+			value >>= 8;
+			calcLight(nn, P, res, k - 1u);
 		}
 
 		c *= res;
 	}
 
-	void main (void)
+	void main()
 	{
 		vec4 u = SAMPLE_TEX;
 

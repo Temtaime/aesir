@@ -4,7 +4,7 @@ precision highp uimage2D;
 layout(local_size_x = 32, local_size_y = 32) in;
 layout(r32ui, binding = 0) uniform writeonly uimage2D output_tex;
 
-uniform sampler2D depth_tex;
+uniform sampler2D pe_tex_depth;
 uniform mat4 proj_view_inversed;
 
 layout(binding = 3) buffer pe_lights
@@ -29,7 +29,7 @@ compute:
 		vec2 uv = vec2(coord) / vec2(VIEWPORT_SIZE);
 
 		uint pixel = 0u;
-		float depth = texture(depth_tex, uv).r;
+		float depth = texture(pe_tex_depth, uv).r;
 
 		if(depth < 0.99)
 		{

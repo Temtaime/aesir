@@ -1,13 +1,9 @@
 module perfontain.managers.gui;
-import std.utf, std.range, std.stdio, std.ascii, std.array, std.string,
-	std.regex, std.encoding, std.algorithm, stb.image, perfontain,
-	perfontain.misc, perfontain.misc.dxt, perfontain.misc.draw,
-	perfontain.opengl, perfontain.signals;
+import std.utf, std.range, std.stdio, std.ascii, std.array, std.string, std.regex, std.encoding, std.algorithm,
+	stb.image, perfontain, perfontain.misc, perfontain.misc.dxt, perfontain.misc.draw, perfontain.opengl, perfontain.signals;
 
-public import nuklear, perfontain.managers.gui.tab, perfontain.managers.gui.text,
-	perfontain.managers.gui.misc, perfontain.managers.gui.scroll,
-	perfontain.managers.gui.select, perfontain.managers.gui.tooltip,
-	perfontain.managers.gui.style;
+public import nuklear, perfontain.managers.gui.tab, perfontain.managers.gui.text, perfontain.managers.gui.misc,
+	perfontain.managers.gui.scroll, perfontain.managers.gui.select, perfontain.managers.gui.tooltip, perfontain.managers.gui.style;
 
 struct PopupText
 {
@@ -110,10 +106,8 @@ final class GUIManager
 		{
 			nk_convert_config config;
 			const(nk_draw_vertex_layout_element)[] vertex_layout = [
-				{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, 0},
-				{NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, 8},
-				{NK_VERTEX_COLOR, NK_FORMAT_R32G32B32A32_FLOAT, 16},
-				NK_VERTEX_LAYOUT_END
+				{NK_VERTEX_POSITION, NK_FORMAT_FLOAT, 0}, {NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, 8},
+				{NK_VERTEX_COLOR, NK_FORMAT_R32G32B32A32_FLOAT, 16}, NK_VERTEX_LAYOUT_END
 			];
 			import core.stdc.string;
 
@@ -196,8 +190,7 @@ private:
 			short n;
 			glDisable(GL_CULL_FACE);
 
-			for (auto cmd = nk__draw_begin(_ctx.ctx, &cmds); (cmd); (cmd) = nk__draw_next(cmd,
-					&cmds, _ctx.ctx))
+			for (auto cmd = nk__draw_begin(_ctx.ctx, &cmds); (cmd); (cmd) = nk__draw_next(cmd, &cmds, _ctx.ctx))
 			{
 				if (!cmd.elem_count)
 					continue;
@@ -214,9 +207,7 @@ private:
 						idx = mh.texs[].length - 1;
 					}
 
-					mh.meshes ~= HolderMesh([
-							HolderSubMesh(cmd.elem_count, offset, cast(ushort)idx)
-							]);
+					mh.meshes ~= HolderMesh([HolderSubMesh(cmd.elem_count, offset, cast(ushort)idx)]);
 				}
 
 				DrawInfo d;
@@ -226,8 +217,7 @@ private:
 				d.id = n++;
 				d.flags = DI_NO_DEPTH;
 				d.blendingMode = blendingNormal;
-				d.scissor = Vector4s(cmd.clip_rect.x,
-						(PE.window.size.y - (cmd.clip_rect.y + cmd.clip_rect.h)),
+				d.scissor = Vector4s(cmd.clip_rect.x, (PE.window.size.y - (cmd.clip_rect.y + cmd.clip_rect.h)),
 						(cmd.clip_rect.w), (cmd.clip_rect.h));
 
 				d.scissor.z += d.scissor.x;
@@ -245,8 +235,11 @@ private:
 
 		}
 
+		//logger(`gui draw`);
+
 		PE.render.doDraw(_prog, RENDER_GUI, _proj, null, false);
 		glEnable(GL_CULL_FACE);
+		//logger(`gui draw 2`);
 	}
 
 	void drawPopups()
@@ -276,8 +269,8 @@ private:
 			foreach (x; -1 .. 2)
 				foreach (y; -1 .. 2)
 					if (x || y)
-						nk_draw_list_add_text(lists, f, nk_rect(r.x + x, r.y + y,
-								r.w, r.h), s.ptr, cast(uint)s.length, f.height, nk_rgb(0, 0, 0));
+						nk_draw_list_add_text(lists, f, nk_rect(r.x + x, r.y + y, r.w, r.h), s.ptr, cast(uint)s.length,
+								f.height, nk_rgb(0, 0, 0));
 
 			nk_draw_list_add_text(lists, f, r, s.ptr, cast(uint)s.length, f.height, c);
 		}
@@ -293,8 +286,7 @@ private:
 		//root.size = sz;
 
 		float[4][4] ortho = [
-			[2.0f, 0.0f, 0.0f, 0.0f], [0.0f, -2.0f, 0.0f, 0.0f],
-			[0.0f, 0.0f, -1.0f, 0.0f], [-1.0f, 1.0f, 0.0f, 1.0f],
+			[2.0f, 0.0f, 0.0f, 0.0f], [0.0f, -2.0f, 0.0f, 0.0f], [0.0f, 0.0f, -1.0f, 0.0f], [-1.0f, 1.0f, 0.0f, 1.0f],
 		];
 		ortho[0][0] /= sz.x;
 		ortho[1][1] /= sz.y;
