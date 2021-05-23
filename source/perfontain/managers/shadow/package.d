@@ -103,6 +103,7 @@ private:
 				_sm = new RenderTarget(tex);
 			}
 
+			version(none)
 			{
 				auto creator = ProgramCreator(`depth`);
 

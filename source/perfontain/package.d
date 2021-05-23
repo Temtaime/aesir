@@ -93,12 +93,14 @@ final class Engine
 		}
 	}
 
-	void create(string title)
+	void create(string title, string backend)
 	{
+		_title = title;
+		_backend = backend;
 		_tick = systemTick;
 
 		window = new WindowManager;
-		window.create(title);
+		window.create(makeTitle, _backend);
 
 		logger.info2(`[gpu info]`);
 		logger.info3(`opengl vendor: %s`, glGetString(GL_VENDOR).fromStringz);
@@ -232,7 +234,7 @@ package:
 				_fpsCounter = 0;
 				_fpsTick = _tick;
 
-				//window.title = format(`Perfontain Engine: %u fps`, _fpsCount);
+				window.title = makeTitle;
 
 				//debug
 				{
@@ -242,18 +244,6 @@ package:
 		}
 
 		timers.process;
-
-		debug
-		{
-		}
-		else
-		{
-			if (!window.active)
-			{
-				Thread.sleep(25.msecs);
-			}
-		}
-
 		return _run;
 	}
 
@@ -288,7 +278,13 @@ package:
 		_debugInfo.pos = Vector2s(window.size.x - _debugInfo.size.x - 20, 20);*/
 	}
 
+	string makeTitle()
+	{
+		return format(`%s [ %s renderer, %u FPS ]`, _title, _backend, _fpsCount);
+	}
+
 	//GUIQuad _debugInfo;
+	string _title, _backend;
 
 	StateManager _state;
 	ObjectsManager _objs;

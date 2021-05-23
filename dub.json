@@ -28,7 +28,8 @@
 		"sdl_mixer_x64"
 	],
 	"dflags": [
-		"-preview=intpromote"
+		"-preview=intpromote",
+		"-preview=shortenedMethods"
 	],
 	"dflags-ldc": [
 		"-ffast-math"

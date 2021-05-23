@@ -1,41 +1,37 @@
 module perfontain.shader.resource;
+import std, perfontain;
 
-import
-		std.string,
-
-		perfontain;
-
-
-shared static this()
+enum ProgramSource
 {
-	debug
-	{}
-	else
-	{
-		shaders =
-		[
-			`depth`: import(`depth.c`),
-			`draw`: import(`draw.c`),
-			`gui`: import(`gui.c`),
-			`lighting`: import(`lighting.c`),
-			`misc`: import(`misc.c`),
-			`shadows`: import(`shadows.c`),
-		];
-	}
+	header,
+	misc,
+
+	light_depth,
+	light_compute,
+
+	gui,
+	draw
 }
 
-auto shaderSource(string name)
+ProgramSource programSource(string name)
 {
-	debug
-	{
-		return PEfs.get(`../source/perfontain/shader/res/` ~ name ~ `.c`).assumeUTF;
-	}
-	else
-	{
-		return shaders[name];
-	}
+	foreach (ps; EnumMembers!ProgramSource)
+		if (ps.to!string == name)
+			return ps;
+
+	assert(false, name);
 }
 
-private:
+string shaderSource(ProgramSource pt)
+{
+	foreach (ps; EnumMembers!ProgramSource)
+		if (ps == pt)
+		{
+			enum Name = ps.to!string ~ `.c`;
 
-__gshared immutable string[string] shaders;
+			debug return PEfs.get(`../source/perfontain/shader/res/` ~ Name).assumeUTF;
+		else return import(Name);
+		}
+
+	assert(false);
+}

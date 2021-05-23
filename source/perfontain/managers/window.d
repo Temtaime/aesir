@@ -14,11 +14,18 @@ final:
 
 class WindowManager
 {
-	void create(string title)
+	void create(string title, string backend)
 	{
-		environment[`ANGLE_DEFAULT_PLATFORM`] = `vulkan`;
-		environment[`PATH`] = buildPath(thisExePath.dirName, ANGLE_DIR)
-			~ pathSeparator ~ environment[`PATH`];
+		environment[`ANGLE_DEFAULT_PLATFORM`] = backend;
+
+		{
+			string suffix;
+
+			debug suffix = `_debug`;  
+
+			environment[`PATH`] = buildPath(thisExePath.dirName, ANGLE_DIR ~ suffix)
+				~ pathSeparator ~ environment[`PATH`];
+		}
 
 		!SDL_Init(SDL_INIT_VIDEO) || throwSDLError;
 		!SDL_GL_LoadLibrary(null) || throwSDLError; // TODO: remove ?
@@ -73,13 +80,10 @@ class WindowManager
 			auto f = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
 			if (PE.settings.fullscreen)
-			{
 				f |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-			}
 
 			_win = SDL_CreateWindow(title.toStringz, SDL_WINDOWPOS_CENTERED,
 					SDL_WINDOWPOS_CENTERED, _size.x, _size.y, f);
-
 			_win || throwSDLError;
 		}
 
@@ -87,6 +91,7 @@ class WindowManager
 
 		hookGL;
 		SDL_GL_SetSwapInterval(0);
+		//SDL_GL_SetSwapInterval(1);
 
 		//SDL_StopTextInput();
 		SDL_SetWindowMinimumSize(_win, 640, 480);

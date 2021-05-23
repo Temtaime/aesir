@@ -1,16 +1,15 @@
 module perfontain.shader.defineprocessor;
-
 import std.stdio, std.array, std.range, std.regex, std.string, std.algorithm,
 	std.functional, pegged.grammar, perfontain, perfontain.shader.grammar,
 	perfontain.shader.resource;
 
 struct DefineProcessor
 {
-	auto process(string n)
+	auto process(ProgramSource ps)
 	{
 		string[string] res;
 
-		auto arr = dataOf(n);
+		auto arr = dataOf(ps);
 		alias pred = a => a.name == `EXGL.Shader`;
 
 		foreach (ref p; arr.filter!pred)
@@ -29,17 +28,15 @@ struct DefineProcessor
 
 	string[string] defs;
 private:
-	static dataOf(string n)
+	static dataOf(ProgramSource ps)
 	{
-		if (auto p = n in _shaders)
-		{
+		if (auto p = ps in _shaders)
 			return *p;
-		}
 
-		auto r = EXGL(n.shaderSource);
-		r.successful || throwError!`shader %s - %s`(n, r.failMsg);
+		auto r = EXGL(ps.shaderSource);
+		r.successful || throwError!`shader %s: %s`(ps, r.failMsg);
 
-		return _shaders[n] = r.children.front.children;
+		return _shaders[ps] = r.children.front.children;
 	}
 
 	auto entab(R)(R r, bool tab)
@@ -97,7 +94,8 @@ private:
 			return format("%s %s", v ? `out` : `in`, s);
 
 		case `EXGL.Import`:
-			return entab(dataOf(p.matches.front), false);
+			string name = p.matches.front;
+			return entab(dataOf(name.programSource), false);
 
 		case `EXGL.Block`:
 			return entab(p.children, tab);
@@ -126,5 +124,5 @@ private:
 		return null;
 	}
 
-	__gshared ParseTree[][string] _shaders;
+	__gshared ParseTree[][ProgramSource] _shaders;
 }

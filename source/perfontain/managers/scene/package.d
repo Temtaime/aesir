@@ -1,9 +1,7 @@
 module perfontain.managers.scene;
 
-import std.math, std.stdio, std.array, std.typecons, std.algorithm, stb.image,
-
-	perfontain, perfontain.math, perfontain.misc, perfontain.misc.draw,
-	perfontain.misc.vmem, perfontain.opengl, perfontain.math.frustum, perfontain.managers.shadow;
+import std.math, std.stdio, std.array, std.typecons, std.algorithm, stb.image, perfontain, perfontain.math,
+	perfontain.misc, perfontain.misc.draw, perfontain.misc.vmem, perfontain.opengl, perfontain.math.frustum, perfontain.managers.shadow;
 
 public import perfontain.render.types, perfontain.managers.scene.structs;
 
@@ -80,6 +78,7 @@ private:
 	{
 		auto full = hasLights;
 
+		version (none)
 		{
 			auto creator = ProgramCreator(`draw`);
 
@@ -154,13 +153,13 @@ package(perfontain):
 	void makePrepass()
 	{
 		{
-			auto creator = ProgramCreator(`geometry`);
+			auto creator = ProgramCreator(ProgramSource.light_depth);
 
 			_geometry = creator.create;
 		}
 
 		{
-			auto creator = ProgramCreator(`draw`);
+			auto creator = ProgramCreator(ProgramSource.draw);
 
 			creator.define(`LIGHT_DIR`, _scene.lightDir);
 			creator.define(`LIGHT_AMBIENT`, _scene.ambient);
@@ -185,7 +184,7 @@ package(perfontain):
 		}
 
 		{
-			auto creator = ProgramCreator(`light`);
+			auto creator = ProgramCreator(ProgramSource.light_compute);
 
 			_comp = creator.create;
 
@@ -233,16 +232,25 @@ package(perfontain):
 
 		draw(_geometry, _gbuffer, mm);
 
-		if (false)
+		if (true)
 		{
-			int maxX, maxY, maxZ, maxItemsPerGroup;
+			int x, y, z, maxInvocations;
 
-			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &maxX);
-			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &maxY);
-			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &maxZ);
-			glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &maxItemsPerGroup);
+			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &x);
+			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &y);
+			glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &z);
+			glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &maxInvocations);
 
-			logger(`%s %s %s %s`, maxX, maxY, maxZ, maxItemsPerGroup);
+			uint k = 1;
+
+			for (uint next = 2, limit = min(x, y); next <= limit && next * next <= maxInvocations; next *= 2)
+			{
+				k = next;
+			}
+
+			logger(`Max invocations: %u`, maxInvocations);
+			logger(`Workgroup capacity: [ %u %u %u ]`, x, y, z);
+			logger(`Using blocks of %ux%1$u size`, k);
 		}
 
 		{

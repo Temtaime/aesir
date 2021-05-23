@@ -133,7 +133,7 @@ enum : uint\n{");
 debug
 {
 " ~ uf.filter!(a => a != `glGetError`)
-			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) in { traceGL(`%1$s`, f, l, args); } out { checkError(`%1$s`, f, l, args); } body { return _%1$s(args); }",
+			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) in { traceGL(`%1$s`, f, l, args); } out { checkError(`%1$s`, f, l, args); } do { return _%1$s(args); }",
 				a))
 			.join("\n") ~ "
 

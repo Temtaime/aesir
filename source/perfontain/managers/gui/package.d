@@ -28,7 +28,7 @@ final class GUIManager
 {
 	this()
 	{
-		_prog = ProgramCreator(`gui`).create;
+		_prog = ProgramCreator(ProgramSource.gui).create;
 
 		bg.r = 0.10f, bg.g = 0.18f, bg.b = 0.24f, bg.a = 1.0f;
 

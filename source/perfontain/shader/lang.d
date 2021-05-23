@@ -2,11 +2,13 @@ module perfontain.shader.lang;
 import std.conv, std.string, std.algorithm, perfontain, perfontain.opengl,
 	perfontain.shader.types, perfontain.shader.defineprocessor;
 
+public import perfontain.shader.resource;
+
 struct ProgramCreator
 {
-	this(string n)
+	this(ProgramSource ps)
 	{
-		logger.info2(`creating %s shader`, _name = n);
+		logger.info2(`creating %s program`, _ps = ps);
 
 		define(`VIEWPORT_SIZE`, PEwindow._size);
 	}
@@ -39,19 +41,16 @@ struct ProgramCreator
 	auto create()
 	{
 		RCArray!Shader res;
-		auto aa = _dp.process(_name);
+		auto aa = _dp.process(_ps);
 
 		foreach (t, s; aa)
 		{
 			auto data = replace(s ~ "\n", "\n", "\r\n");
+			auto name = format(`shader/%s_%s.glsl`, _ps, t);
 
-			debug
-			{
-				PEfs.put(format(`shader/%s_%s.c`, _name, t), data);
-			}
+			debug PEfs.put(name, data);
 
-			auto tp = cast(ubyte)shaderNames.countUntil(t);
-			res ~= new Shader(_name, data, tp);
+			res ~= new Shader(name, data, t.shaderType);
 		}
 
 		auto shaders = res[];
@@ -59,6 +58,6 @@ struct ProgramCreator
 	}
 
 private:
-	string _name;
+	ProgramSource _ps;
 	DefineProcessor _dp;
 }
