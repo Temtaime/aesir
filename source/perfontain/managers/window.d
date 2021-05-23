@@ -18,26 +18,22 @@ class WindowManager
 		environment[`ANGLE_DEFAULT_PLATFORM`] = backend;
 
 		{
-			string suffix, key;
+			string suffix;
+			debug suffix = `_debug`;
 
-			debug
-			{
-				suffix = `_debug`;
-			}
+			const path = buildPath(thisExePath.dirName, ANGLE_DIR ~ suffix);
 
-			version (linux)
+			version (Windows)
 			{
-				key = `LD_LIBRARY_PATH`;
+				const gles = `libGLESv2.dll`, egl = `libEGL.dll`;
 			}
 			else
 			{
-				key = `PATH`;
+				const gles = `libGLESv2.so`, egl = `libEGL.so`;
 			}
 
-			const value = environment[key];
-			const path = buildPath(thisExePath.dirName, ANGLE_DIR ~ suffix);
-
-			environment[key] = value ? (path ~ pathSeparator ~ value) : path;
+			environment[`SDL_VIDEO_GL_DRIVER`] = buildPath(path, gles);
+			environment[`SDL_VIDEO_EGL_DRIVER`] = buildPath(path, egl);
 		}
 
 		!SDL_Init(SDL_INIT_VIDEO) || throwSDLError;
