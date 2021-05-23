@@ -1,6 +1,5 @@
 module perfontain.managers.window;
-import std, perfontain.misc, perfontain, perfontain.math.matrix,
-	perfontain.opengl, utile.except, nuklear;
+import std, perfontain.misc, perfontain, perfontain.math.matrix, perfontain.opengl, utile.except, nuklear;
 public import derelict.sdl2.sdl;
 
 enum : ubyte
@@ -19,12 +18,26 @@ class WindowManager
 		environment[`ANGLE_DEFAULT_PLATFORM`] = backend;
 
 		{
-			string suffix;
+			string suffix, key;
 
-			debug suffix = `_debug`;  
+			debug
+			{
+				suffix = `_debug`;
+			}
 
-			environment[`PATH`] = buildPath(thisExePath.dirName, ANGLE_DIR ~ suffix)
-				~ pathSeparator ~ environment[`PATH`];
+			version (linux)
+			{
+				key = `LD_LIBRARY_PATH`;
+			}
+			else
+			{
+				key = `PATH`;
+			}
+
+			const value = environment[key];
+			const path = buildPath(thisExePath.dirName, ANGLE_DIR ~ suffix);
+
+			environment[key] = value ? (path ~ pathSeparator ~ value) : path;
 		}
 
 		!SDL_Init(SDL_INIT_VIDEO) || throwSDLError;
@@ -62,8 +75,7 @@ class WindowManager
 
 		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION / 10) || throwSDLError;
 		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION % 10) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES)
-			|| throwSDLError;
+		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES) || throwSDLError;
 
 		// {
 		// 	auto flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
@@ -82,8 +94,7 @@ class WindowManager
 			if (PE.settings.fullscreen)
 				f |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-			_win = SDL_CreateWindow(title.toStringz, SDL_WINDOWPOS_CENTERED,
-					SDL_WINDOWPOS_CENTERED, _size.x, _size.y, f);
+			_win = SDL_CreateWindow(title.toStringz, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _size.x, _size.y, f);
 			_win || throwSDLError;
 		}
 
@@ -242,12 +253,9 @@ package(perfontain):
 
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEBUTTONDOWN:
-			const map = [
-		SDL_BUTTON_LEFT : MOUSE_LEFT, SDL_BUTTON_MIDDLE:
-				MOUSE_MIDDLE,
-		SDL_BUTTON_RIGHT:
-				MOUSE_RIGHT
-			];
+			const map = [SDL_BUTTON_LEFT : MOUSE_LEFT, SDL_BUTTON_MIDDLE:
+				MOUSE_MIDDLE, SDL_BUTTON_RIGHT:
+				MOUSE_RIGHT];
 
 			auto t = map[cast(SDL_D_MouseButton)evt.button.button]; // TODO: REPORT DERELICT
 			auto v = evt.button.state == SDL_PRESSED;

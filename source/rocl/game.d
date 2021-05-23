@@ -1,7 +1,6 @@
 module rocl.game;
-import std, perfontain, perfontain.misc, ro.db, ro.str, ro.conv,
-	rocl.loaders.asp, rocl, rocl.gui, rocl.status, rocl.entity, rocl.network,
-	rocl.controls, rocl.resources, rocl.controller.npc, rocl.controller.item,
+import std, perfontain, perfontain.misc, ro.db, ro.str, ro.conv, rocl.loaders.asp, rocl, rocl.gui, rocl.status,
+	rocl.entity, rocl.network, rocl.controls, rocl.resources, rocl.controller.npc, rocl.controller.item,
 	rocl.controller.action, rocl.controller.effect, rocl.rofs;
 
 @property ROfs()
@@ -61,11 +60,11 @@ final class Game
 	void run(string[] args)
 	{
 		bool viewer;
-		string user, pass;
+		string user, pass, backend;
 
-		getopt(args, `viewer`, &viewer, `user`, &user, `pass`, &pass);
+		getopt(args, `viewer`, &viewer, `user`, &user, `pass`, &pass, `backend`, &backend);
 
-		if (initialize(viewer ? 45 : 15))
+		if (initialize(viewer ? 45 : 15, backend))
 		{
 			if (viewer)
 			{
@@ -108,14 +107,8 @@ private:
 		//PE.hotkeys.add(Hotkey({ log(`lispsm %s`, PE.shadows.lispsm ^= true); }, SDLK_LCTRL, SDLK_a));
 		debug
 		{
-			PE.hotkeys.add(Hotkey(null, {
-					PEstate.wireframe = !PEstate.wireframe;
-					return true;
-				}, SDLK_F11));
-			PE.hotkeys.add(Hotkey(null, {
-					PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA);
-					return true;
-				}, SDLK_F10));
+			PE.hotkeys.add(Hotkey(null, { PEstate.wireframe = !PEstate.wireframe; return true; }, SDLK_F11));
+			PE.hotkeys.add(Hotkey(null, { PE.shadows.tex.toImage.saveToFile(`shadows.tga`, IM_TGA); return true; }, SDLK_F10));
 		}
 
 		auto p = Vector3(0, 24.810, 0);
@@ -125,7 +118,7 @@ private:
 		//PE.hotkeys.add(Hotkey(null, { w.show(!w.visible); return true; }, SDLK_F12));
 	}
 
-	bool initialize(uint fov)
+	bool initialize(uint fov, string backend)
 	{
 		auto t = TimeMeter(`main window creation`);
 
@@ -138,7 +131,7 @@ private:
 
 		try
 		{
-			PE.create(`Æsir`, `vulkan`);
+			PE.create(`Æsir`, backend ? backend : `vulkan`);
 		}
 		catch (Exception e)
 		{
@@ -148,9 +141,7 @@ private:
 				logger(e);
 			}
 			else
-				showErrorMessage(
-						"Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: "
-						~ e.msg);
+				showErrorMessage("Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: " ~ e.msg);
 
 			return false;
 		}
