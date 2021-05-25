@@ -55,11 +55,12 @@ final class DrawAllocator : RCounted
 
 				foreach (sm; arr)
 				{
-					if (!cnt) {
+					if (!cnt)
+					{
 						auto tex = sm.tex;
 
-						if(tex)
-						tex.bind(0);
+						if (tex)
+							tex.bind(0);
 					}
 
 					cnt++;
@@ -67,8 +68,7 @@ final class DrawAllocator : RCounted
 					starts ~= off + sm.start * 4;
 				}
 
-				glMultiDrawElementsANGLE(GL_TRIANGLES, counts.ptr,
-						GL_UNSIGNED_INT, cast(void**)starts.ptr, cnt);
+				glMultiDrawElementsANGLE(GL_TRIANGLES, counts.ptr, GL_UNSIGNED_INT, cast(void**)starts.ptr, cnt);
 				k += cnt;
 			}
 		}
@@ -85,8 +85,7 @@ final class DrawAllocator : RCounted
 				_drawnTriangles += sm.len / 3;
 			}
 
-			glMultiDrawElementsANGLE(GL_TRIANGLES, counts[].ptr,
-					GL_UNSIGNED_INT, cast(void**)starts[].ptr, submeshes);
+			glMultiDrawElementsANGLE(GL_TRIANGLES, counts[].ptr, GL_UNSIGNED_INT, cast(void**)starts[].ptr, submeshes);
 		}
 
 		assert(k == submeshes);

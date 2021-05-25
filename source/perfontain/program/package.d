@@ -28,7 +28,7 @@ final class Program : RCounted
 		shaders.each!(a => glDetachShader(_id, a.id));
 
 		parseAttribs;
-		//logger(_attribs);
+		debug logger(_attribs);
 
 		static immutable Attrs = [
 			tuple(`pe_transforms.pe_shadow_matrix`, PROG_DATA_SM_MAT),
@@ -55,9 +55,7 @@ final class Program : RCounted
 		foreach (u; _unis.values.filter!(a => a && a.idx >= 0))
 		{
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, u.idx, 0);
-
 			u.data = null;
-			btr(&_ssbo, u.idx);
 		}
 
 		_texs.each!(a => a.destroy);
@@ -67,31 +65,26 @@ final class Program : RCounted
 
 	void bind()
 	{
-		debug
-		{
-			foreach (name, attr; _attribs)
-			{
-				if (isSampler(attr.type))
-				{
-					const idx = SHADER_TEX_NAMES.countUntil(name);
-					assert(idx >= 0, format!`unknown texture %s`(name));
-
-					const id = cast(ShaderTexture)idx;
-					assert(id == ShaderTexture.main || _texs.keys.canFind(id), format!`texture %s was not bound`(name));
-				}
-			}
-		}
-
 		if (_init)
 		{
 			_init = false;
 
+			debug foreach (name, attr; _attribs)
+			{
+				if (isSampler(attr.type))
+				{
+					const idx = cast(byte)SHADER_TEX_NAMES.countUntil(name);
+
+					assert(idx >= 0, format!`unknown texture %s used`(name));
+					assert(_texs.keys.canFind(idx), format!`texture %s was not bound`(name));
+				}
+			}
+
 			foreach (id, tex; _texs)
 			{
 				const name = SHADER_TEX_NAMES[id];
-				assert(_attribs.keys.canFind(name), format!`extra texture %s`(name));
+				assert(_attribs.keys.canFind(name), format!`trying to bound extra texture %s`(name));
 
-				send(name, id);
 				tex.bind(id);
 			}
 		}
@@ -172,7 +165,7 @@ final class Program : RCounted
 
 	void add(ShaderTexture id, Texture tex)
 	{
-		_texs[id] = new RC!Texture(tex);
+		*_texs.require(id, new RC!Texture) = tex;
 	}
 
 private:
@@ -182,11 +175,13 @@ private:
 	{
 		glLinkProgram(_id);
 
-		int ok;
-		glGetProgramiv(_id, GL_LINK_STATUS, &ok);
+		{
+			int ok;
+			glGetProgramiv(_id, GL_LINK_STATUS, &ok);
 
-		if (ok)
-			return;
+			if (ok)
+				return;
+		}
 
 		int len;
 		glGetProgramiv(_id, GL_INFO_LOG_LENGTH, &len);
@@ -251,18 +246,16 @@ private:
 		if (!cnt)
 			return;
 
-		string block;
-
 		{
 			int nameLen;
 
 			const param = GL_NAME_LENGTH;
 			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1, &param, 1, null, &nameLen);
 
-			auto tmp = new char[nameLen];
-			glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen, null, tmp.ptr);
+			auto name = new char[nameLen];
+			glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen, null, name.ptr);
 
-			block = tmp[0 .. $ - 1].assumeUnique;
+			_ssbo ~= name[0 .. $ - 1].assumeUnique;
 		}
 
 		auto vars = new int[cnt];
@@ -274,19 +267,17 @@ private:
 
 		foreach (var; vars)
 		{
-			enum Query = [GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_SIZE];
-			enum N = cast(uint)Query.length;
+			static immutable props = [GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_SIZE];
+			enum N = cast(uint)props.length;
 
 			int[N] arr;
-			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, Query.ptr, N, null, arr.ptr);
+			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, props.ptr, N, null, arr.ptr);
 
-			uint nameLen;
-			auto varName = new char[arr[0]];
+			auto name = new char[arr[0]];
+			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0], null, name.ptr);
 
-			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0], null, varName.ptr);
-
-			auto elem = varName[0 .. $ - 1];
-			_attribs[format(`%s.%s`, block, elem)] = Attrib(arr[1], arr[2]);
+			auto elem = name[0 .. $ - 1];
+			_attribs[format(`%s.%s`, _ssbo.back, elem)] = Attrib(arr[1], arr[2]);
 		}
 	}
 
@@ -361,11 +352,10 @@ private:
 		byte idx = -1;
 	}
 
-	__gshared size_t _ssbo;
-
 	uint _id;
 	bool _init = true;
 
+	string[] _ssbo;
 	Attrib[string] _attribs;
 
 	UniformData*[string] _unis;

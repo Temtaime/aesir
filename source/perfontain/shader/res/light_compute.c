@@ -4,12 +4,18 @@ precision highp uimage2D;
 layout(local_size_x = 32, local_size_y = 32) in;
 layout(r32ui, binding = 0) uniform writeonly uimage2D output_tex;
 
-uniform sampler2D pe_tex_depth;
+__TEX_ID__ uniform sampler2D pe_tex_depth;
 uniform mat4 proj_view_inversed;
 
-layout(binding = 3) buffer pe_lights
+struct LightSource
 {
-	vec4 lights[];
+	vec4 pos;
+	vec3 color;
+};
+
+__SSBO_ID__ buffer pe_lights
+{
+	LightSource lights[];
 };
 
 compute:
@@ -38,7 +44,7 @@ compute:
 
 			for(int i = 0; i < lights.length(); i++)
 			{
-				vec4 l = lights[i];
+				vec4 l = lights[i].pos;
 
 				if(distance(l.xyz, pos) < l.w)
 				{

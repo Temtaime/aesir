@@ -18,7 +18,7 @@ DECL_TRANS
 			ivec4 scissor;
 	};
 
-	layout(binding = 0) buffer pe_transforms
+	__SSBO_ID__ buffer pe_transforms
 	{
 		SHADOWS_ENABLED
 			mat4 pe_shadow_matrix;
@@ -51,7 +51,7 @@ VERTEX_SHADER
 
 FRAGMENT_SHADER
 	PASS_DATA
-		uniform sampler2D pe_tex_main;
+		__TEX_ID__ uniform sampler2D pe_tex_main;
 
 	DRAW_ID = draw_idx
 	SAMPLE_TEX = texture(pe_tex_main, texCoord)

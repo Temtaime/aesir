@@ -25,43 +25,33 @@ class WindowManager
 
 			version (Windows)
 			{
-				const gles = `libGLESv2.dll`, egl = `libEGL.dll`;
+				const ext = `dll`;
 			}
 			else
 			{
-				const gles = `libGLESv2.so`, egl = `libEGL.so`;
+				const ext = `so`;
 			}
 
-			environment[`SDL_VIDEO_GL_DRIVER`] = buildPath(path, gles);
-			environment[`SDL_VIDEO_EGL_DRIVER`] = buildPath(path, egl);
+			environment[`SDL_VIDEO_GL_DRIVER`] = buildPath(path, `libGLESv2`.setExtension(ext));
+			environment[`SDL_VIDEO_EGL_DRIVER`] = buildPath(path, `libEGL`.setExtension(ext));
 		}
 
-		!SDL_Init(SDL_INIT_VIDEO) || throwSDLError;
-		!SDL_GL_LoadLibrary(null) || throwSDLError; // TODO: remove ?
+		SDL_Init(SDL_INIT_VIDEO) && throwSDLError;
 
 		{
 			SDL_DisplayMode mode;
-			!SDL_GetDesktopDisplayMode(0, &mode) || throwSDLError;
+			SDL_GetDesktopDisplayMode(0, &mode) && throwSDLError;
 
 			_size = Vector2s(mode.w, mode.h);
+			_size -= Vector2s(100, 90);
 		}
 
-		_size -= Vector2s(100, 90);
-
-		debug
-		{
-			if (_size.x > 1920)
-			{
-				_size = Vector2s(1920, 1080);
-			}
-		}
-
-		!SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) || throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8) && throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8) && throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8) && throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8) && throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24) && throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) && throwSDLError;
 
 		// if (PE.settings.msaa)
 		// {
@@ -69,34 +59,25 @@ class WindowManager
 		// 	!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAA_LEVEL) || throwSDLError;
 		// }
 
-		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION / 10) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION % 10) || throwSDLError;
-		!SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES) || throwSDLError;
-
-		// {
-		// 	auto flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
-
-		// 	debug
-		// 	{
-		// 		flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
-		// 	}
-
-		// 	!SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, flags) || throwSDLError;
-		// }
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION / 10) && throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION % 10) && throwSDLError;
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES) && throwSDLError;
 
 		{
 			auto f = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
 			if (PE.settings.fullscreen)
+			{
 				f |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+			}
 
 			_win = SDL_CreateWindow(title.toStringz, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _size.x, _size.y, f);
 			_win || throwSDLError;
 		}
 
 		_ctx = SDL_GL_CreateContext(_win);
-
 		hookGL;
+
 		SDL_GL_SetSwapInterval(0);
 		//SDL_GL_SetSwapInterval(1);
 
