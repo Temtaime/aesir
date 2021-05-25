@@ -1,7 +1,6 @@
 module perfontain.shader.defineprocessor;
-import std.stdio, std.array, std.range, std.regex, std.string, std.algorithm,
-	std.functional, pegged.grammar, perfontain, perfontain.shader.grammar,
-	perfontain.shader.resource;
+import std.stdio, std.array, std.range, std.regex, std.string, std.algorithm, std.functional, pegged.grammar,
+	perfontain, perfontain.shader.grammar, perfontain.shader.resource;
 
 struct DefineProcessor
 {
@@ -59,9 +58,7 @@ private:
 				.each!(a => n = n.replace(a.key, a.value));
 
 			if (n == s)
-			{
 				break;
-			}
 
 			s = n;
 		}
@@ -93,6 +90,22 @@ private:
 
 			return format("%s %s", v ? `out` : `in`, s);
 
+		case `EXGL.TexId`:
+			auto s = p.matches.back;
+
+			auto m = s.match(`(\w+);$`);
+			assert(m);
+
+			return format!`layout(binding = %u) %s`(texId(m.captures.back), s);
+
+		case `EXGL.SsboId`:
+			auto s = p.matches.back;
+
+			auto m = s.match(`^buffer\s+(\w+)$`);
+			assert(m);
+
+			return format!`layout(binding = %u) %s`(ssboId(m.captures.back), s);
+
 		case `EXGL.Import`:
 			string name = p.matches.front;
 			return entab(dataOf(name.programSource), false);
@@ -122,6 +135,22 @@ private:
 		}
 
 		return null;
+	}
+
+	auto texId(string name)
+	{
+		const k = SHADER_TEX_NAMES.countUntil(name);
+		assert(k >= 0, name);
+
+		return cast(ubyte)k;
+	}
+
+	auto ssboId(string name)
+	{
+		const k = SHADER_SSBO_NAMES.countUntil(name);
+		assert(k >= 0, name);
+
+		return cast(ubyte)k;
 	}
 
 	__gshared ParseTree[][ProgramSource] _shaders;

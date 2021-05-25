@@ -30,12 +30,12 @@ fragment:
 		vec3 color;
 	};
 
-	layout(binding = 1) buffer pe_lights
+	__SSBO_ID__ buffer pe_lights
 	{
 		LightSource lights[];
 	};
 
-	uniform highp usampler2D pe_tex_lights;
+	__TEX_ID__ uniform highp usampler2D pe_tex_lights;
 
 	out vec4 pe_frag_color;
 
