@@ -35,7 +35,6 @@ final class DrawAllocator : RCounted
 		_drawnTriangles = 0;
 		_drawnNodes = cast(uint)nodes.length;
 
-		pg.bind;
 		iv.bind;
 		scope (exit)
 			iv.unbind;
@@ -60,7 +59,10 @@ final class DrawAllocator : RCounted
 						auto tex = sm.tex;
 
 						if (tex)
-							tex.bind(0);
+						{
+							pg.add(ShaderTexture.main, tex);
+							pg.bind;
+						}
 					}
 
 					cnt++;
@@ -85,6 +87,7 @@ final class DrawAllocator : RCounted
 				_drawnTriangles += sm.len / 3;
 			}
 
+			pg.bind;
 			glMultiDrawElementsANGLE(GL_TRIANGLES, counts[].ptr, GL_UNSIGNED_INT, cast(void**)starts[].ptr, submeshes);
 		}
 
@@ -113,7 +116,7 @@ private:
 			auto mesh = node.mh.meshes[node.id];
 
 			auto sub = cast()mesh.subs[_sub];
-			auto tex = cast()(node.mh.texs.length ? node.mh.texs[sub.tex] : null);
+			auto tex = cast()node.mh.texs[sub.tex];
 
 			return tuple!(`tex`, `start`, `len`, `node`)(tex, sub.start, sub.len, _node);
 		}

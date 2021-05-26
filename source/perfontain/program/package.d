@@ -88,6 +88,15 @@ final class Program : RCounted
 				tex.bind(id);
 			}
 		}
+		else
+		{
+			enum N = ShaderTexture.main;
+
+			if (auto p = N in _texs)
+			{
+				(*p).bind(N);
+			}
+		}
 
 		bind(_id);
 	}
@@ -128,9 +137,7 @@ final class Program : RCounted
 			glProgramUniformMatrix4fv(_id, s.loc, 1, false, value.ptr);
 		}
 		else
-		{
 			static assert(false);
-		}
 	}
 
 	void ssbo(string name, in void[] data, bool dynamic = true)
@@ -146,10 +153,6 @@ final class Program : RCounted
 
 			s.data.realloc(cast(uint)data.length, data.ptr);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, s.idx, s.data.id);
-
-			// FIXME gles
-			//if (b)
-			//	glShaderStorageBlockBinding(_id, s.loc, s.idx);
 		}
 	}
 
@@ -271,7 +274,7 @@ private:
 			enum N = cast(uint)props.length;
 
 			int[N] arr;
-			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, props.ptr, N, null, arr.ptr);
+			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, props.ptr, N, null, arr.ptr); // TODO: IS TWO N CORRECT ???
 
 			auto name = new char[arr[0]];
 			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0], null, name.ptr);
@@ -306,8 +309,7 @@ private:
 
 		if (loc < 0)
 		{
-			logger.warning("can't get %s location for `%s' variable", ssb ? `SSBO` : `uniform`, name);
-			_attribs.logger;
+			logger.error("can't get %s location for `%s' variable", ssb ? `SSBO` : `uniform`, name);
 		}
 		else
 		{
@@ -326,16 +328,10 @@ private:
 				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1, &prop, 1, null, &idx);
 
 				s.idx = cast(ubyte)idx;
-				//s.idx = 0;
-				//s.idx = cast(byte)bsf(~_ssbo);
-				//btc(&_ssbo, s.idx);
 			}
 		}
 
-		_unis[name] = s;
-		_unis.rehash;
-
-		return s;
+		return _unis[name] = s;
 	}
 
 	static isSampler(uint id)

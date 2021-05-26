@@ -93,6 +93,11 @@ final class Texture : RCounted
 		//assert(isResident == b);
 	}
 
+	const imageBind(ubyte idx, uint mode, ubyte level = 0)
+	{
+		glBindImageTexture(idx, id, level, false, 0, mode, textureTypes[type].front);
+	}
+
 	const bind(ubyte idx)
 	{
 		auto p = &PEstate._texLayers[idx];
@@ -126,8 +131,7 @@ private:
 
 		if (s is null)
 		{
-			_samp = t == TEX_SHADOW_MAP ? PEsamplers.shadowMap
-				: (levels.length == 1 ? PEsamplers.noMipMap : PEsamplers.main);
+			_samp = t == TEX_SHADOW_MAP ? PEsamplers.shadowMap : (levels.length == 1 ? PEsamplers.noMipMap : PEsamplers.main);
 		}
 		else
 			_samp = s;
@@ -158,8 +162,7 @@ private:
 				assert(m.data.ptr);
 				assert(m.data.length == dxtTextureSize(m.sz.x, m.sz.y, type == TEX_DXT_5));
 
-				glCompressedTexSubImage2D(GL_TEXTURE_2D, cast(uint)i, 0, 0,
-						m.sz.x, m.sz.y, ts[0], cast(uint)m.data.length, m.data.ptr);
+				glCompressedTexSubImage2D(GL_TEXTURE_2D, cast(uint)i, 0, 0, m.sz.x, m.sz.y, ts[0], cast(uint)m.data.length, m.data.ptr);
 			}
 		}
 		else

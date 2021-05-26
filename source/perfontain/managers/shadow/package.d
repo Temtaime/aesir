@@ -17,8 +17,7 @@ final class ShadowManager
 		auto s = PE.scene;
 
 		SceneData sd = {
-			view: s.camera.view, viewProjInversed: (s.camera.view * s.proj)
-				.inverse, box: s.scene.node.bbox, cameraPos: s.camera._pos,
+			view: s.camera.view, viewProjInversed: (s.camera.view * s.proj).inverse, box: s.scene.node.bbox, cameraPos: s.camera._pos,
 			cameraDir: s.camera._dir, lightDir: s.scene.lightDir,
 		};
 
@@ -40,9 +39,8 @@ final class ShadowManager
 			}
 
 			SceneData sd = {
-				view: s.camera.view, viewProjInversed: (s.camera.view * s.proj)
-					.inverse, box: s.scene.node.bbox, cameraPos: s.camera._pos,
-				cameraDir: s.camera._dir, lightDir: s.scene.lightDir,
+				view: s.camera.view, viewProjInversed: (s.camera.view * s.proj).inverse, box: s.scene.node.bbox,
+				cameraPos: s.camera._pos, cameraDir: s.camera._dir, lightDir: s.scene.lightDir,
 			};
 
 			Matrix4 view = void, proj = void;
@@ -57,7 +55,7 @@ final class ShadowManager
 			_matrix = vp * _bias;
 
 			_passActive = true;
-			s.draw(_depth, _sm, vp);
+			//s.draw(_depth, _sm, vp);
 			_passActive = false;
 		}
 	}
@@ -103,7 +101,7 @@ private:
 				_sm = new RenderTarget(tex);
 			}
 
-			version(none)
+			version (none)
 			{
 				auto creator = ProgramCreator(`depth`);
 

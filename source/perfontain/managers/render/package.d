@@ -93,7 +93,7 @@ private:
 			bindTextures = true;
 		}
 
-		drawAlloc[_tp].draw(_pg, nodes, subs, bindTextures);
+		drawAlloc[_tp].draw(_pg, nodes, subs, _rt is null);
 	}
 
 	void write(ref in DrawInfo di, ubyte[] arr, ubyte flags)
