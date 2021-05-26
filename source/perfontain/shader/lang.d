@@ -1,14 +1,12 @@
 module perfontain.shader.lang;
-import std.conv, std.string, std.algorithm, perfontain, perfontain.opengl,
-	perfontain.shader.types, perfontain.shader.defineprocessor;
-
+import std.conv, std.string, std.algorithm, perfontain, perfontain.opengl, perfontain.shader.types, perfontain.shader.defineprocessor;
 public import perfontain.shader.resource;
 
 struct ProgramCreator
 {
 	this(ProgramSource ps)
 	{
-		logger.info2(`creating %s program`, _ps = ps);
+		logger.info2!`creating %s program`(_ps = ps);
 
 		define(`VIEWPORT_SIZE`, PEwindow._size);
 	}

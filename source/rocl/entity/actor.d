@@ -1,6 +1,6 @@
 module rocl.entity.actor;
-import std.algorithm, perfontain, ro.grf, ro.path, rocl.game, rocl.status,
-	rocl.network, rocl.entity.misc, rocl.loaders.asp, rocl.entity.visual;
+import std.algorithm, perfontain, ro.grf, ro.path, rocl.game, rocl.status, rocl.network, rocl.entity.misc,
+	rocl.loaders.asp, rocl.entity.visual;
 
 abstract class Actor : RCounted
 {
@@ -45,7 +45,7 @@ abstract class Actor : RCounted
 		if (!ROent.doActor(p.dstId, &onDir))
 		{
 			ent.dir = 0;
-			logger(`no dir %s %s`, p.dstId, ROent.self.bl);
+			logger.msg!`no dir %s %s`(p.dstId, ROent.self.bl);
 		}
 
 		ent.act(Action.attack, Action.readyFight, cast(ushort)p.srcSpeed);

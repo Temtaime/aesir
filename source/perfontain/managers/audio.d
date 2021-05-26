@@ -41,7 +41,7 @@ final class AudioManager
 			}
 			catch (Exception)
 			{
-				logger.warning("can't find `%s' audio", name);
+				logger.warning!"can't find `%s' audio"(name);
 				return;
 			}
 
@@ -87,7 +87,7 @@ private:
 
 	void logMixerError()
 	{
-		logger.error(`SDL mixer error: %s`, Mix_GetError().fromStringz);
+		logger.error!`SDL mixer error: %s`(Mix_GetError().fromStringz);
 	}
 
 	bool _ok;

@@ -1,10 +1,8 @@
 module perfontain.misc;
-import std.conv, std.math, std.range, std.traits, std.string, std.algorithm,
-	std.experimental.allocator, std.experimental.allocator.mallocator,
-	std.experimental.allocator.gc_allocator, std.experimental.allocator.building_blocks.free_tree,
-
-	core.stdc.string, stb.image, perfontain.opengl, perfontain.config,
-	perfontain.math.matrix, utile.except, utile.logger;
+import std.conv, std.math, std.range, std.traits, std.string, std.algorithm, std.experimental.allocator,
+	std.experimental.allocator.mallocator, std.experimental.allocator.gc_allocator,
+	std.experimental.allocator.building_blocks.free_tree, core.stdc.string, stb.image, perfontain.opengl,
+	perfontain.config, perfontain.math.matrix, utile.except, utile.logger;
 
 public import utile.misc, utile.binary;
 
@@ -13,9 +11,8 @@ alias Op(string S) = (a, b) => mixin(`a` ~ S ~ `b`);
 @property blendingModeGL(ubyte m)
 {
 	static immutable modes = [
-		GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA,
-		GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA,
-		GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE,
+		GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA,
+		GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE,
 	], modes2 = [GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_ALPHA,];
 
 	return m < 14 ? modes[m - 1] : modes2[m - 14]; // [1, 15]
@@ -223,8 +220,9 @@ mixin template readableToString()
 
 		foreach (m; __traits(allMembers, T))
 		{
-			static if (mixin(`__traits(compiles, &this.` ~ m ~ `) && !is(FunctionTypeOf!(T.`
-					~ m ~ `) == function) && is(typeof(T.` ~ m ~ `.offsetof))`))
+			static if (mixin(
+					`__traits(compiles, &this.` ~ m ~ `) && !is(FunctionTypeOf!(T.` ~ m ~ `) == function) && is(typeof(T.`
+					~ m ~ `.offsetof))`))
 			{
 				r ~= (r.length ? `, ` : ``) ~ format(`%s: %s`, m, mixin(`this.` ~ m));
 			}
@@ -254,8 +252,7 @@ mixin template publicProperty(T, string name, string value = null)
 {
 	mixin(`
 		public ref ` ~ name ~ `() @property const { return _` ~ name ~ `; }
-		T _` ~ name ~ (value.length
-			? `=` ~ value : null) ~ `;`);
+		T _` ~ name ~ (value.length ? `=` ~ value : null) ~ `;`);
 }
 
 mixin template makeHelpers(A...)
@@ -268,8 +265,8 @@ mixin template makeHelpers(A...)
 		{
 			auto n = A[i * 2], f = A[i * 2 + 1];
 
-			res ~= `@property const ` ~ n ~ `() { return !!(_flags & ` ~ f
-				~ `); } @property ` ~ n ~ `(bool b) { mixin(setFlag("flags", "b", ` ~ f ~ `)); }`;
+			res ~= `@property const ` ~ n ~ `() { return !!(_flags & ` ~ f ~ `); } @property ` ~ n
+				~ `(bool b) { mixin(setFlag("flags", "b", ` ~ f ~ `)); }`;
 		}
 
 		return res;
@@ -298,7 +295,7 @@ struct TimeMeter
 
 	~this()
 	{
-		logger(`%s : %u ms`, _msg, systemTick - _t);
+		logger.msg!`%s : %u ms`(_msg, systemTick - _t);
 	}
 
 private:

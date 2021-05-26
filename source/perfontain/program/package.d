@@ -28,7 +28,6 @@ final class Program : RCounted
 		shaders.each!(a => glDetachShader(_id, a.id));
 
 		parseAttribs;
-		debug logger(_attribs);
 
 		static immutable Attrs = [
 			tuple(`pe_transforms.pe_shadow_matrix`, PROG_DATA_SM_MAT),
@@ -234,7 +233,10 @@ private:
 			}
 		}
 
-		_attribs.rehash;
+		debug
+		{
+			logger.msg(_attribs);
+		}
 	}
 
 	void parseBlock(uint idx)
@@ -309,7 +311,7 @@ private:
 
 		if (loc < 0)
 		{
-			logger.error("can't get %s location for `%s' variable", ssb ? `SSBO` : `uniform`, name);
+			logger.error!"can't get %s location for `%s' variable"(ssb ? `SSBO` : `uniform`, name);
 		}
 		else
 		{

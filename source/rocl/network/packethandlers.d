@@ -433,10 +433,7 @@ mixin template PacketHandlers()
 
 	void onCasting(Pk07fb p)
 	{
-		alias F = (a) {
-			a.ent.info.doCast(p.delaytime, p.srcId != p.dstId);
-			a.ent.info.msg(ROdb.skill(p.skillId) ~ ` !!`);
-		};
+		alias F = (a) { a.ent.info.doCast(p.delaytime, p.srcId != p.dstId); a.ent.info.msg(ROdb.skill(p.skillId) ~ ` !!`); };
 
 		ROent.doActor(p.srcId, a => F(a));
 	}
@@ -475,7 +472,7 @@ mixin template PacketHandlers()
 			break;
 
 		default:
-			p.varId.logger;
+			logger.msg(p.varId);
 		}
 	}
 

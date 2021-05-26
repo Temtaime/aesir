@@ -92,10 +92,10 @@ private:
 			k = next;
 		}
 
-		logger(`Max invocations: %u`, maxInvocations);
-		logger(`Workgroup capacity: [ %u %u %u ]`, x, y, z);
+		logger.msg!`Max invocations: %u`(maxInvocations);
+		logger.msg!`Workgroup capacity: [ %u %u %u ]`(x, y, z);
 
-		logger(`Using blocks of %ux%1$u size`, k);
+		logger.msg!`Using blocks of %ux%1$u size`(k);
 		return k;
 	}
 

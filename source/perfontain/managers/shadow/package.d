@@ -93,7 +93,7 @@ private:
 				auto k = 2 ^^ (level - 1);
 				auto sz = Vector2s(PE.window.size.flat[].reduce!max * k / 4);
 
-				logger.info(`shadow map size: %s`, sz);
+				logger.info!`shadow map size: %s`(sz);
 
 				auto tex = new Texture(TEX_SHADOW_MAP, sz);
 				tex.bind(1);

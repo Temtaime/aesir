@@ -1,6 +1,5 @@
 module rocl.loaders.asp;
-import std, perfontain, perfontain.nodes.sprite, ro.conv, ro.conv.asp,
-	rocl.game, rocl.paths, ro.paths, utile.logger;
+import std, perfontain, perfontain.nodes.sprite, ro.conv, ro.conv.asp, rocl.game, rocl.paths, ro.paths, utile.logger;
 
 enum : ubyte
 {
@@ -46,7 +45,7 @@ auto loadASP(in AspLoadInfo r)
 {
 	SpriteObject res;
 
-	logger.info3(`loading sprite: %s`, r);
+	logger.info3!`loading sprite: %s`(r);
 
 	RoPath kpath;
 	ushort id = r.id;

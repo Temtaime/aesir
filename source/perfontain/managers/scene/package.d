@@ -14,7 +14,10 @@ final class SceneManager
 		PE.settings.fogChange.permanent(_ => onUpdate);
 		PE.settings.lightsChange.permanent(_ => onUpdate);
 
-		glClearColor(1, 0, 1, 0);
+		debug
+		{
+			glClearColor(1, 0, 1, 0);
+		}
 	}
 
 	~this()

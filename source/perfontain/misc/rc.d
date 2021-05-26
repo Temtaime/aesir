@@ -1,6 +1,5 @@
 module perfontain.misc.rc;
-import std, std.experimental.allocator, std.experimental.allocator.mallocator,
-	core.memory, utile.misc, utile.logger;
+import std, std.experimental.allocator, std.experimental.allocator.mallocator, core.memory, utile.misc, utile.logger;
 
 //version = LOG_RC;
 alias Alloc = Mallocator.instance;
@@ -22,12 +21,12 @@ class RCounted
 	~this()
 	{
 		version (LOG_RC)
-			logger(`%s destroying`, this);
+			logger.msg!`%s destroying`(this);
 
 		debug
 		{
 			if (!_wasFreed)
-				logger.error(`%s was never acquired`, this);
+				logger.error!`%s was never acquired`(this);
 		}
 	}
 
@@ -47,7 +46,7 @@ final:
 		_refs++;
 
 		version (LOG_RC)
-			logger(`%s, %u refs`, this, _refs);
+			logger.msg!`%s, %u refs`(this, _refs);
 
 		debug
 		{
@@ -60,7 +59,7 @@ final:
 		assert(_refs);
 
 		version (LOG_RC)
-			logger(`%s, %u refs`, this, _refs - 1);
+			logger.msg!`%s, %u refs`(this, _refs - 1);
 
 		if (!--_refs)
 		{
@@ -295,7 +294,9 @@ debug
 				logger.ident++;
 
 				foreach (k, v; rcLeaks)
-					logger.warning(`%s - %u refs`, (cast(Object)k).toString, v);
+				{
+					logger.warning!`%s - %u refs`((cast(Object)k).toString, v);
+				}
 
 				logger.ident--;
 			}

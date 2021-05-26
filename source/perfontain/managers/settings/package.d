@@ -29,7 +29,7 @@ final class SettingsManager
 				}
 			}
 			else
-				logger.error(`%s is not a valid settings file`, SETTINGS_FILE);
+				logger.error!`%s is not a valid settings file`(SETTINGS_FILE);
 		}
 		catch (Exception e)
 		{

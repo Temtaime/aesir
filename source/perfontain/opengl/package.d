@@ -2,11 +2,11 @@ module perfontain.opengl;
 import std, utile.logger, utile.except;
 public import perfontain.opengl.functions;
 
-debug : package:
+debug:
+package:
 
 enum ENABLED_DEBUG = [
-		GL_DEBUG_TYPE_ERROR_KHR, GL_DEBUG_TYPE_PORTABILITY_KHR,
-		GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR,
+		GL_DEBUG_TYPE_ERROR_KHR, GL_DEBUG_TYPE_PORTABILITY_KHR, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR,
 		GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_KHR
 	];
 
@@ -48,7 +48,9 @@ void checkError(A...)(string func, string file, uint line, A args)
 	auto err = glGetError();
 
 	if (err)
-		logger.error(`[%s:%u] %s(%s) - ERROR 0x%X`, file, line, func, dumpArgs(args), err);
+	{
+		logger.error!`[%s:%u] %s(%s) - ERROR 0x%X`(file, line, func, dumpArgs(args), err);
+	}
 	// if (error.length)
 	// {
 	// 	//if (!errors.canFind(error))
@@ -63,9 +65,8 @@ void checkError(A...)(string func, string file, uint line, A args)
 
 private:
 
-extern (System) void debugCallback(uint source, uint type, uint id, uint severity,
-		uint length, in char* message, in void* userParam)
+extern (System) void debugCallback(uint source, uint type, uint id, uint severity, uint length, in char* message, in void* userParam)
 {
 	auto s = message[0 .. length];
-	logger.warning(`[debug] ERROR 0x%X - %s`, id, s);
+	logger.warning!`[debug] ERROR 0x%X - %s`(id, s);
 }

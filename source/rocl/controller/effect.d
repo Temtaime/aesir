@@ -1,7 +1,7 @@
 module rocl.controller.effect;
 
-import std.format, std.algorithm, perfontain, perfontain.nodes.effect, ro.str,
-	ro.conv, ro.conv.effect, rocl.game, rocl.render.nodes, rocl.entity.visual;
+import std.format, std.algorithm, perfontain, perfontain.nodes.effect, ro.str, ro.conv, ro.conv.effect, rocl.game,
+	rocl.render.nodes, rocl.entity.visual;
 
 final class EffectController
 {
@@ -39,7 +39,7 @@ final class EffectController
 			}
 			else
 			{
-				logger.warning(`unknown effect %u`, id);
+				logger.warning!`unknown effect %u`(id);
 				return;
 			}
 		}
@@ -55,7 +55,7 @@ final class EffectController
 		}
 		catch (Exception e)
 		{
-			logger.error(`effect %u: %s`, id, e.msg);
+			logger.error!`effect %u: %s`(id, e.msg);
 		}
 	}
 

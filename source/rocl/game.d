@@ -135,10 +135,9 @@ private:
 		}
 		catch (Exception e)
 		{
-			//errorReport(e);
 			debug
 			{
-				logger(e);
+				logger.msg(e);
 			}
 			else
 				showErrorMessage("Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: " ~ e.msg);

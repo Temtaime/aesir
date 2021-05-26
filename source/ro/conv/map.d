@@ -51,8 +51,7 @@ private:
 
 	auto processFloor(ref RomFile f)
 	{
-		auto res = GndConverter(this, RoPath(`data/`, _rsw.gnd), f.water.level, f.water.height)
-			.process;
+		auto res = GndConverter(this, RoPath(`data/`, _rsw.gnd), f.water.level, f.water.height).process;
 
 		f.floor = res[0].map!(a => RomFloor(a.calcBBox)).array;
 		f.floor.each!((ref a) => _lights.push(a.box));
@@ -152,9 +151,8 @@ private:
 			auto name = r.fileName;
 			auto negScale = r.scale.fold!((a, b) => a * b) < 0;
 
-			auto mat = Matrix4.scale(r.scale / ROM_SCALE_DIV) * Matrix4.rotate(
-					r.rot * TO_RAD) * Matrix4.translate(r.pos / ROM_SCALE_DIV + _mapTranslation + Vector3(0,
-					DELTA_UP * (k++ % 4), 0)) * coordsConv;
+			auto mat = Matrix4.scale(r.scale / ROM_SCALE_DIV) * Matrix4.rotate(r.rot * TO_RAD) * Matrix4.translate(
+					r.pos / ROM_SCALE_DIV + _mapTranslation + Vector3(0, DELTA_UP * (k++ % 4), 0)) * coordsConv;
 
 			//if(name != "나무잡초꽃/나무02.rsm") continue;
 			//if(name != "나무잡초꽃/덤불01.rsm") continue;
@@ -170,7 +168,7 @@ private:
 			}
 			catch (Exception e)
 			{
-				logger.error(`can't convert %s: %s`, name, e.msg);
+				logger.error!`can't convert %s: %s`(name, e.msg);
 			}
 		}
 
@@ -190,8 +188,7 @@ private:
 			f.lightDir.y *= -1;
 		}
 
-		f.lights = objects!`light`.map!(a => RomLight(
-				(a.pos / ROM_SCALE_DIV + _mapTranslation) * coordsConv, a.color,
+		f.lights = objects!`light`.map!(a => RomLight((a.pos / ROM_SCALE_DIV + _mapTranslation) * coordsConv, a.color,
 				a.range / ROM_SCALE_DIV)).array;
 
 		_lights = LightsCalculator(f.lights);
@@ -231,8 +228,7 @@ private:
 		{
 			string map;
 
-			foreach (s; ROfs.get(`data/fogparametertable.txt`.RoPath)
-					.as!char.assumeUnique.splitter(`#`).map!strip)
+			foreach (s; ROfs.get(`data/fogparametertable.txt`.RoPath).as!char.assumeUnique.splitter(`#`).map!strip)
 			{
 				if (s.endsWith(`.rsw`))
 				{
@@ -376,10 +372,7 @@ struct LightsCalculator
 			}
 		}
 
-		alias func = (a) {
-			auto s = a.length ? cast(uint)res.countUntil(a) : 0;
-			return [s, s + cast(uint)a.length];
-		};
+		alias func = (a) { auto s = a.length ? cast(uint)res.countUntil(a) : 0; return [s, s + cast(uint)a.length]; };
 
 		return _indices.map!func.array;
 	}

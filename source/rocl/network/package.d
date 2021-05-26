@@ -1,9 +1,7 @@
 module rocl.network;
-import std.path, std.conv, std.array, std.ascii, std.range, std.stdio,
-	std.traits, std.string, std.socket, std.encoding, std.typetuple,
-	std.algorithm, core.bitop, perfontain, perfontain.misc, ro.grf, ro.conf,
-	rocl, rocl.game, rocl.status, rocl.entity, rocl.entity.actor,
-	rocl.network.connection, rocl.network.packethandlers;
+import std.path, std.conv, std.array, std.ascii, std.range, std.stdio, std.traits, std.string, std.socket,
+	std.encoding, std.typetuple, std.algorithm, core.bitop, perfontain, perfontain.misc, ro.grf, ro.conf, rocl,
+	rocl.game, rocl.status, rocl.entity, rocl.entity.actor, rocl.network.connection, rocl.network.packethandlers;
 
 public import rocl.network.packets, rocl.network.structs;
 
@@ -106,7 +104,7 @@ private:
 			{
 				version (LOG_PACKETS)
 				{
-					logger.info3(`unknown packet 0x%X, %u bytes:`, _pid, _plen);
+					logger.info3!`unknown packet 0x%X, %u bytes:`(_pid, _plen);
 
 					dumpPacket(data);
 					writeln;
@@ -124,7 +122,7 @@ private:
 	{
 		disconnect;
 
-		logger.info2(`connecting to %s...`, addr);
+		logger.info2!`connecting to %s...`(addr);
 		_reader.connect(addr);
 
 		_pid = 0;
@@ -191,7 +189,7 @@ private:
 				name = format(`(%s)`, T.PK_NAME);
 			}
 
-			logger.info(`sending packet 0x%X%s, %u bytes:`, id, name, data.length);
+			logger.info!`sending packet 0x%X%s, %u bytes:`(id, name, data.length);
 
 			static if (hasData)
 			{
@@ -239,7 +237,7 @@ private:
 					name = format(`(%s)`, T.PK_NAME);
 				}
 
-				logger.info2(`packet 0x%X%s, %u bytes:`, _pid, name, _plen);
+				logger.info2!`packet 0x%X%s, %u bytes:`(_pid, name, _plen);
 				logger("%s\n", p);
 			}
 
@@ -256,7 +254,7 @@ private:
 					name = format(`(%s)`, T.PK_NAME);
 				}
 
-				logger.warning(`failed packet 0x%X%s, %u bytes:`, _pid, name, _plen);
+				logger.warning!`failed packet 0x%X%s, %u bytes:`(_pid, name, _plen);
 				dumpPacket(data);
 			}
 
@@ -285,13 +283,13 @@ private:
 				auto c = e.front;
 				e.popFront;
 
-				logger(`%(%02X %)%*s %s%s`, c, (N - cast(int)c.length) * 3, ``,
-						c.map!(b => b.isPrintable ? char(b) : '.'), e.empty ? "\n" : null);
+				auto chars = c.map!(b => b.isPrintable ? char(b) : '.');
+				logger.msg!`%(%02X %)%*s %s%s`(c, (N - cast(int)c.length) * 3, ``, chars, e.empty ? "\n" : null);
 			}
 		}
 		else
 		{
-			logger("(no data)\n");
+			logger.msg("(no data)\n");
 		}
 	}
 

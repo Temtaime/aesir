@@ -1,5 +1,4 @@
-import core.sys.windows.windows, core.sys.posix.sys.resource, perfontain,
-	ro.conv, rocl.rofs, rocl.game;
+import core.sys.windows.windows, core.sys.posix.sys.resource, perfontain, ro.conv, rocl.rofs, rocl.game;
 
 version (Windows)
 {
@@ -69,6 +68,6 @@ void main(string[] args)
 		RO.destroy;
 		PE.destroy;
 
-		logger(`shutdown complete`);
+		logger.msg(`shutdown complete`);
 	}
 }

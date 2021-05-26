@@ -100,10 +100,10 @@ final class Engine
 		window.create(makeTitle, _backend);
 
 		logger.info2(`[gpu info]`);
-		logger.info3(`opengl vendor: %s`, glGetString(GL_VENDOR).fromStringz);
-		logger.info3(`opengl version: %s`, glGetString(GL_VERSION).fromStringz);
-		logger.info3(`opengl renderer: %s`, glGetString(GL_RENDERER).fromStringz);
-		logger.info3(`opengl sl version: %s`, glGetString(GL_SHADING_LANGUAGE_VERSION).fromStringz);
+		logger.info3!`opengl vendor: %s`(glGetString(GL_VENDOR).fromStringz);
+		logger.info3!`opengl version: %s`(glGetString(GL_VERSION).fromStringz);
+		logger.info3!`opengl renderer: %s`(glGetString(GL_RENDERER).fromStringz);
+		logger.info3!`opengl sl version: %s`(glGetString(GL_SHADING_LANGUAGE_VERSION).fromStringz);
 
 		{
 			int v;
@@ -113,7 +113,7 @@ final class Engine
 
 			if (_aaLevel)
 			{
-				logger.info(`anisotropy level = %ux`, _aaLevel);
+				logger.info!`anisotropy level = %ux`(_aaLevel);
 			}
 			else
 			{
@@ -123,7 +123,7 @@ final class Engine
 
 		if (_msaaLevel)
 		{
-			logger.info(`msaa level = %ux`, _msaaLevel);
+			logger.info!`msaa level = %ux`(_msaaLevel);
 		}
 		else
 		{

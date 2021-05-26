@@ -1,14 +1,6 @@
 module perfontain.meshholder.atlas;
 
-import
-		std.range,
-		std.algorithm,
-
-		perfontain,
-
-		stb.rectpack,
-		stb.rectpack.binding;
-
+import std.range, std.algorithm, perfontain, stb.rectpack, stb.rectpack.binding;
 
 final class AtlasHolderCreator : HolderCreator
 {
@@ -22,14 +14,15 @@ protected:
 	{
 		makeAtlasTexture(res);
 
-		foreach(ref m; _meshes) with(res)
-		{
-			auto start = cast(uint)data.indices.length;
-			processSubMeshes(data, m);
+		foreach (ref m; _meshes)
+			with (res)
+			{
+				auto start = cast(uint)data.indices.length;
+				processSubMeshes(data, m);
 
-			auto sm = HolderSubMesh(cast(uint)data.indices.length - start, start);
-			meshes ~= [ sm ].HolderMesh;
-		}
+				auto sm = HolderSubMesh(cast(uint)data.indices.length - start, start);
+				meshes ~= [sm].HolderMesh;
+			}
 	}
 
 private:
@@ -37,24 +30,20 @@ private:
 
 	void processSubMeshes(ref SubMeshData data, ref in MeshInfo m)
 	{
-		foreach(ref s; m.subs)
+		foreach (ref s; m.subs)
 		{
 			auto len = data.indices.length;
 
 			data.indices ~= s.data.indices;
-			data.indices[len..$][] += cast(uint)data.vertices.length / _vsize;
+			data.indices[len .. $][] += cast(uint)data.vertices.length / _vsize;
 
-			auto vs = s
-						.data
-						.vertices
-						.as!float
-						.chunks(_vsize / 4);
+			auto vs = s.data.vertices.as!float.chunks(_vsize / 4);
 
-			foreach(v; vs)
+			foreach (v; vs)
 			{
 				auto c = calcCoords(s.tex, *cast(Vector2*)&v[$ - 2]);
 
-				data.vertices ~= v[0..$ - 2].toByte;
+				data.vertices ~= v[0 .. $ - 2].toByte;
 				data.vertices ~= c.toByte;
 			}
 		}
@@ -71,7 +60,7 @@ private:
 			uint sq;
 			auto func = rgb ? (int a) => cast(ushort)a : (int a) => alignTo(cast(ushort)a, 4);
 
-			foreach(i, ref s; data)
+			foreach (i, ref s; data)
 			{
 				s.id = cast(uint)i;
 
@@ -82,17 +71,16 @@ private:
 			}
 
 			sz = Vector2s(TexturePacker(data).process.expand);
-			logger.info(`texture atlas usage is %.4g, size is %ux%u`, sq / float(sz.x * sz.y), sz.x, sz.y);
+			logger.info!`texture atlas usage is %.4g, size is %ux%u`(sq / float(sz.x * sz.y), sz.x, sz.y);
 		}
 
 		auto atlas = new Image(sz.x, sz.y, null);
 
-		foreach(r, im; zip(data, _texs.indexed(data.map!(a => a.id))))
+		foreach (r, im; zip(data, _texs.indexed(data.map!(a => a.id))))
 		{
 			assert(rgb || !(r.x & 3) && !(r.y & 3));
 
-			auto	u = r.x + ATLAS_PAD,
-					v = r.y + ATLAS_PAD;
+			auto u = r.x + ATLAS_PAD, v = r.y + ATLAS_PAD;
 
 			atlas.blit(im, u, v);
 
