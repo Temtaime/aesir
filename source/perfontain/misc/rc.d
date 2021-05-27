@@ -195,6 +195,17 @@ struct RCArray(T)
 		_arr[$ - 1] = p;
 	}
 
+	void opOpAssign(string op : `~`)(T[] arr)
+	{
+		resize(length + arr.length);
+
+		foreach (i, p; arr)
+		{
+			p.acquire;
+			_arr[$ - arr.length + i] = p;
+		}
+	}
+
 	void opAssign(T[] u)
 	{
 		releaseAll;

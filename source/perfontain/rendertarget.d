@@ -1,42 +1,39 @@
 module perfontain.rendertarget;
-
-import perfontain, perfontain.opengl;
+import std, perfontain, perfontain.opengl;
 
 final class RenderTarget : RCounted
 {
-	this(Texture t)
-	{
-		this();
-
-		_attachments ~= t;
-
-		add(GL_DEPTH_ATTACHMENT, t);
-
-		finish;
-
-		// FIXME gles
-		//glFramebufferDrawBuffer(GL_FRAMEBUFFER, GL_NONE);
-
-	}
-
-	this()
+	this(Texture depth, Texture[] color)
 	{
 		glGenFramebuffers(1, &_id);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
-	}
 
-	void add(uint pos, Texture tex)
-	{
-		_pos ~= pos;
-		_attachments ~= tex;
-		glFramebufferTexture2D(GL_FRAMEBUFFER, pos, GL_TEXTURE_2D, tex.id, 0);
-	}
+		if (depth)
+		{
+			_attachments ~= depth;
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth.id, 0);
+		}
 
-	void finish()
-	{
-		auto st = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		st == GL_FRAMEBUFFER_COMPLETE || throwError!`FBO status is 0x%X`(st);
+		if (color)
+		{
+			uint[] arr;
+			_attachments ~= color;
 
+			foreach (i, tex; color)
+			{
+				arr ~= GL_COLOR_ATTACHMENT0 + cast(uint)i;
+				glFramebufferTexture2D(GL_FRAMEBUFFER, arr.back, GL_TEXTURE_2D, tex.id, 0);
+			}
+
+			glDrawBuffers(cast(uint)arr.length, arr.ptr);
+		}
+
+		assert(_attachments.length);
+
+		_size = _attachments[0].size;
+		assert(_attachments[1 .. $][].all!(a => a.size == _size));
+
+		check;
 		unbind;
 	}
 
@@ -45,26 +42,19 @@ final class RenderTarget : RCounted
 		glDeleteFramebuffers(1, &_id);
 	}
 
-	void bind()
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
+	void bind() => glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
+	static unbind() => glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-		//glDrawBuffers(cast(uint)_pos.length, _pos.ptr);
-	}
-
-	static unbind()
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	}
-
-	auto attachments()
-	{
-		return _attachments[];
-	}
-
+	auto attachments() => _attachments[];
 package:
-	uint _id;
+	mixin publicProperty!(Vector2s, `size`);
 
-	uint[] _pos;
+	void check()
+	{
+		auto st = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		st == GL_FRAMEBUFFER_COMPLETE || throwError!`FBO status is 0x%X`(st);
+	}
+
+	uint _id;
 	RCArray!Texture _attachments;
 }

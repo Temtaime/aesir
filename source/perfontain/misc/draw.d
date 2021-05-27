@@ -57,6 +57,7 @@ final class DrawAllocator : RCounted
 					if (!cnt)
 					{
 						auto tex = sm.tex;
+						assert(tex); // TODO
 
 						if (tex)
 						{

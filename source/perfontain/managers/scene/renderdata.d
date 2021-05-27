@@ -51,11 +51,9 @@ class SceneRenderData : RCounted
 
 		auto s = PEsamplers.shadowMap;
 
-		_lightsDepth = new RenderTarget;
-
 		{
 			auto tex = new Texture(TEX_SHADOW_MAP, PEwindow._size, s);
-			_lightsDepth.add(GL_DEPTH_ATTACHMENT, tex);
+			_lightsDepth = new RenderTarget(tex, null);
 
 			_compute.add(ShaderTexture.depth, tex);
 		}
@@ -63,8 +61,6 @@ class SceneRenderData : RCounted
 		_ind = new Texture(TEX_RED_UINT, PEwindow._size, s);
 
 		_draw.add(ShaderTexture.lights, _ind);
-
-		_lightsDepth.finish;
 	}
 
 	Texture lightsIndices() => _ind;

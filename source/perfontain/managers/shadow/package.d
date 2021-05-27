@@ -98,7 +98,7 @@ private:
 				auto tex = new Texture(TEX_SHADOW_MAP, sz);
 				tex.bind(1);
 
-				_sm = new RenderTarget(tex);
+				_sm = new RenderTarget(tex, null);
 			}
 
 			version (none)

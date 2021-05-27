@@ -278,13 +278,11 @@ private:
 		{
 			auto e = data.chunks(N);
 
-			while (!e.empty)
+			foreach (c; e)
 			{
-				auto c = e.front;
-				e.popFront;
+				auto repr = c.map!(b => b.isPrintable ? char(b) : '.');
 
-				auto chars = c.map!(b => b.isPrintable ? char(b) : '.');
-				logger.msg!`%(%02X %)%*s %s%s`(c, (N - cast(int)c.length) * 3, ``, chars, e.empty ? "\n" : null);
+				logger.msg!`%(%02X %)%*s %s%s`(c, (N - cast(int)c.length) * 3, string.init, repr, e.empty ? "\n" : null);
 			}
 		}
 		else

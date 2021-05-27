@@ -32,10 +32,7 @@ final class SceneManager
 
 	@property
 	{
-		CameraBase camera()
-		{
-			return _camera;
-		}
+		CameraBase camera() => _camera;
 
 		void camera(CameraBase camera)
 		{
@@ -43,10 +40,7 @@ final class SceneManager
 			PE.window.cursor = _camera.cursor;
 		}
 
-		Scene scene()
-		{
-			return _scene;
-		}
+		Scene scene() => _scene;
 
 		void scene(Scene sc)
 		{
@@ -54,20 +48,11 @@ final class SceneManager
 			_scene = sc;
 		}
 
-		auto ray()
-		{
-			return Tuple!(Vector3, `pos`, Vector3, `dir`)(_ray.front, _ray.back);
-		}
+		auto ray() => Tuple!(Vector3, `pos`, Vector3, `dir`)(_ray.front, _ray.back);
 
-		bool hasLights()
-		{
-			return _scene.lights.length && level == Lights.full;
-		}
+		bool hasLights() => _scene.lights.length && level == Lights.full;
 
-		ref viewProject() const
-		{
-			return _vp;
-		}
+		ref viewProject() const => _vp;
 	}
 
 	Matrix4 proj;
@@ -215,7 +200,10 @@ package(perfontain):
 	void draw(Program pg, RenderTarget rt)
 	{
 		if (rt)
+		{
+			rt.bind;
 			clear(rt.attachments[0].size, false); // rt.size, rt.hasColor
+		}
 		else
 			clear(PEwindow._size, true);
 
@@ -226,6 +214,9 @@ package(perfontain):
 
 			PE.render.doDraw(pg, RENDER_SCENE, _vp, rt);
 		}
+
+		if (rt)
+			rt.unbind;
 	}
 
 	auto traceRay(Vector2s pos)
