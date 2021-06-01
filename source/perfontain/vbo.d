@@ -1,6 +1,5 @@
 module perfontain.vbo;
-import std.stdio, std.algorithm, perfontain, perfontain.misc,
-	perfontain.config, perfontain.opengl, perfontain.math.matrix, utile.except;
+import std.stdio, std.algorithm, perfontain, perfontain.misc, perfontain.config, perfontain.opengl, perfontain.math.matrix, utile.except;
 
 enum
 {
@@ -11,11 +10,7 @@ final class VertexBuffer : RCounted
 {
 	this(byte type = -1, ubyte flags = 0)
 	{
-		{
-			uint b;
-			glGenBuffers(1, &b);
-			id = b;
-		}
+		id = gen!glGenBuffers;
 
 		_type = type;
 		_flags = flags;
@@ -37,11 +32,12 @@ final class VertexBuffer : RCounted
 		glBufferSubData(typeGL, start, data.length, data.ptr);
 	}
 
+	void realloc(in void[] data) => realloc(cast(uint)data.length, data.ptr);
+
 	void realloc(uint len, in void* ptr = null)
 	{
 		bind;
-		glBufferData(typeGL, _length = len, ptr, _flags & VBO_DYNAMIC
-				? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+		glBufferData(typeGL, _length = len, ptr, _flags & VBO_DYNAMIC ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 	}
 
 	void enable()
@@ -64,6 +60,8 @@ final class VertexBuffer : RCounted
 			ptr += v * 4;
 		}
 	}
+
+	void bind(ubyte idx) => glBindBufferBase(GL_SHADER_STORAGE_BUFFER, idx, id);
 
 	const uint id;
 private:

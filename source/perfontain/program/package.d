@@ -12,11 +12,6 @@ enum
 	PROG_DATA_SCISSOR = 32,
 }
 
-struct Attrib
-{
-	uint type, size;
-}
-
 final class Program : RCounted
 {
 	this(Shader[] shaders)
@@ -45,17 +40,29 @@ final class Program : RCounted
 				_flags |= a[1];
 			}
 		}
+
+		// FIXME: refactor ?
+		{
+			enum N = SHADER_SSBO_NAMES[ShaderBuffer.transforms];
+
+			if (auto p = N in _attribs)
+			{
+				assert(ssboType.canFind(p.type));
+
+				add(ShaderBuffer.transforms, new VertexBuffer(-1, VBO_DYNAMIC));
+			}
+		}
 	}
 
 	~this()
 	{
 		unbind;
 
-		foreach (u; _unis.values.filter!(a => a && a.idx >= 0))
-		{
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, u.idx, 0);
-			u.data = null;
-		}
+		// foreach (u; _unis.values.filter!(a => a && a.idx >= 0))
+		// {
+		// 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, u.idx, 0);
+		// 	u.data = null;
+		// }
 
 		_texs.each!(a => a.destroy);
 
@@ -68,26 +75,10 @@ final class Program : RCounted
 		{
 			_init = false;
 
-			debug foreach (name, attr; _attribs)
-			{
-				if (isSampler(attr.type))
-				{
-					const idx = cast(byte)SHADER_TEX_NAMES.countUntil(name);
-
-					assert(idx >= 0, format!`unknown texture %s used`(name));
-					assert(_texs.keys.canFind(idx), format!`texture %s was not bound`(name));
-				}
-			}
-
-			foreach (id, tex; _texs)
-			{
-				const name = SHADER_TEX_NAMES[id];
-				assert(_attribs.keys.canFind(name), format!`trying to bound extra texture %s`(name));
-
-				tex.bind(id);
-			}
+			initialize(ssboType, SHADER_SSBO_NAMES, `ssbo`, _bufs);
+			initialize(samplerTypes, SHADER_TEX_NAMES, `texture`, _texs);
 		}
-		else
+
 		{
 			enum N = ShaderTexture.main;
 
@@ -95,6 +86,11 @@ final class Program : RCounted
 			{
 				(*p).bind(N);
 			}
+		}
+
+		if (auto p = transforms)
+		{
+			p.bind(ShaderBuffer.transforms); // FIXME: too ugly
 		}
 
 		bind(_id);
@@ -107,57 +103,35 @@ final class Program : RCounted
 
 	void send(T)(string name, auto ref in T value)
 	{
-		auto s = locationOf(name);
-
-		debug
-		{
-			if (!s)
-				return;
-		}
+		int loc = _attribs[name].loc;
 
 		static if (is(T : int))
 		{
-			glProgramUniform1i(_id, s.loc, value);
+			glProgramUniform1i(_id, loc, value);
 		}
 		else static if (is(T == ulong))
 		{
-			glProgramUniform2uiv(_id, s.loc, 1, cast(uint*)&value);
+			glProgramUniform2uiv(_id, loc, 1, cast(uint*)&value);
 		}
 		else static if (is(T == Vector3))
 		{
-			glProgramUniform3fv(_id, s.loc, 1, value.ptr);
+			glProgramUniform3fv(_id, loc, 1, value.ptr);
 		}
 		else static if (is(T == Vector4))
 		{
-			glProgramUniform4fv(_id, s.loc, 1, value.ptr);
+			glProgramUniform4fv(_id, loc, 1, value.ptr);
 		}
 		else static if (is(T == Matrix4))
 		{
-			glProgramUniformMatrix4fv(_id, s.loc, 1, false, value.ptr);
+			glProgramUniformMatrix4fv(_id, loc, 1, false, value.ptr);
 		}
 		else
 			static assert(false);
 	}
 
-	void ssbo(string name, in void[] data, bool dynamic = true)
-	{
-		assert(data.length);
-
-		if (auto s = locationOf(name, true))
-		{
-			bool b = !s.data;
-
-			if (b)
-				s.data = new VertexBuffer(-1, dynamic ? VBO_DYNAMIC : 0);
-
-			s.data.realloc(cast(uint)data.length, data.ptr);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, s.idx, s.data.id);
-		}
-	}
-
 	auto minLen(string name)
 	{
-		if (auto r = locationOf(name, true))
+		if (auto r = name in _attribs)
 		{
 			return r.len;
 		}
@@ -170,8 +144,43 @@ final class Program : RCounted
 		*_texs.require(id, new RC!Texture) = tex;
 	}
 
+	void add(ShaderBuffer id, VertexBuffer data)
+	{
+		*_bufs.require(id, new RC!VertexBuffer) = data;
+	}
+
+	VertexBuffer transforms()
+	{
+		if (auto p = ShaderBuffer.transforms in _bufs)
+			return **p;
+
+		return null;
+	}
+
 private:
 	mixin publicProperty!(ubyte, `flags`);
+
+	void initialize(T)(immutable uint[] types, immutable string[] arr, string type, ref T data)
+	{
+		debug foreach (name, attr; _attribs)
+		{
+			if (types.canFind(attr.type))
+			{
+				const idx = cast(byte)arr.countUntil(name);
+
+				assert(idx >= 0, format!`unknown %s %s used`(type, name));
+				assert(data.keys.canFind(idx), format!`%s %s was not bound`(type, name));
+			}
+		}
+
+		foreach (id, e; data)
+		{
+			const name = arr[id];
+			assert(_attribs.keys.canFind(name), format!`trying to bound extra %s %s`(type, name));
+
+			e.bind(id);
+		}
+	}
 
 	void doLink()
 	{
@@ -194,34 +203,35 @@ private:
 		throwError!`cannot link program: %s`(msg[0 .. $ - 1].assumeUnique);
 	}
 
+	void parseVariable(alias F)(uint propCount, uint propNameLen, bool location)
+	{
+		int cnt, nameLen;
+
+		glGetProgramiv(_id, propCount, &cnt);
+		glGetProgramiv(_id, propNameLen, &nameLen);
+
+		auto name = new char[nameLen];
+
+		foreach (i; 0 .. cnt)
+		{
+			uint type;
+			int size, loc;
+
+			F(_id, i, cast(uint)name.length, cast(uint*)&nameLen, &size, &type, name.ptr);
+
+			if (location)
+				loc = glGetUniformLocation(_id, name.ptr);
+			else
+				loc = -1;
+
+			_attribs[name[0 .. nameLen].idup] = Attrib(type, size, loc);
+		}
+	}
+
 	void parseAttribs()
 	{
-		enum Attribs = [
-				tuple(GL_ACTIVE_UNIFORMS, GL_ACTIVE_UNIFORM_MAX_LENGTH, `glGetActiveUniform`),
-				tuple(GL_ACTIVE_ATTRIBUTES, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, `glGetActiveAttrib`),
-			];
-
-		static foreach (e; Attribs)
-		{
-			{
-				int cnt, nameLen;
-
-				glGetProgramiv(_id, e[0], &cnt);
-				glGetProgramiv(_id, e[1], &nameLen);
-
-				auto name = new char[nameLen];
-
-				foreach (i; 0 .. cnt)
-				{
-					int size;
-					uint type;
-
-					mixin(e[2] ~ `(_id, i, cast(uint)name.length, cast(uint*)&nameLen, &size, &type, name.ptr);`);
-
-					_attribs[name[0 .. nameLen].idup] = Attrib(type, size);
-				}
-			}
-		}
+		parseVariable!glGetActiveUniform(GL_ACTIVE_UNIFORMS, GL_ACTIVE_UNIFORM_MAX_LENGTH, true);
+		parseVariable!glGetActiveAttrib(GL_ACTIVE_ATTRIBUTES, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, false);
 
 		{
 			int cnt;
@@ -235,8 +245,29 @@ private:
 
 		debug
 		{
-			logger.msg(_attribs);
+			logger.msg!`parsed attribs: %s`(_attribs);
 		}
+	}
+
+	auto parseBlockName(uint idx)
+	{
+		static immutable param = [GL_NAME_LENGTH, GL_BUFFER_DATA_SIZE];
+		enum uint N = param.length;
+
+		int[N] res;
+		glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, N, param.ptr, N, null, res.ptr);
+
+		const nameLen = res[0];
+		const dataLen = res[1];
+
+		auto name = new char[nameLen];
+		glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen, null, name.ptr);
+		name.length--;
+
+		auto s = name.assumeUnique;
+		_attribs[s] = Attrib(GL_SHADER_STORAGE_BLOCK, dataLen);
+
+		return s;
 	}
 
 	void parseBlock(uint idx)
@@ -251,19 +282,8 @@ private:
 		if (!cnt)
 			return;
 
-		{
-			int nameLen;
-
-			const param = GL_NAME_LENGTH;
-			glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, idx, 1, &param, 1, null, &nameLen);
-
-			auto name = new char[nameLen];
-			glGetProgramResourceName(_id, GL_SHADER_STORAGE_BLOCK, idx, nameLen, null, name.ptr);
-
-			_ssbo ~= name[0 .. $ - 1].assumeUnique;
-		}
-
 		auto vars = new int[cnt];
+		auto ssbo = parseBlockName(idx);
 
 		{
 			const param = GL_ACTIVE_VARIABLES;
@@ -273,16 +293,16 @@ private:
 		foreach (var; vars)
 		{
 			static immutable props = [GL_NAME_LENGTH, GL_TYPE, GL_ARRAY_SIZE];
-			enum N = cast(uint)props.length;
+			enum uint N = props.length;
 
 			int[N] arr;
-			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, props.ptr, N, null, arr.ptr); // TODO: IS TWO N CORRECT ???
+			glGetProgramResourceiv(_id, GL_BUFFER_VARIABLE, var, N, props.ptr, N, null, arr.ptr);
 
-			auto name = new char[arr[0]];
-			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0], null, name.ptr);
+			auto elem = new char[arr[0]];
+			glGetProgramResourceName(_id, GL_BUFFER_VARIABLE, var, arr[0], null, elem.ptr);
+			elem.length--;
 
-			auto elem = name[0 .. $ - 1];
-			_attribs[format(`%s.%s`, _ssbo.back, elem)] = Attrib(arr[1], arr[2]);
+			_attribs[format(`%s.%s`, ssbo, elem)] = Attrib(arr[1], arr[2]);
 		}
 	}
 
@@ -297,65 +317,20 @@ private:
 		}
 	}
 
-	auto locationOf(string name, bool ssb = false)
-	{
-		if (auto u = name in _unis)
-		{
-			return *u;
-		}
-
-		auto n = name.toStringz;
-		int loc = ssb ? glGetProgramResourceIndex(_id, GL_SHADER_STORAGE_BLOCK, n) : glGetUniformLocation(_id, n);
-
-		UniformData* s;
-
-		if (loc < 0)
-		{
-			logger.error!"can't get %s location for `%s' variable"(ssb ? `SSBO` : `uniform`, name);
-		}
-		else
-		{
-			s = new UniformData;
-			s.loc = loc;
-
-			if (ssb)
-			{
-				auto prop = GL_BUFFER_DATA_SIZE;
-
-				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1, &prop, 1, null, &s.len);
-
-				int idx;
-
-				prop = GL_BUFFER_BINDING;
-				glGetProgramResourceiv(_id, GL_SHADER_STORAGE_BLOCK, loc, 1, &prop, 1, null, &idx);
-
-				s.idx = cast(ubyte)idx;
-			}
-		}
-
-		return _unis[name] = s;
-	}
-
-	static isSampler(uint id)
-	{
-		static immutable uint[] samplers = [GL_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_2D];
-		return samplers.canFind(id);
-	}
-
-	struct UniformData
-	{
-		RC!VertexBuffer data;
-
-		int loc, len;
-		byte idx = -1;
-	}
-
 	uint _id;
 	bool _init = true;
 
-	string[] _ssbo;
+	struct Attrib
+	{
+		uint type, len;
+		int loc;
+	}
+
+	static immutable ssboType = [GL_SHADER_STORAGE_BLOCK];
+	static immutable samplerTypes = [GL_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_2D];
+
 	Attrib[string] _attribs;
 
-	UniformData*[string] _unis;
 	RC!Texture*[ShaderTexture] _texs;
+	RC!VertexBuffer*[ShaderBuffer] _bufs;
 }

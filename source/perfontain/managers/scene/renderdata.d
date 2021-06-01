@@ -11,15 +11,8 @@ class SceneRenderData : RCounted
 			_depth = creator.create;
 		}
 
+		VertexBuffer vbo = new VertexBuffer;
 		{
-			auto creator = ProgramCreator(ProgramSource.draw);
-
-			creator.define(`LIGHT_DIR`, sc.lightDir);
-			creator.define(`LIGHT_AMBIENT`, sc.ambient);
-			creator.define(`LIGHT_DIFFUSE`, sc.diffuse);
-
-			_draw = creator.create;
-
 			ubyte[] buf;
 
 			foreach (ref r; sc.lights)
@@ -30,7 +23,19 @@ class SceneRenderData : RCounted
 				buf ~= u.toByte;
 			}
 
-			_draw.ssbo(`pe_lights`, buf, false);
+			vbo.realloc(buf);
+		}
+
+		{
+			auto creator = ProgramCreator(ProgramSource.draw);
+
+			creator.define(`LIGHT_DIR`, sc.lightDir);
+			creator.define(`LIGHT_AMBIENT`, sc.ambient);
+			creator.define(`LIGHT_DIFFUSE`, sc.diffuse);
+
+			_draw = creator.create;
+
+			_draw.add(ShaderBuffer.lights, vbo);
 		}
 
 		{
@@ -46,7 +51,7 @@ class SceneRenderData : RCounted
 				buf ~= v.toByte;
 			}
 
-			_compute.ssbo(`pe_lights`, buf, false);
+			_compute.add(ShaderBuffer.lights, vbo);
 		}
 
 		auto s = PEsamplers.shadowMap;

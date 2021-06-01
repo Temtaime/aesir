@@ -155,9 +155,9 @@ package(perfontain):
 				{
 					draw(progLightsDepth, rt);
 					computeLights(lightsIndices, progLightsCompute, computeBlock);
-
-					pg = progDraw;
 				}
+
+				pg = progDraw;
 			}
 		}
 
@@ -184,13 +184,8 @@ package(perfontain):
 		glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
 	}
 
-	void clear(Vector2s size, bool color)
+	void clear(Vector2s size, uint flags)
 	{
-		auto flags = GL_DEPTH_BUFFER_BIT;
-
-		if (color)
-			flags |= GL_COLOR_BUFFER_BIT;
-
 		PEstate.viewPort = size;
 		PEstate.depthMask = true; // otherwise depth clear won't work
 
@@ -202,10 +197,13 @@ package(perfontain):
 		if (rt)
 		{
 			rt.bind;
-			clear(rt.attachments[0].size, false); // rt.size, rt.hasColor
+			clear(rt.size, rt.clearFlags);
 		}
 		else
-			clear(PEwindow._size, true);
+		{
+			RenderTarget.unbind;
+			clear(PEwindow._size, GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		}
 
 		if (_scene)
 		{
@@ -214,9 +212,6 @@ package(perfontain):
 
 			PE.render.doDraw(pg, RENDER_SCENE, _vp, rt);
 		}
-
-		if (rt)
-			rt.unbind;
 	}
 
 	auto traceRay(Vector2s pos)
