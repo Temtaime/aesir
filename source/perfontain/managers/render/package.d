@@ -17,8 +17,7 @@ final class RenderManager
 		_infos ~= di;
 	}
 
-	void doDraw(Program pg, ubyte tp, ref const(Matrix4) viewProj, RenderTarget rt,
-			bool doSort = true)
+	void doDraw(Program pg, ubyte tp, ref const(Matrix4) viewProj, RenderTarget rt, bool doSort = true)
 	{
 		_tp = tp;
 		_pg = pg;
@@ -84,7 +83,8 @@ private:
 				subs += n.mh.meshes[n.id].subs.length;
 			}
 
-			_pg.ssbo(`pe_transforms`, tmp[]);
+			auto data = tmp[];
+			_pg.transforms.realloc(data);
 		}
 
 		//if (!_rt || PE.shadows.textured)

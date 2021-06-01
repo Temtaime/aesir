@@ -13,7 +13,8 @@ extern (C) __gshared
 
 	export
 	{
-		uint NvOptimusEnablement = 1, AmdPowerXpressRequestHighPerformance = 1;
+		int NvOptimusEnablement = 1;
+		int AmdPowerXpressRequestHighPerformance = 1;
 	}
 }
 
