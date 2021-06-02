@@ -32,8 +32,8 @@ jobs:
           arch: x64
 
       - run: |
-          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git
           git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git -b chromium/4472
 
       - working-directory: angle
         run: |
