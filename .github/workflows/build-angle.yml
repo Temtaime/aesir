@@ -18,7 +18,7 @@ jobs:
       - id: main
         run: |
           VER=$(wget -qO- http://omahaproxy.appspot.com/all.json | jq -r '.[] | select(.os == "win64") .versions[] | select(.channel == "stable") .true_branch')
-          echo "::set-output name=version::$VER"
+          echo "::set-output name=version::chromium/$VER"
 
   build:
     needs: find_version
@@ -44,7 +44,7 @@ jobs:
 
       - run: |
           git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git -b chromium/${{ needs.find_version.outputs.result }}
+          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git -b ${{ needs.find_version.outputs.result }}
 
       - working-directory: angle
         run: |
@@ -52,7 +52,7 @@ jobs:
 
           python scripts/bootstrap.py
           gclient sync
-          git checkout master
+          git checkout ${{ needs.find_version.outputs.result }}
           git apply -p1 ../utils/angle_fixes.patch
 
       - if: ${{ matrix.os == 'ubuntu-20.04' }}
