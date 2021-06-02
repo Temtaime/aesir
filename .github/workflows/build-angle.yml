@@ -10,7 +10,18 @@ env:
   COMMON_OPTS: is_clang=true is_component_build=false is_cfi=false symbol_level=0 angle_enable_null=false
 
 jobs:
+  find_version:
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.main.outputs.version }}
+    steps:
+      - id: main
+        run: |
+          VER=$(wget -qO- http://omahaproxy.appspot.com/all.json | jq -r '.[] | select(.os == "win64") .versions[] | select(.channel == "stable ") .true_branch')
+          echo "::set-output name=version::$VER"
+
   build:
+    needs: find_version
     strategy:
       fail-fast: false
       matrix:
@@ -33,7 +44,7 @@ jobs:
 
       - run: |
           git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git -b chromium/4472
+          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git -b chromium/${{ needs.find_version.outputs.version }}
 
       - working-directory: angle
         run: |
