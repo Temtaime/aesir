@@ -13,7 +13,7 @@ jobs:
   find_version:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.main.outputs.version }}
+      result: ${{ steps.main.outputs.version }}
     steps:
       - id: main
         run: |
@@ -44,7 +44,7 @@ jobs:
 
       - run: |
           git clone --depth=1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git -b chromium/${{ needs.find_version.outputs.version }}
+          git clone --depth=1 https://chromium.googlesource.com/angle/angle.git -b chromium/${{ needs.find_version.outputs.result }}
 
       - working-directory: angle
         run: |
