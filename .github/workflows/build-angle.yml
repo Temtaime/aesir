@@ -18,6 +18,7 @@ jobs:
       - id: main
         run: |
           VER=$(wget -qO- http://omahaproxy.appspot.com/all.json | jq -r '.[] | select(.os == "win64") .versions[] | select(.channel == "stable ") .true_branch')
+          echo version is $VER
           echo "::set-output name=version::$VER"
 
   build:
