@@ -21,6 +21,11 @@ package:
 
 mixin template Setting(T, string Name, T Value)
 {
-	mixin(`T ` ~ Name ~ ` = Value;
+	mixin(`private T _` ~ Name ~ ` = Value;
+
+	T ` ~ Name ~ `() @property => _` ~ Name ~ `;
+	void ` ~ Name ~ `(T value) @property => ` ~ Name
+			~ `Change(_` ~ Name ~ ` = value);
+
 perfontain.Signal!(void, T)` ~ Name ~ `Change;`);
 }

@@ -1,7 +1,5 @@
 module perfontain.nodes.sprite;
-
-import std.math, std.stdio, std.range, perfontain, perfontain.math,
-	perfontain.nodes, perfontain.misc;
+import std.math, std.stdio, std.range, perfontain, perfontain.math, perfontain.nodes, perfontain.misc;
 
 enum
 {
@@ -73,7 +71,7 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 		auto cam = PEscene.camera;
 		auto mat = cam._inversed * matrix; // * Matrix4.translate(0, 0.8, 0);
 
-		if (!PE.shadows.passActive)
+		if (!PE.scene.shadowPass) // FIXME: ??????
 		{
 			auto v = cam.view;
 
@@ -101,8 +99,7 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 		auto aa = (_action * 8 + fdir);
 		auto a = &spr.spr.actions[aa % $];
 
-		auto frame = _time > 0 ? tm * cast(uint)a.frames.length / _time
-			: tm / (_factor ? a.delay * _factor / 100 : a.delay);
+		auto frame = _time > 0 ? tm * cast(uint)a.frames.length / _time : tm / (_factor ? a.delay * _factor / 100 : a.delay);
 
 		auto fs = &a.frames[(directionHead < 0 || _action ? frame : directionHead) % $];
 
@@ -140,8 +137,7 @@ final class SpriteNode : Node // TODO: BBOX ON CREATION
 			auto cnt = cast(ushort)sa.frames.length / 3;
 			auto u = &sa.frames[cnt > 1 ? directionHead * 3 + frame % cnt : directionHead];
 
-			auto m2 = u.extra.x.isNaN ? mat : Matrix4.translate(Vector3(fs.extra - u.extra, 0))
-				* mat;
+			auto m2 = u.extra.x.isNaN ? mat : Matrix4.translate(Vector3(fs.extra - u.extra, 0)) * mat;
 
 			bbox += BBox(Vector3(u.size.xy, 0), Vector3(u.size.zw, 0)) * m2;
 

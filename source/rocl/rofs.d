@@ -1,6 +1,6 @@
 module rocl.rofs;
-import std, perfontain, perfontain.misc.rc, perfontain.filesystem, ro.grf,
-	ro.conf, rocl.game, rocl.paths, utile.except, utile.logger, utile.miniz : Zip;
+import std, perfontain, perfontain.misc.rc, perfontain.filesystem, ro.grf, ro.conf, rocl.game, rocl.paths,
+	utile.except, utile.logger, utile.miniz : Zip;
 
 final class RoFileSystem : FileSystem
 {
@@ -47,7 +47,7 @@ final class RoFileSystem : FileSystem
 		assert(0);
 	}
 
-	override ubyte[] get(string name, string f = __FILE__, uint l = __LINE__)
+	override ubyte[] get(string name)
 	{
 		debug
 		{
@@ -55,17 +55,17 @@ final class RoFileSystem : FileSystem
 		else
 		{
 			if (auto data = _zip.get(name).ifThrown(null))
+			{
 				return data;
+			}
 		}
 
-		try
+		if (auto data = super.get(`tmp/` ~ name))
 		{
-			return super.get(`tmp/` ~ name, f, l);
+			return data;
 		}
-		catch (Exception)
-		{
-			return super.get(name, f, l);
-		}
+
+		return super.get(name);
 	}
 
 	override void put(string name, in void[] data, ubyte t = FS_DISK)

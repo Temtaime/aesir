@@ -20,6 +20,12 @@ final class NuklearContext
 		this.text_colored(text.ptr, cast(int)text.length, align_, color);
 	}
 
+	bool checkbox(string text, bool v)
+	{
+		int value = v;
+		return !!this.checkbox_text(text.ptr, cast(uint)text.length, &value);
+	}
+
 	bool button(string text)
 	{
 		return !!this.button_text(text.ptr, cast(uint)text.length);

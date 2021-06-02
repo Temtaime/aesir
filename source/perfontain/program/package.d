@@ -40,32 +40,11 @@ final class Program : RCounted
 				_flags |= a[1];
 			}
 		}
-
-		// FIXME: refactor ?
-		{
-			enum N = SHADER_SSBO_NAMES[ShaderBuffer.transforms];
-
-			if (auto p = N in _attribs)
-			{
-				assert(ssboType.canFind(p.type));
-
-				add(ShaderBuffer.transforms, new VertexBuffer(-1, VBO_DYNAMIC));
-			}
-		}
 	}
 
 	~this()
 	{
 		unbind;
-
-		// foreach (u; _unis.values.filter!(a => a && a.idx >= 0))
-		// {
-		// 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, u.idx, 0);
-		// 	u.data = null;
-		// }
-
-		_texs.each!(a => a.destroy);
-
 		glDeleteProgram(_id);
 	}
 
@@ -74,25 +53,10 @@ final class Program : RCounted
 		if (_init)
 		{
 			_init = false;
-
-			initialize(ssboType, SHADER_SSBO_NAMES, `ssbo`, _bufs);
-			initialize(samplerTypes, SHADER_TEX_NAMES, `texture`, _texs);
+			doInitialize;
 		}
 
-		{
-			enum N = ShaderTexture.main;
-
-			if (auto p = N in _texs)
-			{
-				(*p).bind(N);
-			}
-		}
-
-		if (auto p = transforms)
-		{
-			p.bind(ShaderBuffer.transforms); // FIXME: too ugly
-		}
-
+		bindMainTexture;
 		bind(_id);
 	}
 
@@ -129,56 +93,71 @@ final class Program : RCounted
 			static assert(false);
 	}
 
-	auto minLen(string name)
-	{
-		if (auto r = name in _attribs)
-		{
-			return r.len;
-		}
-
-		assert(false);
-	}
+	auto minLen(string name) => _attribs[name].len;
 
 	void add(ShaderTexture id, Texture tex)
 	{
-		*_texs.require(id, new RC!Texture) = tex;
+		if (_texs[id] != tex)
+		{
+			_texs[id] = tex;
+		}
 	}
 
 	void add(ShaderBuffer id, VertexBuffer data)
 	{
-		*_bufs.require(id, new RC!VertexBuffer) = data;
-	}
-
-	VertexBuffer transforms()
-	{
-		if (auto p = ShaderBuffer.transforms in _bufs)
-			return **p;
-
-		return null;
+		_bufs[id] = data;
 	}
 
 private:
 	mixin publicProperty!(ubyte, `flags`);
 
-	void initialize(T)(immutable uint[] types, immutable string[] arr, string type, ref T data)
+	void bindMainTexture()
+	{
+		enum N = ShaderTexture.main;
+		auto tex = _texs[N];
+
+		if (tex)
+			tex.bind(N);
+	}
+
+	void doInitialize()
+	{
+		bool processSSBO(string name, uint type)
+		{
+			return name != SHADER_SSBO_NAMES[ShaderBuffer.transforms] && type == GL_SHADER_STORAGE_BLOCK;
+		}
+
+		bool processTexture(string name, uint type)
+		{
+			return only(GL_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_2D).canFind(type);
+		}
+
+		initialize(&processSSBO, SHADER_SSBO_NAMES, `ssbo`, _bufs);
+		initialize(&processTexture, SHADER_TEX_NAMES, `texture`, _texs);
+	}
+
+	void initialize(T)(bool delegate(string, uint) dg, immutable string[] arr, string type, ref T data)
 	{
 		debug foreach (name, attr; _attribs)
 		{
-			if (types.canFind(attr.type))
+			if (dg(name, attr.type))
 			{
 				const idx = cast(byte)arr.countUntil(name);
 
 				assert(idx >= 0, format!`unknown %s %s used`(type, name));
-				assert(data.keys.canFind(idx), format!`%s %s was not bound`(type, name));
+				assert(data[idx], format!`%s %s was not bound`(type, name));
 			}
 		}
 
-		foreach (id, e; data)
+		foreach (ubyte id, ref e; data)
 		{
-			const name = arr[id];
-			assert(_attribs.keys.canFind(name), format!`trying to bound extra %s %s`(type, name));
+			if (e)
+			{
+				const name = arr[id];
+				assert(_attribs.keys.canFind(name), format!`trying to bound extra %s %s`(type, name));
 
-			e.bind(id);
+				e.bind(id);
+			}
 		}
 	}
 
@@ -199,8 +178,9 @@ private:
 
 		auto msg = new char[len];
 		glGetProgramInfoLog(_id, len, null, msg.ptr);
+		msg.length--;
 
-		throwError!`cannot link program: %s`(msg[0 .. $ - 1].assumeUnique);
+		throwError!`cannot link program: %s`(msg.assumeUnique);
 	}
 
 	void parseVariable(alias F)(uint propCount, uint propNameLen, bool location)
@@ -326,11 +306,8 @@ private:
 		int loc;
 	}
 
-	static immutable ssboType = [GL_SHADER_STORAGE_BLOCK];
-	static immutable samplerTypes = [GL_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_2D];
-
 	Attrib[string] _attribs;
 
-	RC!Texture*[ShaderTexture] _texs;
-	RC!VertexBuffer*[ShaderBuffer] _bufs;
+	RC!Texture[ShaderTexture.max] _texs;
+	RC!VertexBuffer[ShaderBuffer.max] _bufs;
 }

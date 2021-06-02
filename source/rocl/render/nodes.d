@@ -61,7 +61,7 @@ final class ItemNode : Node // TODO: BBOX ON CREATION
 
 	override void draw(in DrawInfo* di) // TODO: move in onTick
 	{
-		if (PE.shadows.passActive)
+		if (PE.scene.shadowPass)
 		{
 			return;
 		}

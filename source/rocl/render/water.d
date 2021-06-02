@@ -1,23 +1,7 @@
 module rocl.render.water;
 
-import
-
-		std.math,
-		std.stdio,
-		std.range,
-
-		perfontain,
-		perfontain.math,
-		perfontain.nodes,
-
-		perfontain.misc,
-		perfontain.misc.rc,
-
-		perfontain.math.matrix,
-
-		ro.map,
-		rocl.game;
-
+import std.math, std.stdio, std.range, perfontain, perfontain.math, perfontain.nodes, perfontain.misc,
+	perfontain.misc.rc, perfontain.math.matrix, ro.map, rocl.game;
 
 final class WaterNode : Node
 {
@@ -27,9 +11,9 @@ final class WaterNode : Node
 		_mh = new MeshHolder(f.waterData);
 	}
 
-	override void draw(in DrawInfo *di)
+	override void draw(in DrawInfo* di)
 	{
-		if(PE.shadows.passActive)
+		if (PE.scene.shadowPass)
 		{
 			return;
 		}

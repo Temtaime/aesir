@@ -1,9 +1,7 @@
 module rocl.gui;
-import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game,
-	rocl.paths, rocl.gui.misc, rocl.network.packets, rocl.controls,
-	rocl.controls.chat, rocl.controls.status, rocl.controls.numbers,
-	rocl.status.item, rocl.controls.charselect, rocl.controls.hotkeysettings,
-	rocl.controller.npc, rocl.status, utile.except;
+import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game, rocl.paths, rocl.gui.misc, rocl.network.packets,
+	rocl.controls, rocl.controls.chat, rocl.controls.status, rocl.controls.numbers, rocl.status.item,
+	rocl.controls.charselect, rocl.controls.hotkeysettings, rocl.controller.npc, rocl.status, utile.except;
 
 struct IconCache
 {
@@ -61,6 +59,12 @@ final class GuiManager
 
 	void draw()
 	{
+		if (showSettings)
+			settings.draw(isViewer);
+
+		if (isViewer)
+			return;
+
 		if (_cd)
 			charSelect.draw(_cd);
 
@@ -152,6 +156,8 @@ final class GuiManager
 	IconCache iconCache;
 	WinCharSelect charSelect;
 
+	WinSettings settings;
+
 	RC!WinShop shop;
 	RC!WinLogin login;
 
@@ -164,6 +170,8 @@ final class GuiManager
 	//mixin MakeWindow!(WinSettings, `settings`);
 	//mixin MakeWindow!(WinCharSelect, `charSelect`);
 	//mixin MakeWindow!(WinHotkeySettings, `hotkeySettings`);
+
+	bool isViewer, showSettings;
 private:
 	mixin publicProperty!(bool, `isGame`);
 

@@ -7,33 +7,31 @@ final class SettingsManager
 {
 	this()
 	{
+		auto data = PEfs.get(SETTINGS_FILE);
+		rc4.process(data);
+
+		if (data.empty || !data.isValid)
+			return;
+
 		try
 		{
-			auto data = PEfs.get(SETTINGS_FILE);
-			rc4.process(data);
+			auto json = data.assumeUTF.parseJSON;
 
-			if (data.isValid)
+			static foreach (name; settingNames)
 			{
-				auto json = data.assumeUTF.parseJSON;
-
-				static foreach (name; settingNames)
+				try
 				{
-					try
-					{
-						load(json[name], mixin(name));
-					}
-					catch (Exception e)
-					{
-						logger.error(e);
-					}
+					load(json[name], mixin(name));
+				}
+				catch (Exception e)
+				{
+					logger.error!`cannot parse setting %s: %s`(name, e.msg); 
 				}
 			}
-			else
-				logger.error!`%s is not a valid settings file`(SETTINGS_FILE);
 		}
-		catch (Exception e)
+		catch (Exception ex)
 		{
-			logger.error(e);
+			logger.error!`cannot parse %s: %s`(SETTINGS_FILE, ex.msg);
 		}
 	}
 
@@ -42,7 +40,9 @@ final class SettingsManager
 		JSONValue json;
 
 		static foreach (name; settingNames)
+		{
 			json[name] = jsonize(mixin(name));
+		}
 
 		auto data = json.toJSON.representation.dup;
 		rc4.process(data);
@@ -56,9 +56,9 @@ final class SettingsManager
 	mixin Setting!(bool, `fullscreen`, false);
 
 	mixin Setting!(Lights, `lights`, Lights.global);
-	mixin Setting!(Shadows, `shadows`, Shadows.none);
+	mixin Setting!(Shadows, `shadows`, Shadows.high);
 
-	mixin Setting!(Tuple!(string, `user`, string, `pass`)[], `accounts`, null);
+	Tuple!(string, `user`, string, `pass`)[] accounts;
 private:
 	static settingNames() // TODO: BUGREPORT
 	{
@@ -74,7 +74,9 @@ private:
 	static jsonize(T)(T value)
 	{
 		static if (isDynamicArray!T)
+		{
 			return value.map!jsonize.array.JSONValue;
+		}
 		else
 		{
 			static if (isTuple!T)
@@ -82,7 +84,9 @@ private:
 				JSONValue[string] aa;
 
 				static foreach (i, name; T.fieldNames)
+				{
 					aa[name] = value[i].JSONValue;
+				}
 
 				return JSONValue(aa);
 			}
@@ -130,16 +134,17 @@ private:
 			auto k = json.integer;
 
 			if (only(EnumMembers!T).canFind(k))
+			{
 				value = cast(T)k;
+			}
 		}
 		else static if (isBoolean!T)
+		{
 			value = json.boolean;
+		}
 		else
 			static assert(false);
 	}
 
-	static rc4()
-	{
-		return RC4(thisExePath);
-	}
+	static rc4() => RC4(thisExePath);
 }

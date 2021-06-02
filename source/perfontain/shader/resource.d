@@ -5,10 +5,10 @@ enum ProgramSource
 {
 	header,
 	misc,
-
-	light_depth,
+	depth,
+	shadows,
+	lighting,
 	light_compute,
-
 	gui,
 	draw
 }

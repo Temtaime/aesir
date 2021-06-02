@@ -11,8 +11,10 @@ final class SceneManager
 	{
 		PE.onMove.permanent(&traceRay); // TODO: REMOVE
 
+		PE.onResize.permanent(_ => onUpdate);
 		PE.settings.fogChange.permanent(_ => onUpdate);
 		PE.settings.lightsChange.permanent(_ => onUpdate);
+		PE.settings.shadowsChange.permanent(_ => onUpdate);
 
 		debug
 		{
@@ -57,6 +59,8 @@ final class SceneManager
 
 	Matrix4 proj;
 private:
+	mixin publicProperty!(bool, `shadowPass`);
+
 	static level()
 	{
 		return PE.settings.lights;
@@ -136,11 +140,8 @@ package(perfontain):
 
 	void draw()
 	{
-		//glDisable(GL_BLEND);
-		//glEnable(GL_DEPTH_TEST);
-
 		Program pg;
-		_culler = FrustumCuller(_vp = _camera.view * proj);
+		_vp = _camera.view * proj;
 
 		if (_scene)
 		{
@@ -151,9 +152,16 @@ package(perfontain):
 
 			with (_rd)
 			{
+				if (auto rt = shadowsDepth)
+				{
+					_shadowPass = true;
+					draw(progShadowsDepth, rt, PE.shadows.makeMatrix);
+					_shadowPass = false;
+				}
+
 				if (auto rt = lightsDepth)
 				{
-					draw(progLightsDepth, rt);
+					draw(progLightsDepth, rt, _vp);
 					computeLights(lightsIndices, progLightsCompute, computeBlock);
 				}
 
@@ -161,7 +169,7 @@ package(perfontain):
 			}
 		}
 
-		draw(pg, null);
+		draw(pg, null, _vp);
 	}
 
 	void computeLights(Texture tex, Program compute, ushort bs)
@@ -192,8 +200,10 @@ package(perfontain):
 		glClear(flags);
 	}
 
-	void draw(Program pg, RenderTarget rt)
+	void draw(Program pg, RenderTarget rt, Matrix4 vp)
 	{
+		_culler = FrustumCuller(vp);
+
 		if (rt)
 		{
 			rt.bind;
@@ -210,7 +220,7 @@ package(perfontain):
 			DrawInfo di;
 			_scene.node.draw(&di);
 
-			PE.render.doDraw(pg, RENDER_SCENE, _vp, rt);
+			PE.render.doDraw(pg, RENDER_SCENE, vp, rt);
 		}
 	}
 

@@ -206,6 +206,26 @@ package(perfontain):
 				}
 
 				break;*/
+		case SDL_WINDOWEVENT:
+			switch (evt.window.event)
+			{
+			case SDL_WINDOWEVENT_FOCUS_GAINED:
+				//_active = _skip = true;
+				break;
+
+			case SDL_WINDOWEVENT_FOCUS_LOST:
+				//_active = false;
+				break;
+
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+				PE.onResize(_size = Vector2s(evt.window.data1, evt.window.data2));
+				break;
+
+			default:
+			}
+
+			goto default;
+
 		case SDL_KEYUP:
 		case SDL_KEYDOWN:
 			auto r = evt.key.keysym.sym;

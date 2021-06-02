@@ -9,13 +9,19 @@ enum
 
 class FileSystem
 {
-	ubyte[] get(string name, string f = __FILE__, uint l = __LINE__)
+	ubyte[] get(string name)
 	{
 		if (auto data = _files.get(name, null))
+		{
 			return data.dup;
+		}
 
-		name.exists || throwError!`can't find file %s`(f, l, name);
-		return std.file.read(name).toByte;
+		if (name.exists)
+		{
+			return std.file.read(name).toByte;
+		}
+
+		return null;
 	}
 
 	void put(string name, in void[] data, ubyte t = FS_DISK)
@@ -34,9 +40,9 @@ class FileSystem
 		std.file.write(name, data);
 	}
 
-	final read(T)(string name, string f = __FILE__, uint l = __LINE__)
+	final read(T)(string name)
 	{
-		return get(name, f, l).deserializeMem!T;
+		return get(name).deserializeMem!T;
 	}
 
 	final write(T)(string name, auto ref in T data, ubyte t = FS_DISK)

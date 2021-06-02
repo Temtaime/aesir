@@ -8,6 +8,8 @@ final class RenderManager
 {
 	this()
 	{
+		_transforms = new VertexBuffer(-1, VBO_DYNAMIC);
+
 		drawAlloc ~= new DrawAllocator(RENDER_GUI);
 		drawAlloc ~= new DrawAllocator(RENDER_SCENE);
 	}
@@ -56,44 +58,45 @@ private:
 		}
 	}
 
-	void drawNodes(in DrawInfo[] nodes) // one program and mesh holder
+	uint writeTransforms(in DrawInfo[] nodes)
 	{
 		uint subs;
-		bool bindTextures;
 
+		auto fs = _pg.flags;
+		auto start = fs & PROG_DATA_SM_MAT ? 64 : 0;
+
+		auto len = _pg.minLen(`pe_transforms`) - start + 15;
+		len &= ~15;
+
+		auto tmp = ScopeArray!ubyte(len * nodes.length + start);
+
+		if (fs & PROG_DATA_SM_MAT)
 		{
-			auto fs = _pg.flags;
-			auto start = fs & PROG_DATA_SM_MAT ? 64 : 0;
-
-			auto len = _pg.minLen(`pe_transforms`) - start + 15;
-			len &= ~15;
-
-			auto tmp = ScopeArray!ubyte(len * nodes.length + start);
-
-			if (fs & PROG_DATA_SM_MAT)
-			{
-				tmp[0 .. 64][] = PE.shadows.matrix.toByte;
-			}
-
-			foreach (i, ref n; nodes)
-			{
-				auto sub = tmp[start + i * len .. $][0 .. len].toByte;
-
-				write(n, sub, fs);
-				subs += n.mh.meshes[n.id].subs.length;
-			}
-
-			auto data = tmp[];
-			_pg.transforms.realloc(data);
+			tmp[0 .. 64][] = PE.shadows.matrix.toByte;
 		}
 
-		//if (!_rt || PE.shadows.textured)
+		foreach (i, ref n; nodes)
 		{
-			//nodes[0].mh.texs[0].bind(0);
-			bindTextures = true;
+			auto sub = tmp[start + i * len .. $][0 .. len].toByte;
+
+			write(n, sub, fs);
+			subs += n.mh.meshes[n.id].subs.length;
 		}
 
-		drawAlloc[_tp].draw(_pg, nodes, subs, _rt is null);
+		auto data = tmp[];
+
+		_transforms.realloc(data);
+		_transforms.bind(ShaderBuffer.transforms); // force rebind to correct calculate buffer size in the shader
+
+		return subs;
+	}
+
+	void drawNodes(in DrawInfo[] nodes) // one program and mesh holder
+	{
+		auto subs = writeTransforms(nodes);
+		bool bind = _rt is null || PE.scene.shadowPass && PE.shadows.textured;
+
+		drawAlloc[_tp].draw(_pg, nodes, subs, bind);
 	}
 
 	void write(ref in DrawInfo di, ubyte[] arr, ubyte flags)
@@ -135,6 +138,8 @@ private:
 
 		assert(arr.length == (p + 15) / 16 * 16);
 	}
+
+	RC!VertexBuffer _transforms;
 
 	// used only when draw called
 	ubyte _tp;
