@@ -21,7 +21,9 @@ string dumpArgs(A...)(A args)
 		dump ~= dump ? `, ` : null;
 
 		static if (isPointer!(typeof(e)))
+		{
 			dump ~= format(`0x%X`, cast(size_t)e);
+		}
 		else
 			dump ~= e.to!string;
 	}
@@ -31,7 +33,7 @@ string dumpArgs(A...)(A args)
 
 void traceGL(A...)(string func, string file, uint line, A args)
 {
-	//logger.info3(`[trace] %s(%s)`, func, dumpArgs(args));
+	//logger.info3!`[%s:%u] %s(%s)`(file, line, func, dumpArgs(args));
 }
 
 void checkError(A...)(string func, string file, uint line, A args)

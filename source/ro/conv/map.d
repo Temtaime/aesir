@@ -111,7 +111,7 @@ private:
 
 			foreach (ref m; ps)
 			{
-				f.poses ~= RomPose(m, bb * (r.trans * m), 0, 0, cast(ushort)id);
+				f.poses ~= RomPose(m, bb * (r.trans * m), cast(ushort)id);
 
 				_lights.push(f.poses.back.box);
 			}
@@ -199,25 +199,9 @@ private:
 
 	void processLightsIndices(ref RomFile f)
 	{
-		auto arr = _lights.calc(f.lightIndices);
+		f.lights = f.lights.indexed(_lights.used).array; // TODO: OPTIMIZE
 
-		foreach (i, p; arr)
-		{
-			auto k = cast(int)(i - f.floor.length);
-
-			if (k >= 0)
-			{
-				f.poses[k].lightStart = p.front;
-				f.poses[k].lightEnd = p.back;
-			}
-			else
-			{
-				f.floor[i].lightStart = p.front;
-				f.floor[i].lightEnd = p.back;
-			}
-		}
-
-		f.lights = f.lights.indexed(_lights.used).array;
+		f.lights.sort!((a, b) => a.range > b.range); // TODO: ??????
 	}
 
 	void processFogEntries(ref RomFile f)
@@ -325,56 +309,28 @@ struct LightsCalculator
 
 	void push(ref in BBox obj)
 	{
-		_indices.length++;
-
 		foreach (i, ref s; _arr)
 		{
 			if (s.box.collision(obj))
 			{
 				s.used = true;
-				_indices.back ~= cast(ushort)i;
 			}
 		}
 	}
 
 	auto used()
 	{
-		return _arr.enumerate
+		auto res = _arr.enumerate
 			.filter!(a => a.value.used)
-			.map!(a => a.index);
-	}
-
-	auto calc(ref ushort[] res)
-	{
-		// pointers to array elements
-		auto index = new ushort[]*[_indices.length];
-
-		// sort to find max lengths
-		makeIndex!((a, b) => a.length > b.length)(_indices, index);
-
-		// unused lights
-		auto unused = _arr.enumerate
-			.filter!(a => !a.value.used)
 			.map!(a => a.index)
-			.array
-			.assumeSorted;
+			.array;
 
-		foreach (sub; index.map!(a => *a))
+		if (auto unused = _arr.length - res.length)
 		{
-			foreach (ref k; sub)
-			{
-				k -= unused.lowerBound(k).length;
-			}
-
-			if (!res.canFind(sub))
-			{
-				res ~= sub;
-			}
+			logger.warning!`%u lights are unreachable`(unused);
 		}
 
-		alias func = (a) { auto s = a.length ? cast(uint)res.countUntil(a) : 0; return [s, s + cast(uint)a.length]; };
-
-		return _indices.map!func.array;
+		return res;
 	}
 
 private:
@@ -385,5 +341,4 @@ private:
 	}
 
 	Light[] _arr;
-	ushort[][] _indices;
 }

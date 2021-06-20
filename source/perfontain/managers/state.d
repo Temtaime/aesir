@@ -1,16 +1,16 @@
 module perfontain.managers.state;
-
-import std.array, core.bitop, perfontain, perfontain.opengl, perfontain.config,
-	perfontain.math.matrix, perfontain.misc;
+import std.array, core.bitop, perfontain, perfontain.opengl, perfontain.config, perfontain.math.matrix, perfontain.misc;
 
 final class StateManager
 {
 	this()
 	{
-		culling = false; // TODO GUI TEST
+		culling = true;
 
 		if (PE._msaaLevel > 0)
+		{
 			msaa = true;
+		}
 	}
 
 	@property
@@ -29,6 +29,14 @@ final class StateManager
 			{
 				// FIXME
 				//glPolygonMode(GL_FRONT_AND_BACK, (_wireframe = b) == true ? GL_LINE : GL_FILL);
+			}
+		}
+
+		void culling(bool b)
+		{
+			if (_culling != b)
+			{
+				disableEnable(GL_CULL_FACE, _culling = b);
 			}
 		}
 
@@ -95,8 +103,7 @@ package(perfontain):
 			if (_blending && _blendingMode != m)
 			{
 				auto modes = unpackModes(_blendingMode = m);
-				glBlendFuncSeparate(modes.front.blendingModeGL,
-						modes.back.blendingModeGL, GL_ONE, GL_ONE);
+				glBlendFuncSeparate(modes.front.blendingModeGL, modes.back.blendingModeGL, GL_ONE, GL_ONE);
 			}
 		}
 
@@ -109,12 +116,6 @@ package(perfontain):
 		}
 	}
 
-	struct LayerInfo
-	{
-		uint tex, samp;
-	}
-
-	LayerInfo[MAX_LAYERS] _texLayers;
 	uint _pipeline, _vao, _prog;
 private:
 	static disableEnable(uint v, bool b)
@@ -130,14 +131,6 @@ private:
 		if (_blending != b)
 		{
 			disableEnable(GL_BLEND, _blending = b);
-		}
-	}
-
-	void culling(bool b)
-	{
-		if (_culling != b)
-		{
-			disableEnable(GL_CULL_FACE, _culling = b);
 		}
 	}
 

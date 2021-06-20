@@ -1,7 +1,6 @@
 module rocl.loaders.map;
-
-import std.stdio, std.range, std.array, std.algorithm, perfontain,
-	perfontain.opengl, ro.map, ro.conv, rocl.paths, ro.conv.map, rocl.render.water;
+import std.stdio, std.range, std.array, std.algorithm, perfontain, perfontain.opengl, ro.map, ro.conv, rocl.paths,
+	ro.conv.map, rocl.render.water;
 
 struct RomLoader
 {
@@ -28,8 +27,6 @@ private:
 		sc.diffuse = _rom.diffuse;
 
 		sc.lightDir = _rom.lightDir;
-		sc.lightIndices = _rom.lightIndices;
-
 		sc.lights = _rom.lights.map!(a => LightSource(a.pos, a.color, a.range)).array;
 
 		sc.fogFar = _rom.fogFar;
@@ -48,9 +45,6 @@ private:
 			n.id = cast(ushort)i;
 			n.mh = _mh;
 			n.bbox = f.box;
-
-			n.lightStart = f.lightStart;
-			n.lightEnd = f.lightEnd;
 
 			node.childs ~= n;
 		}
@@ -85,9 +79,6 @@ private:
 
 			n.oris = s.oris;
 			n.matrix = s.matrix * r.pos;
-
-			n.lightStart = r.lightStart;
-			n.lightEnd = r.lightEnd;
 
 			n.bbox = r.box;
 			n.childs = s.childs;

@@ -174,7 +174,7 @@ package(perfontain):
 
 	void computeLights(Texture tex, Program compute, ushort bs)
 	{
-		tex.imageBind(0, GL_WRITE_ONLY);
+		tex.imageBind(0, GL_READ_WRITE);
 
 		compute.send(`proj_view_inversed`, _vp.inversed);
 		compute.bind;
@@ -189,7 +189,7 @@ package(perfontain):
 			glDispatchCompute(sz.x, sz.y, 1);
 		}
 
-		glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT);
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	}
 
 	void clear(Vector2s size, uint flags)

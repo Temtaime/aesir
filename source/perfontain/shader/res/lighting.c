@@ -10,7 +10,7 @@ LIGHTING_FULL
 		LightSource lights[];
 	};
 
-	__TEX_ID__ uniform highp usampler2D pe_tex_lights;
+	layout(r32ui, binding = 0) uniform readonly highp uimage2D pe_tex_lights_indices;
 
 	void calcLight(vec3 nn, vec3 P, inout vec3 res, uint idx)
 	{
@@ -31,8 +31,7 @@ void calcLights(inout vec3 c)
 	LIGHTING_FULL
 		vec3 P = vec3(pos.xyz / pos.w);
 
-		vec2 uv = gl_FragCoord.xy / vec2(VIEWPORT_SIZE);
-		uint value = texture(pe_tex_lights, uv).r;
+		uint value = imageLoad(pe_tex_lights_indices, ivec2(gl_FragCoord.xy)).r;
 
 		for(int i = 0; i < 4; i++)
 		{

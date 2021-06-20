@@ -1,21 +1,6 @@
 module perfontain.nodes;
-
-import
-
-		std.stdio,
-		std.range,
-		std.algorithm,
-
-		perfontain,
-		perfontain.vbo,
-		perfontain.mesh,
-		perfontain.misc,
-		perfontain.math.bbox,
-		perfontain.config,
-		perfontain.opengl,
-		perfontain.math.matrix,
-		perfontain.shader;
-
+import std.stdio, std.range, std.algorithm, perfontain, perfontain.vbo, perfontain.mesh, perfontain.misc,
+	perfontain.math.bbox, perfontain.config, perfontain.opengl, perfontain.math.matrix, perfontain.shader;
 
 class Node : RCounted
 {
@@ -29,7 +14,7 @@ class Node : RCounted
 		//const transBBox() { return bbox * matrix; }
 	}
 
-	void draw(in DrawInfo *di)
+	void draw(in DrawInfo* di)
 	{
 		childs.each!(a => a.draw(di));
 	}
@@ -48,11 +33,11 @@ struct FrameOrientation
 
 final class ObjecterNode : Node
 {
-	override void draw(in DrawInfo *di)
+	override void draw(in DrawInfo* di)
 	{
 		DrawInfo m;
 
-		if(oris.length)
+		if (oris.length)
 		{
 			auto step = (PE._tick * 2) % oris.back.time;
 
@@ -73,9 +58,6 @@ final class ObjecterNode : Node
 		}
 
 		m.mh = mh;
-
-		m.lightStart = lightStart;
-		m.lightEnd = lightEnd;
 		m.id = id;
 		m.flags = di.flags;
 
@@ -90,7 +72,5 @@ final class ObjecterNode : Node
 	RC!MeshHolder mh;
 
 	Matrix4 matrix;
-
-	uint lightStart, lightEnd;
 	ushort id;
 }

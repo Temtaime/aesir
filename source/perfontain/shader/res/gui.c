@@ -2,7 +2,6 @@ import header
 
 use PASS_DATA
 use PASS_DRAW_ID
-
 use TRANS_GUI
 
 import misc

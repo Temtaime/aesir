@@ -27,7 +27,7 @@ final class Texture : RCounted
 	{
 		PE.textures.remove(this);
 
-		PEstate._texLayers.each!((ref a) => cas(a.tex, id, 0));
+		//PEstate._texLayers.each!((ref a) => cas(a.tex, id, 0));
 
 		glDeleteTextures(1, &id);
 	}
@@ -100,8 +100,6 @@ final class Texture : RCounted
 
 	const bind(ubyte idx)
 	{
-		auto p = &PEstate._texLayers[idx];
-
 		//if (set(p.samp, _samp._id))
 		{
 			glBindSampler(idx, _samp._id);

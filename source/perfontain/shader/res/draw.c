@@ -1,4 +1,6 @@
 use PASS_DATA
+use PASS_DRAW_ID
+use TRANS_COLOR
 
 LIGHTING_FULL
 	use MODEL_MAT
@@ -51,6 +53,8 @@ fragment:
 
 		if(u.a < 0.05)
 			discard;
+
+		u *= TRANS.color;
 
 		LIGHTING_ENABLED
 			calcLights(u.rgb);

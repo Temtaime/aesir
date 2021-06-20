@@ -14,8 +14,6 @@ struct DrawInfo
 	Matrix4 matrix;
 	Vector4s scissor;
 
-	uint lightStart, lightEnd;
-
 	Color color = colorWhite;
 	ushort id;
 
@@ -23,8 +21,8 @@ struct DrawInfo
 package:
 	static diff(string val, string cmp = `<`, string as = ``)
 	{
-		return `if(` ~ as ~ `(a.` ~ val ~ `) != ` ~ as ~ `(b.` ~ val ~ `)) return `
-			~ as ~ `(a.` ~ val ~ `) ` ~ cmp ~ as ~ `(b.` ~ val ~ `);`;
+		return `if(` ~ as ~ `(a.` ~ val ~ `) != ` ~ as ~ `(b.` ~ val ~ `)) return ` ~ as ~ `(a.` ~ val ~ `) ` ~ cmp ~ as ~ `(b.` ~ val
+			~ `);`;
 	}
 
 	static cmp(ref in DrawInfo a, ref in DrawInfo b)

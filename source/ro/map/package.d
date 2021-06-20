@@ -1,5 +1,4 @@
 module ro.map;
-
 import perfontain;
 
 public import ro.map.gat, ro.map.rsm, ro.map.gnd, ro.map.rsw;
@@ -9,11 +8,10 @@ struct RomFile
 	static immutable
 	{
 		char[3] bom = `ROM`;
-		ubyte ver = 18;
+		ubyte ver = 19;
 	}
 
 	float fogFar, fogNear;
-
 	Vector3 fogColor, ambient, diffuse, lightDir;
 
 	RomWater water;
@@ -23,9 +21,7 @@ struct RomFile
 	@(ArrayLength!ushort) RomNode[] nodes;
 	@(ArrayLength!ushort) RomPose[] poses;
 	@(ArrayLength!ushort) RomEffect[] effects;
-
 	@(ArrayLength!ushort) RomLight[] lights;
-	@(ArrayLength!uint) ushort[] lightIndices;
 
 	HolderData objectsData, waterData;
 }
@@ -49,8 +45,6 @@ struct RomGround
 struct RomFloor
 {
 	BBox box;
-
-	uint lightStart, lightEnd;
 }
 
 struct RomCell
@@ -72,16 +66,12 @@ struct RomPose
 {
 	Matrix4 pos;
 	BBox box;
-
-	uint lightStart, lightEnd;
-
 	ushort id;
 }
 
 struct RomLight
 {
 	Vector3 pos, color;
-
 	float range;
 }
 

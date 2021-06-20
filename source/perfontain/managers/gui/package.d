@@ -182,13 +182,16 @@ private:
 
 	void draw(SubMeshData data)
 	{
+		PEstate.culling = false; // TODO: FIX GUI
+		scope (exit)
+			PEstate.culling = true;
+
 		auto mh = asRC(new MeshHolder(RENDER_GUI, data));
 		//mh.texs = (cast(Texture) ftex).sliceOne;
 
 		{
 			uint offset;
 			short n;
-			glDisable(GL_CULL_FACE);
 
 			for (auto cmd = nk__draw_begin(_ctx.ctx, &cmds); (cmd); (cmd) = nk__draw_next(cmd, &cmds, _ctx.ctx))
 			{
@@ -235,11 +238,7 @@ private:
 
 		}
 
-		//logger(`gui draw`);
-
 		PE.render.doDraw(_prog, RENDER_GUI, _proj, null, false);
-		glEnable(GL_CULL_FACE);
-		//logger(`gui draw 2`);
 	}
 
 	void drawPopups()

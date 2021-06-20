@@ -1,5 +1,4 @@
 module perfontain.managers.render;
-
 import std, perfontain, perfontain.opengl, perfontain.misc.draw;
 
 public import perfontain.managers.render.drawinfo;
@@ -127,12 +126,6 @@ private:
 
 		if (flags & PROG_DATA_SCISSOR)
 			add(di.scissor.Vector4i);
-
-		if (flags & PROG_DATA_LIGHTS)
-		{
-			add(di.lightStart);
-			add(di.lightEnd);
-		}
 
 		arr[p .. $] = 0;
 

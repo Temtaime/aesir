@@ -4,9 +4,8 @@ import std;
 enum ShaderTexture : ubyte
 {
 	main,
-	depth,
-	lights,
-	shadows,
+	lights_depth,
+	shadows_depth,
 
 	max
 }

@@ -1,5 +1,4 @@
 module rocl.resources;
-
 import std.file, std.format, std.algorithm, perfontain, ro.map, ro.conv, ro.conf, ro.conv.gui, rocl.game, rocl.paths,
 	rocl.loaders.map, rocl.loaders.asp;
 

@@ -57,15 +57,14 @@ class SceneRenderData : RCounted
 		}
 
 		if (texShadowsDepth)
-			_draw.add(ShaderTexture.shadows, texShadowsDepth);
-
 		{
-			_compute = ProgramCreator(ProgramSource.light_compute).create;
+			_draw.add(ShaderTexture.shadows_depth, texShadowsDepth);
 		}
 
 		if (lightsFull)
 		{
 			_depth = ProgramCreator(ProgramSource.depth).create;
+			_compute = ProgramCreator(ProgramSource.light_compute).create;
 
 			VertexBuffer vbo = new VertexBuffer;
 			{
@@ -92,12 +91,10 @@ class SceneRenderData : RCounted
 					auto tex = new Texture(TEX_SHADOW_MAP, PEwindow._size, s);
 					_lightsDepth = new RenderTarget(tex, null);
 
-					_compute.add(ShaderTexture.depth, tex);
+					_compute.add(ShaderTexture.lights_depth, tex);
 				}
 
 				_ind = new Texture(TEX_RED_UINT, PEwindow._size, s);
-
-				_draw.add(ShaderTexture.lights, _ind);
 			}
 		}
 	}
@@ -140,6 +137,5 @@ private:
 
 	RC!Texture _ind;
 	RC!RenderTarget _lightsDepth, _shadowsDepth;
-
 	RC!Program _draw, _compute, _depth, _shadowsDepthProg;
 }

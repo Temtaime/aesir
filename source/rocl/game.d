@@ -150,6 +150,7 @@ private:
 		PE.gui.drawGUI = &gui.draw;
 
 		PE.hotkeys.add(Hotkey(null, { gui.showSettings ^= true; return true; }, SDLK_ESCAPE));
+
 		return true;
 	}
 

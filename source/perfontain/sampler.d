@@ -11,13 +11,13 @@ final class Sampler : RCounted
 
 	~this()
 	{
-		foreach (uint i, ref v; PEstate._texLayers)
-		{
-			if (v.samp == _id)
-			{
-				glBindSampler(i, v.samp = 0);
-			}
-		}
+		// foreach (uint i, ref v; PEstate._texLayers)
+		// {
+		// 	if (v.samp == _id)
+		// 	{
+		// 		glBindSampler(i, v.samp = 0);
+		// 	}
+		// }
 
 		glDeleteSamplers(1, &_id);
 	}

@@ -25,7 +25,7 @@ final class SettingsManager
 				}
 				catch (Exception e)
 				{
-					logger.error!`cannot parse setting %s: %s`(name, e.msg); 
+					logger.error!`cannot parse setting %s: %s`(name, e.msg);
 				}
 			}
 		}
@@ -56,7 +56,7 @@ final class SettingsManager
 	mixin Setting!(bool, `fullscreen`, false);
 
 	mixin Setting!(Lights, `lights`, Lights.global);
-	mixin Setting!(Shadows, `shadows`, Shadows.high);
+	mixin Setting!(Shadows, `shadows`, Shadows.medium);
 
 	Tuple!(string, `user`, string, `pass`)[] accounts;
 private:
