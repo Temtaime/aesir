@@ -50,6 +50,13 @@ class SceneRenderData : RCounted
 				creator.define(`FOG_COLOR`, sc.fogColor);
 			}
 
+			debug
+			{
+			}
+			else
+				with (sc.fogColor)
+					glClearColor(x, y, z, 0);
+
 			if (PE.settings.shadows)
 				creator.define(`SHADOWS_ENABLED`);
 
