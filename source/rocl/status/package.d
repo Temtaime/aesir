@@ -60,6 +60,7 @@ struct Items
 	// 			debug throwError!`item at index %u was not found, cannot add %u to the amount`(idx, cnt);
 	// 	}
 	// }
+
 	void add(T)(in T data)
 	{
 		if (auto e = getIdx(data.idx))

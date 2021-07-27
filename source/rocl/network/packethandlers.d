@@ -576,7 +576,6 @@ mixin template PacketHandlers()
 			stats[RO_INT].needs = p.needInt;
 			stats[RO_DEX].needs = p.needDex;
 			stats[RO_LUK].needs = p.needLuk;
-
 		}
 	}
 
@@ -678,7 +677,7 @@ mixin template PacketHandlers()
 	{
 		foreach (ref r; p.items)
 		{
-			RO.status.items.changeAmount(r.idx, 0, false, () => new Item(r));
+			RO.status.items.add(r);
 		}
 	}
 
@@ -686,7 +685,7 @@ mixin template PacketHandlers()
 	{
 		foreach (ref r; p.items)
 		{
-			RO.status.items.changeAmount(r.idx, 0, false, () => new Item(r));
+			RO.status.items.add(r);
 		}
 	}
 
