@@ -1,13 +1,12 @@
 module perfontain.math.vector;
 
-
 mixin template VectorImpl()
 {
-	this(R)(R range) if(isInputRange!R)
+	this(R)(R range) if (isInputRange!R)
 	{
 		uint k;
 
-		foreach(v; range)
+		foreach (v; range)
 		{
 			flat[k++] = v;
 		}
@@ -15,15 +14,15 @@ mixin template VectorImpl()
 		assert(k == C);
 	}
 
-	this(A...)(auto ref in A args)
+	this(A...)(in A args)
 	{
 		uint k;
 
-		foreach(ref v; args)
+		foreach (ref v; args)
 		{
-			static if(.isVector!(typeof(v)))
+			static if (.isVector!(typeof(v)))
 			{
-				foreach(ref e; v.flat)
+				foreach (ref e; v.flat)
 				{
 					flat[k++] = cast(T)e;
 				}
@@ -34,9 +33,9 @@ mixin template VectorImpl()
 			}
 		}
 
-		if(k == 1)
+		if (k == 1)
 		{
-			flat[k..$] = flat[0];
+			flat[k .. $] = flat[0];
 		}
 		else
 		{
@@ -46,24 +45,57 @@ mixin template VectorImpl()
 
 	@property inout ref
 	{
-		auto x()() if(C > 0) { return flat[0]; }
-		auto y()() if(C > 1) { return flat[1]; }
-		auto z()() if(C > 2) { return flat[2]; }
-		auto w()() if(C > 3) { return flat[3]; }
+		auto x()() if (C > 0)
+		{
+			return flat[0];
+		}
 
-		auto u()() if(C > 6) { return flat[6]; }
-		auto v()() if(C > 7) { return flat[7]; }
+		auto y()() if (C > 1)
+		{
+			return flat[1];
+		}
 
-		auto p()() if(C > 2) { return *cast(inout(Vector3)*)(flat.ptr + 0); }
-		auto n()() if(C > 5) { return *cast(inout(Vector3)*)(flat.ptr + 3); }
-		auto t()() if(C > 7) { return *cast(inout(Vector2)*)(flat.ptr + 6); }
+		auto z()() if (C > 2)
+		{
+			return flat[2];
+		}
+
+		auto w()() if (C > 3)
+		{
+			return flat[3];
+		}
+
+		auto u()() if (C > 6)
+		{
+			return flat[6];
+		}
+
+		auto v()() if (C > 7)
+		{
+			return flat[7];
+		}
+
+		auto p()() if (C > 2)
+		{
+			return *cast(inout(Vector3)*)(flat.ptr + 0);
+		}
+
+		auto n()() if (C > 5)
+		{
+			return *cast(inout(Vector3)*)(flat.ptr + 3);
+		}
+
+		auto t()() if (C > 7)
+		{
+			return *cast(inout(Vector2)*)(flat.ptr + 6);
+		}
 	}
 
-	@property opDispatch(string s)() const if(s.length > 1)
+	@property opDispatch(string s)() const if (s.length > 1)
 	{
 		Vector!(T, s.length) res;
 
-		static foreach(i; 0..res.C)
+		static foreach (i; 0 .. res.C)
 		{
 			res[i] = mixin(`this.` ~ s[i]);
 		}
@@ -76,7 +108,7 @@ mixin template VectorImpl()
 		return flat[];
 	}
 
-	static if(isFP)
+	static if (isFP)
 	{
 		const length()
 		{
@@ -94,7 +126,7 @@ mixin template VectorImpl()
 		}
 	}
 
-	const zip(ref in Matrix v)
+	const zip(in Matrix v)
 	{
 		return std.range.zip(flat[], v[]);
 	}

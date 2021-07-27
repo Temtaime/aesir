@@ -34,15 +34,12 @@ final class IndexVertex : RCounted
 		_vao.unbind;
 	}
 
-	auto alloc(ref in SubMeshData sd)
+	auto alloc(in SubMeshData sd)
 	{
 		auto index = _ia.alloc(sd.indices.toByte);
 		auto vertex = _va.alloc(sd.vertices.toByte);
 
-		vertex.onMove = {
-			index.value = vertex.start / _va.vbo.alignment;
-			_ia.update(index);
-		};
+		vertex.onMove = { index.value = vertex.start / _va.vbo.alignment; _ia.update(index); };
 
 		vertex.onMove();
 		_va.update(vertex);

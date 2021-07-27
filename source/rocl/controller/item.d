@@ -1,31 +1,18 @@
 module rocl.controller.item;
 
-import
-		std.array,
-		std.typecons,
-		std.algorithm,
-
-		perfontain,
-		perfontain.math,
-
-		rocl.game,
-		rocl.network,
-
-		rocl.render.nodes;
-
+import std.array, std.typecons, std.algorithm, perfontain, perfontain.math, rocl.game, rocl.network, rocl.render.nodes;
 
 final class ItemController
 {
 	bool pickUp()
 	{
-		auto r = _aa
-						.byKeyValue
-						.map!(a => tuple(a.key, a.value.pickUp))
-						.filter!(a => !!a[1])
-						.array
-						.sort!((a, b) => a[1] < b[1]);
+		auto r = _aa.byKeyValue
+			.map!(a => tuple(a.key, a.value.pickUp))
+			.filter!(a => !!a[1])
+			.array
+			.sort!((a, b) => a[1] < b[1]);
 
-		if(r.empty)
+		if (r.empty)
 		{
 			return false;
 		}
@@ -34,9 +21,9 @@ final class ItemController
 		return true;
 	}
 
-	void add(ref in Pk084b p)
+	void add(in Pk084b p)
 	{
-		if(p.id in _aa)
+		if (p.id in _aa)
 		{
 			remove(p.id);
 		}
@@ -57,7 +44,7 @@ final class ItemController
 
 	void remove(uint id)
 	{
-		if(auto p = id in _aa)
+		if (auto p = id in _aa)
 		{
 			PEscene.scene.node.childs.remove(*p);
 			_aa.remove(id);
@@ -66,9 +53,9 @@ final class ItemController
 
 	void remove(ItemNode n) // TODO: PACKAGE
 	{
-		foreach(k, v; _aa)
+		foreach (k, v; _aa)
 		{
-			if(v == n)
+			if (v == n)
 			{
 				_aa.remove(k);
 				break;

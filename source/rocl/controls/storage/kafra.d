@@ -1,7 +1,6 @@
 module rocl.controls.storage.kafra;
-import std.meta, std.conv, std.range, std.string, std.algorithm, perfontain,
-	ro.db, ro.conv, ro.conv.gui, ro.conv.item, rocl, rocl.gui.misc, rocl.game,
-	rocl.paths, rocl.status, rocl.status.helpers, rocl.network, rocl.controls,
+import std.meta, std.conv, std.range, std.string, std.algorithm, perfontain, ro.db, ro.conv, ro.conv.gui, ro.conv.item,
+	rocl, rocl.gui.misc, rocl.game, rocl.paths, rocl.status, rocl.status.helpers, rocl.network, rocl.controls,
 	rocl.controls.storage, rocl.controls.storage;
 
 final class WinKafra : ItemView
@@ -26,7 +25,7 @@ final class WinKafra : ItemView
 
 	void remove()
 	{
-		_items.clear;
+		store.clear;
 		_amount = _maxAmount = 0;
 	}
 
@@ -36,16 +35,12 @@ final class WinKafra : ItemView
 		_maxAmount = max;
 	}
 
-	void add(Item m)
-	{
-		_items ~= m;
-	}
-
 	@property isActive()
 	{
 		return !!_maxAmount;
 	}
 
+	Items store;
 protected:
 	override string info()
 	{
@@ -54,11 +49,17 @@ protected:
 
 	override Item[] items()
 	{
-		return _items[];
+		return store.arr;
+	}
+
+	override void onIconDraw(in Widget w, Item m)
+	{
+		if (w.clicked(NK_BUTTON_LEFT))
+		{
+			ROnet.storeGet(m.idx, m.amount);
+		}
 	}
 
 private:
-	RCArray!Item _items;
-
 	ushort _amount, _maxAmount;
 }

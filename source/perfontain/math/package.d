@@ -1,13 +1,8 @@
 module perfontain.math;
 
-import
-		std.math,
-		std.algorithm,
+import std.math, std.algorithm, perfontain.math.matrix;
 
-		perfontain.math.matrix;
-
-
-auto unproject(ushort x, ushort y, float z, ref in Matrix4 vp, Vector2s viewport)
+auto unproject(ushort x, ushort y, float z, in Matrix4 vp, Vector2s viewport)
 {
 	auto v = Vector3(x, y, z) * 2;
 
@@ -18,7 +13,7 @@ auto unproject(ushort x, ushort y, float z, ref in Matrix4 vp, Vector2s viewport
 	return v * vp.inversed;
 }
 
-auto project(Vector3 v, ref in Matrix4 vp, Vector2s viewport)
+auto project(Vector3 v, in Matrix4 vp, Vector2s viewport)
 {
 	v *= vp;
 
@@ -42,7 +37,7 @@ auto project(Vector3 v, Vector2s viewport)
 	return v / 2;
 }
 
-float rayTriangleDistance(ref in Vector3 rayPos, ref in Vector3 rayDir, ref in Vector3 v1, ref in Vector3 v2, ref in Vector3 v3)
+float rayTriangleDistance(in Vector3 rayPos, in Vector3 rayDir, in Vector3 v1, in Vector3 v2, in Vector3 v3)
 {
 	// compute vectors along two edges of the triangle
 	auto edge1 = v2 - v1;
@@ -54,7 +49,8 @@ float rayTriangleDistance(ref in Vector3 rayPos, ref in Vector3 rayDir, ref in V
 	float det = directionCrossEdge2 * edge1;
 
 	// if the ray and triangle are parallel, there is no collision
-	if(valueEqual(det, 0)) return -1;
+	if (valueEqual(det, 0))
+		return -1;
 
 	float inverseDet = 1 / det;
 
@@ -65,7 +61,8 @@ float rayTriangleDistance(ref in Vector3 rayPos, ref in Vector3 rayDir, ref in V
 	triangleU *= inverseDet;
 
 	// mke sure the U is inside the triangle
-	if(triangleU < 0 || triangleU > 1) return -1;
+	if (triangleU < 0 || triangleU > 1)
+		return -1;
 
 	// calculate the V parameter of the intersection point
 	auto distanceCrossEdge1 = distanceVector ^ edge1;
@@ -74,7 +71,8 @@ float rayTriangleDistance(ref in Vector3 rayPos, ref in Vector3 rayDir, ref in V
 	triangleV *= inverseDet;
 
 	// make sure the V is inside the triangle
-	if(triangleV < 0 || triangleU + triangleV > 1) return -1;
+	if (triangleV < 0 || triangleU + triangleV > 1)
+		return -1;
 
 	// get the distance to the face from our ray origin
 	float rayDistance = distanceCrossEdge1 * edge2;
@@ -112,12 +110,12 @@ auto triangleArea(in Vector3 a, in Vector3 b, in Vector3 c)
 	return m.det / 2;
 }
 
-auto calcNormal(ref in Vector3 a, ref in Vector3 b, ref in Vector3 c)
+auto calcNormal(in Vector3 a, in Vector3 b, in Vector3 c)
 {
 	return (b - c) ^ (a - c);
 }
 
-auto angleTo(ref in Vector3 a, ref in Vector3 b)
+auto angleTo(in Vector3 a, in Vector3 b)
 {
 	return acos(a * b / (a.length * b.length));
 }

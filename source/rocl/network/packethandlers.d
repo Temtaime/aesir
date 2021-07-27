@@ -339,7 +339,7 @@ mixin template PacketHandlers()
 	{
 		foreach (ref v; p.items)
 		{
-			RO.gui.kafra.add(new Item(v));
+			RO.gui.kafra.store.add(v);
 		}
 	}
 
@@ -347,28 +347,18 @@ mixin template PacketHandlers()
 	{
 		foreach (ref v; p.items)
 		{
-			RO.gui.kafra.add(new Item(v));
+			RO.gui.kafra.store.add(v);
 		}
 	}
 
 	void onKafraItem(Pk0a0a p)
 	{
-		RO.gui.kafra.add(new Item(p));
+		RO.gui.kafra.store.changeAmount(p.idx, p.amount, false, () => new Item(p));
 	}
 
 	void onKafraItemRemoved(Pk00f6 p)
 	{
-		// if (auto e = RO.gui.store.items.getIdx(p.index))
-		// {
-		// 	if (p.amount == e.amount)
-		// 	{
-		// 		//RO.gui.store.items.remove(e);
-		// 	}
-		// 	else
-		// 	{
-		// 		e.reamount(cast(ushort)(e.amount - p.amount));
-		// 	}
-		// }
+		RO.gui.kafra.store.changeAmount(p.index, -p.amount);
 	}
 
 	void onKafraClose(Pk00f8 p)
@@ -389,40 +379,20 @@ mixin template PacketHandlers()
 
 	void onItemDelete(Pk07fa p)
 	{
-		if (auto e = RO.status.items.getIdx(p.index))
-		{
-			if (p.amount == e.amount)
-			{
-				RO.status.items.remove(e);
-			}
-			else
-			{
-				e.reamount(cast(ushort)(e.amount - p.amount));
-			}
-		}
+		RO.status.items.changeAmount(p.index, -p.amount);
 	}
 
 	void onItemDropAck(Pk00af p)
 	{
-		if (p.amount)
+		if (p.amount) // TODO: ???
 		{
-			if (auto e = RO.status.items.getIdx(p.index))
-			{
-				if (p.amount == e.amount)
-				{
-					RO.status.items.remove(e);
-				}
-				else
-				{
-					e.reamount(cast(ushort)(e.amount - p.amount));
-				}
-			}
+			RO.status.items.changeAmount(p.index, -p.amount);
 		}
 	}
 
 	void onItemRemove(Pk00a1 p)
 	{
-		RO.items.remove(p.id);
+		RO.items.remove(p.id); // TODO: ????
 	}
 
 	/// ====================================== MISC ======================================
@@ -542,14 +512,7 @@ mixin template PacketHandlers()
 	{
 		if (!p.result)
 		{
-			if (auto e = RO.status.items.getIdx(p.idx))
-			{
-				e.reamount(cast(ushort)(e.amount + p.amount));
-			}
-			else
-			{
-				RO.status.items.add(new Item(p));
-			}
+			RO.status.items.changeAmount(p.idx, p.amount, false, () => new Item(p));
 		}
 	}
 
@@ -557,17 +520,7 @@ mixin template PacketHandlers()
 	{
 		if (p.result && p.id == ROent.self.bl)
 		{
-			if (auto e = RO.status.items.getIdx(p.index))
-			{
-				if (p.amount)
-				{
-					e.reamount(p.amount);
-				}
-				else
-				{
-					RO.status.items.remove(e);
-				}
-			}
+			RO.status.items.changeAmount(p.index, p.amount, true);
 		}
 	}
 
@@ -725,7 +678,7 @@ mixin template PacketHandlers()
 	{
 		foreach (ref r; p.items)
 		{
-			RO.status.items.add(new Item(r));
+			RO.status.items.changeAmount(r.idx, 0, false, () => new Item(r));
 		}
 	}
 
@@ -733,7 +686,7 @@ mixin template PacketHandlers()
 	{
 		foreach (ref r; p.items)
 		{
-			RO.status.items.add(new Item(r));
+			RO.status.items.changeAmount(r.idx, 0, false, () => new Item(r));
 		}
 	}
 

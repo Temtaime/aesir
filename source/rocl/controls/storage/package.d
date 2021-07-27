@@ -11,7 +11,7 @@ protected:
 	string info();
 	Item[] items();
 
-	void onIconDraw(in ref Widget, Item)
+	void onIconDraw(in Widget, Item)
 	{
 	}
 
@@ -27,8 +27,7 @@ private:
 		auto s = info;
 		auto tabs = [MSG_ITM, MSG_EQP, MSG_ETC];
 
-		nk.tabSelector(tabs, _tab, (ref a) => a.variable(nk.widthFor(s)),
-				() => nk.label(s, NK_TEXT_RIGHT));
+		nk.tabSelector(tabs, _tab, (ref a) => a.variable(nk.widthFor(s)), () => nk.label(s, NK_TEXT_RIGHT));
 	}
 
 	void drawTab()

@@ -193,11 +193,11 @@ private:
 
 			static if (hasData)
 			{
-				logger(p);
+				logger.msg(p);
 			}
 			else
 			{
-				logger("(no data)\n");
+				logger.msg("(no data)\n");
 			}
 
 			writeln;
@@ -238,7 +238,7 @@ private:
 				}
 
 				logger.info2!`packet 0x%X%s, %u bytes:`(_pid, name, _plen);
-				logger("%s\n", p);
+				logger.msg!"%s\n"(p);
 			}
 
 			F(p);

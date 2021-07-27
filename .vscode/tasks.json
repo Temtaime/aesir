@@ -34,7 +34,6 @@
 			"options": {
 				"cwd": "utils/packets"
 			},
-			"group": "build",
 			"label": "Packet gen"
 		},
 		{
@@ -50,7 +49,6 @@
 			"options": {
 				"cwd": "utils/opengl"
 			},
-			"group": "build",
 			"label": "OpenGL gen"
 		},
 		{
@@ -66,7 +64,6 @@
 			"options": {
 				"cwd": "utils/shaders"
 			},
-			"group": "build",
 			"label": "Shader gen"
 		},
 		{
@@ -92,7 +89,7 @@
 						]
 					}
 				}
-			},
+			}
 		}
 	]
 }

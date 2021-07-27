@@ -1,7 +1,6 @@
 module ro.sprite.act;
-import std.conv, std.math, std.array, std.stdio, std.string, std.algorithm,
-	stb.image, perfontain, perfontain.misc, perfontain.nodes.sprite,
-	perfontain.math.matrix, ro.sprite.spr, ro.conv.asp, utile.except;
+import std.conv, std.math, std.array, std.stdio, std.string, std.algorithm, stb.image, perfontain, perfontain.misc,
+	perfontain.nodes.sprite, perfontain.math.matrix, ro.sprite.spr, ro.conv.asp, utile.except;
 
 struct ActSprite
 {
@@ -56,7 +55,7 @@ struct ActFile
 	@(IgnoreIf!(e => e.that.ver < 0x202), ArrayLength!(e => e.that.cnt)) float[] delays;
 }
 
-auto imageOf(ref ImageInfo info, ref in ActSprite s)
+auto imageOf(ref ImageInfo info, in ActSprite s)
 {
 	auto res = (s.type & 1 ? info.pals : 0) + s.idx;
 

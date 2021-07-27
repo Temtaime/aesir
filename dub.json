@@ -28,6 +28,7 @@
 		"sdl_mixer_x64"
 	],
 	"dflags": [
+		"-preview=in",
 		"-preview=intpromote",
 		"-preview=shortenedMethods"
 	],

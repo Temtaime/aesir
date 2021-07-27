@@ -1,11 +1,10 @@
 module perfontain.math.matrix;
-import std.math, std.range, std.string, std.traits, std.algorithm,
-	std.exception, perfontain.misc, perfontain.math.m4x4, perfontain.math.square,
-	perfontain.math.vector, perfontain.math.quaternion;
+import std.math, std.range, std.string, std.traits, std.algorithm, std.exception, perfontain.misc,
+	perfontain.math.m4x4, perfontain.math.square, perfontain.math.vector, perfontain.math.quaternion;
 
 public import perfontain.math.constants;
 
-auto zipMap(alias F, T, uint N)(auto ref in Matrix!(T, 1, N) a, auto ref in Matrix!(T, 1, N) b)
+auto zipMap(alias F, T, uint N)(in Matrix!(T, 1, N) a, in Matrix!(T, 1, N) b)
 {
 	Vector!(typeof(F(T.init, T.init)), N) res;
 
@@ -94,9 +93,8 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 			static if (isVector)
 			{
 				static if (isFP)
-					return format(`[%-( %s%) ]`, (cast(T[])flat)
-							.map!(a => format(`%*s`, DIGITS, valueEqual(a, 0)
-								? 0 : a)[0 .. min(DIGITS, $)]));
+					return format(`[%-( %s%) ]`, (cast(T[])flat).map!(a => format(`%*s`, DIGITS, valueEqual(a, 0) ? 0 : a)[0 .. min(DIGITS,
+								$)]));
 				else
 					return format(`[%( %s%) ]`, flat);
 			}
@@ -104,7 +102,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 				return format("%(%s%|\n%)", this[]);
 		}
 
-		auto opBinary(string op : `*`, uint R)(auto ref in Matrix!(T, N, R) b)
+		auto opBinary(string op : `*`, uint R)(in Matrix!(T, N, R) b)
 		{
 			Matrix!(T, M, R) ret = void;
 
@@ -145,7 +143,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 			return ret;
 		}
 
-		auto opBinary(string op)(auto ref in Matrix m) if (op == `+` || op == `-`)
+		auto opBinary(string op)(in Matrix m) if (op == `+` || op == `-`)
 		{
 			Matrix ret = void;
 			ret.flat[] = mixin(`flat[]` ~ op ~ `m.flat[]`);
@@ -172,7 +170,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		return this;
 	}
 
-	ref opOpAssign(string op)(auto ref in Matrix m)
+	ref opOpAssign(string op)(in Matrix m)
 	{
 		return this = opBinary!op(m);
 	}
@@ -218,23 +216,23 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 				alias Quat = QuaternionT!T;
 			}
 
-			ref opOpAssign(string op : `*`, E)(auto ref in E e)
+			ref opOpAssign(string op : `*`, E)(in E e)
 			{
 				return this = this * e;
 			}
 
 		const:
-			auto opBinary(string op : `^`)(auto ref in Matrix v)
+			auto opBinary(string op : `^`)(in Matrix v)
 			{
 				return Matrix(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
 			}
 
-			auto opBinary(string op : `*`)(auto ref in Quat q)
+			auto opBinary(string op : `*`)(in Quat q)
 			{
 				return (q * Quat(this, 0) * q.inversed).xyz;
 			}
 
-			auto opBinary(string op : `*`)(auto ref in Matrix!(T, 4) m)
+			auto opBinary(string op : `*`)(in Matrix!(T, 4) m)
 			{
 				auto v = Vector!(T, 4)(this, 1) * m;
 				return v.xyz / v.w;
@@ -245,14 +243,14 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		{
 			mixin QuaternionImpl;
 
-			auto opBinary(string op : `*`)(auto ref in Matrix b) const
+			auto opBinary(string op : `*`)(in Matrix b) const
 			{
 				return Matrix(b.p * w + p * b.w + (p ^ b.p), w * b.w + p * b.p);
 			}
 		}
 		else
 		{
-			auto opBinary(string op : `*`)(auto ref in Matrix b) const
+			auto opBinary(string op : `*`)(in Matrix b) const
 			{
 				return zip(b).map!(a => a[0] * a[1])
 					.fold!((a, b) => a + b);

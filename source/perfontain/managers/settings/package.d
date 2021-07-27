@@ -95,7 +95,7 @@ private:
 		}
 	}
 
-	static load(T)(ref in JSONValue json, ref T value)
+	static load(T)(in JSONValue json, ref T value)
 	{
 		static if (is(T == string))
 		{

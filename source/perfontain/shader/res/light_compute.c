@@ -1,11 +1,10 @@
 import header
-precision highp uimage2D;
 
 layout(local_size_x = 32, local_size_y = 32) in;
-layout(r32ui, binding = 0) uniform writeonly uimage2D output_tex;
+layout(r32ui, binding = 0) uniform writeonly highp uimage2D output_tex;
 
-__TEX_ID__ uniform sampler2D pe_tex_lights_depth;
 uniform mat4 proj_view_inversed;
+__TEX_ID__ uniform sampler2D pe_tex_lights_depth;
 
 struct LightSource
 {
@@ -25,21 +24,15 @@ compute:
 		return p.xyz / p.w;
 	}
 
-	void main()
+	uint makeColor(vec2 uv)
 	{
-		ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
-
-		if(coord.x >= VIEWPORT_SIZE.x || coord.y >= VIEWPORT_SIZE.y)
-			return;
-
-		vec2 uv = vec2(coord) / vec2(VIEWPORT_SIZE);
+		const uint end = 1u << 24;
 
 		uint pixel = 0u;
 		float depth = texture(pe_tex_lights_depth, uv).r;
 
 		if(depth < 0.99)
 		{
-			const uint end = 1u << 24;
 			vec3 pos = pixel_pos(vec3(uv, depth));
 
 			for(int i = 0; i < lights.length(); i++)
@@ -52,11 +45,24 @@ compute:
 
 					if(pixel >= end)
 					{
-						break;
+						return pixel;
 					}
 				}
 			}
 		}
+
+		return pixel;
+	}
+
+	void main()
+	{
+		ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
+
+		if(coord.x >= VIEWPORT_SIZE.x || coord.y >= VIEWPORT_SIZE.y)
+			return;
+
+		vec2 uv = vec2(coord) / vec2(VIEWPORT_SIZE);
+		uint pixel = makeColor(uv);
 
 		imageStore(output_tex, coord, uvec4(pixel));
 	}

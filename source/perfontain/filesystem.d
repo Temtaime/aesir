@@ -45,7 +45,7 @@ class FileSystem
 		return get(name).deserializeMem!T;
 	}
 
-	final write(T)(string name, auto ref in T data, ubyte t = FS_DISK)
+	final write(T)(string name, in T data, ubyte t = FS_DISK)
 	{
 		put(name, data.serializeMem, t);
 	}

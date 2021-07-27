@@ -4,7 +4,7 @@ import std.algorithm, perfontain, ro.grf, ro.path, rocl.game, rocl.status, rocl.
 
 abstract class Actor : RCounted
 {
-	static Actor create(ref in ActorInfo p)
+	static Actor create(in ActorInfo p)
 	{
 		final switch (p.type)
 		{
@@ -17,7 +17,7 @@ abstract class Actor : RCounted
 		}
 	}
 
-	this(ref in ActorInfo p)
+	this(in ActorInfo p)
 	{
 		bl = p.bl;
 		name = p.name;
@@ -40,7 +40,7 @@ abstract class Actor : RCounted
 		return false;
 	}
 
-	void doAttack(ref in Pk08c8 p)
+	void doAttack(in Pk08c8 p)
 	{
 		if (!ROent.doActor(p.dstId, &onDir))
 		{
@@ -81,7 +81,7 @@ package:
 
 final class Mob : Actor
 {
-	this(ref in ActorInfo p)
+	this(in ActorInfo p)
 	{
 		super(p);
 	}
@@ -95,7 +95,7 @@ final class Mob : Actor
 
 final class Npc : Actor
 {
-	this(ref in ActorInfo p)
+	this(in ActorInfo p)
 	{
 		super(p);
 	}
@@ -117,7 +117,7 @@ final class Npc : Actor
 
 final class Player : Actor
 {
-	this(ref in ActorInfo p)
+	this(in ActorInfo p)
 	{
 		super(p);
 

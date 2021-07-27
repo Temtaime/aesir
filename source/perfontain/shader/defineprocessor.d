@@ -66,7 +66,7 @@ private:
 		return s;
 	}
 
-	string gen(ref in ParseTree p, bool tab = true)
+	string gen(in ParseTree p, bool tab = true)
 	{
 		switch (p.name)
 		{

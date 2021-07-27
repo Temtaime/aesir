@@ -1,7 +1,6 @@
 module ro.conv.asp;
-import std.conv, std.digest.md, std.math, std.path, std.file, std.stdio, std.range,
-	std.string, std.algorithm, stb.image, perfontain, perfontain.nodes.sprite,
-	perfontain.math.matrix, ro.grf, ro.conf, ro.conv, ro.sprite.spr,
+import std.conv, std.digest.md, std.math, std.path, std.file, std.stdio, std.range, std.string, std.algorithm,
+	stb.image, perfontain, perfontain.nodes.sprite, perfontain.math.matrix, ro.grf, ro.conf, ro.conv, ro.sprite.spr,
 	ro.sprite.act, ro.sprite.svg, rocl.game;
 
 struct AspFile
@@ -51,8 +50,8 @@ protected:
 		}
 
 		Sprite spr = {
-			events: _act.sounds.map!(a => SpriteEvent(a.path)).array, actions: _act.acts.enumerate.map!(
-					a => makeAction(a.value, cast(uint)a.index)).array
+			events: _act.sounds.map!(a => SpriteEvent(a.path)).array, actions: _act.acts.enumerate.map!(a => makeAction(a.value,
+					cast(uint)a.index)).array
 		};
 
 		AspFile res;
@@ -64,18 +63,16 @@ protected:
 	}
 
 private:
-	auto makeAction(ref in ActAction ac, uint idx)
+	auto makeAction(in ActAction ac, uint idx)
 	{
 		SpriteAction res = {
-			delay: cast(ushort)(_act.delays.length ? _act.delays[idx] * 25 : 150),
-
-			frames: ac.frames.map!(a => makeFrame(a)).array
+			delay: cast(ushort)(_act.delays.length ? _act.delays[idx] * 25 : 150), frames: ac.frames.map!(a => makeFrame(a)).array
 		};
 
 		return res;
 	}
 
-	auto makeFrame(ref in ActFrame fr)
+	auto makeFrame(in ActFrame fr)
 	{
 		BBox box;
 		SpriteFrame res;
@@ -145,12 +142,10 @@ private:
 			_meshes ~= m;
 		}
 
-		fr.eventId < cast(int)_act.sounds.length
-			|| throwError!`invalid event id = %d, max is %u`(fr.eventId, _act.sounds.length);
+		fr.eventId < cast(int)_act.sounds.length || throwError!`invalid event id = %d, max is %u`(fr.eventId, _act.sounds.length);
 
 		res.event = cast(byte)max(-1, fr.eventId);
-		res.extra = fr.hasExtra ? Vector2(fr.extra.pos) * -SPRITE_PROP
-			: Vector2(_offset ? float.init : 0);
+		res.extra = fr.hasExtra ? Vector2(fr.extra.pos) * -SPRITE_PROP : Vector2(_offset ? float.init : 0);
 
 		return res;
 	}

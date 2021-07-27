@@ -98,7 +98,7 @@ private:
 		drawAlloc[_tp].draw(_pg, nodes, subs, bind);
 	}
 
-	void write(ref in DrawInfo di, ubyte[] arr, ubyte flags)
+	void write(in DrawInfo di, ubyte[] arr, ubyte flags)
 	{
 		uint p;
 

@@ -43,20 +43,73 @@ struct Items
 {
 	void clear()
 	{
-		arr = null;
+		_arr = null;
 	}
 
-	void add(Item m)
+	// void add(ushort idx, ushort cnt, scope Item delegate() dg)
+	// {
+	// 	if (auto e = getIdx(idx))
+	// 	{
+	// 		e.reamount(cast(ushort)(e.amount + cnt));
+	// 	}
+	// 	else
+	// 	{
+	// 		if (dg)
+	// 			add(dg());
+	// 		else
+	// 			debug throwError!`item at index %u was not found, cannot add %u to the amount`(idx, cnt);
+	// 	}
+	// }
+	void add(T)(in T data)
 	{
-		assert(getIdx(m.idx) is null);
+		if (auto e = getIdx(data.idx))
+		{
+			debug
+			{
+				throwError!`item at index %u is already exist`(data.idx);
+			}
 
-		arr ~= m;
-		onAdded(m);
+			_arr.remove(e);
+		}
+
+		add(new Item(data));
 	}
 
-	void remove(Item m)
+	void changeAmount(ushort idx, int cnt, bool isTotal = false, scope Item delegate() dg = null)
 	{
-		arr.remove(m);
+		if (auto e = getIdx(idx))
+		{
+			if (isTotal)
+			{
+				if (cnt)
+					e.reamount(cast(ushort)cnt);
+				else
+					_arr.remove(e);
+			}
+			else
+			{
+				int amount = e.amount + cnt;
+
+				debug
+				{
+					amount >= 0 || throwError!`item at index %u has amount %u, while new amount is %d`(idx, e.amount, amount);
+				}
+
+				if (amount > 0)
+					e.reamount(cast(ushort)amount);
+				else
+					_arr.remove(e);
+			}
+		}
+		else
+		{
+			if (dg)
+			{
+				add(dg());
+			}
+			else
+				debug throwError!`tried to process a non-existant item at index %u`(idx);
+		}
 	}
 
 	auto getIdx(ushort idx)
@@ -68,14 +121,25 @@ struct Items
 
 	auto get(scope bool delegate(Item) dg)
 	{
-		return arr[].filter!dg
+		return arr.filter!dg
 			.array
 			.sort!((a, b) => a.idx < b.idx)
 			.release;
 	}
 
-	RCArray!Item arr;
+	inout arr() => _arr[];
+
 	Signal!(void, Item) onAdded;
+private:
+	void add(Item m)
+	{
+		assert(getIdx(m.idx) is null);
+
+		_arr ~= m;
+		onAdded(m);
+	}
+
+	RCArray!Item _arr;
 }
 
 struct Param(T)

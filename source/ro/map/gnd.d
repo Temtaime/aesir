@@ -1,7 +1,6 @@
 module ro.map.gnd;
-import std.math, std.conv, std.array, std.range, std.string, std.typecons,
-	std.algorithm, perfontain, perfontain.misc, perfontain.math, ro.grf,
-	ro.map, ro.conf, ro.conv, ro.conv.map, rocl.game;
+import std.math, std.conv, std.array, std.range, std.string, std.typecons, std.algorithm, perfontain,
+	perfontain.misc, perfontain.math, ro.grf, ro.map, ro.conf, ro.conv, ro.conv.map, rocl.game;
 
 struct GndConverter
 {
@@ -19,8 +18,7 @@ struct GndConverter
 		MeshInfo[] res;
 		MeshInfo[32] water;
 
-		auto tx = (_gnd.width + ROM_SPLIT_MAP - 1) / ROM_SPLIT_MAP,
-			ty = (_gnd.height + ROM_SPLIT_MAP - 1) / ROM_SPLIT_MAP;
+		auto tx = (_gnd.width + ROM_SPLIT_MAP - 1) / ROM_SPLIT_MAP, ty = (_gnd.height + ROM_SPLIT_MAP - 1) / ROM_SPLIT_MAP;
 
 		foreach (i; 0 .. tx)
 		{
@@ -30,8 +28,7 @@ struct GndConverter
 			{
 				auto y = j * ROM_SPLIT_MAP, sy = min(_gnd.height - y, ROM_SPLIT_MAP);
 
-				auto r = processSub(water, cast(ushort)x, cast(ushort)y,
-						cast(ushort)sx, cast(ushort)sy);
+				auto r = processSub(water, cast(ushort)x, cast(ushort)y, cast(ushort)sx, cast(ushort)sy);
 
 				if (r.subs.length)
 				{
@@ -279,8 +276,7 @@ private:
 			return;
 
 		// surface check
-		if (!arePointsOnOneLine(va[0].p, va[v_21].p, vb[v_21].p)
-				|| !arePointsOnOneLine(va[v_12].p, va[3].p, vb[3].p))
+		if (!arePointsOnOneLine(va[0].p, va[v_21].p, vb[v_21].p) || !arePointsOnOneLine(va[v_12].p, va[3].p, vb[3].p))
 			return;
 
 		if (compCoord)
@@ -301,8 +297,7 @@ private:
 			// TODO: CHECK BOTH TEXTURE COORDS: ALL 4 COORDS, NOT ONLY 1
 
 			// delta divider
-			auto div = lastSide ? va[1].z - va[0].z : (combineY ? va[0].z - va[2].z
-					: va[1].x - va[0].x);
+			auto div = lastSide ? va[1].z - va[0].z : (combineY ? va[0].z - va[2].z : va[1].x - va[0].x);
 
 			// calc a delta
 			f /= div / 2;
@@ -346,7 +341,7 @@ auto toInts(in float[] arr)
 	return arr.map!(a => cast(int)lrint(a * 100)).array;
 }
 
-bool compareCoords(T)(ref in T a, ref in T b)
+bool compareCoords(T)(in T a, in T b)
 {
 	return a.flat.toInts[] == b.flat.toInts[];
 }
@@ -425,7 +420,5 @@ static immutable ubyte[4][2][3] posArray = [
 	2 3
 	0 1
 	**/
-	[[0, 1, 0, 1], [0, 0, 1, 1]], [[0, 1, 0, 1], [1, 1, 1, 1],],
-
-	[[1, 1, 1, 1], [1, 0, 1, 0],]
+	[[0, 1, 0, 1], [0, 0, 1, 1]], [[0, 1, 0, 1], [1, 1, 1, 1],], [[1, 1, 1, 1], [1, 0, 1, 0],]
 ];

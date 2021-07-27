@@ -1,6 +1,6 @@
 module ro.conv.effect;
-import std.uni, std.digest.md, std.math, std.array, std.stdio, std.algorithm, perfontain,
-	perfontain.misc, perfontain.mesh, perfontain.math, ro.grf, ro.conf, ro.map, ro.str, ro.conv;
+import std.uni, std.digest.md, std.math, std.array, std.stdio, std.algorithm, perfontain, perfontain.misc,
+	perfontain.mesh, perfontain.math, ro.grf, ro.conf, ro.map, ro.str, ro.conv;
 
 class AafConverter : Converter!AafFile
 {
@@ -48,10 +48,7 @@ class AafConverter : Converter!AafFile
 					foreach (i, ref v; vs)
 					{
 						v.p *= m;
-						v.t = [
-							Vector2(0, 0), Vector2(1, 0), Vector2(0, 1),
-							Vector2(1, 1)
-						][i]; // p.uv[i];
+						v.t = [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1), Vector2(1, 1)][i]; // p.uv[i];
 					}
 
 					Color c;
@@ -146,8 +143,7 @@ class AafConverter : Converter!AafFile
 						ds[] += i * 4;
 
 						{
-							auto n = calcNormal(vertices[ds[0]].p,
-									vertices[ds[1]].p, vertices[ds[2]].p);
+							auto n = calcNormal(vertices[ds[0]].p, vertices[ds[1]].p, vertices[ds[2]].p);
 
 							if (n.z < 0)
 							{
@@ -176,7 +172,7 @@ class AafConverter : Converter!AafFile
 	}
 
 private:
-	bool calcAnim(ref in StrLayer r, uint key, ref StrAnimation p)
+	bool calcAnim(in StrLayer r, uint key, ref StrAnimation p)
 	{
 		short fromId = -1, toId = -1, lastSource, lastFrame;
 
@@ -290,7 +286,7 @@ private:
 
 	struct StrMesh
 	{
-		const opCmp(ref in StrMesh m)
+		const opCmp(in StrMesh m)
 		{
 			if (subs.length != m.subs.length)
 				return cast(int)subs.length - cast(int)m.subs.length;

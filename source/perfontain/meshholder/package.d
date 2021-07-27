@@ -1,10 +1,6 @@
 module perfontain.meshholder;
 
-import
-		std,
-
-		perfontain;
-
+import std, perfontain;
 
 final class MeshHolder : RCounted
 {
@@ -14,14 +10,11 @@ final class MeshHolder : RCounted
 		reg = _iv.alloc(data);
 	}
 
-	this(ref in HolderData v)
+	this(in HolderData v)
 	{
 		this(v.type, v.data);
 
-		texs = v
-					.textures
-					.map!(a => new Texture(a))
-					.array;
+		texs = v.textures.map!(a => new Texture(a)).array;
 
 		meshes = v.meshes;
 	}

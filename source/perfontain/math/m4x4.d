@@ -6,20 +6,35 @@ mixin template M4x4Impl()
 
 	@property inout
 	{
-		ref translation() { return *cast(inout(V3) *)A[3].ptr; }
+		ref translation()
+		{
+			return *cast(inout(V3)*)A[3].ptr;
+		}
 
 		auto scale()
 		{
 			V3 res;
-			foreach(i; 0..3) res[i] = A[i][i];
+			foreach (i; 0 .. 3)
+				res[i] = A[i][i];
 			return res;
 		}
 	}
 
 static:
-	Matrix scale()(auto ref in V3 v) { return scale(v.x, v.y, v.z); }
-	Matrix rotate()(auto ref in V3 v) { return rotate(v.x, v.y, v.z); }
-	Matrix translate()(auto ref in V3 v) { return translate(v.x, v.y, v.z); }
+	Matrix scale()(in V3 v)
+	{
+		return scale(v.x, v.y, v.z);
+	}
+
+	Matrix rotate()(in V3 v)
+	{
+		return rotate(v.x, v.y, v.z);
+	}
+
+	Matrix translate()(in V3 v)
+	{
+		return translate(v.x, v.y, v.z);
+	}
 
 	Matrix scale()(T x, T y, T z)
 	{
@@ -47,7 +62,7 @@ static:
 		return ret;
 	}
 
-	Matrix rotateVector()(auto ref in V3 axis, float angle)
+	Matrix rotateVector()(in V3 axis, float angle)
 	{
 		float c = cos(angle);
 		float s = sin(angle);
@@ -71,8 +86,8 @@ static:
 		ret.flat[5] = ty * axis.y + c;
 		ret.flat[6] = ty * axis.z + sx;
 
-		ret.flat[8]  = tz * axis.x + sy;
-		ret.flat[9]  = tz * axis.y - sx;
+		ret.flat[8] = tz * axis.x + sy;
+		ret.flat[9] = tz * axis.y - sx;
 		ret.flat[10] = tz * axis.z + c;
 
 		return ret;
@@ -95,7 +110,7 @@ static:
 		return res;
 	}
 
-	Matrix lookAt(ref in V3 pos, ref in V3 dir)
+	Matrix lookAt(in V3 pos, in V3 dir)
 	{
 		auto z = dir;
 		auto x = (AXIS_Y ^ z).normalize;

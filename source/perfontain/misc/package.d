@@ -284,7 +284,7 @@ void changed(uint old, uint new_, uint bit, void delegate(bool) func)
 
 struct TimeMeter
 {
-	this(A...)(string msg, auto ref in A args)
+	this(A...)(string msg, in A args)
 	{
 		static if (args.length)
 			msg = format(msg, args);

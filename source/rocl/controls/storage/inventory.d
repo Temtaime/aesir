@@ -1,7 +1,6 @@
 module rocl.controls.storage.inventory;
-import std.meta, std.conv, std.range, std.string, std.algorithm, perfontain,
-	ro.db, ro.conv, ro.conv.gui, ro.conv.item, rocl, rocl.gui.misc, rocl.game,
-	rocl.paths, rocl.status, rocl.status.helpers, rocl.network, rocl.controls,
+import std.meta, std.conv, std.range, std.string, std.algorithm, perfontain, ro.db, ro.conv, ro.conv.gui, ro.conv.item,
+	rocl, rocl.gui.misc, rocl.game, rocl.paths, rocl.status, rocl.status.helpers, rocl.network, rocl.controls,
 	rocl.controls.storage, rocl.controls.storage;
 
 final class WinInventory : ItemView
@@ -29,12 +28,18 @@ protected:
 		return RO.status.items.arr[];
 	}
 
-	override void onIconDraw(in ref Widget w, Item m)
+	override void onIconDraw(in Widget w, Item m)
 	{
-		if (RO.gui.kafra.isActive)
+		if (w.clicked(NK_BUTTON_LEFT))
 		{
-			ROnet.storePut(m.idx, m.amount);
-			return;
+			if (RO.gui.kafra.isActive)
+			{
+				ROnet.storePut(m.idx, m.amount);
+			}
+			else
+			{
+				m.action;
+			}
 		}
 	}
 }

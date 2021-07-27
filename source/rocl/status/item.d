@@ -1,6 +1,5 @@
 module rocl.status.item;
-import std.meta, std.algorithm, perfontain, rocl.status, rocl.network,
-	rocl.controls, utile.logger;
+import std.meta, std.algorithm, perfontain, rocl.status, rocl.network, rocl.controls, utile.logger;
 
 enum
 {
@@ -12,7 +11,7 @@ enum
 
 final class Item : RCounted
 {
-	this(ref in PkItemBuy p)
+	this(in PkItemBuy p)
 	{
 		id = p.id;
 
@@ -22,7 +21,7 @@ final class Item : RCounted
 		price = min(p.price, p.discountPrice);
 	}
 
-	this(ref in Pk0a09 p)
+	this(in Pk0a09 p)
 	{
 		foreach (s; AliasSeq!(`id`, `type`, `amount`, `flags`, `attr`, `refine`, `cards`))
 		{
@@ -32,7 +31,7 @@ final class Item : RCounted
 		source = ITEM_TRADING;
 	}
 
-	this(ref in PkEquipItem p)
+	this(in PkEquipItem p)
 	{
 		amount = 1;
 
@@ -44,7 +43,7 @@ final class Item : RCounted
 		createFrom(p);
 	}
 
-	this(ref in Pk0a0a p)
+	this(in Pk0a0a p)
 	{
 		foreach (s; AliasSeq!(`amount`, `refine`))
 		{
@@ -54,7 +53,7 @@ final class Item : RCounted
 		createFrom(p);
 	}
 
-	this(ref in PkStackableItem p)
+	this(in PkStackableItem p)
 	{
 		foreach (s; AliasSeq!(`amount`, `equip`, `expireTime`))
 		{
@@ -64,7 +63,7 @@ final class Item : RCounted
 		createFrom(p);
 	}
 
-	this(ref in Pk0a37 p)
+	this(in Pk0a37 p)
 	{
 		foreach (s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`, `bound`, `look`))
 		{
@@ -134,11 +133,7 @@ final class Item : RCounted
 
 	ubyte tab() const
 	{
-		static immutable arr = [
-			[IT_HEALING, IT_USABLE, IT_CASH], [
-				IT_ARMOR, IT_WEAPON, IT_PETARMOR,
-			],
-		];
+		static immutable arr = [[IT_HEALING, IT_USABLE, IT_CASH], [IT_ARMOR, IT_WEAPON, IT_PETARMOR,],];
 
 		auto n = cast(byte)arr.countUntil!(a => a.canFind(type));
 		return n < 0 ? 2 : n;
@@ -161,8 +156,7 @@ private:
 		assert(!m.equip2);
 		assert(!m.trading);
 
-		foreach (s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`,
-				`price`, `bound`, `look`, `attr`, `source`))
+		foreach (s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`, `price`, `bound`, `look`, `attr`, `source`))
 		{
 			mixin(s ~ `= cast(typeof(` ~ s ~ `))m.` ~ s ~ `;`);
 		}
@@ -170,7 +164,7 @@ private:
 		createFrom(m);
 	}
 
-	void createFrom(T)(ref in T p)
+	void createFrom(T)(in T p)
 	{
 		foreach (s; AliasSeq!(`id`, `idx`, `type`, `flags`, `cards`))
 		{

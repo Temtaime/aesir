@@ -28,7 +28,7 @@ protected:
 private:
 	enum ATLAS_PAD = 2; // doubled, so it's 4
 
-	void processSubMeshes(ref SubMeshData data, ref in MeshInfo m)
+	void processSubMeshes(ref SubMeshData data, in MeshInfo m)
 	{
 		foreach (ref s; m.subs)
 		{

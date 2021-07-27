@@ -25,7 +25,7 @@ package:
 			~ `);`;
 	}
 
-	static cmp(ref in DrawInfo a, ref in DrawInfo b)
+	static cmp(in DrawInfo a, in DrawInfo b)
 	{
 		mixin(diff(`prog`, `<`, `cast(void*)`));
 		mixin(diff(`flags & DI_NO_DEPTH`));

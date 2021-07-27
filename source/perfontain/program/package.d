@@ -63,7 +63,7 @@ final class Program : RCounted
 		bind(0);
 	}
 
-	void send(T)(string name, auto ref in T value)
+	void send(T)(string name, in T value)
 	{
 		int loc = _attribs[name].loc;
 

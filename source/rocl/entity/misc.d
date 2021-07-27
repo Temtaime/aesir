@@ -24,7 +24,7 @@ struct PosDir
 
 struct ActorInfo
 {
-	this(T)(ref in T p)
+	this(T)(in T p)
 	{
 		foreach (n; __traits(allMembers, typeof(this)))
 		{

@@ -1,6 +1,5 @@
 module ro.sprite.spr;
-import std.range, std.stdio, std.algorithm, stb.image, perfontain.math.matrix,
-	perfontain.misc, utile.except;
+import std.range, std.stdio, std.algorithm, stb.image, perfontain.math.matrix, perfontain.misc, utile.except;
 
 struct ImageOffset
 {
@@ -14,7 +13,7 @@ struct ImageInfo
 	ImageOffset[] images;
 }
 
-auto toInfo(ref in SprFile f)
+auto toInfo(in SprFile f)
 {
 	auto res = ImageInfo(f.pCnt);
 
@@ -82,8 +81,7 @@ struct SprPalette
 {
 	Vector2s size;
 
-	@(IgnoreIf!(e => e.input.ver == 0x200),
-			Default!(e => cast(ushort)(e.that.size.x * e.that.size.y))) ushort len;
+	@(IgnoreIf!(e => e.input.ver == 0x200), Default!(e => cast(ushort)(e.that.size.x * e.that.size.y))) ushort len;
 
 	@(ArrayLength!(e => e.that.len)) ubyte[] data;
 }

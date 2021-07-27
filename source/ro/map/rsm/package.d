@@ -1,8 +1,7 @@
 module ro.map.rsm;
 
-import std.conv, std.math, std.stdio, std.array, std.range, std.algorithm,
-	std.exception, perfontain, perfontain.misc, ro.grf, ro.map, ro.conv, rocl.game,
-	ro.conv.map, ro.map.rsm.structs;
+import std.conv, std.math, std.stdio, std.array, std.range, std.algorithm, std.exception, perfontain, perfontain.misc,
+	ro.grf, ro.map, ro.conv, rocl.game, ro.conv.map, ro.map.rsm.structs;
 
 struct RsmObject
 {
@@ -36,7 +35,7 @@ struct RsmConverter
 private:
 	alias VT = Vertex[][uint];
 
-	auto makeVertices(ref in RsmMesh mesh)
+	auto makeVertices(in RsmMesh mesh)
 	{
 		VT vertices;
 
@@ -71,9 +70,7 @@ private:
 
 		foreach (tid, va; vertices)
 		{
-			SubMeshInfo sm = {
-				tex: _conv.imageOf(RoPath(`data/texture/`, _rsm.texs[tid].name))
-			};
+			SubMeshInfo sm = {tex: _conv.imageOf(RoPath(`data/texture/`, _rsm.texs[tid].name))};
 
 			with (sm.data)
 			{
@@ -90,7 +87,7 @@ private:
 		return subs;
 	}
 
-	auto calcMatrices(ref in RsmMesh mesh, ref in Matrix4 pm)
+	auto calcMatrices(in RsmMesh mesh, in Matrix4 pm)
 	{
 		struct Res
 		{
@@ -166,7 +163,7 @@ private:
 					.filter!((ref a) => a.parent == name && meshId(a) != _main)
 					.map!((ref a) => processMesh(a, ms.boxTrans)) // ms.trans ???
 
-
+					
 
 					.array;
 
@@ -195,7 +192,7 @@ private:
 		return res;
 	}
 
-	auto meshId(ref in RsmMesh m)
+	auto meshId(in RsmMesh m)
 	{
 		auto r = cast(uint)(&m - _rsm.meshes.ptr);
 
