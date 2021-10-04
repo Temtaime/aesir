@@ -63,7 +63,7 @@ void main(string[] args)
 			//errorReport(e);
 		}
 
-		showErrorMessage(e.toString);
+		showErrorMessage(e.msg);
 	}
 	finally
 	{
