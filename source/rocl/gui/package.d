@@ -78,6 +78,7 @@ final class GuiManager
 				inv.draw;
 				chat.draw;
 				status.draw;
+				skills.draw;
 
 				if (shop)
 					shop.draw;
@@ -150,7 +151,7 @@ final class GuiManager
 	NpcController npc;
 
 	WinBase base;
-	//WinSkills skills;
+	WinSkills skills;
 	WinStatus status;
 	WinHotkeys hotkeys;
 	IconCache iconCache;

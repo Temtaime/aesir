@@ -1,13 +1,23 @@
 module rocl.controls.skills;
+import std.utf, std.meta, std.conv, std.range, std.string, std.algorithm, perfontain, perfontain.opengl, ro.grf,
+	ro.conv, ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game, rocl.status, rocl.controls, rocl.network.packets;
 
-import std.utf, std.meta, std.conv, std.range, std.string, std.algorithm,
+struct WinSkills
+{
+	void draw()
+	{
+		auto sz = Vector2s(340, 255);
+		auto pos = Vector2u(0, PE.window.size.y - sz.y);
 
-	perfontain, perfontain.opengl, ro.grf, ro.conv, ro.conv.gui, ro.conv.item,
+		if (auto win = Window(nk, MSG_SKILLS, nk_rect(pos.x, pos.y, sz.x, sz.y)))
+		{
+			//process(viewer);
+		}
+	}
 
-	rocl.paths, rocl, rocl.game, rocl.status, rocl.controls, rocl.network.packets;
-
-final:
-
+private:
+	mixin Nuklear;
+}
 // class WinSkills : WinBasic2
 // {
 // 	this()
