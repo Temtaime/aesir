@@ -51,8 +51,7 @@ struct RoPath
 
 	string toString() const
 	{
-		return data.map!(a => a.isPrintable
-				? [cast(immutable char)a] : `\x` ~ a.toByte.toHexString).join;
+		return data.map!(a => a.isPrintable ? [cast(immutable char)a] : `\x` ~ a.toByte.toHexString).join;
 	}
 
 	immutable(ubyte)[] data;
@@ -68,8 +67,7 @@ static:
 
 	auto itemIcon(string name)
 	{
-		return RoPath("data/texture/\xC0\xAF\xC0\xFA\xC0\xCE\xC5\xCD\xC6\xE4\xC0\xCC\xBD\xBA/item/",
-				name, `.bmp`); // 유저인터페이스
+		return RoPath("data/texture/\xC0\xAF\xC0\xFA\xC0\xCE\xC5\xCD\xC6\xE4\xC0\xCC\xBD\xBA/item/", name, `.bmp`); // 유저인터페이스
 	}
 
 	auto palette(string name)
@@ -97,8 +95,7 @@ static:
 	auto headSprite(ushort id, bool male)
 	{
 		auto name = id.to!string;
-		return RoPath("data/sprite/\xC0\xCE\xB0\xA3\xC1\xB7/\xB8\xD3\xB8\xAE\xC5\xEB/",
-				sexPath(name, male)); // 인간족 / 머리통
+		return RoPath("data/sprite/\xC0\xCE\xB0\xA3\xC1\xB7/\xB8\xD3\xB8\xAE\xC5\xEB/", sexPath(name, male)); // 인간족 / 머리통
 	}
 
 	auto hatSprite(ushort id, bool male)

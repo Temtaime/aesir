@@ -11,6 +11,12 @@ struct IconCache
 		return _aa.require(res, makeTex(res));
 	}
 
+	auto get(Skill sk)
+	{
+		auto res = sk.name;
+		return _aa.require(res, makeTex(res));
+	}
+
 	~this()
 	{
 		_aa.values.each!(a => a.release);

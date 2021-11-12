@@ -325,8 +325,8 @@ protected:
 			auto space = _widget.space;
 			auto canvas = _widget.canvas;
 
-			assert(space.w == 36);
-			assert(space.h == 36);
+			//assert(space.w == 36, space.to!string);
+			//assert(space.h == 36, space.to!string);
 
 			auto img = nk_image_ptr(cast(void*)tex);
 
@@ -334,15 +334,15 @@ protected:
 			{
 				nk_fill_rect(canvas, space, 0, nk.ctx.style.selectable.pressed_active.data.color);
 
-				nk_draw_image(canvas, nk_rect(space.x + 2, space.y + 2, 32, 32),
-						&img, nk_color(255, 255, 255, 255));
+				nk_draw_image(canvas, nk_rect(space.x + 2, space.y + 2, 32, 32), &img, nk_color(255, 255, 255, 255));
 
 				if (auto s = tooltip)
+				{
 					nk.tooltip(s);
+				}
 			}
 			else
-				nk_draw_image(canvas, nk_rect(space.x + 6, space.y + 6, 24, 24),
-						&img, nk_color(255, 255, 255, 255));
+				nk_draw_image(canvas, nk_rect(space.x + 6, space.y + 6, 24, 24), &img, nk_color(255, 255, 255, 255));
 
 			return true;
 		}
@@ -365,7 +365,9 @@ final class ItemIcon : Icon
 		auto tex = RO.gui.iconCache.get(_m);
 
 		if (super.draw(tex))
+		{
 			drawPcs;
+		}
 	}
 
 protected:
@@ -378,18 +380,15 @@ protected:
 		auto text = _m.amount.to!string;
 
 		auto w = nk.widthFor(text);
-		auto r = nk_rect(space.x + space.w - w - 3,
-				space.y + space.h - nk.ctx.style.font.height - 1, w, nk.ctx.style.font.height);
+		auto r = nk_rect(space.x + space.w - w - 3, space.y + space.h - nk.ctx.style.font.height - 1, w, nk.ctx.style.font.height);
 
 		foreach (x; -1 .. 2)
 			foreach (y; -1 .. 2)
 				if (x || y)
-					nk_draw_text(_widget.canvas, nk_rect(r.x + x, r.y + y, r.w,
-							r.h), text.ptr, cast(uint)text.length,
+					nk_draw_text(_widget.canvas, nk_rect(r.x + x, r.y + y, r.w, r.h), text.ptr, cast(uint)text.length,
 							nk.ctx.style.font, nk_color.init, nk_color(0, 0, 0, 255));
 
-		nk_draw_text(_widget.canvas, r, text.ptr, cast(uint)text.length,
-				nk.ctx.style.font, nk_color.init, nk_color(255, 255, 255, 255));
+		nk_draw_text(_widget.canvas, r, text.ptr, cast(uint)text.length, nk.ctx.style.font, nk_color.init, nk_color(255, 255, 255, 255));
 	}
 
 	override string tooltip()
@@ -399,4 +398,58 @@ protected:
 
 private:
 	Item _m;
+}
+
+final class SkillIcon : Icon
+{
+	this(Skill sk)
+	{
+		_sk = sk;
+	}
+
+	override void draw()
+	{
+		auto tex = RO.gui.iconCache.get(_sk);
+
+		if (super.draw(tex))
+		{
+			//drawPcs;
+		}
+	}
+
+private:
+	Skill _sk;
+
+protected:
+	override string tooltip()
+	{
+		return null;
+	}
+	// 	void drawPcs()
+	// 	{
+	// 		if (_m.amount == 1 || _m.source == ITEM_SHOP)
+	// 			return;
+
+	// 		auto space = _widget.space;
+	// 		auto text = _m.amount.to!string;
+
+	// 		auto w = nk.widthFor(text);
+	// 		auto r = nk_rect(space.x + space.w - w - 3, space.y + space.h - nk.ctx.style.font.height - 1, w, nk.ctx.style.font.height);
+
+	// 		foreach (x; -1 .. 2)
+	// 			foreach (y; -1 .. 2)
+	// 				if (x || y)
+	// 					nk_draw_text(_widget.canvas, nk_rect(r.x + x, r.y + y, r.w, r.h), text.ptr, cast(uint)text.length,
+	// 							nk.ctx.style.font, nk_color.init, nk_color(0, 0, 0, 255));
+
+	// 		nk_draw_text(_widget.canvas, r, text.ptr, cast(uint)text.length, nk.ctx.style.font, nk_color.init, nk_color(255, 255, 255, 255));
+	// 	}
+
+	// 	override string tooltip()
+	// 	{
+	// 		return format(`%s : %u %s`, _m.data.name, _m.amount, MSG_PCS);
+	// 	}
+
+	// private:
+	// 	Item _m;
 }

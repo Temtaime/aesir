@@ -1,6 +1,6 @@
 module rocl.controls.skills;
-import std.utf, std.meta, std.conv, std.range, std.string, std.algorithm, perfontain, perfontain.opengl, ro.grf,
-	ro.conv, ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game, rocl.status, rocl.controls, rocl.network.packets;
+import std.utf, std.meta, std.conv, std.range, std.string, perfontain, perfontain.opengl, ro.grf, ro.conv,
+	ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game, rocl.status, rocl.controls, rocl.network.packets;
 
 struct WinSkills
 {
@@ -11,7 +11,47 @@ struct WinSkills
 
 		if (auto win = Window(nk, MSG_SKILLS, nk_rect(pos.x, pos.y, sz.x, sz.y)))
 		{
-			//process(viewer);
+			//nk.layout_row_dynamic(36, 2);
+
+			// nk.layout_row_begin(ctx, NK_DYNAMIC, 36, 2);
+			// nk.layout_row_push(ctx, 0.25f);
+			// nk.widget(...);
+			// nk.layout_row_push(ctx, 0.75f);
+			// nk.widget(...);
+			// nk.layout_row_end(ctx);
+
+			//nk_layout_space_begin(ctx, NK_STATIC, 500, 64);
+			//nk_layout_space_push(ctx, nk_rect(0, 0, 150, 500));
+
+			auto s1 = Style(nk, &nk.ctx.style.window.group_padding, nk_vec2(0, 0));
+
+			// with (LayoutRowTemplate(nk, 36))
+			// {
+			// 	static_(36);
+			// 	dynamic;
+			// }
+
+			// foreach (sk; RO.status.skills)
+			// {
+			// 	//nk.layout_row_dynamic(36, 2);
+
+			// 	with (Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
+			// 	{
+			// 		nk.layout_row_static(36, 36, 1);
+
+			// 		scope r = new SkillIcon(sk);
+			// 		r.draw;
+			// 	}
+
+			// 	with (Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
+			// 	{
+			// 		nk.layout_row_dynamic(18, 1);
+
+			// 		nk.label(ROdb.skill(sk.name));
+			// 		nk.label(`gso gso`);
+			// 	}
+			// }
+ 
 		}
 	}
 
