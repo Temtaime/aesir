@@ -123,7 +123,7 @@ struct Widget
 		_process = r != NK_WIDGET_INVALID;
 	}
 
-	const clicked(uint button)
+	const clicked(nk_buttons button)
 	{
 		return !!nk_input_has_mouse_click(input, button);
 	}
@@ -151,8 +151,7 @@ struct Combo
 	this(NuklearContext nk, string text, Texture tex)
 	{
 		_nk = nk;
-		_process = !!nk.combo_begin_image_text(text.ptr, cast(uint)text.length,
-				nk_image_ptr(cast(void*)tex), size);
+		_process = !!nk.combo_begin_image_text(text.ptr, cast(uint)text.length, nk_image_ptr(cast(void*)tex), size);
 	}
 
 	bool item(string text)
@@ -162,8 +161,7 @@ struct Combo
 
 	bool item(string text, Texture tex)
 	{
-		return !!_nk.combo_item_image_text(nk_image_ptr(cast(void*)tex),
-				text.ptr, cast(uint)text.length, NK_TEXT_RIGHT);
+		return !!_nk.combo_item_image_text(nk_image_ptr(cast(void*)tex), text.ptr, cast(uint)text.length, NK_TEXT_RIGHT);
 	}
 
 private:
@@ -214,14 +212,13 @@ struct Tree
 {
 	mixin NuklearStruct!(`tree_pop`, true);
 
-	this(string File = __FILE__, uint Line = __LINE__)(NuklearContext nk,
-			string name, ubyte type = NK_TREE_TAB, ubyte flags = NK_MINIMIZED)
+	this(string File = __FILE__, uint Line = __LINE__)(NuklearContext nk, string name, nk_tree_type type = NK_TREE_TAB,
+			nk_collapse_states flags = NK_MINIMIZED)
 	{
 		auto id = nk.uniqueId!(File, Line);
 
 		_nk = nk;
-		_process = !!nk.tree_push_hashed(type, name.toStringz, flags, id.ptr,
-				cast(uint)id.length, 0);
+		_process = !!nk.tree_push_hashed(type, name.toStringz, flags, id.ptr, cast(uint)id.length, 0);
 	}
 }
 
@@ -235,6 +232,5 @@ struct Window
 		_process = !!nk.begin(name.toStringz, rect, flags);
 	}
 
-	enum DEFAULT_FLAGS = NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE
-		| NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE;
+	enum DEFAULT_FLAGS = NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE;
 }

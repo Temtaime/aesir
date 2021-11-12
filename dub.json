@@ -58,5 +58,11 @@
 	],
 	"lflags-windows": [
 		"/LIBPATH:utils/deps"
+	],
+	"lflags-windows-dmd": [
+		"/LIBPATH:utils/deps/debug"
+	],
+	"lflags-windows-ldc": [
+		"/LIBPATH:utils/deps/release"
 	]
 }

@@ -22,8 +22,7 @@ final class NuklearContext
 
 	bool checkbox(string text, bool v)
 	{
-		int value = v;
-		return !!this.checkbox_text(text.ptr, cast(uint)text.length, &value);
+		return !!this.checkbox_text(text.ptr, cast(uint)text.length, &v);
 	}
 
 	bool button(string text)
@@ -41,8 +40,7 @@ final class NuklearContext
 		nk_tooltip(&_ctx, text.toStringz);
 	}
 
-	bool tabSelector(string[] tabs, ref ubyte index,
-			void delegate(ref LayoutRowTemplate) dg = null, void delegate() draw = null)
+	bool tabSelector(string[] tabs, ref ubyte index, void delegate(ref LayoutRowTemplate) dg = null, void delegate() draw = null)
 	{
 
 		bool res, extra = dg && draw;
@@ -85,8 +83,7 @@ final class NuklearContext
 	{
 		auto font = _ctx.style.font;
 
-		return cast(ushort)font.width(cast(nk_handle)font.userdata,
-				font.height, text.ptr, cast(int)text.length);
+		return cast(ushort)font.width(cast(nk_handle)font.userdata, font.height, text.ptr, cast(int)text.length);
 	}
 
 	void coloredText(CharColor[] line)
@@ -103,12 +100,10 @@ final class NuklearContext
 				auto c = g[0].color;
 				auto str = g.map!(a => a.c).toUTF8;
 
-				auto rect = nk_rect(widget.space.x + x, widget.space.y + y,
-						widget.space.w, _ctx.style.font.height);
+				auto rect = nk_rect(widget.space.x + x, widget.space.y + y, widget.space.w, _ctx.style.font.height);
 				auto color = nk_rgba(c.r, c.g, c.b, c.a);
 
-				nk_draw_text(widget.canvas, rect, str.ptr, cast(uint)str.length,
-						_ctx.style.font, _ctx.style.window.background, color);
+				nk_draw_text(widget.canvas, rect, str.ptr, cast(uint)str.length, _ctx.style.font, _ctx.style.window.background, color);
 				x += widthFor(str);
 			}
 		}
@@ -116,9 +111,7 @@ final class NuklearContext
 
 	const buttonWidth(string text)
 	{
-		return widthFor(text) + (
-				_ctx.style.button.rounding + _ctx.style.button.border + _ctx.style.button.padding.x)
-			* 2;
+		return widthFor(text) + (_ctx.style.button.rounding + _ctx.style.button.border + _ctx.style.button.padding.x) * 2;
 	}
 
 	const editHeight()

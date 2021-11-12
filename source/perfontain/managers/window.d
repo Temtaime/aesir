@@ -355,7 +355,7 @@ int nk_sdl_handle_event(SDL_Event* evt)
 	if (evt.type == SDL_KEYUP || evt.type == SDL_KEYDOWN)
 	{
 		/* key events */
-		int down = evt.type == SDL_KEYDOWN;
+		bool down = evt.type == SDL_KEYDOWN;
 		const Uint8* state = SDL_GetKeyboardState(null);
 		SDL_Keycode sym = evt.key.keysym.sym;
 		if (sym == SDLK_RSHIFT || sym == SDLK_LSHIFT)
@@ -425,7 +425,7 @@ int nk_sdl_handle_event(SDL_Event* evt)
 	else if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP)
 	{
 		/* mouse button */
-		int down = evt.type == SDL_MOUSEBUTTONDOWN;
+		bool down = evt.type == SDL_MOUSEBUTTONDOWN;
 		const int x = evt.button.x, y = evt.button.y;
 		if (evt.button.button == SDL_BUTTON_LEFT)
 		{
