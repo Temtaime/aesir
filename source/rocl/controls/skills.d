@@ -11,47 +11,33 @@ struct WinSkills
 
 		if (auto win = Window(nk, MSG_SKILLS, nk_rect(pos.x, pos.y, sz.x, sz.y)))
 		{
-			//nk.layout_row_dynamic(36, 2);
+			auto s1 = Style(nk, &nk.ctx.style.text.padding, nk_vec2(0, 0));
+			auto s2 = Style(nk, &nk.ctx.style.window.group_padding, nk_vec2(0, 0));
 
-			// nk.layout_row_begin(ctx, NK_DYNAMIC, 36, 2);
-			// nk.layout_row_push(ctx, 0.25f);
-			// nk.widget(...);
-			// nk.layout_row_push(ctx, 0.75f);
-			// nk.widget(...);
-			// nk.layout_row_end(ctx);
+			with (LayoutRowTemplate(nk, 36))
+			{
+				static_(36);
+				dynamic;
+			}
 
-			//nk_layout_space_begin(ctx, NK_STATIC, 500, 64);
-			//nk_layout_space_push(ctx, nk_rect(0, 0, 150, 500));
+			foreach (sk; RO.status.skills)
+			{
+				if (auto group = Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
+				{
+					nk.layout_row_dynamic(36, 1);
 
-			auto s1 = Style(nk, &nk.ctx.style.window.group_padding, nk_vec2(0, 0));
+					scope r = new SkillIcon(sk);
+					r.draw;
+				}
 
-			// with (LayoutRowTemplate(nk, 36))
-			// {
-			// 	static_(36);
-			// 	dynamic;
-			// }
+				if (auto group = Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
+				{
+					nk.layout_row_dynamic(18, 1);
 
-			// foreach (sk; RO.status.skills)
-			// {
-			// 	//nk.layout_row_dynamic(36, 2);
-
-			// 	with (Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
-			// 	{
-			// 		nk.layout_row_static(36, 36, 1);
-
-			// 		scope r = new SkillIcon(sk);
-			// 		r.draw;
-			// 	}
-
-			// 	with (Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
-			// 	{
-			// 		nk.layout_row_dynamic(18, 1);
-
-			// 		nk.label(ROdb.skill(sk.name));
-			// 		nk.label(`gso gso`);
-			// 	}
-			// }
- 
+					nk.label(ROdb.skill(sk.name));
+					nk.label(`gso gso`);
+				}
+			}
 		}
 	}
 

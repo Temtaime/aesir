@@ -87,7 +87,7 @@ struct Popup
 		auto type = static_ ? NK_POPUP_STATIC : NK_POPUP_DYNAMIC;
 
 		_nk = nk;
-		_process = !!nk.popup_begin(type, name.toStringz, flags, rect);
+		_process = nk.popup_begin(type, name.toStringz, flags, rect);
 	}
 
 	void close()
@@ -103,7 +103,7 @@ struct Group
 	this(NuklearContext nk, string name, uint flags = 0)
 	{
 		_nk = nk;
-		_process = !!nk.group_begin(name.toStringz, flags);
+		_process = nk.group_begin(name.toStringz, flags);
 	}
 }
 
@@ -125,12 +125,12 @@ struct Widget
 
 	const clicked(nk_buttons button)
 	{
-		return !!nk_input_has_mouse_click(input, button);
+		return nk_input_has_mouse_click(input, button);
 	}
 
 	const mouseInside()
 	{
-		return !!nk_input_is_mouse_hovering_rect(input, space);
+		return nk_input_is_mouse_hovering_rect(input, space);
 	}
 
 	nk_rect space;
@@ -145,23 +145,23 @@ struct Combo
 	this(NuklearContext nk, string text)
 	{
 		_nk = nk;
-		_process = !!nk.combo_begin_text(text.ptr, cast(uint)text.length, size);
+		_process = nk.combo_begin_text(text.ptr, cast(uint)text.length, size);
 	}
 
 	this(NuklearContext nk, string text, Texture tex)
 	{
 		_nk = nk;
-		_process = !!nk.combo_begin_image_text(text.ptr, cast(uint)text.length, nk_image_ptr(cast(void*)tex), size);
+		_process = nk.combo_begin_image_text(text.ptr, cast(uint)text.length, nk_image_ptr(cast(void*)tex), size);
 	}
 
 	bool item(string text)
 	{
-		return !!_nk.combo_item_text(text.ptr, cast(uint)text.length, NK_TEXT_CENTERED);
+		return _nk.combo_item_text(text.ptr, cast(uint)text.length, NK_TEXT_CENTERED);
 	}
 
 	bool item(string text, Texture tex)
 	{
-		return !!_nk.combo_item_image_text(nk_image_ptr(cast(void*)tex), text.ptr, cast(uint)text.length, NK_TEXT_RIGHT);
+		return _nk.combo_item_image_text(nk_image_ptr(cast(void*)tex), text.ptr, cast(uint)text.length, NK_TEXT_RIGHT);
 	}
 
 private:
@@ -218,7 +218,7 @@ struct Tree
 		auto id = nk.uniqueId!(File, Line);
 
 		_nk = nk;
-		_process = !!nk.tree_push_hashed(type, name.toStringz, flags, id.ptr, cast(uint)id.length, 0);
+		_process = nk.tree_push_hashed(type, name.toStringz, flags, id.ptr, cast(uint)id.length, 0);
 	}
 }
 
@@ -229,7 +229,7 @@ struct Window
 	this(NuklearContext nk, string name, nk_rect rect, uint flags = DEFAULT_FLAGS)
 	{
 		_nk = nk;
-		_process = !!nk.begin(name.toStringz, rect, flags);
+		_process = nk.begin(name.toStringz, rect, flags);
 	}
 
 	enum DEFAULT_FLAGS = NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE;

@@ -22,17 +22,17 @@ final class NuklearContext
 
 	bool checkbox(string text, bool v)
 	{
-		return !!this.checkbox_text(text.ptr, cast(uint)text.length, &v);
+		return this.checkbox_text(text.ptr, cast(uint)text.length, &v);
 	}
 
 	bool button(string text)
 	{
-		return !!this.button_text(text.ptr, cast(uint)text.length);
+		return this.button_text(text.ptr, cast(uint)text.length);
 	}
 
 	bool button(string text, uint align_, nk_symbol_type symbol)
 	{
-		return !!this.button_symbol_text(symbol, text.ptr, cast(uint)text.length, align_);
+		return this.button_symbol_text(symbol, text.ptr, cast(uint)text.length, align_);
 	}
 
 	void tooltip(string text)
@@ -147,7 +147,7 @@ final class NuklearContext
 
 	bool isWidgetHovered()
 	{
-		return !!nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
+		return nk_input_is_mouse_hovering_rect(&ctx.input, this.widget_bounds());
 	}
 
 	static uniqueId(string File = __FILE__, uint Line = __LINE__)()
