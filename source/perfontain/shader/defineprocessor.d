@@ -1,6 +1,6 @@
 module perfontain.shader.defineprocessor;
-import std.stdio, std.array, std.range, std.regex, std.string, std.algorithm, std.functional, pegged.grammar,
-	perfontain, perfontain.shader.grammar, perfontain.shader.resource;
+import std.stdio, std.array, std.range, std.regex, std.string, std.algorithm, std.functional,
+	perfontain, perfontain.shader.resource;
 
 struct DefineProcessor
 {
@@ -66,7 +66,7 @@ private:
 		return s;
 	}
 
-	string gen(in ParseTree p, bool tab = true)
+	string gen(const scope ParseTree p, bool tab = true)
 	{
 		switch (p.name)
 		{

@@ -42,7 +42,7 @@ final class ResourcesManager
 	}
 
 	// ---------------------- loading related ----------------------
-	auto load(in AspLoadInfo r)
+	auto load(const scope AspLoadInfo r)
 	{
 		auto s = r in _sprites;
 

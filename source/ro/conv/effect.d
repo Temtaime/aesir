@@ -172,7 +172,7 @@ class AafConverter : Converter!AafFile
 	}
 
 private:
-	bool calcAnim(in StrLayer r, uint key, ref StrAnimation p)
+	bool calcAnim(const scope StrLayer r, uint key, ref StrAnimation p)
 	{
 		short fromId = -1, toId = -1, lastSource, lastFrame;
 
@@ -286,7 +286,7 @@ private:
 
 	struct StrMesh
 	{
-		const opCmp(in StrMesh m)
+		const opCmp(const scope StrMesh m)
 		{
 			if (subs.length != m.subs.length)
 				return cast(int)subs.length - cast(int)m.subs.length;

@@ -1,9 +1,7 @@
 module rocl.network.structs;
 
 import
-		perfontain,
-
-		rocl.network.packets;
+		perfontain;
 
 
 struct RoPos

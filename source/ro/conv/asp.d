@@ -63,7 +63,7 @@ protected:
 	}
 
 private:
-	auto makeAction(in ActAction ac, uint idx)
+	auto makeAction(const scope ActAction ac, uint idx)
 	{
 		SpriteAction res = {
 			delay: cast(ushort)(_act.delays.length ? _act.delays[idx] * 25 : 150), frames: ac.frames.map!(a => makeFrame(a)).array
@@ -72,7 +72,7 @@ private:
 		return res;
 	}
 
-	auto makeFrame(in ActFrame fr)
+	auto makeFrame(const scope ActFrame fr)
 	{
 		BBox box;
 		SpriteFrame res;

@@ -14,7 +14,7 @@ mixin template VectorImpl()
 		assert(k == C);
 	}
 
-	this(A...)(in A args)
+	this(A...)(const scope A args)
 	{
 		uint k;
 
@@ -126,7 +126,7 @@ mixin template VectorImpl()
 		}
 	}
 
-	const zip(in Matrix v)
+	const zip(const scope Matrix v)
 	{
 		return std.range.zip(flat[], v[]);
 	}

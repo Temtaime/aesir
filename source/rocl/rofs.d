@@ -43,7 +43,7 @@ final class RoFileSystem : FileSystem
 			if (auto data = grf.get(p))
 				return data;
 
-		throwError!`file %s is not found in GRFs`(p);
+		throwError!`file %s is not found const scope GRFs`(p);
 		assert(0);
 	}
 
@@ -68,7 +68,7 @@ final class RoFileSystem : FileSystem
 		return super.get(name);
 	}
 
-	override void put(string name, in void[] data, ubyte t = FS_DISK)
+	override void put(string name, const scope void[] data, ubyte t = FS_DISK)
 	{
 		super.put(`tmp/` ~ name, data, t);
 	}

@@ -8,7 +8,7 @@ enum
 	MH_DXT = 1,
 }
 
-HolderCreator makeHolderCreator(in MeshInfo[] meshes, ubyte type, ubyte flags)
+HolderCreator makeHolderCreator(const scope MeshInfo[] meshes, ubyte type, ubyte flags)
 {
 	if (false)
 	{
@@ -22,7 +22,7 @@ HolderCreator makeHolderCreator(in MeshInfo[] meshes, ubyte type, ubyte flags)
 
 abstract class HolderCreator
 {
-	this(in MeshInfo[] meshes, ubyte type, ubyte flags)
+	this(const scope MeshInfo[] meshes, ubyte type, ubyte flags)
 	{
 		_type = type;
 		_meshes = meshes;
@@ -97,7 +97,7 @@ abstract class HolderCreator
 protected:
 	void makeData(ref HolderData);
 
-	void add(ref HolderData res, in Image im, bool mipmaps)
+	void add(ref HolderData res, const scope Image im, bool mipmaps)
 	{
 		res.textures ~= im.makeTexInfo(_flags & MH_DXT ? im.dxtTranspType : TEX_RGBA, mipmaps);
 	}

@@ -133,7 +133,7 @@ struct LineSplitter
 private:
 	static immutable CONT = `...`;
 
-	const size(in CharColor[] s)
+	const size(const scope CharColor[] s)
 	{
 		return _size(s.map!(a => a.c).array.toUTF8);
 	}

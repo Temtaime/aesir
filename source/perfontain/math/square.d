@@ -2,7 +2,7 @@ module perfontain.math.square;
 
 mixin template SquareImpl()
 {
-	this(uint K)(in Matrix!(T, K) m) if (K != N)
+	this(uint K)(const scope Matrix!(T, K) m) if (K != N)
 	{
 		enum L = min(N, K);
 

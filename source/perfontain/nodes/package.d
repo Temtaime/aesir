@@ -14,7 +14,7 @@ class Node : RCounted
 		//const transBBox() { return bbox * matrix; }
 	}
 
-	void draw(in DrawInfo* di)
+	void draw(const scope DrawInfo* di)
 	{
 		childs.each!(a => a.draw(di));
 	}
@@ -33,7 +33,7 @@ struct FrameOrientation
 
 final class ObjecterNode : Node
 {
-	override void draw(in DrawInfo* di)
+	override void draw(const scope DrawInfo* di)
 	{
 		DrawInfo m;
 
@@ -41,7 +41,7 @@ final class ObjecterNode : Node
 		{
 			auto step = (PE._tick * 2) % oris.back.time;
 
-			auto n = oris.countUntil!(a => a.time > step); // TODO: time check in the converter
+			auto n = oris.countUntil!(a => a.time > step); // TODO: time check const scope the converter
 
 			auto q1 = oris[n ? n - 1 : 0];
 			auto q2 = oris[n];

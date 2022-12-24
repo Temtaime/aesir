@@ -25,7 +25,7 @@ package:
 			~ `);`;
 	}
 
-	static cmp(in DrawInfo a, in DrawInfo b)
+	static cmp(const scope DrawInfo a, const scope DrawInfo b)
 	{
 		mixin(diff(`prog`, `<`, `cast(void*)`));
 		mixin(diff(`flags & DI_NO_DEPTH`));

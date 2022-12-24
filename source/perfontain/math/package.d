@@ -2,7 +2,7 @@ module perfontain.math;
 
 import std.math, std.algorithm, perfontain.math.matrix;
 
-auto unproject(ushort x, ushort y, float z, in Matrix4 vp, Vector2s viewport)
+auto unproject(ushort x, ushort y, float z, const scope Matrix4 vp, Vector2s viewport)
 {
 	auto v = Vector3(x, y, z) * 2;
 
@@ -13,7 +13,7 @@ auto unproject(ushort x, ushort y, float z, in Matrix4 vp, Vector2s viewport)
 	return v * vp.inversed;
 }
 
-auto project(Vector3 v, in Matrix4 vp, Vector2s viewport)
+auto project(Vector3 v, const scope Matrix4 vp, Vector2s viewport)
 {
 	v *= vp;
 
@@ -37,7 +37,7 @@ auto project(Vector3 v, Vector2s viewport)
 	return v / 2;
 }
 
-float rayTriangleDistance(in Vector3 rayPos, in Vector3 rayDir, in Vector3 v1, in Vector3 v2, in Vector3 v3)
+float rayTriangleDistance(const scope Vector3 rayPos, const scope Vector3 rayDir, const scope Vector3 v1, const scope Vector3 v2, const scope Vector3 v3)
 {
 	// compute vectors along two edges of the triangle
 	auto edge1 = v2 - v1;
@@ -82,7 +82,7 @@ float rayTriangleDistance(in Vector3 rayPos, in Vector3 rayDir, in Vector3 v1, i
 	return rayDistance < 0 ? -1 : rayDistance;
 }
 
-auto planeIntersection(in Vector3 p1, in Vector3 p2, in Vector3 p3, in Vector3 x, in Vector3 dir)
+auto planeIntersection(const scope Vector3 p1, const scope Vector3 p2, const scope Vector3 p3, const scope Vector3 x, const scope Vector3 dir)
 {
 	Matrix4 m1, m2;
 
@@ -99,7 +99,7 @@ auto planeIntersection(in Vector3 p1, in Vector3 p2, in Vector3 p3, in Vector3 x
 	return -m1.det / m2.det;
 }
 
-auto triangleArea(in Vector3 a, in Vector3 b, in Vector3 c)
+auto triangleArea(const scope Vector3 a, const scope Vector3 b, const scope Vector3 c)
 {
 	Matrix3 m;
 
@@ -110,12 +110,12 @@ auto triangleArea(in Vector3 a, in Vector3 b, in Vector3 c)
 	return m.det / 2;
 }
 
-auto calcNormal(in Vector3 a, in Vector3 b, in Vector3 c)
+auto calcNormal(const scope Vector3 a, const scope Vector3 b, const scope Vector3 c)
 {
 	return (b - c) ^ (a - c);
 }
 
-auto angleTo(in Vector3 a, in Vector3 b)
+auto angleTo(const scope Vector3 a, const scope Vector3 b)
 {
 	return acos(a * b / (a.length * b.length));
 }

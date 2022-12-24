@@ -4,7 +4,7 @@ import std.range, std.algorithm, perfontain;
 
 final class BindlessHolderCreator : HolderCreator
 {
-	this(in MeshInfo[] meshes, ubyte type, ubyte flags = 0)
+	this(const scope MeshInfo[] meshes, ubyte type, ubyte flags = 0)
 	{
 		super(meshes, type, flags);
 	}
@@ -32,7 +32,7 @@ protected:
 		_texs.each!(a => add(res, a, true));
 	}
 
-	void processSubMesh(ref SubMeshData data, in SubMeshInfo s)
+	void processSubMesh(ref SubMeshData data, const scope SubMeshInfo s)
 	{
 		auto len = data.indices.length;
 

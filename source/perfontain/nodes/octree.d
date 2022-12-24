@@ -21,7 +21,7 @@ final class OctreeNode : Node
 		create(_root);
 	}
 
-	override void draw(in DrawInfo* di)
+	override void draw(const scope DrawInfo* di)
 	{
 
 		check(_root, di);
@@ -32,7 +32,7 @@ final class OctreeNode : Node
 private:
 	enum DEPTH = 2;
 
-	void check(ref Tree t, in DrawInfo* di)
+	void check(ref Tree t, const scope DrawInfo* di)
 	{
 		if(auto res = PEscene._culler.collision(t.box))
 		{
@@ -101,7 +101,7 @@ private:
 		}
 	}
 
-	void draw(uint[] arr, in DrawInfo* di, bool inside)
+	void draw(uint[] arr, const scope DrawInfo* di, bool inside)
 	{
 		foreach(idx; arr)
 		{

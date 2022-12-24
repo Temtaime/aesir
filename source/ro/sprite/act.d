@@ -55,7 +55,7 @@ struct ActFile
 	@(IgnoreIf!(e => e.that.ver < 0x202), ArrayLength!(e => e.that.cnt)) float[] delays;
 }
 
-auto imageOf(ref ImageInfo info, in ActSprite s)
+auto imageOf(ref ImageInfo info, const scope ActSprite s)
 {
 	auto res = (s.type & 1 ? info.pals : 0) + s.idx;
 

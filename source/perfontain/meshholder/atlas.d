@@ -4,7 +4,7 @@ import std.range, std.algorithm, perfontain, stb.rectpack, stb.rectpack.binding;
 
 final class AtlasHolderCreator : HolderCreator
 {
-	this(in MeshInfo[] meshes, ubyte type, ubyte flags = 0)
+	this(const scope MeshInfo[] meshes, ubyte type, ubyte flags = 0)
 	{
 		super(meshes, type, flags);
 	}
@@ -28,7 +28,7 @@ protected:
 private:
 	enum ATLAS_PAD = 2; // doubled, so it's 4
 
-	void processSubMeshes(ref SubMeshData data, in MeshInfo m)
+	void processSubMeshes(ref SubMeshData data, const scope MeshInfo m)
 	{
 		foreach (ref s; m.subs)
 		{
@@ -115,7 +115,7 @@ private:
 		add(f, atlas, false);
 	}
 
-	auto calcCoords(in Image tex, Vector2 t)
+	auto calcCoords(const scope Image tex, Vector2 t)
 	{
 		auto v = _coords[tex];
 

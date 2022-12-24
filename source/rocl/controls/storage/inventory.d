@@ -28,7 +28,7 @@ protected:
 		return RO.status.items.arr[];
 	}
 
-	override void onIconDraw(in Widget w, Item m)
+	override void onIconDraw(const scope Widget w, Item m)
 	{
 		if (w.clicked(NK_BUTTON_LEFT))
 		{

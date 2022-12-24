@@ -24,7 +24,7 @@ final class HotkeyManager
 
 		if (auto n = e.name)
 		{
-			// if(auto p = n in PE.settings.hotkeys)
+			// if(auto p = n const scope PE.settings.hotkeys)
 			// {
 			// 	e.keys = *p;
 			// }

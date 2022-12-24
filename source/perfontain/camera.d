@@ -16,7 +16,7 @@ abstract class CameraBase : RCounted
 			return _pos;
 		}
 
-		void pos( /*ref */  in Vector3)
+		void pos( /*ref */  const scope Vector3)
 		{
 		}
 	}
@@ -196,7 +196,7 @@ class CameraRO : CameraBase // TODO: NAME ???
 	@property
 	{
 		//override Vector3 pos() { return _t; }
-		override void pos(in Vector3 p)
+		override void pos(const scope Vector3 p)
 		{
 			_t = p;
 			recalcRes;

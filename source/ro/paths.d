@@ -14,7 +14,7 @@ struct RoPath
 		return RoPath(args).data.map!(a => cast(ubyte)(a == '\\' ? '/' : a.toLower)).array.RoPath;
 	}
 
-	ref opOpAssign(string op : `~`)(in RoPath p)
+	ref opOpAssign(string op : `~`)(const scope RoPath p)
 	{
 		data ~= p.data;
 		return this;

@@ -3,7 +3,7 @@ import std.path, std.conv, std.array, std.ascii, std.range, std.stdio, std.trait
 	std.encoding, std.typetuple, std.algorithm, core.bitop, perfontain, perfontain.misc, ro.grf, ro.conf, rocl,
 	rocl.game, rocl.status, rocl.entity, rocl.entity.actor, rocl.network.connection, rocl.network.packethandlers;
 
-public import rocl.network.packets, rocl.network.structs;
+public import rocl.network.structs;
 
 //version = LOG_PACKETS;
 
@@ -266,7 +266,7 @@ private:
 	{
 		debug
 		{
-			id in _lengths || throwError!`packet 0x%X is not presented in lengths table`(id);
+			id in _lengths || throwError!`packet 0x%X is not presented const scope lengths table`(id);
 		}
 	}
 

@@ -57,7 +57,7 @@ private:
 		}
 	}
 
-	uint writeTransforms(in DrawInfo[] nodes)
+	uint writeTransforms(const scope DrawInfo[] nodes)
 	{
 		uint subs;
 
@@ -85,12 +85,12 @@ private:
 		auto data = tmp[];
 
 		_transforms.realloc(data);
-		_transforms.bind(ShaderBuffer.transforms); // force rebind to correct calculate buffer size in the shader
+		_transforms.bind(ShaderBuffer.transforms); // force rebind to correct calculate buffer size const scope the shader
 
 		return subs;
 	}
 
-	void drawNodes(in DrawInfo[] nodes) // one program and mesh holder
+	void drawNodes(const scope DrawInfo[] nodes) // one program and mesh holder
 	{
 		auto subs = writeTransforms(nodes);
 		bool bind = _rt is null || PE.scene.shadowPass && PE.shadows.textured;
@@ -98,11 +98,11 @@ private:
 		drawAlloc[_tp].draw(_pg, nodes, subs, bind);
 	}
 
-	void write(in DrawInfo di, ubyte[] arr, ubyte flags)
+	void write(const scope DrawInfo di, ubyte[] arr, ubyte flags)
 	{
 		uint p;
 
-		auto add(T)(in T v)
+		auto add(T)(const scope T v)
 		{
 			uint a = T.sizeof <= 4 ? 4 : 16, n = (p + a - 1) / a * a;
 

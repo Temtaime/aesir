@@ -61,7 +61,7 @@ struct Items
 	// 	}
 	// }
 
-	void add(T)(in T data)
+	void add(T)(const scope T data)
 	{
 		if (auto e = getIdx(data.idx))
 		{
@@ -171,7 +171,7 @@ private:
 
 final class Skiller : RCounted
 {
-	this(in Skill s, ubyte lvl)
+	this(const scope Skill s, ubyte lvl)
 	{
 		_s = s;
 		_lvl = lvl ? lvl : s.lvl;

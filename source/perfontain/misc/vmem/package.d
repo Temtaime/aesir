@@ -16,7 +16,7 @@ final class VMemAlloc : RCounted
 		assert(!_used);
 	}
 
-	auto alloc(in ubyte[] data)
+	auto alloc(const scope ubyte[] data)
 	{
 		assert(data.length);
 
@@ -38,7 +38,7 @@ final class VMemAlloc : RCounted
 		return r;
 	}
 
-	void free(in AllocRegion* r)
+	void free(const scope AllocRegion* r)
 	{
 		_used -= r.data.length;
 		_regs = _regs.remove(_regs.countUntil!(a => a is r));

@@ -93,7 +93,7 @@ class WinHotkeys //: GUIElement
 		}
 	}
 
-	// bool add(HotkeyIcon w, in Vector2s p = Vector2s(-1))
+	// bool add(HotkeyIcon w, const scope Vector2s p = Vector2s(-1))
 	// {
 	// 	// Vector2s q;
 

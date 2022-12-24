@@ -45,7 +45,7 @@ final class EntityManager
 		}
 	}
 
-	auto createChar(in PkCharData* r, uint bl, bool gender)
+	auto createChar(const scope PkCharData* r, uint bl, bool gender)
 	{
 		auto pk = ActorInfo(*r);
 
@@ -91,7 +91,7 @@ final class EntityManager
 		_self.fix(pos.PosDir);
 	}
 
-	auto appear(in ActorInfo p)
+	auto appear(const scope ActorInfo p)
 	{
 		auto ac = Actor.create(p);
 

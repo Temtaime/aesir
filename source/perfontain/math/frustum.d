@@ -4,7 +4,7 @@ import perfontain.math.bbox, perfontain.math.matrix;
 
 struct FrustumCuller
 {
-	this(in Matrix4 m)
+	this(const scope Matrix4 m)
 	{
 		foreach (i; 0 .. 6)
 			foreach (j; 0 .. 4)
@@ -18,7 +18,7 @@ struct FrustumCuller
 			}
 	}
 
-	const collision()(in BBox box)
+	const collision()(const scope BBox box)
 	{
 		ubyte c;
 

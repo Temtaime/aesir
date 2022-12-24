@@ -210,7 +210,7 @@ final class Entity : RCounted
 		act(Action.walk, -1, 0, cast(ushort)(speed * 100 / 150));
 	}
 
-	void fix(in PosDir v)
+	void fix(const scope PosDir v)
 	{
 		stop;
 		pose(v.pos.Vector2);
@@ -218,7 +218,7 @@ final class Entity : RCounted
 		_node.direction = v.dir;
 	}
 
-	void add(ubyte idx, in AspLoadInfo info)
+	void add(ubyte idx, const scope AspLoadInfo info)
 	{
 		auto s = ROres.load(info);
 

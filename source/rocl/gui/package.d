@@ -1,5 +1,5 @@
 module rocl.gui;
-import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game, rocl.paths, rocl.gui.misc, rocl.network.packets,
+import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game, rocl.paths, rocl.gui.misc,
 	rocl.controls, rocl.controls.chat, rocl.controls.status, rocl.controls.numbers, rocl.status.item,
 	rocl.controls.charselect, rocl.controls.hotkeysettings, rocl.controller.npc, rocl.status, utile.except;
 
@@ -58,7 +58,7 @@ final class GuiManager
 		_cd = null;
 	}
 
-	void createCharSelect(in PkCharData* data)
+	void createCharSelect(const scope PkCharData* data)
 	{
 		_cd = data;
 	}

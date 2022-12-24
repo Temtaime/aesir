@@ -1,19 +1,19 @@
 module perfontain.misc.dxt;
 import std.range, std.algorithm, std.parallelism, stb.dxt, stb.image, perfontain;
 
-auto dxtTranspType(in Image im)
+auto dxtTranspType(const scope Image im)
 {
 	enum D = 10;
 
 	return im[].any!(a => a.a > D && a.a < 255 - D) ? TEX_DXT_5 : TEX_DXT_5; // FIXME: ??????
 }
 
-auto makeTexInfo(in Image im, bool mipmaps = true)
+auto makeTexInfo(const scope Image im, bool mipmaps = true)
 {
 	return makeTexInfo(im, im.dxtTranspType, mipmaps);
 }
 
-auto makeTexInfo(in Image im, ubyte t, bool mipmaps = true)
+auto makeTexInfo(const scope Image im, ubyte t, bool mipmaps = true)
 {
 	TextureInfo res = {t};
 
