@@ -14,6 +14,7 @@ import
 
 		rocl,
 		rocl.game,
+		rocl.network.packets,
 		rocl.controls;
 
 

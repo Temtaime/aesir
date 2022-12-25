@@ -1,7 +1,8 @@
 module rocl.gui;
 import std, stb.image, perfontain, ro.conv, ro.conv.gui, rocl.game, rocl.paths, rocl.gui.misc,
 	rocl.controls, rocl.controls.chat, rocl.controls.status, rocl.controls.numbers, rocl.status.item,
-	rocl.controls.charselect, rocl.controls.hotkeysettings, rocl.controller.npc, rocl.status, utile.except;
+	rocl.controls.charselect, rocl.controls.hotkeysettings, rocl.controller.npc, rocl.status, utile.except
+	, rocl.network.packets;
 
 struct IconCache
 {

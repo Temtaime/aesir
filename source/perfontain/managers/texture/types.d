@@ -1,6 +1,6 @@
 module perfontain.managers.texture.types;
 import perfontain, perfontain.opengl, stb.dxt;
-
+import perfontain.opengl.functions;
 enum : ubyte
 {
 	TEX_DXT_1,

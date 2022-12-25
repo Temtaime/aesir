@@ -2,6 +2,7 @@ module rocl.entity;
 
 import std.stdio, std.array, std.format, std.algorithm, perfontain, perfontain.math, perfontain.nodes.sprite, ro.grf,
 	ro.path, rocl.network, rocl.loaders.asp, ro.db, rocl.game, rocl.entity.actor;
+import rocl.network.packets;
 
 public import rocl.entity.misc;
 

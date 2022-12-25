@@ -1,6 +1,6 @@
 module perfontain.program;
 import std, core.bitop, perfontain.opengl, perfontain, utile.except, utile.logger;
-public import perfontain.program.props;
+public import perfontain.program.props, perfontain.opengl.functions;
 
 enum
 {

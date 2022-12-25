@@ -250,7 +250,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		}
 		else
 		{
-			auto opBinary(string op : `*`)(const scope Matrix b) const
+			auto opBinary(string op : `*`)(scope Matrix b) const
 			{
 				return zip(b).map!(a => a[0] * a[1])
 					.fold!((a, b) => a + b);

@@ -1,6 +1,6 @@
 module rocl.network.structs;
 
-import
+import	rocl.network.packets,
 		perfontain;
 
 

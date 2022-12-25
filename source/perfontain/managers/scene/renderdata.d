@@ -1,5 +1,5 @@
 module perfontain.managers.scene.renderdata;
-import std, perfontain;
+import std, perfontain, perfontain.opengl.functions;
 
 class SceneRenderData : RCounted
 {

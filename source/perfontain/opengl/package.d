@@ -1,6 +1,5 @@
 module perfontain.opengl;
-import std, utile.logger, utile.except;
-
+import std, utile.logger, utile.except, perfontain.opengl.functions;
 uint gen(alias F)()
 {
 	uint id;

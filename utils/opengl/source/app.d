@@ -49,7 +49,7 @@ void main()
 			.map!(a => a.replace(`const*`, `*`))
 			.map!(a => a.replace(regex(`const\s+(\w+)\s*\*\s*const`, `g`), `const scope $1`))
 			.map!(a => a.replace(regex(`\s*\w+(,|\))`, `g`), `$1`))
-			.map!(a => a.replace(`const`, `in`))
+			.map!(a => a.replace(regex(`(?!const\s+scope\s*(\w+))(const)`, `g`), `const scope$1`))
 			.map!(a => a.replace(regex(`\s*\*\s*`, `g`), `*`))
 			.map!(a => a.replace(regex(`(\S+)\s*\b(\w+)\s*(.+)$`), `$1 function$3 $2;`))
 			.array;
@@ -133,7 +133,7 @@ enum : uint\n{");
 debug
 {
 " ~ uf.filter!(a => a != `glGetError`)
-			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) const scope { traceGL(`%1$s`, f, l, args); } out { checkError(`%1$s`, f, l, args); } do { return _%1$s(args); }",
+			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) in\n\t { traceGL(`%1$s`, f, l, args); } out\n\t { checkError(`%1$s`, f, l, args); } do\n\t { return _%1$s(args); }",
 				a))
 			.join("\n") ~ "
 

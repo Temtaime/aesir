@@ -1,7 +1,7 @@
 module rocl.controls.charselect;
 
 import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
-	rocl.game, rocl.controls;
+	rocl.game, rocl.controls, rocl.network.packets;
 
 final:
 

@@ -64,5 +64,6 @@
 	],
 	"lflags-windows-ldc": [
 		"/LIBPATH:utils/deps/release"
-	]
+	],
+	"buildRequirements": ["silenceWarnings"]
 }

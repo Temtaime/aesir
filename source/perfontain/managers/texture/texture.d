@@ -1,6 +1,7 @@
 module perfontain.managers.texture.texture;
 
-import std.range, std.algorithm, perfontain, perfontain.opengl, perfontain.misc.dxt, stb.dxt;
+import std.range, std.algorithm, perfontain, perfontain.opengl, perfontain.misc.dxt, stb.dxt,
+ perfontain.opengl.functions;
 
 public import perfontain.managers.texture.types;
 

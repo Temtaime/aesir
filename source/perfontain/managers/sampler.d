@@ -4,8 +4,8 @@ import
 		perfontain,
 		perfontain.opengl,
 		perfontain.sampler,
-		perfontain.misc.rc;
-
+		perfontain.misc.rc,
+		perfontain.opengl.functions;
 
 final class SamplerManager
 {

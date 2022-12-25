@@ -110,7 +110,7 @@ struct Group
 struct Widget
 {
 	mixin NuklearStruct!(null, true);
-
+	this(ref return const scope Widget rhs) {}
 	this(NuklearContext nk)
 	{
 		auto ctx = nk.ctx;

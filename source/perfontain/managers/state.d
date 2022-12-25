@@ -1,5 +1,6 @@
 module perfontain.managers.state;
-import std.array, core.bitop, perfontain, perfontain.opengl, perfontain.config, perfontain.math.matrix, perfontain.misc;
+import std.array, core.bitop, perfontain, perfontain.opengl, perfontain.config, perfontain.math.matrix, perfontain.misc,
+perfontain.opengl.functions;
 
 final class StateManager
 {

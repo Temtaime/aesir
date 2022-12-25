@@ -1,6 +1,6 @@
 module perfontain.sampler;
 
-import std.stdio, std.traits, perfontain, perfontain.opengl;
+import std.stdio, std.traits, perfontain, perfontain.opengl, perfontain.opengl.functions;
 
 final class Sampler : RCounted
 {

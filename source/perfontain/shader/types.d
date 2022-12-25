@@ -1,6 +1,6 @@
 module perfontain.shader.types;
 import perfontain.opengl;
-
+import perfontain.opengl.functions;
 struct ShaderInfo
 {
 	uint bit;

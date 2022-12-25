@@ -126,7 +126,7 @@ mixin template VectorImpl()
 		}
 	}
 
-	const zip(const scope Matrix v)
+	const zip(return ref Matrix v)
 	{
 		return std.range.zip(flat[], v[]);
 	}
