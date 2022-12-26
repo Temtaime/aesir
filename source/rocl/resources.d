@@ -84,8 +84,10 @@ private:
 
 	const clampVec(Vector2s p)
 	{
-		p.x = clamp(p.x, short.init, _map.size.x);
-		p.y = clamp(p.y, short.init, _map.size.y);
+		short map_size_x = _map.size.x;
+		short map_size_y = _map.size.y;
+		p.x = clamp(p.x, short.init, map_size_x);
+		p.y = clamp(p.y, short.init, map_size_y);
 
 		return p;
 	}
