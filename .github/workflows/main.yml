@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-  branches:
-    - master
-  paths:
-    - dub.json
-    - 'utils/**'
-    - 'source/**'
-    - .github/workflows/main.yml
+    branches:
+      - master
+    paths:
+      - dub.json
+      - 'utils/**'
+      - 'source/**'
+      - .github/workflows/main.yml
   workflow_dispatch:
 
 jobs:
