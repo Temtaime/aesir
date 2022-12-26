@@ -1,0 +1,30 @@
+{
+	"authors": [
+		"Temtaime"
+	],
+	"configurations": [
+		{
+			"name": "library",
+			"targetType": "library"
+		}
+	],
+	"description": "stb bindings for D",
+	"importPaths": [
+		"source/"
+	],
+	"lflags-linux": [
+		"$PACKAGE_DIR/bin/libstb.a"
+	],
+	"libs-windows-x86": [
+		"$PACKAGE_DIR/bin/stb_x86"
+	],
+	"libs-windows-x86_64": [
+		"$PACKAGE_DIR/bin/stb_x64"
+	],
+	"license": "MIT",
+	"name": "stb",
+	"sourcePaths": [
+		"source/"
+	],
+	"version": "2.0.1"
+}

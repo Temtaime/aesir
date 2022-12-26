@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86
+            os: windows-latest
+            dub_arch: x86_mscoff
+            dub_compiler: ldc-latest
+
+          - arch: x64
+            os: windows-latest
+            dub_arch: x86_64
+            dub_compiler: ldc-latest
+
+          - arch: x64
+            os: ubuntu-20.04
+            dub_arch: x86_64
+            dub_compiler: ldc-latest
+
+          - arch: x86
+            os: windows-latest
+            dub_arch: x86_mscoff
+            dub_compiler: dmd-latest
+
+          - arch: x64
+            os: windows-latest
+            dub_arch: x86_64
+            dub_compiler: dmd-latest
+
+          - arch: x64
+            os: ubuntu-20.04
+            dub_arch: x86_64
+            dub_compiler: dmd-latest
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: ${{ matrix.dub_compiler }}
+
+      - run: |
+          dub test -b unittest -a ${{ matrix.dub_arch }}
+
+  release:
+    runs-on: ubuntu-20.04
+    needs: [ build ]
+    if: "!contains(github.event.head_commit.message, 'WIP')"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: anothrNick/github-tag-action@1.35.0
+        id: create_tag
+        env:
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.create_tag.outputs.new_tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

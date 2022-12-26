@@ -1,0 +1,34 @@
+{
+	"authors": [
+		"Temtaime"
+	],
+	"configurations": [
+		{
+			"name": "library",
+			"targetType": "library"
+		}
+	],
+	"description": "Useful things for D",
+	"dflags": [
+		"-preview=in",
+		"-preview=shortenedMethods"
+	],
+	"importPaths": [
+		"source/"
+	],
+	"lflags-linux": [
+		"$PACKAGE_DIR/bin/libutile.a"
+	],
+	"libs-windows-x86": [
+		"$PACKAGE_DIR/bin/utile_x86"
+	],
+	"libs-windows-x86_64": [
+		"$PACKAGE_DIR/bin/utile_x64"
+	],
+	"license": "MIT",
+	"name": "utile",
+	"sourcePaths": [
+		"source/"
+	],
+	"version": "1.2.17"
+}

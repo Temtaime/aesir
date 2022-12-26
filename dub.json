@@ -9,8 +9,8 @@
 		}
 	},
 	"dependencies": {
-		"stb": ">=2.0.1",
-		"utile": ">=1.2.8",
+		"stb": {"path":"external_libs/stb/stb/"},
+		"utile": {"path":"external_libs/utile/utile/"},
 		"pegged": ">=0.4.5",
 		"derelict-sdl2": ">=3.1.0-alpha.4"
 	},
