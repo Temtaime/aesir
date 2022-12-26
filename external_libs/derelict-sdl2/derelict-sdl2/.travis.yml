@@ -1,0 +1,11 @@
+language: d
+
+sudo: false
+
+d:
+  - dmd
+  - dmd-2.073.2
+  - dmd-2.072.2
+  - dmd-2.071.2
+  - ldc
+  - gdc

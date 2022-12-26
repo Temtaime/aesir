@@ -1,0 +1,40 @@
+{
+	"authors": [
+		"Mike Parker"
+	],
+	"configurations": [
+		{
+			"excludedSourceFiles": [
+				"source/derelict/sdl2/internal/*_static.d"
+			],
+			"name": "derelict-sdl2-dynamic",
+			"targetType": "library"
+		},
+		{
+			"excludedSourceFiles": [
+				"source/derelict/sdl2/internal/*_dyn*.d"
+			],
+			"name": "derelict-sdl2-static",
+			"targetType": "library",
+			"versions": [
+				"DerelictSDL2_Static"
+			]
+		}
+	],
+	"dependencies": {
+		"derelict-util": ">=3.0.0-beta.1 <3.1.0-0"
+	},
+	"description": "Dynamic bindings to SDL2, SDL2_image, SDL2_mixer, SDL2_ttf and SDL2_net.",
+	"homepage": "https://github.com/DerelictOrg/DerelictSDL2",
+	"importPaths": [
+		"source/"
+	],
+	"license": "Boost",
+	"name": "derelict-sdl2",
+	"sourcePaths": [
+		"source/"
+	],
+	"targetName": "DerelictSDL2",
+	"targetPath": "lib",
+	"version": "3.1.0-alpha.6"
+}

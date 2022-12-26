@@ -12,7 +12,7 @@
 		"stb": {"path":"external_libs/stb/stb/"},
 		"utile": {"path":"external_libs/utile/utile/"},
 		"pegged": ">=0.4.5",
-		"derelict-sdl2": ">=3.1.0-alpha.4"
+		"derelict-sdl2": {"path":"external_libs/derelict-sdl2/derelict-sdl2/"}
 	},
 	"subConfigurations": {
 		"derelict-sdl2": "derelict-sdl2-static"
