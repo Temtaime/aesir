@@ -57,13 +57,13 @@
 		"-Lutils/deps"
 	],
 	"lflags-windows": [
-		"/LIBPATH:utils/deps","/NODEFAULTLIB"
+		"/LIBPATH:utils/deps","/NODEFAULTLIB:libvcruntime"
 	],
 	"lflags-windows-dmd": [
-		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB"
+		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB:libvcruntime"
 	],
 	"lflags-windows-ldc": [
-		"/LIBPATH:utils/deps/release","/NODEFAULTLIB"
+		"/LIBPATH:utils/deps/release","/NODEFAULTLIB:libvcruntime"
 	],
 	"buildRequirements": ["silenceWarnings"]
 }
