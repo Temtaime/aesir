@@ -57,13 +57,13 @@
 		"-Lutils/deps"
 	],
 	"lflags-windows": [
-		"/LIBPATH:utils/deps"
+		"/LIBPATH:utils/deps","/NODEFAULTLIB"
 	],
 	"lflags-windows-dmd": [
-		"/LIBPATH:utils/deps/debug"
+		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB"
 	],
 	"lflags-windows-ldc": [
-		"/LIBPATH:utils/deps/release"
+		"/LIBPATH:utils/deps/release","/NODEFAULTLIB"
 	],
 	"buildRequirements": ["silenceWarnings"]
 }
