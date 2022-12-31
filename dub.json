@@ -57,13 +57,13 @@
 		"-Lutils/deps"
 	],
 	"lflags-windows": [
-		"/LIBPATH:utils/deps","/NODEFAULTLIB:libvcruntime"
+		"/LIBPATH:utils/deps","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"lflags-windows-dmd": [
-		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB:libvcruntime"
+		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"lflags-windows-ldc": [
-		"/LIBPATH:utils/deps/release","/NODEFAULTLIB:libvcruntime"
+		"/LIBPATH:utils/deps/release","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"buildRequirements": ["silenceWarnings"]
 }
