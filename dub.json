@@ -21,6 +21,7 @@
 		"source/perfontain/shader/res"
 	],
 	"libs": [
+		"sdl_x64",
 		"lispsm_x64",
 		"nuklear_x64",
 		"sdl_ttf_x64",
