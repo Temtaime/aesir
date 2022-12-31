@@ -63,7 +63,7 @@
 		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"lflags-windows-ldc": [
-		"/LIBPATH:utils/deps/release","/NODEFAULTLIB"
+		"/LIBPATH:utils/deps/release","/NODEFAULTLIB:libvcruntime"
 	],
 	"buildRequirements": ["silenceWarnings"]
 }
