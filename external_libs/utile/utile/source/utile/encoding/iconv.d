@@ -36,7 +36,7 @@ version (linux)  : auto iconv(string s, string from, string to)
 
 extern (C):
 
-void* iconv_open(in char*, in char*);
+void* iconv_open(const scope char*, const scope char*);
 size_t iconv(void*, char**, size_t*, char**, size_t*);
 
 int iconv_close(void*);
