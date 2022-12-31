@@ -21,7 +21,6 @@
 		"source/perfontain/shader/res"
 	],
 	"libs": [
-		"sdl_x64",
 		"lispsm_x64",
 		"nuklear_x64",
 		"sdl_ttf_x64",
@@ -63,8 +62,7 @@
 		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"lflags-windows-ldc": [
-		"/LIBPATH:utils/deps/release","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib",
-		"/NODEFAULTLIB:sdl_x64.lib"
+		"/LIBPATH:utils/deps/release","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"buildRequirements": ["silenceWarnings"]
 }
