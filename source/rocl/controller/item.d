@@ -21,7 +21,7 @@ final class ItemController
 		return true;
 	}
 
-	void add(in Pk084b p)
+	void add(const scope Pk084b p)
 	{
 		if (p.id in _aa)
 		{

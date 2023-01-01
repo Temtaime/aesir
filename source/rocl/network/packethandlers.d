@@ -35,7 +35,7 @@ mixin template PacketHandlers()
 		send!Pk0a39(name, slot, color, style, 0, 0, st.gender);
 	}
 
-	void setHotkey(uint idx, in PkHotkey h)
+	void setHotkey(uint idx, const scope PkHotkey h)
 	{
 		send!Pk02ba(cast(ushort)idx, h);
 	}

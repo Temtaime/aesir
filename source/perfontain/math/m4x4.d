@@ -21,17 +21,17 @@ mixin template M4x4Impl()
 	}
 
 static:
-	Matrix scale()(in V3 v)
+	Matrix scale()(const scope V3 v)
 	{
 		return scale(v.x, v.y, v.z);
 	}
 
-	Matrix rotate()(in V3 v)
+	Matrix rotate()(const scope V3 v)
 	{
 		return rotate(v.x, v.y, v.z);
 	}
 
-	Matrix translate()(in V3 v)
+	Matrix translate()(const scope V3 v)
 	{
 		return translate(v.x, v.y, v.z);
 	}
@@ -62,7 +62,7 @@ static:
 		return ret;
 	}
 
-	Matrix rotateVector()(in V3 axis, float angle)
+	Matrix rotateVector()(const scope V3 axis, float angle)
 	{
 		float c = cos(angle);
 		float s = sin(angle);
@@ -110,7 +110,7 @@ static:
 		return res;
 	}
 
-	Matrix lookAt(in V3 pos, in V3 dir)
+	Matrix lookAt(const scope V3 pos, const scope V3 dir)
 	{
 		auto z = dir;
 		auto x = (AXIS_Y ^ z).normalize;

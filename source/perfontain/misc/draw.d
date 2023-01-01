@@ -10,7 +10,7 @@ final class DrawAllocator : RCounted
 
 	// RULES:
 	// All the nodes are using same mesh holder
-	// A texture cannot be repeated in submeshes
+	// A texture cannot be repeated const scope submeshes
 	// If bindless is not present, mesh must contain only one submesh
 	//
 	//
@@ -18,7 +18,7 @@ final class DrawAllocator : RCounted
 	//
 	//
 
-	void draw(Program pg, in DrawInfo[] nodes, uint submeshes, bool bind)
+	void draw(Program pg, const scope DrawInfo[] nodes, uint submeshes, bool bind)
 	in
 	{
 		assert(nodes[1 .. $].all!(a => a.mh is nodes[0].mh));
@@ -102,7 +102,7 @@ private:
 
 	struct SubMeshRange
 	{
-		this(in DrawInfo[] nodes)
+		this(const scope DrawInfo[] nodes)
 		{
 			_nodes = nodes;
 		}

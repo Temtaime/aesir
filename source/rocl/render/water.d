@@ -11,7 +11,7 @@ final class WaterNode : Node
 		_mh = new MeshHolder(f.waterData);
 	}
 
-	override void draw(in DrawInfo* di)
+	override void draw(const scope DrawInfo* di)
 	{
 		if (PE.scene.shadowPass)
 		{

@@ -35,7 +35,7 @@ struct RsmConverter
 private:
 	alias VT = Vertex[][uint];
 
-	auto makeVertices(in RsmMesh mesh)
+	auto makeVertices(const scope RsmMesh mesh)
 	{
 		VT vertices;
 
@@ -87,7 +87,7 @@ private:
 		return subs;
 	}
 
-	auto calcMatrices(in RsmMesh mesh, in Matrix4 pm)
+	auto calcMatrices(const scope RsmMesh mesh, const scope Matrix4 pm)
 	{
 		struct Res
 		{
@@ -130,7 +130,7 @@ private:
 		return s;
 	}
 
-	RsmObject processMesh(ref RsmMesh mesh, in Matrix4 pm)
+	RsmObject processMesh(ref RsmMesh mesh, const scope Matrix4 pm)
 	{
 		auto id = meshId(mesh);
 
@@ -192,7 +192,7 @@ private:
 		return res;
 	}
 
-	auto meshId(in RsmMesh m)
+	auto meshId(const scope RsmMesh m)
 	{
 		auto r = cast(uint)(&m - _rsm.meshes.ptr);
 

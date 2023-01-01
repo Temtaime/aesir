@@ -1,0 +1,68 @@
+name: Build deps
+
+on:
+  workflow_dispatch:
+
+env:
+  BUILD_CMD: -fno-stack-protector -O3 -msse3 -DNDEBUG main.c
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [ x86, x64 ]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - working-directory: lib
+        run: |
+          clang -fuse-ld=llvm-lib -o stb_${{ matrix.arch }}.lib ${{ env.BUILD_CMD }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path:
+            lib/*.lib
+
+  build-linux:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - working-directory: lib
+        run: |
+          clang -fPIC -c ${{ env.BUILD_CMD }}
+          ar rcs libstb.a *.o
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path:
+            lib/*.a
+
+  commit:
+    runs-on: ubuntu-20.04
+    needs: [ build-linux, build-windows ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - uses: actions/download-artifact@v2
+
+      - run: |
+          mv artifact/* bin
+
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add -u
+          git commit -m generated
+          git push

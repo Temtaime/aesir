@@ -4,7 +4,7 @@ import std.math, std.range, std.string, std.traits, std.algorithm, std.exception
 
 public import perfontain.math.constants;
 
-auto zipMap(alias F, T, uint N)(in Matrix!(T, 1, N) a, in Matrix!(T, 1, N) b)
+auto zipMap(alias F, T, uint N)(const scope Matrix!(T, 1, N) a, const scope Matrix!(T, 1, N) b)
 {
 	Vector!(typeof(F(T.init, T.init)), N) res;
 
@@ -17,7 +17,7 @@ auto zipMap(alias F, T, uint N)(in Matrix!(T, 1, N) a, in Matrix!(T, 1, N) b)
 }
 
 bool valueEqual(float a, float b) => isClose(a, b);
-bool valueEqual(in float[] a, in float[] b) => isClose(a, b);
+bool valueEqual(const scope float[] a, const scope float[] b) => isClose(a, b);
 
 enum float TO_RAD = PI / 180;
 enum float TO_DEG = 180 / PI;
@@ -102,7 +102,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 				return format("%(%s%|\n%)", this[]);
 		}
 
-		auto opBinary(string op : `*`, uint R)(in Matrix!(T, N, R) b)
+		auto opBinary(string op : `*`, uint R)(const scope Matrix!(T, N, R) b)
 		{
 			Matrix!(T, M, R) ret = void;
 
@@ -143,7 +143,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 			return ret;
 		}
 
-		auto opBinary(string op)(in Matrix m) if (op == `+` || op == `-`)
+		auto opBinary(string op)(const scope Matrix m) if (op == `+` || op == `-`)
 		{
 			Matrix ret = void;
 			ret.flat[] = mixin(`flat[]` ~ op ~ `m.flat[]`);
@@ -170,7 +170,7 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		return this;
 	}
 
-	ref opOpAssign(string op)(in Matrix m)
+	ref opOpAssign(string op)(const scope Matrix m)
 	{
 		return this = opBinary!op(m);
 	}
@@ -216,23 +216,23 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 				alias Quat = QuaternionT!T;
 			}
 
-			ref opOpAssign(string op : `*`, E)(in E e)
+			ref opOpAssign(string op : `*`, E)(const scope E e)
 			{
 				return this = this * e;
 			}
 
 		const:
-			auto opBinary(string op : `^`)(in Matrix v)
+			auto opBinary(string op : `^`)(const scope Matrix v)
 			{
 				return Matrix(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
 			}
 
-			auto opBinary(string op : `*`)(in Quat q)
+			auto opBinary(string op : `*`)(const scope Quat q)
 			{
 				return (q * Quat(this, 0) * q.inversed).xyz;
 			}
 
-			auto opBinary(string op : `*`)(in Matrix!(T, 4) m)
+			auto opBinary(string op : `*`)(const scope Matrix!(T, 4) m)
 			{
 				auto v = Vector!(T, 4)(this, 1) * m;
 				return v.xyz / v.w;
@@ -243,14 +243,14 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		{
 			mixin QuaternionImpl;
 
-			auto opBinary(string op : `*`)(in Matrix b) const
+			auto opBinary(string op : `*`)(const scope Matrix b) const
 			{
 				return Matrix(b.p * w + p * b.w + (p ^ b.p), w * b.w + p * b.p);
 			}
 		}
 		else
 		{
-			auto opBinary(string op : `*`)(in Matrix b) const
+			auto opBinary(string op : `*`)(scope Matrix b) const
 			{
 				return zip(b).map!(a => a[0] * a[1])
 					.fold!((a, b) => a + b);

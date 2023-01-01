@@ -26,12 +26,12 @@ struct ProgramCreator
 		_dp.defs[s] = format(`float(%g)`, v);
 	}
 
-	void define(string s, in Vector3 v)
+	void define(string s, const scope Vector3 v)
 	{
 		_dp.defs[s] = format(`vec3(%(%s, %))`, v.flat);
 	}
 
-	void define(string s, in Vector2s v)
+	void define(string s, const scope Vector2s v)
 	{
 		_dp.defs[s] = format(`ivec2(%(%s, %))`, v.flat);
 	}

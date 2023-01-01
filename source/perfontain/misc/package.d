@@ -2,7 +2,7 @@ module perfontain.misc;
 import std.conv, std.math, std.range, std.traits, std.string, std.algorithm, std.experimental.allocator,
 	std.experimental.allocator.mallocator, std.experimental.allocator.gc_allocator,
 	std.experimental.allocator.building_blocks.free_tree, core.stdc.string, stb.image, perfontain.opengl,
-	perfontain.config, perfontain.math.matrix, utile.except, utile.logger;
+	perfontain.config, perfontain.math.matrix, utile.except, utile.logger, perfontain.opengl.functions;
 
 public import utile.misc, utile.binary;
 
@@ -68,7 +68,7 @@ void eachGroup(alias F, T)(T[] arr, void delegate(T[]) dg)
 	}
 }
 
-auto constAway(T)(in T[] arr)
+auto constAway(T)(const scope T[] arr)
 {
 	return arr.as!T;
 }
@@ -126,7 +126,7 @@ void byFlag(T)(ref T v, uint bit, bool st)
 
 @property
 {
-	auto toFloats(ubyte N)(in int[N] arr)
+	auto toFloats(ubyte N)(const scope int[N] arr)
 	{
 		float[N] res;
 
@@ -138,7 +138,7 @@ void byFlag(T)(ref T v, uint bit, bool st)
 		return res;
 	}
 
-	auto toInts(ubyte N)(in float[N] arr)
+	auto toInts(ubyte N)(const scope float[N] arr)
 	{
 		int[N] res;
 
@@ -175,7 +175,7 @@ void byFlag(T)(ref T v, uint bit, bool st)
 		return u.f - 32768f;
 	}
 
-	//Color toCol(ref in Vector4 v) { with(v) return Color(cast(uint)x * 255, cast(uint)y * 255, cast(uint)z * 255, cast(uint)w * 255); }
+	//Color toCol(ref const scope Vector4 v) { with(v) return Color(cast(uint)x * 255, cast(uint)y * 255, cast(uint)z * 255, cast(uint)w * 255); }
 
 	Vector4 toVec(Color c)
 	{
@@ -190,7 +190,7 @@ void byFlag(T)(ref T v, uint bit, bool st)
 		return cast(uint)TickDuration.currSystemTick.msecs;
 	}
 
-	auto swapBytes(T)(in T value)
+	auto swapBytes(T)(const scope T value)
 	{
 		T res = value;
 		res.toByte.reverse();
@@ -284,7 +284,7 @@ void changed(uint old, uint new_, uint bit, void delegate(bool) func)
 
 struct TimeMeter
 {
-	this(A...)(string msg, in A args)
+	this(A...)(string msg, const scope A args)
 	{
 		static if (args.length)
 			msg = format(msg, args);

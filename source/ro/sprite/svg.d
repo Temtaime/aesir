@@ -3,7 +3,7 @@ module ro.sprite.svg;
 // SVG CONVERTER IS BROKEN
 version (none)  : import std.stdio, std.base64, std.string, std.algorithm, spr, act, perfontain.misc.binary;
 
-string toSVG(in ActFile a, ubyte aid, in Images images)
+string toSVG(const scope ActFile a, ubyte aid, const scope Images images)
 {
 	// return value
 	string ret;

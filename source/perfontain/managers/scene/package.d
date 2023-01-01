@@ -1,7 +1,7 @@
 module perfontain.managers.scene;
 import std.math, std.stdio, std.array, std.typecons, std.algorithm, stb.image, perfontain, perfontain.math,
 	perfontain.misc, perfontain.misc.draw, perfontain.misc.vmem, perfontain.opengl, perfontain.math.frustum,
-	perfontain.managers.shadow, perfontain.managers.scene.renderdata;
+	perfontain.managers.shadow, perfontain.managers.scene.renderdata, perfontain.opengl.functions;
 
 public import perfontain.render.types, perfontain.managers.scene.structs;
 

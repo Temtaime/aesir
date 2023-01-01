@@ -1,5 +1,5 @@
 module perfontain.rendertarget;
-import std, perfontain, perfontain.opengl;
+import std, perfontain, perfontain.opengl, perfontain.opengl.functions;
 
 final class RenderTarget : RCounted
 {

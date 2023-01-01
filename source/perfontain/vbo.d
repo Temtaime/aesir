@@ -26,15 +26,15 @@ final class VertexBuffer : RCounted
 		return type < 0 ? 4 : _type.vertexSize;
 	}
 
-	void update(in void[] data, uint start)
+	void update(const scope void[] data, uint start)
 	{
 		bind;
 		glBufferSubData(typeGL, start, data.length, data.ptr);
 	}
 
-	void realloc(in void[] data) => realloc(cast(uint)data.length, data.ptr);
+	void realloc(const scope void[] data) => realloc(cast(uint)data.length, data.ptr);
 
-	void realloc(uint len, in void* ptr = null)
+	void realloc(uint len, const scope void* ptr = null)
 	{
 		bind;
 		glBufferData(typeGL, _length = len, ptr, _flags & VBO_DYNAMIC ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);

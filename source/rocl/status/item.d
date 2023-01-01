@@ -11,7 +11,7 @@ enum
 
 final class Item : RCounted
 {
-	this(in PkItemBuy p)
+	this(const scope PkItemBuy p)
 	{
 		id = p.id;
 
@@ -21,7 +21,7 @@ final class Item : RCounted
 		price = min(p.price, p.discountPrice);
 	}
 
-	this(in Pk0a09 p)
+	this(const scope Pk0a09 p)
 	{
 		foreach (s; AliasSeq!(`id`, `type`, `amount`, `flags`, `attr`, `refine`, `cards`))
 		{
@@ -31,7 +31,7 @@ final class Item : RCounted
 		source = ITEM_TRADING;
 	}
 
-	this(in PkEquipItem p)
+	this(const scope PkEquipItem p)
 	{
 		amount = 1;
 
@@ -43,7 +43,7 @@ final class Item : RCounted
 		createFrom(p);
 	}
 
-	this(in Pk0a0a p)
+	this(const scope Pk0a0a p)
 	{
 		foreach (s; AliasSeq!(`amount`, `refine`))
 		{
@@ -53,7 +53,7 @@ final class Item : RCounted
 		createFrom(p);
 	}
 
-	this(in PkStackableItem p)
+	this(const scope PkStackableItem p)
 	{
 		foreach (s; AliasSeq!(`amount`, `equip`, `expireTime`))
 		{
@@ -63,7 +63,7 @@ final class Item : RCounted
 		createFrom(p);
 	}
 
-	this(in Pk0a37 p)
+	this(const scope Pk0a37 p)
 	{
 		foreach (s; AliasSeq!(`amount`, `equip`, `refine`, `expireTime`, `bound`, `look`))
 		{
@@ -150,7 +150,7 @@ final class Item : RCounted
 	Signal!(void, Item, uint) onUnequip;
 	Signal!(void, Item) onEquip, onRemove, onCountChanged;
 private:
-	this(in Item m)
+	this(const scope Item m)
 	{
 		assert(!m.price);
 		assert(!m.equip2);
@@ -164,7 +164,7 @@ private:
 		createFrom(m);
 	}
 
-	void createFrom(T)(in T p)
+	void createFrom(T)(const scope T p)
 	{
 		foreach (s; AliasSeq!(`id`, `idx`, `type`, `flags`, `cards`))
 		{

@@ -20,7 +20,7 @@ mixin template QuaternionImpl()
 	// 	return fromAxis(rotAxis.normalize, rotAngle);
 	// }
 
-	static lookAt(in V3 dir, in V3 front, in V3 up)
+	static lookAt(const scope V3 dir, const scope V3 front, const scope V3 up)
 	{
 		//compute rotation axis
 		V3 rotAxis = front ^ dir; /* front.cross(toVector).normalized();
@@ -35,7 +35,7 @@ mixin template QuaternionImpl()
 		return fromAxis(rotAxis, ang);
 	}
 
-	static fromMatrix()(in Matrix!(T, 4) m)
+	static fromMatrix()(const scope Matrix!(T, 4) m)
 	{
 		/*Matrix ret = void;
 
@@ -66,7 +66,7 @@ mixin template QuaternionImpl()
 		return Matrix(V3(a, b, c) * s, .25 / s);
 	}
 
-	static fromAxis()(in V3 axis, float angle)
+	static fromAxis()(const scope V3 axis, float angle)
 	{
 		angle /= 2;
 		return Matrix(axis * angle.sin, angle.cos);

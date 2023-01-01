@@ -7,7 +7,7 @@ final:
 
 struct WinCharSelect //: GUIWindow
 {
-	void draw(in PkCharData* c)
+	void draw(const scope PkCharData* c)
 	{
 		auto rc = nk_rect(200, 200, 400, 400);
 
@@ -34,7 +34,7 @@ struct WinCharSelect //: GUIWindow
 private:
 	mixin Nuklear;
 
-	auto stats(in PkCharData* c)
+	auto stats(const scope PkCharData* c)
 	{
 		string[2][] stats;
 

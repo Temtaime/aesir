@@ -212,7 +212,7 @@ import std, perfontain, rocl.messages, rocl.status;
 
 // final class SkillIcon : HotkeyIcon
 // {
-// 	this(GUIElement w, in Skill s)
+// 	this(GUIElement w, const scope Skill s)
 // 	{
 // 		sk = s;
 

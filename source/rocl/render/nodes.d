@@ -59,7 +59,7 @@ final class ItemNode : Node // TODO: BBOX ON CREATION
 		RO.items.remove(this);
 	}
 
-	override void draw(in DrawInfo* di) // TODO: move in onTick
+	override void draw(const scope DrawInfo* di) // TODO: move const scope onTick
 	{
 		if (PE.scene.shadowPass)
 		{
@@ -125,7 +125,7 @@ final class EffectNode : Node
 		RO.effects.onRemove(this);
 	}
 
-	override void draw(in DrawInfo* di)
+	override void draw(const scope DrawInfo* di)
 	{
 		auto cam = PEscene.camera;
 

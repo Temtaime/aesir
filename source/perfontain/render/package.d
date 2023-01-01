@@ -34,7 +34,7 @@ final class IndexVertex : RCounted
 		_vao.unbind;
 	}
 
-	auto alloc(in SubMeshData sd)
+	auto alloc(const scope SubMeshData sd)
 	{
 		auto index = _ia.alloc(sd.indices.toByte);
 		auto vertex = _va.alloc(sd.vertices.toByte);
@@ -47,7 +47,7 @@ final class IndexVertex : RCounted
 		return RegionIV(index, vertex);
 	}
 
-	auto dealloc(in RegionIV r)
+	auto dealloc(const scope RegionIV r)
 	{
 		_ia.free(r.index);
 		_va.free(r.vertex);

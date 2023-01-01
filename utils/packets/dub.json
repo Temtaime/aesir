@@ -3,6 +3,6 @@
 
 	"dependencies":
 	{
-		"pegged": ">=0.4.4"
+		"pegged": ">=0.4.5"
 	}
 }

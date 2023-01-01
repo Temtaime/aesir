@@ -1,6 +1,6 @@
 module perfontain.program;
 import std, core.bitop, perfontain.opengl, perfontain, utile.except, utile.logger;
-public import perfontain.program.props;
+public import perfontain.program.props, perfontain.opengl.functions;
 
 enum
 {
@@ -63,7 +63,7 @@ final class Program : RCounted
 		bind(0);
 	}
 
-	void send(T)(string name, in T value)
+	void send(T)(string name, const scope T value)
 	{
 		int loc = _attribs[name].loc;
 

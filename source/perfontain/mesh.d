@@ -18,7 +18,7 @@ void swapTrisOrder(ref MeshInfo m)
 		}
 }
 
-auto calcBBox(in MeshInfo m)
+auto calcBBox(const scope MeshInfo m)
 {
 	return m.subs
 		.map!(a => BBox(a.data.asVertexes))

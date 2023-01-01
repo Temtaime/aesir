@@ -1,5 +1,6 @@
 module perfontain.managers.window;
-import std, perfontain.misc, perfontain, perfontain.math.matrix, perfontain.opengl, utile.except, nuklear;
+import std, perfontain.misc, perfontain, perfontain.math.matrix, perfontain.opengl, utile.except, nuklear,
+perfontain.opengl.functions;
 public import derelict.sdl2.sdl;
 
 enum : ubyte

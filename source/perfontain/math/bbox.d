@@ -11,13 +11,13 @@ enum : ubyte
 
 struct BBox
 {
-	this()(in Vector3 min_, in Vector3 max_)
+	this()(const scope Vector3 min_, const scope Vector3 max_)
 	{
 		min = min_;
 		max = max_;
 	}
 
-	this()(in BBox b)
+	this()(const scope BBox b)
 	{
 		min = b.min;
 		max = b.max;
@@ -28,19 +28,19 @@ struct BBox
 		r.each!(a => add(a.p));
 	}
 
-	ref opOpAssign(string op : `+`)(in BBox b)
+	ref opOpAssign(string op : `+`)(const scope BBox b)
 	{
 		return merge(b);
 	}
 
 	const
 	{
-		auto opBinary(string op : `+`)(in BBox b)
+		auto opBinary(string op : `+`)(const scope BBox b)
 		{
 			return BBox(this).merge(b);
 		}
 
-		auto opBinary(string op : `*`)(in Matrix4 m)
+		auto opBinary(string op : `*`)(const scope Matrix4 m)
 		{
 			BBox r;
 
@@ -52,12 +52,12 @@ struct BBox
 			return r;
 		}
 
-		bool hasInside()(in Vector3 v)
+		bool hasInside()(const scope Vector3 v)
 		{
 			return max.zipMap!((a, b) => a >= b)(v)[].all && min.zipMap!((a, b) => a <= b)(v)[].all;
 		}
 
-		auto collision()(in BBox b)
+		auto collision()(const scope BBox b)
 		{
 
 			if (max.zipMap!((a, b) => a >= b)(b.max)[].all && min.zipMap!((a, b) => a <= b)(b.min)[].all)
@@ -119,7 +119,7 @@ private:
 		max = max.zipMap!(std.algorithm.max)(p);
 	}
 
-	ref merge(in BBox b)
+	ref merge(const scope BBox b)
 	{
 		min = min.zipMap!(std.algorithm.min)(b.min);
 		max = max.zipMap!(std.algorithm.max)(b.max);

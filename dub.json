@@ -9,10 +9,10 @@
 		}
 	},
 	"dependencies": {
-		"stb": ">=2.0.1",
-		"utile": ">=1.2.8",
-		"pegged": ">=0.4.5-beta.2",
-		"derelict-sdl2": ">=3.1.0-alpha.4"
+		"stb": {"path":"external_libs/stb/stb/"},
+		"utile": {"path":"external_libs/utile/utile/"},
+		"pegged": ">=0.4.5",
+		"derelict-sdl2": {"path":"external_libs/derelict-sdl2/derelict-sdl2/"}
 	},
 	"subConfigurations": {
 		"derelict-sdl2": "derelict-sdl2-static"
@@ -57,12 +57,13 @@
 		"-Lutils/deps"
 	],
 	"lflags-windows": [
-		"/LIBPATH:utils/deps"
+		"/LIBPATH:utils/deps","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"lflags-windows-dmd": [
-		"/LIBPATH:utils/deps/debug"
+		"/LIBPATH:utils/deps/debug","/NODEFAULTLIB:libcmt.lib","/NODEFAULTLIB:libcmtd.lib","/NODEFAULTLIB:msvcrtd.lib"
 	],
 	"lflags-windows-ldc": [
-		"/LIBPATH:utils/deps/release"
-	]
+		"/LIBPATH:utils/deps/release","/NODEFAULTLIB:libvcruntime"
+	],
+	"buildRequirements": ["silenceWarnings"]
 }

@@ -19,12 +19,12 @@ Packets:
 
 enum TypeMap = [`L` : `int`, `W` : `short`, `B` : `ubyte`, `P` : `RoPos`];
 
-auto gen(in ParseTree[] arr)
+auto gen(const scope ParseTree[] arr)
 {
 	return arr.map!(a => gen(a));
 }
 
-string gen(ref in ParseTree t)
+string gen(ref const scope ParseTree t)
 {
 	switch (t.name)
 	{

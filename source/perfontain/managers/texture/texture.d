@@ -1,12 +1,13 @@
 module perfontain.managers.texture.texture;
 
-import std.range, std.algorithm, perfontain, perfontain.opengl, perfontain.misc.dxt, stb.dxt;
+import std.range, std.algorithm, perfontain, perfontain.opengl, perfontain.misc.dxt, stb.dxt,
+ perfontain.opengl.functions;
 
 public import perfontain.managers.texture.types;
 
 final class Texture : RCounted
 {
-	this(in TextureInfo ti)
+	this(const scope TextureInfo ti)
 	{
 		this(ti.t, ti.levels, null);
 	}
@@ -123,7 +124,7 @@ final class Texture : RCounted
 	}
 
 private:
-	this(ubyte t, in TextureData[] levels, Sampler s)
+	this(ubyte t, const scope TextureData[] levels, Sampler s)
 	{
 		type = t;
 

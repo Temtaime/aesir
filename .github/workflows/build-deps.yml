@@ -2,6 +2,8 @@ name: Build deps
 
 on:
   push:
+    branches:
+      - master
     paths:
       - .github/workflows/build-deps.yml
   workflow_dispatch:

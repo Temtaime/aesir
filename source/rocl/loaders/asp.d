@@ -41,7 +41,7 @@ struct AspLoadInfo
 	mixin readableToString;
 }
 
-auto loadASP(in AspLoadInfo r)
+auto loadASP(const scope AspLoadInfo r)
 {
 	SpriteObject res;
 

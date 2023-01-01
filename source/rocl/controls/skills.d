@@ -151,7 +151,7 @@ private:
 
 // // class SkillItem : Selectable
 // // {
-// // 	this(GUIElement p, Selector s, in Skill sk, ushort w)
+// // 	this(GUIElement p, Selector s, const scope Skill sk, ushort w)
 // // 	{
 // // 		super(s);
 

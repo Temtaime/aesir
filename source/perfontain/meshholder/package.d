@@ -4,13 +4,13 @@ import std, perfontain;
 
 final class MeshHolder : RCounted
 {
-	this(ubyte type, in SubMeshData data)
+	this(ubyte type, const scope SubMeshData data)
 	{
 		_iv = PE.render.drawAlloc[type].iv;
 		reg = _iv.alloc(data);
 	}
 
-	this(in HolderData v)
+	this(const scope HolderData v)
 	{
 		this(v.type, v.data);
 

@@ -24,7 +24,7 @@ class FileSystem
 		return null;
 	}
 
-	void put(string name, in void[] data, ubyte t = FS_DISK)
+	void put(string name, const scope void[] data, ubyte t = FS_DISK)
 	{
 		final switch (t)
 		{
@@ -45,7 +45,7 @@ class FileSystem
 		return get(name).deserializeMem!T;
 	}
 
-	final write(T)(string name, in T data, ubyte t = FS_DISK)
+	final write(T)(string name, const scope T data, ubyte t = FS_DISK)
 	{
 		put(name, data.serializeMem, t);
 	}

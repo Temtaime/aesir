@@ -24,7 +24,7 @@ struct PosDir
 
 struct ActorInfo
 {
-	this(T)(in T p)
+	this(T)(const scope T p)
 	{
 		foreach (n; __traits(allMembers, typeof(this)))
 		{
@@ -83,7 +83,7 @@ auto writePos(PosDir v)
 	return res;
 }
 
-auto toVec(in ubyte[3] p)
+auto toVec(const scope ubyte[3] p)
 {
 	PosDir r;
 
@@ -97,7 +97,7 @@ auto toVec(in ubyte[3] p)
 	return r;
 }
 
-auto toVec(in ubyte[6] p)
+auto toVec(const scope ubyte[6] p)
 {
 	Vector2s pos, to;
 

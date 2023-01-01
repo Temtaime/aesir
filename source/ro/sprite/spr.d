@@ -13,7 +13,7 @@ struct ImageInfo
 	ImageOffset[] images;
 }
 
-auto toInfo(in SprFile f)
+auto toInfo(const scope SprFile f)
 {
 	auto res = ImageInfo(f.pCnt);
 

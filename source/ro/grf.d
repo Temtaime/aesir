@@ -52,7 +52,7 @@ final class Grf : RCounted
 		// _modified = false;
 	}
 
-	void put(RoPath name, in void[] data)
+	void put(RoPath name, const scope void[] data)
 	{
 		remove(name);
 

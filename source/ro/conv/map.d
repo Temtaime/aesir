@@ -123,7 +123,7 @@ private:
 
 	static
 	{
-		RomNode nodeOf(ref ushort id, in RsmObject r)
+		RomNode nodeOf(ref ushort id, const scope RsmObject r)
 		{
 			RomNode res;
 
@@ -135,7 +135,7 @@ private:
 			return res;
 		}
 
-		MeshInfo[] meshesOf(in RsmObject r)
+		MeshInfo[] meshesOf(const scope RsmObject r)
 		{
 			return cast()r.mesh ~ r.childs.map!(a => meshesOf(a)).join;
 		}
@@ -302,12 +302,12 @@ private:
 
 struct LightsCalculator
 {
-	this(in RomLight[] lights)
+	this(const scope RomLight[] lights)
 	{
 		_arr = lights.map!(a => Light(BBox(a.pos - a.range, a.pos + a.range))).array;
 	}
 
-	void push(in BBox obj)
+	void push(const scope BBox obj)
 	{
 		foreach (i, ref s; _arr)
 		{

@@ -336,12 +336,12 @@ private:
 
 // TODO: MOVE ALL THESE FUNCTIONS
 
-auto toInts(in float[] arr)
+auto toInts(const scope float[] arr)
 {
 	return arr.map!(a => cast(int)lrint(a * 100)).array;
 }
 
-bool compareCoords(T)(in T a, in T b)
+bool compareCoords(T)(const scope T a, const scope T b)
 {
 	return a.flat.toInts[] == b.flat.toInts[];
 }

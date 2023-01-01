@@ -7,7 +7,7 @@ package:
 
 abstract class Converter(T)
 {
-	this(in ubyte[16] hash)
+	this(const scope ubyte[16] hash)
 	{
 		_saveHash = hash.toHexString.idup; // DMD BUG: https://issues.dlang.org/show_bug.cgi?id=21806
 	}

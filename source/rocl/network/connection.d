@@ -72,7 +72,7 @@ struct NetReader
 		return res;
 	}
 
-	void write(in void[] data, bool reset = true)
+	void write(const scope void[] data, bool reset = true)
 	{
 		if (key)
 		{

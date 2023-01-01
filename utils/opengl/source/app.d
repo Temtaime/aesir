@@ -20,7 +20,7 @@ void main()
 	auto aa = [
 		[
 			`GLDEBUGPROC`,
-			`void function(GLenum, GLenum, GLuint, GLenum, GLsizei, in GLchar *, in void *)`
+			`void function(GLenum, GLenum, GLuint, GLenum, GLsizei, const scope GLchar *, const scope void *)`
 		], [`GLvoid`, `void`], [`GLdouble`, `double`], [`GLenum`, `uint`],
 		[`GLfloat`, `float`], [`GLintptr`, `size_t`], [`GLsizeiptr`,
 			`size_t`], [`GLint64`, `long`], [`GLuint64`, `ulong`], [
@@ -47,9 +47,9 @@ void main()
 		fs ~= matches.map!(a => a.replace(`GL_APIENTRY `, ``))
 			.map!(a => a.replace(regex(`^const `), ``))
 			.map!(a => a.replace(`const*`, `*`))
-			.map!(a => a.replace(regex(`const\s+(\w+)\s*\*\s*const`, `g`), `in $1`))
+			.map!(a => a.replace(regex(`const\s+(\w+)\s*\*\s*const`, `g`), `const scope $1`))
 			.map!(a => a.replace(regex(`\s*\w+(,|\))`, `g`), `$1`))
-			.map!(a => a.replace(`const`, `in`))
+			.map!(a => a.replace(regex(`(?!const\s+scope\s*(\w+))(const)`, `g`), `const scope$1`))
 			.map!(a => a.replace(regex(`\s*\*\s*`, `g`), `*`))
 			.map!(a => a.replace(regex(`(\S+)\s*\b(\w+)\s*(.+)$`), `$1 function$3 $2;`))
 			.array;
@@ -133,7 +133,7 @@ enum : uint\n{");
 debug
 {
 " ~ uf.filter!(a => a != `glGetError`)
-			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) in { traceGL(`%1$s`, f, l, args); } out { checkError(`%1$s`, f, l, args); } do { return _%1$s(args); }",
+			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) in\n\t { traceGL(`%1$s`, f, l, args); } out\n\t { checkError(`%1$s`, f, l, args); } do\n\t { return _%1$s(args); }",
 				a))
 			.join("\n") ~ "
 
@@ -151,7 +151,7 @@ __gshared extern(System) @nogc nothrow\n{");
 
 	o.writeln("}
 
-auto load(in char* name)
+auto load(const scope char* name)
 {
 	pragma(inline, false);
 

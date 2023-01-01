@@ -2,6 +2,8 @@ name: Build angle
 
 on:
   push:
+    branches:
+      - master
     paths:
       - .github/workflows/build-angle.yml
   workflow_dispatch:

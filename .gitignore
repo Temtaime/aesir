@@ -6,6 +6,7 @@
 /source/perfontain/opengl/functions.d
 
 /libs/
+*.html
 
 /utils/gui/gen*
 /utils/opengl/gen*

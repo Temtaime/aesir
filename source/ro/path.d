@@ -10,7 +10,7 @@ enum
 
 struct PathFinder
 {
-	auto search(in Vector2s p, in Vector2s t)
+	auto search(const scope Vector2s p, const scope Vector2s t)
 	{
 		int i, j;
 		int e, f, len;
@@ -119,7 +119,7 @@ struct PathFinder
 	Vector2s size;
 	ubyte delegate(uint, uint) typeOf;
 private:
-	auto searchLong(Vector2s p, in Vector2s t, ubyte type)
+	auto searchLong(Vector2s p, const scope Vector2s t, ubyte type)
 	{
 		Vector2s[] res;
 
@@ -215,7 +215,7 @@ private:
 		return ret;
 	}
 
-	bool addPath(in Vector2s p, short dist, short before, short cost)
+	bool addPath(const scope Vector2s p, short dist, short before, short cost)
 	{
 		auto i = calcIndex(p);
 
@@ -251,7 +251,7 @@ private:
 		return false;
 	}
 
-	static calcIndex(in Vector2s p)
+	static calcIndex(const scope Vector2s p)
 	{
 		return (p.x + p.y * MAX_WALKPATH) & (MAX_WALKPATH * MAX_WALKPATH - 1);
 	}

@@ -11,7 +11,7 @@ protected:
 	string info();
 	Item[] items();
 
-	void onIconDraw(in Widget, Item)
+	void onIconDraw(const scope Widget, Item)
 	{
 	}
 

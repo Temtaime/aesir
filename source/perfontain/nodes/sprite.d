@@ -63,7 +63,7 @@ final class SpriteObject : RCounted
 
 final class SpriteNode : Node // TODO: BBOX ON CREATION
 {
-	override void draw(in DrawInfo* di) // TODO: move in onTick
+	override void draw(const scope DrawInfo* di) // TODO: move const scope onTick
 	{
 		SpriteObject spr = sprites[0];
 		//if(!spr) return;

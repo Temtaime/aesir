@@ -45,7 +45,7 @@ final class ObjectsManager
 		return new MeshHolder(od);
 	}
 
-	auto makeHolder(in Image im, float xs = 0)
+	auto makeHolder(const scope Image im, float xs = 0)
 	{
 		auto d = im[];
 

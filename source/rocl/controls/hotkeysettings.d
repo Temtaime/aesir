@@ -136,7 +136,7 @@
 // // 		// {
 // // 		// 	_name = n;
 
-// // 		// 	if(auto arr = n in PE.settings.hotkeys)
+// // 		// 	if(auto arr = n const scope PE.settings.hotkeys)
 // // 		// 	{
 // // 		// 		_keys = *arr;
 // // 		// 	}
