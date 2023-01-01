@@ -89,7 +89,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: anothrNick/github-tag-action@1.26.0
+      - uses: anothrNick/github-tag-action@v1
         id: create_tag
         env:
           WITH_V: true
