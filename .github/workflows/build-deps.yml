@@ -72,7 +72,7 @@ jobs:
         with:
           ref: master
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
 
       - run: |
           mv artifact/SDL2.lib utils/deps/sdl_x64.lib
