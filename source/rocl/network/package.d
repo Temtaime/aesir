@@ -1,7 +1,7 @@
 module rocl.network;
 import std.path, std.conv, std.array, std.ascii, std.range, std.stdio, std.traits, std.string, std.socket,
-	std.encoding, std.typetuple, std.algorithm, core.bitop, perfontain, perfontain.misc, ro.grf, ro.conf, rocl,
-	rocl.game, rocl.status, rocl.entity, rocl.entity.actor, rocl.network.connection, rocl.network.packethandlers;
+std.encoding, std.typetuple, std.algorithm, core.bitop, perfontain, perfontain.misc, ro.grf, ro.conf, rocl,
+rocl.game, rocl.status, rocl.entity, rocl.entity.actor, rocl.network.connection, rocl.network.packethandlers;
 
 public import rocl.network.packets, rocl.network.structs;
 
@@ -254,7 +254,7 @@ private:
 					name = format(`(%s)`, T.PK_NAME);
 				}
 
-				logger.warning!`failed packet 0x%X%s, %u bytes:`(_pid, name, _plen);
+				logger.warn!`failed packet 0x%X%s, %u bytes:`(_pid, name, _plen);
 				dumpPacket(data);
 			}
 

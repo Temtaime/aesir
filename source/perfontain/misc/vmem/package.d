@@ -1,6 +1,6 @@
 module perfontain.misc.vmem;
 import std.range, std.typecons, std.algorithm, core.stdc.stdlib,
-	perfontain.vbo, perfontain.misc, perfontain.misc.rc, utile.logger;
+perfontain.vbo, perfontain.misc, perfontain.misc.rc, utile.log;
 
 public import perfontain.misc.vmem.region;
 

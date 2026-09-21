@@ -1,5 +1,5 @@
 module perfontain.misc.rc;
-import std, std.experimental.allocator, std.experimental.allocator.mallocator, core.memory, utile.misc, utile.logger;
+import std, std.experimental.allocator, std.experimental.allocator.mallocator, core.memory, utile.misc, utile.log;
 
 //version = LOG_RC;
 alias Alloc = Mallocator.instance;
@@ -302,14 +302,16 @@ debug
 			if (rcLeaks.length)
 			{
 				logger.error(`reference counting leaks:`);
-				logger.ident++;
+
+				// FIXME:
+				//logger.ident++;
 
 				foreach (k, v; rcLeaks)
 				{
-					logger.warning!`%s - %u refs`((cast(Object)k).toString, v);
+					logger.warn!`%s - %u refs`((cast(Object)k).toString, v);
 				}
 
-				logger.ident--;
+				//logger.ident--;
 			}
 			else
 				logger.info(`no reference counting leaks are found`);

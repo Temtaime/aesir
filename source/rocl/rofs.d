@@ -1,6 +1,6 @@
 module rocl.rofs;
 import std, perfontain, perfontain.misc.rc, perfontain.filesystem, ro.grf, ro.conf, rocl.game, rocl.paths,
-	utile.except, utile.logger, utile.miniz : Zip;
+utile.except, utile.log, utile.miniz : Zip;
 
 final class RoFileSystem : FileSystem
 {

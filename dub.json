@@ -9,10 +9,13 @@
 		}
 	},
 	"dependencies": {
-		"stb": ">=2.0.3",
-		"utile": ">=1.2.19",
+		"stb": ">=2.0.4",
+		"utile": ">=2.9.6",
 		"pegged": ">=0.4.8",
-		"derelict-sdl2": ">=3.1.0-alpha.4"
+		"derelict-sdl2": ">=3.1.0-alpha.4",
+
+		"utile:zip": "*",
+		"utile:sqlite": "*",
 	},
 	"subConfigurations": {
 		"derelict-sdl2": "derelict-sdl2-static"

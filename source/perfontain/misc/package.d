@@ -1,8 +1,8 @@
 module perfontain.misc;
 import std.conv, std.math, std.range, std.traits, std.string, std.algorithm, std.experimental.allocator,
-	std.experimental.allocator.mallocator, std.experimental.allocator.gc_allocator,
-	std.experimental.allocator.building_blocks.free_tree, core.stdc.string, stb.image, perfontain.opengl,
-	perfontain.config, perfontain.math.matrix, utile.except, utile.logger;
+std.experimental.allocator.mallocator, std.experimental.allocator.gc_allocator,
+std.experimental.allocator.building_blocks.free_tree, core.stdc.string, stb.image, perfontain.opengl,
+perfontain.config, perfontain.math.matrix, utile.except, utile.log;
 
 public import utile.misc, utile.binary;
 
@@ -251,8 +251,10 @@ mixin template createCtorsDtors(A...)
 mixin template publicProperty(T, string name, string value = null)
 {
 	mixin(`
-		public ref ` ~ name ~ `() @property const { return _` ~ name ~ `; }
-		T _` ~ name ~ (value.length ? `=` ~ value : null) ~ `;`);
+		public ref `
+			~ name ~ `() @property const { return _` ~ name ~ `; }
+		T _`
+			~ name ~ (value.length ? `=` ~ value : null) ~ `;`);
 }
 
 mixin template makeHelpers(A...)

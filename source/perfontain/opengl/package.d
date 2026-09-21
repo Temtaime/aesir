@@ -1,5 +1,5 @@
 module perfontain.opengl;
-import std, utile.logger, utile.except;
+import std, utile.log, utile.except;
 public import perfontain.opengl.functions;
 
 uint gen(alias F)()
@@ -9,8 +9,7 @@ uint gen(alias F)()
 	return id;
 }
 
-debug:
-package:
+debug : package:
 
 string dumpArgs(A...)(A args)
 {

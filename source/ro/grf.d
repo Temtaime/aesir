@@ -1,7 +1,7 @@
 module ro.grf;
 import std.utf, std.conv, std.file, std.path, std.zlib, std.stdio, std.range,
-	std.array, std.mmfile, std.string, std.datetime, std.algorithm, etc.c.zlib,
-	perfontain.misc, perfontain.misc.rc, utile.except, utile.logger, utile.encoding;
+std.array, std.mmfile, std.string, std.datetime, std.algorithm, etc.c.zlib,
+perfontain.misc, perfontain.misc.rc, utile.except, utile.log, utile.encoding;
 
 public import ro.paths;
 

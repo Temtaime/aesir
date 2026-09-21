@@ -1,5 +1,5 @@
 module rocl.loaders.asp;
-import std, perfontain, perfontain.nodes.sprite, ro.conv, ro.conv.asp, rocl.game, rocl.paths, ro.paths, utile.logger;
+import std, perfontain, perfontain.nodes.sprite, ro.conv, ro.conv.asp, rocl.game, rocl.paths, ro.paths, utile.log;
 
 enum : ubyte
 {

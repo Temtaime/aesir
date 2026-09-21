@@ -1,5 +1,5 @@
 module perfontain.program;
-import std, core.bitop, perfontain.opengl, perfontain, utile.except, utile.logger;
+import std, core.bitop, perfontain.opengl, perfontain, utile.except, utile.log;
 public import perfontain.program.props;
 
 enum

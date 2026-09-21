@@ -1,7 +1,7 @@
 module ro.conv;
 import std.file, std.format, std.path, std.conv, std.range, std.getopt, std.process, std.digest.md, core.memory,
-	perfontain, perfontain.misc, ro.conv.asp, ro.conv.map, ro.conv.gui, ro.conv.all, ro.conv.item, ro.conv.effect,
-	rocl.rofs, rocl.game, ro.paths;
+perfontain, perfontain.misc, ro.conv.asp, ro.conv.map, ro.conv.gui, ro.conv.all, ro.conv.item, ro.conv.effect,
+rocl.rofs, rocl.game, ro.paths;
 
 package:
 
@@ -26,7 +26,7 @@ abstract class Converter(T)
 			}
 			catch (Exception ex)
 			{
-				logger.warning(ex.msg);
+				logger.warn(ex.msg);
 			}
 
 		auto res = process;

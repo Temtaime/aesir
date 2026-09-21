@@ -41,7 +41,7 @@ final class AudioManager
 			}
 			catch (Exception)
 			{
-				logger.warning!"can't find `%s' audio"(name);
+				logger.warn!"can't find `%s' audio"(name);
 				return;
 			}
 

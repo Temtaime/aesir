@@ -1,5 +1,5 @@
 module ro.conv.map;
-import std, std.digest.md, perfontain, ro.map, ro.grf, ro.conf, ro.conv, rocl.game, utile.logger;
+import std, std.digest.md, perfontain, ro.map, ro.grf, ro.conf, ro.conv, rocl.game, utile.log;
 
 final class RomConverter : Converter!RomFile
 {
@@ -152,7 +152,7 @@ private:
 			auto negScale = r.scale.fold!((a, b) => a * b) < 0;
 
 			auto mat = Matrix4.scale(r.scale / ROM_SCALE_DIV) * Matrix4.rotate(r.rot * TO_RAD) * Matrix4.translate(
-					r.pos / ROM_SCALE_DIV + _mapTranslation + Vector3(0, DELTA_UP * (k++ % 4), 0)) * coordsConv;
+				r.pos / ROM_SCALE_DIV + _mapTranslation + Vector3(0, DELTA_UP * (k++ % 4), 0)) * coordsConv;
 
 			//if(name != "나무잡초꽃/나무02.rsm") continue;
 			//if(name != "나무잡초꽃/덤불01.rsm") continue;
@@ -327,7 +327,7 @@ struct LightsCalculator
 
 		if (auto unused = _arr.length - res.length)
 		{
-			logger.warning!`%u lights are unreachable`(unused);
+			logger.warn!`%u lights are unreachable`(unused);
 		}
 
 		return res;

@@ -1,20 +1,20 @@
 module perfontain;
 import std.utf, std.file, std.path, std.conv, std.array, std.range, std.stdio, std.traits, std.string, std.encoding,
-	std.exception, std.algorithm : filter, map;
+std.exception, std.algorithm : filter, map;
 
 import core.time, core.thread, core.memory, perfontain.misc, perfontain.managers.state, perfontain.opengl,
-	perfontain.sampler, perfontain.filesystem, perfontain.managers.audio, perfontain.math.frustum,
-	perfontain.managers.shadow, perfontain.managers.sampler;
+perfontain.sampler, perfontain.filesystem, perfontain.managers.audio, perfontain.math.frustum,
+perfontain.managers.shadow, perfontain.managers.sampler;
 
 public import perfontain.misc, perfontain.misc.rc, perfontain.misc.dxt, perfontain.meshholder,
-	perfontain.meshholder.structs, perfontain.meshholder.creator, perfontain.nodes, perfontain.nodes.octree,
-	perfontain.nodes.sprite, perfontain.managers.gui, perfontain.managers.font, perfontain.managers.timer,
-	perfontain.managers.scene, perfontain.managers.render, perfontain.managers.window, perfontain.managers.shadow,
-	perfontain.managers.hotkey, perfontain.managers.objects, perfontain.managers.texture, perfontain.managers.settings,
-	perfontain.shader, perfontain.shader.lang, perfontain.math.bbox, perfontain.math.matrix, perfontain.vao,
-	perfontain.vbo, perfontain.mesh, perfontain.render, perfontain.camera, perfontain.config, perfontain.signals,
-	perfontain.submesh, perfontain.program, perfontain.sampler, perfontain.filesystem, perfontain.rendertarget,
-	stb.image, utile.except, utile.logger;
+perfontain.meshholder.structs, perfontain.meshholder.creator, perfontain.nodes, perfontain.nodes.octree,
+perfontain.nodes.sprite, perfontain.managers.gui, perfontain.managers.font, perfontain.managers.timer,
+perfontain.managers.scene, perfontain.managers.render, perfontain.managers.window, perfontain.managers.shadow,
+perfontain.managers.hotkey, perfontain.managers.objects, perfontain.managers.texture, perfontain.managers.settings,
+perfontain.shader, perfontain.shader.lang, perfontain.math.bbox, perfontain.math.matrix, perfontain.vao,
+perfontain.vbo, perfontain.mesh, perfontain.render, perfontain.camera, perfontain.config, perfontain.signals,
+perfontain.submesh, perfontain.program, perfontain.sampler, perfontain.filesystem, perfontain.rendertarget,
+stb.image, utile.except, utile.log;
 
 alias PE = Engine.instance;
 
@@ -197,7 +197,7 @@ final class Engine
 	Signal!(bool, SDL_Keycode, bool) onKey;
 package:
 	mixin createCtorsDtors!(fs, settings, window, render, shadows, _samplers, _state, audio, timers, textures, scene,
-			fonts, _objs, gui, hotkeys);
+		fonts, _objs, gui, hotkeys);
 
 	mixin publicProperty!(bool, `run`);
 
