@@ -9,9 +9,9 @@
 		}
 	},
 	"dependencies": {
-		"stb": ">=2.0.1",
-		"utile": ">=1.2.8",
-		"pegged": ">=0.4.5-beta.2",
+		"stb": ">=2.0.3",
+		"utile": ">=1.2.19",
+		"pegged": ">=0.4.8",
 		"derelict-sdl2": ">=3.1.0-alpha.4"
 	},
 	"subConfigurations": {
@@ -28,9 +28,7 @@
 		"sdl_mixer_x64"
 	],
 	"dflags": [
-		"-preview=in",
-		"-preview=intpromote",
-		"-preview=shortenedMethods"
+		"-preview=in"
 	],
 	"dflags-ldc": [
 		"-ffast-math"

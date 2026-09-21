@@ -1,6 +1,5 @@
 module perfontain.meshholder.atlas;
-
-import std.range, std.algorithm, perfontain, stb.rectpack, stb.rectpack.binding;
+import std.range, std.algorithm, perfontain, stb.rectpack, stb : stbrp_rect;
 
 final class AtlasHolderCreator : HolderCreator
 {

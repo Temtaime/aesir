@@ -1,6 +1,6 @@
 module rocl.resources;
 import std.file, std.format, std.algorithm, perfontain, ro.map, ro.conv, ro.conf, ro.conv.gui, rocl.game, rocl.paths,
-	rocl.loaders.map, rocl.loaders.asp;
+rocl.loaders.map, rocl.loaders.asp;
 
 final class ResourcesManager
 {
@@ -25,7 +25,7 @@ final class ResourcesManager
 		with (_map)
 		{
 			auto x1 = heights[idx + 0] + (heights[idx + 1] - heights[idx + 0]) * pos.x,
-				x2 = heights[idx + 2] + (heights[idx + 3] - heights[idx + 2]) * pos.x;
+			x2 = heights[idx + 2] + (heights[idx + 3] - heights[idx + 2]) * pos.x;
 
 			return (x1 + (x2 - x1) * pos.y) / -ROM_SCALE_DIV + 0.1f;
 		}

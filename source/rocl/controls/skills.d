@@ -1,6 +1,6 @@
 module rocl.controls.skills;
 import std.utf, std.meta, std.conv, std.range, std.string, perfontain, perfontain.opengl, ro.grf, ro.conv,
-	ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game, rocl.status, rocl.controls, rocl.network.packets;
+	ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game, rocl.status, rocl.controls, rocl.network.packets, std.algorithm : max;
 
 struct WinSkills
 {
@@ -11,38 +11,41 @@ struct WinSkills
 
 		if (auto win = Window(nk, MSG_SKILLS, nk_rect(pos.x, pos.y, sz.x, sz.y)))
 		{
-			auto s1 = Style(nk, &nk.ctx.style.text.padding, nk_vec2(0, 0));
-			auto s2 = Style(nk, &nk.ctx.style.window.group_padding, nk_vec2(0, 0));
-
 			with (LayoutRowTemplate(nk, 36))
 			{
 				static_(36);
-				dynamic;
+				static_(_w);
 			}
+
+			_w = 0;
 
 			foreach (sk; RO.status.skills)
 			{
-				if (auto group = Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
 				{
-					nk.layout_row_dynamic(36, 1);
-
 					scope r = new SkillIcon(sk);
 					r.draw;
 				}
 
-				if (auto group = Group(nk, nk.uniqueId, NK_WINDOW_NO_SCROLLBAR))
-				{
-					nk.layout_row_dynamic(18, 1);
+				auto name = ROdb.skill(sk.name);
+				auto width = nk.widthFor(name);
 
-					nk.label(ROdb.skill(sk.name));
-					nk.label(`gso gso`);
+				if (width > _w)
+				{
+					_w = width;
 				}
+
+				int v = sk.lvl;
+				nk.property_int(name.toStringz, 0, &v, 100, 1, 1);
 			}
+
+			_w += 60;
 		}
 	}
 
 private:
 	mixin Nuklear;
+
+	uint _w;
 }
 // class WinSkills : WinBasic2
 // {

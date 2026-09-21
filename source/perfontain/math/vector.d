@@ -126,8 +126,16 @@ mixin template VectorImpl()
 		}
 	}
 
-	const zip(in Matrix v)
+	const zip(in Matrix other)
 	{
-		return std.range.zip(flat[], v[]);
+		T[2][C] res;
+
+		foreach (i, v; flat)
+		{
+			res[i][0] = v;
+			res[i][1] = other.flat[i];
+		}
+
+		return res;
 	}
 }

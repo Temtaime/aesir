@@ -1,8 +1,6 @@
 ﻿{
 	"name": "gen",
-
-	"dependencies":
-	{
-		"pegged": ">=0.4.4"
+	"dependencies": {
+		"pegged": ">=0.4.8"
 	}
 }

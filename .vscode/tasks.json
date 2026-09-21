@@ -2,77 +2,50 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "dub",
-			"run": false,
-			"compiler": "dmd",
-			"archType": "x86_64",
-			"buildType": "debug",
-			"configuration": "application",
-			"problemMatcher": [
-				"$dmd"
-			],
-			"presentation": {
-				"clear": true,
-				"showReuseMessage": false
-			},
+			"label": "Build debug",
+			"type": "shell",
+			"command": "dub build -a x86_64",
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			},
-			"label": "Build debug"
+			}
 		},
 		{
-			"type": "dub",
-			"run": true,
-			"compiler": "dmd",
-			"archType": "x86_64",
-			"buildType": "debug",
-			"configuration": "application",
-			"problemMatcher": [
-				"$dmd"
-			],
+			"label": "Build release",
+			"type": "shell",
+			"command": "dub build -a x86_64 -b release-nobounds --compiler=ldc2",
+		},
+		{
+			"label": "Gen packet",
+			"type": "shell",
+			"command": "dub run -a x86_64",
 			"options": {
 				"cwd": "utils/packets"
-			},
-			"label": "Packet gen"
+			}
 		},
 		{
-			"type": "dub",
-			"run": true,
-			"compiler": "dmd",
-			"archType": "x86_64",
-			"buildType": "debug",
-			"configuration": "application",
-			"problemMatcher": [
-				"$dmd"
-			],
+			"label": "Gen OpenGL",
+			"type": "shell",
+			"command": "dub run -a x86_64",
 			"options": {
 				"cwd": "utils/opengl"
 			},
-			"label": "OpenGL gen"
 		},
 		{
-			"type": "dub",
-			"run": true,
-			"compiler": "dmd",
-			"archType": "x86_64",
-			"buildType": "debug",
-			"configuration": "application",
-			"problemMatcher": [
-				"$dmd"
-			],
+			"label": "Gen shader",
+			"type": "shell",
+			"command": "dub run -a x86_64",
 			"options": {
 				"cwd": "utils/shaders"
 			},
-			"label": "Shader gen"
 		},
 		{
 			"label": "Run",
 			"type": "shell",
+			"command": "start cmd /c \"dub build -a x86_64 -b debug-no-info && cd bin && perfontain.exe & pause\"",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"command": "start cmd /c \"dub build -a x86_64 -b debug-no-info && cd bin && perfontain.exe & pause\"",
 			"group": {
 				"kind": "test",
 				"isDefault": true

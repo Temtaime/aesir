@@ -1,6 +1,6 @@
 module perfontain.math.matrix;
 import std.math, std.range, std.string, std.traits, std.algorithm, std.exception, perfontain.misc,
-	perfontain.math.m4x4, perfontain.math.square, perfontain.math.vector, perfontain.math.quaternion;
+perfontain.math.m4x4, perfontain.math.square, perfontain.math.vector, perfontain.math.quaternion;
 
 public import perfontain.math.constants;
 
@@ -252,7 +252,10 @@ struct Matrix(T, uint _M, uint _N = _M, ubyte _F = 0)
 		{
 			auto opBinary(string op : `*`)(in Matrix b) const
 			{
-				return zip(b).map!(a => a[0] * a[1])
+				auto z = zip(b);
+
+				return z[]
+					.map!(a => a[0] * a[1])
 					.fold!((a, b) => a + b);
 			}
 		}

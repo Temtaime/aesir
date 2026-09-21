@@ -44,7 +44,7 @@ void main(string[] args)
 	// 	}
 	// }
 
-	PEfs = new RoFileSystem;
+	PEfs = new RoFileSystem; 
 
 	PE.doInit;
 	RO.doInit;

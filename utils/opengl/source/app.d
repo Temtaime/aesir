@@ -47,9 +47,8 @@ void main()
 		fs ~= matches.map!(a => a.replace(`GL_APIENTRY `, ``))
 			.map!(a => a.replace(regex(`^const `), ``))
 			.map!(a => a.replace(`const*`, `*`))
-			.map!(a => a.replace(regex(`const\s+(\w+)\s*\*\s*const`, `g`), `in $1`))
-			.map!(a => a.replace(regex(`\s*\w+(,|\))`, `g`), `$1`))
-			.map!(a => a.replace(`const`, `in`))
+			.map!(a => a.replace(regex(`const\s+(\w+)\s*\*\s*const`, `g`), `const($1)`))
+			.map!(a => a.replace(regex(`\s*\w+(,|\))`, `g`), `$1`)) //.map!(a => a.replace(`const`, `in`))
 			.map!(a => a.replace(regex(`\s*\*\s*`, `g`), `*`))
 			.map!(a => a.replace(regex(`(\S+)\s*\b(\w+)\s*(.+)$`), `$1 function$3 $2;`))
 			.array;
@@ -132,7 +131,8 @@ enum : uint\n{");
 
 debug
 {
-" ~ uf.filter!(a => a != `glGetError`)
+"
+			~ uf.filter!(a => a != `glGetError`)
 			.map!(a => format("\tauto %1$s(string f = __FILE__, uint l = __LINE__, A...)(A args) in { traceGL(`%1$s`, f, l, args); } out { checkError(`%1$s`, f, l, args); } do { return _%1$s(args); }",
 				a))
 			.join("\n") ~ "
@@ -141,7 +141,8 @@ debug
 }
 else
 {
-" ~ uf.map!(a => format("\talias %1$s = _%1$s;", a)).join("\n") ~ "
+"
+			~ uf.map!(a => format("\talias %1$s = _%1$s;", a)).join("\n") ~ "
 }
 
 private:

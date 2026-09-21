@@ -69,8 +69,8 @@ struct Items
 			{
 				throwError!`item at index %u is already exist`(data.idx);
 			}
-
-			_arr.remove(e);
+			else
+				_arr.remove(e);
 		}
 
 		add(new Item(data));

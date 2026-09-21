@@ -29,32 +29,35 @@ EXGL:
 `;
 
 enum Extra = `
-auto endBlock(ParseTree p)
+@safe
 {
-	ident -= p.successful;
-	return p;
+	auto endBlock(ParseTree p)
+	{
+		ident -= p.successful;
+		return p;
+	}
+
+	auto startBlock(ParseTree p)
+	{
+		p.successful &= (p.end - p.begin == ident + 1);
+
+		ident += p.successful;
+		return p;
+	}
+
+	auto checkIdent(ParseTree p)
+	{
+		p.successful &= (p.end - p.begin == ident);
+		return p;
+	}
+
+	auto extract(ParseTree p)
+	{
+		return p.successful ? p.children[0] : p;
+	}
 }
 
-auto startBlock(ParseTree p)
-{
-	p.successful &= (p.end - p.begin == ident + 1);
-
-	ident += p.successful;
-	return p;
-}
-
-auto checkIdent(ParseTree p)
-{
-	p.successful &= (p.end - p.begin == ident);
-	return p;
-}
-
-auto extract(ParseTree p)
-{
-	return p.successful ? p.children[0] : p;
-}
-
-private __gshared byte ident;
+private byte ident;
 `;
 
 void main()

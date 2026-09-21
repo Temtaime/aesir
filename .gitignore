@@ -21,3 +21,4 @@ dub.selections.json
 
 *.grf
 *.sublime-workspace
+/bin/res.png
