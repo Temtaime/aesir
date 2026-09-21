@@ -12,6 +12,8 @@
 /utils/packets/gen*
 /utils/shaders/gen*
 
+/utils/bgfx/deps/
+
 /bin/start.bat
 /bin/atlas.png
 /bin/aesir.json

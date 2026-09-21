@@ -12,15 +12,24 @@ extern (C) __gshared
 
 	string[] rt_options = [`scanDataSeg=precise`, `gcopt=cleanup:finalize gc:precise`];
 
-	export
-	{
-		int NvOptimusEnablement = 1;
-		int AmdPowerXpressRequestHighPerformance = 1;
-	}
+	// export
+	// {
+	// 	int NvOptimusEnablement = 1;
+	// 	int AmdPowerXpressRequestHighPerformance = 1;
+	// }
+}
+
+void foo()
+{
+	import bindbc.bgfx;
+
+	auto init_ = bgfx.Init(0);
 }
 
 void main(string[] args)
 {
+	foo;
+
 	version (Windows)
 	{
 		SetConsoleOutputCP(65001);
@@ -44,7 +53,7 @@ void main(string[] args)
 	// 	}
 	// }
 
-	PEfs = new RoFileSystem; 
+	PEfs = new RoFileSystem;
 
 	PE.doInit;
 	RO.doInit;

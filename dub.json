@@ -13,6 +13,8 @@
 		"utile": ">=2.9.6",
 		"pegged": ">=0.4.8",
 		"derelict-sdl2": ">=3.1.0-alpha.4",
+		"bindbc-common": "~>1.0.5",
+		"bindbc-loader": "~>1.1.5",
 
 		"utile:zip": "*",
 		"utile:sqlite": "*",
@@ -25,6 +27,7 @@
 	],
 	"libs": [
 		"sdl_x64",
+		"bgfx_x64",
 		"lispsm_x64",
 		"nuklear_x64",
 		"sdl_ttf_x64",
