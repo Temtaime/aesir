@@ -1,5 +1,5 @@
 module perfontain.managers.render;
-import std, perfontain, perfontain.opengl, perfontain.misc.draw;
+import std, perfontain, perfontain.misc.draw;
 
 public import perfontain.managers.render.drawinfo;
 
@@ -92,7 +92,14 @@ private:
 
 	void drawNodes(in DrawInfo[] nodes) // one program and mesh holder
 	{
+		uint subs;
+
+		foreach (n; nodes)
+			subs += n.mh.meshes[n.id].subs.length;
+
+		/* Legacy transform SSBO upload retained until instancing and draw-ID batching migrate.
 		auto subs = writeTransforms(nodes);
+		*/
 		bool bind = _rt is null || PE.scene.shadowPass && PE.shadows.textured;
 
 		drawAlloc[_tp].draw(_pg, nodes, subs, bind);

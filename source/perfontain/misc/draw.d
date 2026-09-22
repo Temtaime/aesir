@@ -1,5 +1,5 @@
 module perfontain.misc.draw;
-import std, core.stdc.stdlib, perfontain, perfontain.opengl;
+import std, core.stdc.stdlib, perfontain;
 
 final class DrawAllocator : RCounted
 {
@@ -35,9 +35,7 @@ final class DrawAllocator : RCounted
 		_drawnTriangles = 0;
 		_drawnNodes = cast(uint)nodes.length;
 
-		iv.bind;
-		scope (exit)
-			iv.unbind;
+		// bgfx binds geometry for every submission; it has no VAO bind step.
 
 		uint k;
 		const off = nodes[0].mh.reg.index.start;
@@ -47,11 +45,6 @@ final class DrawAllocator : RCounted
 			foreach (arr; SubMeshRange(nodes).chunkBy!((a, b) => a.tex is b.tex))
 			{
 				uint cnt;
-				pg.send(`pe_base_draw_id`, k);
-
-				uint[] counts;
-				size_t[] starts;
-
 				foreach (sm; arr)
 				{
 					if (!cnt)
@@ -67,29 +60,22 @@ final class DrawAllocator : RCounted
 					}
 
 					cnt++;
-					counts ~= sm.len;
-					starts ~= off + sm.start * 4;
+					pg.submit(iv, off / 4 + sm.start, sm.len, nodes[sm.node].matrix * PEscene.viewProject);
 				}
-
-				glMultiDrawElementsANGLE(GL_TRIANGLES, counts.ptr, GL_UNSIGNED_INT, cast(void**)starts.ptr, cnt);
 				k += cnt;
 			}
 		}
 		else
 		{
-			auto counts = ScopeArray!uint(submeshes);
-			auto starts = ScopeArray!size_t(submeshes);
-
 			foreach (sm; SubMeshRange(nodes))
 			{
-				counts[k] = sm.len;
-				starts[k++] = off + sm.start * 4;
+				pg.submit(iv, off / 4 + sm.start, sm.len, nodes[sm.node].matrix * PEscene.viewProject);
+				k++;
 
 				_drawnTriangles += sm.len / 3;
 			}
 
 			pg.bind;
-			glMultiDrawElementsANGLE(GL_TRIANGLES, counts[].ptr, GL_UNSIGNED_INT, cast(void**)starts[].ptr, submeshes);
 		}
 
 		assert(k == submeshes);

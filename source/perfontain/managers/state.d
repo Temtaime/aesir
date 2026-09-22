@@ -1,5 +1,5 @@
 module perfontain.managers.state;
-import std.array, core.bitop, perfontain, perfontain.opengl, perfontain.config, perfontain.math.matrix, perfontain.misc;
+import std.array, core.bitop, perfontain, perfontain.config, perfontain.math.matrix, perfontain.misc;
 
 final class StateManager
 {
@@ -17,10 +17,7 @@ final class StateManager
 	{
 		void msaa(bool b)
 		{
-			if (_msaa != b && PE._msaaLevel > 0)
-			{
-				disableEnable(GL_MULTISAMPLE_EXT, _msaa = b);
-			}
+			_msaa = b && PE._msaaLevel > 0;
 		}
 
 		void wireframe(bool b)
@@ -34,10 +31,7 @@ final class StateManager
 
 		void culling(bool b)
 		{
-			if (_culling != b)
-			{
-				disableEnable(GL_CULL_FACE, _culling = b);
-			}
+			_culling = b;
 		}
 
 		bool msaa()
@@ -90,34 +84,24 @@ package(perfontain):
 	{
 		void viewPort(Vector2s vp)
 		{
-			if (_viewPort != vp)
-			{
-				glViewport(0, 0, (_viewPort = vp).x, vp.y);
-			}
+			_viewPort = vp;
 		}
 
 		void blendingMode(ubyte m)
 		{
-			blending = m != noBlending;
-
-			if (_blending && _blendingMode != m)
-			{
-				auto modes = unpackModes(_blendingMode = m);
-				glBlendFuncSeparate(modes.front.blendingModeGL, modes.back.blendingModeGL, GL_ONE, GL_ONE);
-			}
+			_blending = m != noBlending;
+			_blendingMode = m;
 		}
 
 		void depthMask(bool m)
 		{
-			if (_depthMask != m)
-			{
-				glDepthMask(_depthMask = m);
-			}
+			_depthMask = m;
 		}
 	}
 
 	uint _pipeline, _vao, _prog;
 private:
+	/* Legacy GL state mutation retained until it is translated to bgfx submit flags.
 	static disableEnable(uint v, bool b)
 	{
 		if (b)
@@ -125,14 +109,7 @@ private:
 		else
 			glDisable(v);
 	}
-
-	void blending(bool b)
-	{
-		if (_blending != b)
-		{
-			disableEnable(GL_BLEND, _blending = b);
-		}
-	}
+	*/
 
 	Vector2s _viewPort;
 

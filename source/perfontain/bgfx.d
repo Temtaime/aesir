@@ -86,6 +86,24 @@ final class BgfxManager
 		return _layouts[type];
 	}
 
+	string shaderProfile() const
+	{
+		switch (bgfx_get_renderer_type())
+		{
+			case BGFX_RENDERER_TYPE_DIRECT3D11:
+			case BGFX_RENDERER_TYPE_DIRECT3D12:
+				return `s_5_0`;
+			case BGFX_RENDERER_TYPE_OPENGL:
+				return `430`;
+			case BGFX_RENDERER_TYPE_OPENGLES:
+				return `310_es`;
+			case BGFX_RENDERER_TYPE_VULKAN:
+				return `spirv`;
+			default:
+				throwError!`unsupported bgfx renderer for shaderc: %d`(cast(uint)bgfx_get_renderer_type());
+		}
+	}
+
 private:
 	bgfx_swap_chain_t _swapChain;
 	bgfx_vertex_layout_t[2] _layouts;

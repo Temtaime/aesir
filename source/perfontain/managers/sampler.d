@@ -2,7 +2,6 @@ module perfontain.managers.sampler;
 
 import
 		perfontain,
-		perfontain.opengl,
 		perfontain.sampler,
 		perfontain.misc.rc;
 
@@ -14,6 +13,7 @@ final class SamplerManager
 		// used for bindless textures
 		main = new Sampler;
 
+		/* Legacy GL sampler configuration retained until bgfx sampler presets are completed.
 		main.set(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		main.set(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
@@ -42,6 +42,7 @@ final class SamplerManager
 
 		shadowMap.set(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		shadowMap.set(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		*/
 	}
 
 	RC!Sampler

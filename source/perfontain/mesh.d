@@ -1,6 +1,6 @@
 module perfontain.mesh;
 
-import std.stdio, std.array, std.range, std.algorithm, perfontain, perfontain.vbo, perfontain.opengl,
+import std.stdio, std.array, std.range, std.algorithm, perfontain, perfontain.vbo,
 	perfontain.config, perfontain.shader, perfontain.math.bbox, perfontain.math.matrix;
 
 struct MeshInfo

@@ -1,7 +1,7 @@
 module rocl.controls.base;
 
 import std.utf, std.meta, std.conv, std.range, std.string, std.typecons,
-	std.algorithm, std.functional, perfontain, perfontain.opengl, ro.grf,
+	std.algorithm, std.functional, perfontain, ro.grf,
 	ro.conv, ro.conv.gui, ro.conv.item, rocl.paths, rocl, rocl.game,
 	rocl.status, rocl.status.helpers, rocl.controls, rocl.network.packets;
 

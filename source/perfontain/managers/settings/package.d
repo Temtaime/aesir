@@ -1,5 +1,5 @@
 module perfontain.managers.settings;
-import std, perfontain, perfontain.opengl, perfontain.managers.shadow, utile.encrypt;
+import std, perfontain, perfontain.managers.shadow, utile.encrypt;
 
 public import perfontain.managers.settings.data;
 

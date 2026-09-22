@@ -1,5 +1,5 @@
 module perfontain.managers.window;
-import std, perfontain.misc, perfontain, perfontain.math.matrix, perfontain.opengl, utile.except, nuklear;
+import std, perfontain.misc, perfontain, perfontain.math.matrix, utile.except, nuklear;
 public import derelict.sdl2.sdl;
 
 private extern(C)
@@ -217,8 +217,6 @@ package(perfontain):
 
 	void processEvents()
 	{
-		version (none)
-		{
 		auto inGui = isGuiHovered();
 
 		nk_input_begin(ctx);
@@ -346,21 +344,6 @@ package(perfontain):
 		}
 
 		nk_input_end(ctx);
-		}
-
-		for (SDL_Event evt; SDL_PollEvent(&evt);) switch (evt.type)
-		{
-		case SDL_WINDOWEVENT:
-			if (evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-				PE.onResize(_size = Vector2s(evt.window.data1, evt.window.data2));
-			break;
-
-		case SDL_QUIT:
-			PE._run = false;
-			break;
-
-		default:
-		}
 	}
 
 private:

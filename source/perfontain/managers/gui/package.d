@@ -1,6 +1,6 @@
 module perfontain.managers.gui;
 import std.utf, std.range, std.stdio, std.ascii, std.array, std.string, std.regex, std.encoding, std.algorithm,
-	stb.image, perfontain, perfontain.misc, perfontain.misc.dxt, perfontain.misc.draw, perfontain.opengl, perfontain.signals;
+	stb.image, perfontain, perfontain.misc, perfontain.misc.dxt, perfontain.misc.draw, perfontain.signals;
 
 public import nuklear, perfontain.managers.gui.tab, perfontain.managers.gui.text, perfontain.managers.gui.misc,
 	perfontain.managers.gui.scroll, perfontain.managers.gui.select, perfontain.managers.gui.tooltip, perfontain.managers.gui.style;

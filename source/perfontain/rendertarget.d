@@ -1,5 +1,5 @@
 module perfontain.rendertarget;
-import std, perfontain, perfontain.opengl;
+import bgfx_c, std, perfontain;
 
 final class RenderTarget : RCounted
 {
@@ -10,15 +10,10 @@ final class RenderTarget : RCounted
 	}
 	do
 	{
-		_id = gen!glGenFramebuffers;
-		bind;
-
 		if (depth)
 		{
 			_attachments ~= depth;
-			_clearFlags |= GL_DEPTH_BUFFER_BIT;
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth.id, 0);
+			_clearFlags |= BGFX_CLEAR_DEPTH_;
 		}
 
 		if (color)
@@ -26,41 +21,42 @@ final class RenderTarget : RCounted
 			uint[] arr;
 
 			_attachments ~= color;
-			_clearFlags |= GL_COLOR_BUFFER_BIT;
-
-			foreach (i, tex; color)
-			{
-				arr ~= GL_COLOR_ATTACHMENT0 + cast(uint)i;
-
-				glFramebufferTexture2D(GL_FRAMEBUFFER, arr.back, GL_TEXTURE_2D, tex.id, 0);
-			}
-
-			glDrawBuffers(cast(uint)arr.length, arr.ptr);
+			_clearFlags |= BGFX_CLEAR_COLOR_;
 		}
 
 		_size = _attachments[0].size;
 		assert(_attachments[1 .. $].all!(a => a.size == _size));
 
-		check;
-		unbind;
+		auto handles = color.map!(a => a.handle).array;
+		if (depth)
+			handles ~= depth.handle;
+
+		_frameBuffer = bgfx_create_frame_buffer_from_handles(cast(ubyte)handles.length, handles.ptr, false);
 	}
 
-	~this() => glDeleteFramebuffers(1,  & _id);
+	~this() => bgfx_destroy_frame_buffer(_frameBuffer);
 
-	void bind() => glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
-	static unbind() => glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	void bind()
+	{
+		/* Legacy OpenGL framebuffer bind retained until scene views migrate to bgfx.
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
+		*/
+	}
+
+	static unbind()
+	{
+		/*
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		*/
+	}
 
 	auto attachments() => _attachments[];
 package:
 	mixin publicProperty!(Vector2s, `size`);
-	mixin publicProperty!(uint, `clearFlags`);
+	mixin publicProperty!(ushort, `clearFlags`);
 
-	void check()
-	{
-		auto st = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-		st == GL_FRAMEBUFFER_COMPLETE || throwError!`FBO status is 0x%X`(st);
-	}
+	const(bgfx_frame_buffer_handle_t) frameBuffer() => _frameBuffer;
 
-	const uint _id;
+	bgfx_frame_buffer_handle_t _frameBuffer;
 	RCArray!Texture _attachments;
 }

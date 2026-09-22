@@ -66,7 +66,6 @@ final class Game
 
 		if (initialize(viewer ? 45 : 15, backend))
 		{
-			/* Legacy client startup retained until its bgfx renderer replacements are available.
 			if (viewer)
 			{
 				//if(std.file.exists(`tmp/map/prontera.rom`)) std.file.remove(`tmp/map/prontera.rom`);
@@ -82,7 +81,6 @@ final class Game
 					ROnet.login(user, pass);
 				}
 			}
-			*/
 
 			PE.work;
 		}
@@ -129,32 +127,13 @@ private:
 			PE.scene.proj = Matrix4.makePerspective(float(sz.x) / sz.y, fov, 10, 1000);
 		}
 
-		/* Legacy scene initialization retained until its bgfx renderer replacements are available.
 		PE.onResize.permanent(&onResize);
-
-		try
-		{
-			PE.create(`Æsir`, backend ? backend : `vulkan`);
-		}
-		catch (Exception e)
-		{
-			debug
-			{
-				logger.msg(e);
-			}
-			else
-				showErrorMessage("Your graphics driver seems to be outdated.\nUpdate it and try again.\n\nError message: " ~ e.msg);
-
-			return false;
-		}
-
-		PE.timers.add(&onWork, 0, 0);
 		ctors;
-
+		PE.timers.add(&onWork, 0, 0);
 		PE.gui.drawGUI = &gui.draw;
 
 		PE.hotkeys.add(Hotkey(null, { gui.showSettings ^= true; return true; }, SDLK_ESCAPE));
-		*/
+		onResize(PE.window.size);
 
 		return true;
 	}

@@ -1,5 +1,5 @@
 module rocl.loaders.map;
-import std.stdio, std.range, std.array, std.algorithm, perfontain, perfontain.opengl, ro.map, ro.conv, rocl.paths,
+import std.stdio, std.range, std.array, std.algorithm, perfontain, ro.map, ro.conv, rocl.paths,
 	ro.conv.map, rocl.render.water;
 
 struct RomLoader

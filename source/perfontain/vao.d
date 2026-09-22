@@ -1,6 +1,6 @@
 module perfontain.vao;
 
-import perfontain, perfontain.opengl;
+import perfontain;
 
 final class ArrayBuffer : RCounted
 {

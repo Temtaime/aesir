@@ -7,7 +7,6 @@ import
 		std.algorithm,
 
 		perfontain,
-		perfontain.opengl,
 
 		ro.grf,
 		ro.conv.gui,

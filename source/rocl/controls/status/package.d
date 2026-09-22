@@ -1,5 +1,5 @@
 module rocl.controls.status;
-import std, perfontain, perfontain.opengl, ro.grf, ro.conv.gui, rocl,
+import std, perfontain, ro.grf, ro.conv.gui, rocl,
 	rocl.game, rocl.status, rocl.controls, rocl.network.packets, rocl.gui.misc;
 
 struct WinStatus

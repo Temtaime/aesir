@@ -109,7 +109,7 @@ final class Texture : RCounted
 	}
 
 	bgfx_texture_handle_t handle() const => _handle;
-	uint samplerFlags() const => _samp._flags;
+	uint samplerFlags() const => _samp ? _samp._flags : 0;
 
 private:
 	this(ubyte t, in TextureData[] levels, Sampler s)

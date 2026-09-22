@@ -10,6 +10,8 @@ Use `import bgfx_c;` for bgfx. `utils/bgfx/bgfx_c.c` includes the official `bgfx
 
 When an official `BGFX_*` macro is unavailable in D after `import bgfx_c`, add an enum alias in `utils/bgfx/bgfx_c.c` with a trailing underscore, for example `BGFX_BUFFER_ALLOW_RESIZE_ = BGFX_BUFFER_ALLOW_RESIZE`. Use that imported alias from D. Do not hardcode the macro's numeric value or recreate a D binding.
 
+Shader sources must use only the native bgfx shader language and its official include files. If a required bgfx shader include or tool file is unavailable, stop and ask the user for its path. Do not replace it with GLSL, HLSL, custom compatibility macros, or backend-specific fallback syntax.
+
 Never launch `perfontain.exe`. Do not perform runtime, visual, or smoke-test checks. After a buildable milestone, ask the user to run it and wait for their result before continuing runtime diagnosis.
 
 ## Milestones
@@ -74,4 +76,7 @@ Never launch `perfontain.exe`. Do not perform runtime, visual, or smoke-test che
 - `ArrayBuffer` is a bgfx compatibility no-op because bgfx vertex layouts belong to buffers rather than VAOs. `Sampler` now stores bgfx sampler flags, and `Texture` owns a C99 `bgfx_texture_handle_t`, uploads every mip through `bgfx_copy` and `bgfx_update_texture_2d`, and destroys the handle through `bgfx_destroy_texture`.
 - `RenderTarget` owns a C99 `bgfx_frame_buffer_handle_t` created from its texture handles. Binding a framebuffer remains inactive until scene rendering assigns framebuffers to bgfx views.
 - `Program`, shader compilation, uniform bindings, draw submission, scene views, and asynchronous texture readback still use legacy compatibility paths and require the offline shader-pipeline milestone.
+- The initial shader bridge now writes generated native bgfx `draw` and `gui` sources to `bin/bgfx/shaders`, invokes `bin/bgfx/shaderc.exe` with the profile for the active renderer, and creates C99 shader/program handles from the generated binaries. `bin/bgfx/varying.def.sc` defines the base vertex attributes and varyings.
+- The first scene path is deliberately unlit and textured: fog, lighting, shadows, depth, and compute program creation are retained as comments in `SceneRenderData` until basic geometry is verified. `DrawAllocator` submits one bgfx draw per submesh instead of using the legacy GL multi-draw path.
+- Engine managers, timers, scene draw, GUI draw, and the `--viewer` startup path are active again. Viewer loads `prontera`, creates its FPS camera, and enables the viewer GUI; shadow processing remains disabled.
 - Legacy OpenGL setup and client startup remain disabled as source comments. They are retained as the migration checklist and must not be removed before feature parity.

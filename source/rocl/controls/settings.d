@@ -1,5 +1,5 @@
 module rocl.controls.settings;
-import std.meta, std.array, std.algorithm, perfontain, perfontain.opengl, ro.conv.gui, rocl, rocl.rofs, rocl.game,
+import std.meta, std.array, std.algorithm, perfontain, ro.conv.gui, rocl, rocl.rofs, rocl.game,
 	rocl.controls, ro.paths;
 
 struct WinSettings

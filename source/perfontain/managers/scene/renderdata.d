@@ -1,10 +1,11 @@
 module perfontain.managers.scene.renderdata;
-import std, perfontain, perfontain.opengl.functions;
+import std, perfontain;
 
 class SceneRenderData : RCounted
 {
 	this(Scene sc)
 	{
+		/* Lighting and shadow resources are disabled until the unlit bgfx scene path is verified.
 		const lightsFull = PE.settings.lights == Lights.full && sc.lights;
 
 		Texture texShadowsDepth;
@@ -27,10 +28,12 @@ class SceneRenderData : RCounted
 				_shadowsDepth = new RenderTarget(texShadowsDepth, null);
 			}
 		}
+		*/
 
 		{
 			auto creator = ProgramCreator(ProgramSource.draw);
 
+			/*
 			if (PE.settings.lights)
 			{
 				creator.define(`LIGHTING_ENABLED`);
@@ -59,10 +62,12 @@ class SceneRenderData : RCounted
 
 			if (PE.settings.shadows)
 				creator.define(`SHADOWS_ENABLED`);
+			*/
 
 			_draw = creator.create;
 		}
 
+		/*
 		if (texShadowsDepth)
 		{
 			_draw.add(ShaderTexture.shadows_depth, texShadowsDepth);
@@ -104,6 +109,7 @@ class SceneRenderData : RCounted
 				_ind = new Texture(TEX_RED_UINT, PEwindow._size, s);
 			}
 		}
+		*/
 	}
 
 	Texture lightsIndices() => _ind;
@@ -120,6 +126,7 @@ class SceneRenderData : RCounted
 private:
 	ushort blockSize()
 	{
+		/* Legacy GL compute capability query retained until bgfx compute migration.
 		int x, y, z, maxInvocations;
 
 		glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &x);
@@ -138,6 +145,8 @@ private:
 		logger.msg!`Using blocks of %ux%1$u size`(k);
 
 		return k;
+		*/
+		return 1;
 	}
 
 	__gshared ushort _block;

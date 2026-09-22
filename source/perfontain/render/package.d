@@ -62,6 +62,9 @@ final class IndexVertex : RCounted
 		return _va.vbo.type;
 	}
 
+	VertexBuffer indexBuffer() => _ia.vbo;
+	VertexBuffer vertexBuffer() => _va.vbo;
+
 private:
 	RC!VMemAlloc _ia, _va;
 

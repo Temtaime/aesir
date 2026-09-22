@@ -1,69 +1,23 @@
-use PASS_DATA
-use PASS_DRAW_ID
-use TRANS_COLOR
-
-LIGHTING_FULL
-	use MODEL_MAT
-SHADOWS_ENABLED
-	use MODEL_MAT
-
-LIGHTING_ENABLED
-	use PASS_NORMALS
-
-import header
-import misc
-
 vertex:
-	layout(location = 0) in vec3 pe_vertex;
-	layout(location = 1) in vec3 pe_normal;
-	layout(location = 2) in vec2 pe_tex_coord;
+	$input a_position, a_normal, a_texcoord0
+	$output v_texcoord0
+
+	#include "bgfx_shader.sh"
 
 	void main()
 	{
-		vec4 v = vec4(pe_vertex, 1.0);
-
-		MODEL_MAT
-			vec4 p = TRANS.model * v;
-
-		LIGHTING_FULL
-			pos = p;
-
-		SHADOWS_ENABLED
-			shadowPos = pe_shadow_matrix * p;
-
-		LIGHTING_ENABLED
-			norm = vec3(TRANS.normal * vec4(pe_normal, 0.0));
-
-		texCoord = pe_tex_coord;
-		gl_Position = TRANS.mvp * v;
+		v_texcoord0 = a_texcoord0;
+		gl_Position = mul(u_modelViewProj, vec4(a_position, 1.0));
 	}
 
 fragment:
-	LIGHTING_ENABLED
-		import lighting
+	$input v_texcoord0
 
-	SHADOWS_ENABLED
-		import shadows
+	#include "bgfx_shader.sh"
 
-	out vec4 pe_frag_color;
+	SAMPLER2D(s_texMain, 0);
 
 	void main()
 	{
-		vec4 u = SAMPLE_TEX;
-
-		if(u.a < 0.05)
-			discard;
-
-		u *= TRANS.color;
-
-		LIGHTING_ENABLED
-			calcLights(u.rgb);
-
-		SHADOWS_ENABLED
-			calcShadows(shadowPos, 0.0, u.rgb);
-
-		USE_FOG
-			u.rgb = mix(u.rgb, FOG_COLOR, smoothstep(FOG_NEAR, FOG_FAR, gl_FragCoord.z / gl_FragCoord.w));
-
-		pe_frag_color = u;
+		gl_FragColor = texture2D(s_texMain, v_texcoord0);
 	}

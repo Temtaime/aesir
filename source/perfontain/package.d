@@ -2,7 +2,7 @@ module perfontain;
 import std.utf, std.file, std.path, std.conv, std.array, std.range, std.stdio, std.traits, std.string, std.encoding,
 std.exception, std.algorithm : filter, map;
 
-import core.time, core.thread, core.memory, perfontain.misc, perfontain.managers.state, perfontain.opengl,
+import core.time, core.thread, core.memory, perfontain.misc, perfontain.managers.state,
 	perfontain.bgfx, perfontain.sampler, perfontain.filesystem, perfontain.managers.audio, perfontain.math.frustum,
 perfontain.managers.shadow, perfontain.managers.sampler;
 
@@ -139,14 +139,12 @@ final class Engine
 			logger.error(`msaa is not supported`);
 		}
 */
-		logger.info2(`legacy OpenGL renderer disabled pending bgfx initialization`);
+		logger.info2(`bgfx renderer initialized`);
 
 		_run = true;
 
-		/* Legacy OpenGL resource initialization retained until its bgfx replacements are available.
 		ctors;
 		onResize(PE.window.size);
-*/
 
 		{
 
@@ -169,11 +167,9 @@ final class Engine
 			/*
 			glEnable(GL_DEPTH_TEST);
 			*/
-			// Legacy OpenGL frame execution retained until its bgfx replacements are available.
-			//shadows.process;
-			//scene.draw;
-			//glDisable(GL_DEPTH_TEST);
-			//gui.draw;
+			// Shadows, compute lighting, and framebuffer passes remain disabled.
+			scene.draw;
+			gui.draw;
 			//PEwindow.swapBuffers;
 			bgfx.frame;
 		}
@@ -255,9 +251,7 @@ package:
 			}
 		}
 
-		/*
 		timers.process;
-		*/
 		return _run;
 	}
 

@@ -1,6 +1,6 @@
 module perfontain.nodes;
 import std.stdio, std.range, std.algorithm, perfontain, perfontain.vbo, perfontain.mesh, perfontain.misc,
-	perfontain.math.bbox, perfontain.config, perfontain.opengl, perfontain.math.matrix, perfontain.shader;
+	perfontain.math.bbox, perfontain.config, perfontain.math.matrix, perfontain.shader;
 
 class Node : RCounted
 {

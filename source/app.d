@@ -55,6 +55,8 @@ void main(string[] args)
 	}
 	catch (Throwable e)
 	{
+		logger.error(e.msg);
+
 		debug
 		{
 		}

@@ -1,6 +1,6 @@
 module perfontain.managers.scene;
 import std.math, std.stdio, std.array, std.typecons, std.algorithm, stb.image, perfontain, perfontain.math,
-	perfontain.misc, perfontain.misc.draw, perfontain.misc.vmem, perfontain.opengl, perfontain.math.frustum,
+	perfontain.misc, perfontain.misc.draw, perfontain.misc.vmem, perfontain.math.frustum,
 	perfontain.managers.shadow, perfontain.managers.scene.renderdata;
 
 public import perfontain.render.types, perfontain.managers.scene.structs;
@@ -16,10 +16,9 @@ final class SceneManager
 		PE.settings.lightsChange.permanent(_ => onUpdate);
 		PE.settings.shadowsChange.permanent(_ => onUpdate);
 
-		debug
-		{
-			glClearColor(1, 0, 1, 0);
-		}
+		/*
+		glClearColor(1, 0, 1, 0);
+		*/
 	}
 
 	~this()
@@ -162,7 +161,7 @@ package(perfontain):
 				if (auto rt = lightsDepth)
 				{
 					draw(progLightsDepth, rt, _vp);
-					computeLights(lightsIndices, progLightsCompute, computeBlock);
+					// computeLights(lightsIndices, progLightsCompute, computeBlock);
 				}
 
 				pg = progDraw;
@@ -172,6 +171,7 @@ package(perfontain):
 		draw(pg, null, _vp);
 	}
 
+	/* Legacy OpenGL compute path retained until bgfx compute migration.
 	void computeLights(Texture tex, Program compute, ushort bs)
 	{
 		tex.imageBind(0, GL_READ_WRITE);
@@ -191,13 +191,11 @@ package(perfontain):
 
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	}
+	*/
 
 	void clear(Vector2s size, uint flags)
 	{
-		PEstate.viewPort = size;
-		PEstate.depthMask = true; // otherwise depth clear won't work
-
-		glClear(flags);
+		// bgfx view clear is configured by BgfxManager.
 	}
 
 	void draw(Program pg, RenderTarget rt, Matrix4 vp)
@@ -212,7 +210,7 @@ package(perfontain):
 		else
 		{
 			RenderTarget.unbind;
-			clear(PEwindow._size, GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+			clear(PEwindow._size, 0);
 		}
 
 		if (_scene)

@@ -1,5 +1,5 @@
 module perfontain.vbo;
-import bgfx_c, std.stdio, std.algorithm, perfontain, perfontain.misc, perfontain.config, perfontain.opengl, perfontain.math.matrix, utile.except;
+import bgfx_c, std.stdio, std.algorithm, perfontain, perfontain.misc, perfontain.config, perfontain.math.matrix, utile.except;
 
 enum
 {
@@ -117,6 +117,9 @@ final class VertexBuffer : RCounted
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, idx, id);
 		*/
 	}
+
+	bgfx_dynamic_index_buffer_handle_t indexHandle() const => _index;
+	bgfx_dynamic_vertex_buffer_handle_t vertexHandle() const => _vertex;
 
 private:
 	mixin publicProperty!(byte, `type`);

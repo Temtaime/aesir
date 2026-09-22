@@ -1,39 +1,29 @@
-import header
-
-use PASS_DATA
-use PASS_DRAW_ID
-use TRANS_GUI
-
-import misc
-
 vertex:
-	layout(location = 0) in vec4 pe_vertex;
-	layout(location = 1) in vec4 pe_color;
+	$input a_position, a_color0
+	$output v_texcoord0, v_color0
+
+	#include "bgfx_shader.sh"
 
 	void main()
 	{
-		DO_DATA_PASS
-
-		color = pe_color;
-		texCoord = pe_vertex.zw;
-
-		gl_Position = TRANS.mvp * vec4(pe_vertex.xy, 0., 1.);
+		v_texcoord0 = a_position.zw;
+		v_color0 = a_color0;
+		gl_Position = mul(u_modelViewProj, vec4(a_position.xy, 0.0, 1.0));
 	}
 
 fragment:
-	out vec4 pe_frag_color;
+	$input v_texcoord0, v_color0
+
+	#include "bgfx_shader.sh"
+
+	SAMPLER2D(s_texMain, 0);
 
 	void main()
 	{
-		ivec2 coord = ivec2(gl_FragCoord);
+		vec4 c = texture2D(s_texMain, v_texcoord0) * v_color0;
 
-		if(coord.x < TRANS.scissor.x || coord.x >= TRANS.scissor.z || coord.y < TRANS.scissor.y || coord.y >= TRANS.scissor.w)
+		if (c.a < 0.05)
 			discard;
 
-		vec4 c = SAMPLE_TEX * color;
-
-		if(c.a < .05)
-			discard;
-
-		pe_frag_color = c;
+		gl_FragColor = c;
 	}

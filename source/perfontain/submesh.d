@@ -2,7 +2,7 @@ module perfontain.submesh;
 import std.stdio, std.array, std.range, std.typecons, std.container,
 	std.algorithm, std.container.rbtree, perfontain, perfontain.misc.rc,
 	perfontain.vbo, perfontain.vao, perfontain.misc, perfontain.mesh, perfontain.nodes,
-	perfontain.config, perfontain.shader, perfontain.opengl, perfontain.math,
+	perfontain.config, perfontain.shader, perfontain.math,
 	perfontain.math.bbox, perfontain.math.matrix, utile.except;
 
 /*enum

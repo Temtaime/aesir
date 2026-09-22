@@ -1,9 +1,10 @@
 module perfontain.sampler;
 
-import bgfx_c, std.stdio, perfontain, perfontain.opengl;
+import bgfx_c, std.stdio, perfontain;
 
 final class Sampler : RCounted
 {
+	/*
 	auto set(T)(uint e, T v)
 	{
 		switch (e)
@@ -30,6 +31,7 @@ final class Sampler : RCounted
 
 		return this;
 	}
+	*/
 
 package:
 	uint _flags;

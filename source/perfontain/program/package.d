@@ -1,5 +1,5 @@
 module perfontain.program;
-import std, core.bitop, perfontain.opengl, perfontain, utile.except, utile.log;
+import bgfx_c, std, core.bitop, perfontain, utile.except, utile.log;
 public import perfontain.program.props;
 
 enum
@@ -11,6 +11,7 @@ enum
 	PROG_DATA_SCISSOR = 32,
 }
 
+/* Legacy OpenGL program linking and reflection retained until all shader paths use bgfx.
 final class Program : RCounted
 {
 	this(Shader[] shaders)
@@ -308,4 +309,72 @@ private:
 
 	RC!Texture[ShaderTexture.max] _texs;
 	RC!VertexBuffer[ShaderBuffer.max] _bufs;
+}
+*/
+
+final class Program : RCounted
+{
+	this(Shader[] shaders)
+	{
+		assert(shaders.length == 2);
+
+		_handle = bgfx_create_program(shaders[0].handle, shaders[1].handle, true);
+		shaders.each!(a => a.relinquish);
+
+		_mainTexture = bgfx_create_uniform(`s_texMain`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
+	}
+
+	~this()
+	{
+		bgfx_destroy_uniform(_mainTexture);
+		bgfx_destroy_program(_handle);
+	}
+
+	void bind()
+	{
+	}
+
+	static void unbind()
+	{
+	}
+
+	void send(T)(string name, in T value)
+	{
+		// Legacy program uniforms are replaced by explicit bgfx uniforms during submission.
+	}
+
+	uint minLen(string name) => 0;
+	ubyte flags() => 0;
+
+	void add(ShaderTexture id, Texture tex)
+	{
+		_texs[id] = tex;
+	}
+
+	void add(ShaderBuffer id, VertexBuffer data)
+	{
+	}
+
+	bgfx_program_handle_t handle() const => _handle;
+	bgfx_uniform_handle_t mainTexture() const => _mainTexture;
+	const(Texture) mainTextureValue() const => _texs[ShaderTexture.main];
+
+	void submit(IndexVertex iv, uint firstIndex, uint numIndices, in Matrix4 mvp)
+	{
+		bgfx_set_transform(mvp.ptr, 1);
+
+		if (auto tex = _texs[ShaderTexture.main])
+			bgfx_set_texture(0, _mainTexture, tex.handle, tex.samplerFlags);
+
+		auto vertex = iv.vertexBuffer;
+		bgfx_set_dynamic_vertex_buffer(0, vertex.vertexHandle, 0, vertex.length / vertex.alignment);
+		bgfx_set_dynamic_index_buffer(iv.indexBuffer.indexHandle, firstIndex, numIndices);
+		bgfx_set_state(BGFX_STATE_WRITE_RGB_ | BGFX_STATE_WRITE_A_ | BGFX_STATE_WRITE_Z_ | BGFX_STATE_DEPTH_TEST_LESS_, 0);
+		bgfx_submit(0, _handle, 0, 0);
+	}
+
+private:
+	bgfx_program_handle_t _handle;
+	bgfx_uniform_handle_t _mainTexture;
+	Texture[ShaderTexture.max] _texs;
 }
