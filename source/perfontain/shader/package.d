@@ -53,6 +53,7 @@ final class Shader : RCounted
 {
 	this(string name, string data, ubyte type)
 	{
+		_name = name;
 		_type = type;
 
 		mkdirRecurse(`bgfx/shaders`);
@@ -86,6 +87,7 @@ final class Shader : RCounted
 	}
 
 	bgfx_shader_handle_t handle() const => _handle;
+	string sourceName() const => _name;
 	void relinquish()
 	{
 		_owned = false;
@@ -94,5 +96,6 @@ final class Shader : RCounted
 private:
 	bgfx_shader_handle_t _handle;
 	ubyte _type;
+	string _name;
 	bool _owned = true;
 }

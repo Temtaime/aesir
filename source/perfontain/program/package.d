@@ -320,13 +320,22 @@ final class Program : RCounted
 
 		_handle = bgfx_create_program(shaders[0].handle, shaders[1].handle, true);
 		shaders.each!(a => a.relinquish);
+		_depthOnly = shaders[0].sourceName.canFind(`depth_`);
 
 		_mainTexture = bgfx_create_uniform(`s_texMain`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
+		_color = bgfx_create_uniform(`u_color`.toStringz, BGFX_UNIFORM_TYPE_VEC4, 1);
+		_shadowMatrix = bgfx_create_uniform(`u_shadowMatrix`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
+		_shadowModel = bgfx_create_uniform(`u_shadowModel`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
+		_shadowMap = bgfx_create_uniform(`s_shadowMap`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
 	}
 
 	~this()
 	{
 		bgfx_destroy_uniform(_mainTexture);
+		bgfx_destroy_uniform(_color);
+		bgfx_destroy_uniform(_shadowMatrix);
+		bgfx_destroy_uniform(_shadowModel);
+		bgfx_destroy_uniform(_shadowMap);
 		bgfx_destroy_program(_handle);
 	}
 
@@ -359,22 +368,43 @@ final class Program : RCounted
 	bgfx_uniform_handle_t mainTexture() const => _mainTexture;
 	const(Texture) mainTextureValue() const => _texs[ShaderTexture.main];
 
-	void submit(IndexVertex iv, uint firstIndex, uint numIndices, in Matrix4 mvp)
+	void submit(IndexVertex iv, uint firstIndex, uint numIndices, in Matrix4 mvp, in Matrix4 model, in Color color, bool noDepth, bool blend, ushort view)
 	{
 		bgfx_set_transform(mvp.ptr, 1);
+		auto c = color.toVec;
+		bgfx_set_uniform(_color, c.ptr, 1);
 
 		if (auto tex = _texs[ShaderTexture.main])
 			bgfx_set_texture(0, _mainTexture, tex.handle, tex.samplerFlags);
 
+		if (auto tex = _texs[ShaderTexture.shadows_depth])
+		{
+			bgfx_set_uniform(_shadowMatrix, PE.shadows.matrix.ptr, 1);
+			bgfx_set_uniform(_shadowModel, model.ptr, 1);
+			bgfx_set_texture(1, _shadowMap, tex.handle, tex.samplerFlags);
+		}
+
 		auto vertex = iv.vertexBuffer;
 		bgfx_set_dynamic_vertex_buffer(0, vertex.vertexHandle, 0, vertex.length / vertex.alignment);
 		bgfx_set_dynamic_index_buffer(iv.indexBuffer.indexHandle, firstIndex, numIndices);
-		bgfx_set_state(BGFX_STATE_WRITE_RGB_ | BGFX_STATE_WRITE_A_ | BGFX_STATE_WRITE_Z_ | BGFX_STATE_DEPTH_TEST_LESS_, 0);
-		bgfx_submit(0, _handle, 0, 0);
+		ulong state = BGFX_STATE_DEPTH_TEST_LESS_;
+
+		if (!_depthOnly)
+			state |= BGFX_STATE_WRITE_RGB_ | BGFX_STATE_WRITE_A_;
+
+		if (!noDepth)
+			state |= BGFX_STATE_WRITE_Z_;
+
+		if (blend)
+			state |= BGFX_STATE_BLEND_ALPHA_;
+
+		bgfx_set_state(state, 0);
+		bgfx_submit(view, _handle, 0, 0);
 	}
 
 private:
 	bgfx_program_handle_t _handle;
-	bgfx_uniform_handle_t _mainTexture;
+	bgfx_uniform_handle_t _mainTexture, _color, _shadowMatrix, _shadowModel, _shadowMap;
 	Texture[ShaderTexture.max] _texs;
+	bool _depthOnly;
 }

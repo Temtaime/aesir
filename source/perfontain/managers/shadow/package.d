@@ -4,11 +4,6 @@ import std.algorithm, perfontain, perfontain.managers.shadow.lispsm;
 
 final class ShadowManager
 {
-	this()
-	{
-		_bias = Matrix4.scale(VEC3_2) * Matrix4.translate(VEC3_2);
-	}
-
 	auto makeMatrix()
 	{
 		auto s = PE.scene;
@@ -23,7 +18,10 @@ final class ShadowManager
 		calculateShadowMatrices(&sd, view.ptr, proj.ptr, lispsm);
 
 		auto vp = view * proj;
-		_matrix = vp * _bias;
+		auto zScale = PE.bgfx.homogeneousDepth ? 0.5 : 1.0;
+		auto zOffset = PE.bgfx.homogeneousDepth ? 0.5 : 0.0;
+		auto bias = Matrix4.scale(Vector3(0.5, 0.5, zScale)) * Matrix4.translate(Vector3(0.5, 0.5, zOffset));
+		_matrix = vp * bias;
 
 		return vp;
 	}
@@ -54,5 +52,4 @@ private:
 
 	static level() => PE.settings.shadows;
 
-	immutable Matrix4 _bias;
 }

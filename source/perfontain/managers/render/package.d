@@ -23,6 +23,7 @@ final class RenderManager
 		_tp = tp;
 		_pg = pg;
 		_rt = rt;
+		_view = rt ? 0 : (tp == RENDER_SCENE ? 1 : 2);
 		_viewProj = &viewProj;
 
 		if (_infos.length)
@@ -102,7 +103,7 @@ private:
 		*/
 		bool bind = _rt is null || PE.scene.shadowPass && PE.shadows.textured;
 
-		drawAlloc[_tp].draw(_pg, nodes, subs, bind);
+		drawAlloc[_tp].draw(_pg, nodes, subs, bind, *_viewProj, _view);
 	}
 
 	void write(in DrawInfo di, ubyte[] arr, ubyte flags)
@@ -145,6 +146,7 @@ private:
 	ubyte _tp;
 	Program _pg;
 	RenderTarget _rt;
+	ushort _view;
 
 	const(Matrix4)* _viewProj;
 

@@ -5,19 +5,11 @@ class SceneRenderData : RCounted
 {
 	this(Scene sc)
 	{
-		/* Lighting and shadow resources are disabled until the unlit bgfx scene path is verified.
-		const lightsFull = PE.settings.lights == Lights.full && sc.lights;
-
 		Texture texShadowsDepth;
 
 		if (PE.settings.shadows)
 		{
 			auto creator = ProgramCreator(ProgramSource.depth);
-
-			if (PE.shadows.textured)
-			{
-				creator.define(`TEXTURED`);
-			}
 
 			_shadowsDepthProg = creator.create;
 
@@ -28,10 +20,15 @@ class SceneRenderData : RCounted
 				_shadowsDepth = new RenderTarget(texShadowsDepth, null);
 			}
 		}
-		*/
 
 		{
 			auto creator = ProgramCreator(ProgramSource.draw);
+			if (texShadowsDepth)
+			{
+				creator.define(`SHADOWS_ENABLED`);
+				if (!PE.bgfx.originBottomLeft)
+					creator.define(`SHADOWS_FLIP_Y`);
+			}
 
 			/*
 			if (PE.settings.lights)
@@ -60,18 +57,16 @@ class SceneRenderData : RCounted
 				with (sc.fogColor)
 					glClearColor(x, y, z, 0);
 
-			if (PE.settings.shadows)
-				creator.define(`SHADOWS_ENABLED`);
 			*/
 
 			_draw = creator.create;
 		}
 
-		/*
 		if (texShadowsDepth)
 		{
 			_draw.add(ShaderTexture.shadows_depth, texShadowsDepth);
 		}
+		/*
 
 		if (lightsFull)
 		{

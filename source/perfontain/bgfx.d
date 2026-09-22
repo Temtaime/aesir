@@ -71,14 +71,22 @@ final class BgfxManager
 		_swapChain.height = size.y;
 
 		bgfx_reset(BGFX_RESET_NONE_, &_swapChain);
-		bgfx_set_view_rect(0, 0, 0, size.x, size.y, 0, 1);
+		bgfx_set_view_rect(1, 0, 0, size.x, size.y, 0, 1);
+		bgfx_set_view_rect(2, 0, 0, size.x, size.y, 0, 1);
 	}
 
 	void frame()
 	{
-		bgfx_set_view_clear(0, BGFX_CLEAR_COLOR_ | BGFX_CLEAR_DEPTH_, 0xFF00_FFFF, 1, 0);
-		bgfx_touch(0);
+		bgfx_set_view_clear(1, BGFX_CLEAR_COLOR_ | BGFX_CLEAR_DEPTH_, 0xFF00_FFFF, 1, 0);
+		bgfx_touch(1);
 		bgfx_frame(BGFX_FRAME_NONE_);
+	}
+
+	void setView(ushort id, bgfx_frame_buffer_handle_t frameBuffer, Vector2s size, ushort clearFlags)
+	{
+		bgfx_set_view_frame_buffer(id, frameBuffer);
+		bgfx_set_view_rect(id, 0, 0, size.x, size.y, 0, 1);
+		bgfx_set_view_clear(id, clearFlags, 0, 1, 0);
 	}
 
 	ref bgfx_vertex_layout_t layout(ubyte type)
@@ -103,6 +111,9 @@ final class BgfxManager
 				throwError!`unsupported bgfx renderer for shaderc: %d`(cast(uint)bgfx_get_renderer_type());
 		}
 	}
+
+	bool homogeneousDepth() const => bgfx_get_caps.homogeneousDepth;
+	bool originBottomLeft() const => bgfx_get_caps.originBottomLeft;
 
 private:
 	bgfx_swap_chain_t _swapChain;

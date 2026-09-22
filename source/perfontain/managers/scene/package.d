@@ -204,7 +204,7 @@ package(perfontain):
 
 		if (rt)
 		{
-			rt.bind;
+			PE.bgfx.setView(0, rt.frameBuffer, rt.size, rt.clearFlags);
 			clear(rt.size, rt.clearFlags);
 		}
 		else
