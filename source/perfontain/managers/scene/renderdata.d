@@ -10,6 +10,8 @@ class SceneRenderData : RCounted
 		if (PE.settings.shadows)
 		{
 			auto creator = ProgramCreator(ProgramSource.depth);
+			if (PE.shadows.textured)
+				creator.define(`TEXTURED`);
 
 			_shadowsDepthProg = creator.create;
 

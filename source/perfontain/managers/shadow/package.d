@@ -18,10 +18,15 @@ final class ShadowManager
 		calculateShadowMatrices(&sd, view.ptr, proj.ptr, lispsm);
 
 		auto vp = view * proj;
-		auto zScale = PE.bgfx.homogeneousDepth ? 0.5 : 1.0;
-		auto zOffset = PE.bgfx.homogeneousDepth ? 0.5 : 0.0;
-		auto bias = Matrix4.scale(Vector3(0.5, 0.5, zScale)) * Matrix4.translate(Vector3(0.5, 0.5, zOffset));
+		auto bias = Matrix4.scale(Vector3(0.5)) * Matrix4.translate(Vector3(0.5));
 		_matrix = vp * bias;
+
+		if (!PE.bgfx.homogeneousDepth)
+		{
+			// bgfx's D3D depth range is [0, 1], while the legacy shadow matrix is sampled in biased clip space.
+			auto depthBias = Matrix4.scale(1, 1, 0.5) * Matrix4.translate(0, 0, 0.5);
+			return vp * depthBias;
+		}
 
 		return vp;
 	}
