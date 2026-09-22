@@ -2,15 +2,15 @@
 
 ## Goal
 
-Replace the ANGLE/OpenGL ES renderer with bgfx through `bindbc.bgfx`, while preserving the current client behavior: scene and GUI rendering, textures, batching, lighting, shadow maps, fog, blending, scissor rectangles, and compute-based light culling.
+Replace the ANGLE/OpenGL ES renderer with bgfx through the C99 API imported from `bgfx_c`, while preserving the current client behavior: scene and GUI rendering, textures, batching, lighting, shadow maps, fog, blending, scissor rectangles, and compute-based light culling.
 
 The project must remain buildable at every milestone. It is acceptable for it not to render or run correctly while the old OpenGL backend is disabled and before bgfx produces the first frame.
 
-When translating bgfx C++ examples, initialize D structs that use a zero-argument C++ constructor with `0` as their required D argument.
+Use `import bgfx_c;` for bgfx. `utils/bgfx/bgfx_c.c` includes the official `bgfx/c99/bgfx.h`; ImportC exposes its C99 types and `bgfx_*` functions directly to D. Keep any C macro values needed by D as named C enum constants in that wrapper.
 
-Use the checked-in `bindbc.bgfx` C++ bindings exclusively. Do not add C99 declarations or call the `bgfx_*` API directly; fix binding or library ABI mismatches at their source.
+When an official `BGFX_*` macro is unavailable in D after `import bgfx_c`, add an enum alias in `utils/bgfx/bgfx_c.c` with a trailing underscore, for example `BGFX_BUFFER_ALLOW_RESIZE_ = BGFX_BUFFER_ALLOW_RESIZE`. Use that imported alias from D. Do not hardcode the macro's numeric value or recreate a D binding.
 
-Do not launch the application or perform runtime, visual, or smoke-test checks autonomously. After a buildable milestone, ask the user to run it and wait for their result before continuing runtime diagnosis.
+Never launch `perfontain.exe`. Do not perform runtime, visual, or smoke-test checks. After a buildable milestone, ask the user to run it and wait for their result before continuing runtime diagnosis.
 
 ## Milestones
 
@@ -21,7 +21,7 @@ Do not launch the application or perform runtime, visual, or smoke-test checks a
    - Build after each group of changes; runtime rendering is not a requirement for this milestone.
 
 2. **Build and platform integration**
-   - Add the `bindbc-bgfx` dependency and select the required binding/library versions.
+    - Use the checked-in C99 wrapper and `bgfx_x64` library.
    - Replace ANGLE environment setup and SDL GL-context creation with an SDL window suitable for bgfx platform data.
    - Implement bgfx startup, reset on resize, per-frame `bgfx_frame`, and orderly shutdown.
    - Verify an empty bgfx frame runs on Windows and Linux.
@@ -64,9 +64,14 @@ Do not launch the application or perform runtime, visual, or smoke-test checks a
 - The frame loop is in `perfontain/package.d`; scene clearing, framebuffer selection, rendering, and compute dispatch are in `managers/scene/package.d`.
 - Resource wrappers live in `vao.d`, `vbo.d`, `managers/texture/texture.d`, `sampler.d`, `rendertarget.d`, and `program/package.d`.
 - Geometry is allocated through `IndexVertex` and `VMemAlloc`; `DrawAllocator` batches index draws with `glMultiDrawElementsANGLE`.
-- The project already links `bgfx_x64`; local generated sources expose it through `import bindbc.bgfx` in `source/bindbc/bgfx/` and `source/bgfx/`.
+- The project links `bgfx_x64`; `utils/bgfx/bgfx_c.c` includes the official C99 header and is imported directly with `import bgfx_c`.
 - `dub build` succeeds before the migration changes, with pre-existing deprecation warnings only.
 - The active window path now creates a plain SDL window and no longer configures ANGLE, creates an SDL GL context, or calls `hookGL`. Engine-level GPU queries and depth-test toggles are also disabled; running the client is intentionally unsupported until bgfx initialization is added.
-- `bgfx::init` is exported by `bgfx_x64.lib` as `?init@bgfx@@YA_NAEBUInit@1@@Z`. The local generator emitted an incompatible parameter mangling for `Init` and `SwapChain`; their checked-in binding declarations now use the library's C++ names. No C99 API is used.
-- The active minimal path creates a bgfx main swap chain from the SDL `HWND`, resets it on `SDL_WINDOWEVENT_SIZE_CHANGED`, clears view 0 to `0xFF00_FFFF`, touches that view, and calls `bgfx.frame`. It remains alive for five seconds in an automated smoke test.
+- The active renderer uses unmangled C99 exports such as `bgfx_init`, `bgfx_reset`, `bgfx_set_view_clear`, and `bgfx_frame`; it does not depend on C++ ABI or symbol mangling.
+- The active minimal path creates a bgfx main swap chain from the SDL `HWND`, resets it on `SDL_WINDOWEVENT_SIZE_CHANGED`, clears view 0 to `0xFF00_FFFF`, touches that view, and calls `bgfx.frame`. The user verified this path selects Direct3D 11 and presents the clear color.
+- GUI and scene `bgfx::VertexLayout` instances now describe the existing shader inputs: GUI uses `position: vec4` and `color0: vec4`; scene uses `position: vec3`, `normal: vec3`, and `texCoord0: vec2`.
+- `VertexBuffer` now owns bgfx dynamic index or vertex buffers and uploads `VMemAlloc` data through `bgfx.copy` and `bgfx.update`. The legacy GL allocation, update, and VAO code is retained as comments until submission is ported.
+- `ArrayBuffer` is a bgfx compatibility no-op because bgfx vertex layouts belong to buffers rather than VAOs. `Sampler` now stores bgfx sampler flags, and `Texture` owns a C99 `bgfx_texture_handle_t`, uploads every mip through `bgfx_copy` and `bgfx_update_texture_2d`, and destroys the handle through `bgfx_destroy_texture`.
+- `RenderTarget` owns a C99 `bgfx_frame_buffer_handle_t` created from its texture handles. Binding a framebuffer remains inactive until scene rendering assigns framebuffers to bgfx views.
+- `Program`, shader compilation, uniform bindings, draw submission, scene views, and asynchronous texture readback still use legacy compatibility paths and require the offline shader-pipeline milestone.
 - Legacy OpenGL setup and client startup remain disabled as source comments. They are retained as the migration checklist and must not be removed before feature parity.

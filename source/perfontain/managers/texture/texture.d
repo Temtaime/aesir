@@ -1,6 +1,6 @@
 module perfontain.managers.texture.texture;
 
-import std.range, std.algorithm, perfontain, perfontain.opengl, perfontain.misc.dxt, stb.dxt;
+import bgfx_c, std.range, std.algorithm, perfontain, perfontain.misc.dxt, stb.dxt;
 
 public import perfontain.managers.texture.types;
 
@@ -29,17 +29,12 @@ final class Texture : RCounted
 
 		//PEstate._texLayers.each!((ref a) => cas(a.tex, id, 0));
 
-		glDeleteTextures(1, &id);
+		bgfx_destroy_texture(_handle);
 	}
 
-	const toImage()
+	Image toImage() const
 	{
-		assert(type > TEX_DXT_5);
-
-		auto t = textureTypes[type];
-		auto arr = new float[size.x * size.y];
-
-		// FIXME
+		/* Legacy OpenGL readback retained until asynchronous bgfx readback is implemented.
 		glBindTexture(GL_TEXTURE_2D, id);
 		glGetTexImageANGLE(GL_TEXTURE_2D, 0, t[1], t[2], arr.ptr);
 
@@ -70,6 +65,8 @@ final class Texture : RCounted
 		}
 
 		return new Image(size.x, size.y, arr);
+		*/
+		assert(0, `bgfx texture readback is not implemented`);
 	}
 
 	const isResident()
@@ -95,32 +92,24 @@ final class Texture : RCounted
 
 	const imageBind(ubyte idx, uint mode, ubyte level = 0)
 	{
+		/*
 		glBindImageTexture(idx, id, level, false, 0, mode, textureTypes[type].front);
+		*/
 	}
 
 	const bind(ubyte idx)
 	{
-		//if (set(p.samp, _samp._id))
-		{
-			glBindSampler(idx, _samp._id);
-		}
-
-		//if (set(p.tex, id))
-		{
-			glActiveTexture(GL_TEXTURE0 + idx);
-			glBindTexture(GL_TEXTURE_2D, id);
-
-			//glBindTextureUnit(idx, id);
-		}
+		// A bgfx texture is bound with its sampler uniform by Program during submission.
 	}
 
 	const
 	{
-		uint id;
-
 		ubyte type;
 		Vector2s size;
 	}
+
+	bgfx_texture_handle_t handle() const => _handle;
+	uint samplerFlags() const => _samp._flags;
 
 private:
 	this(ubyte t, in TextureData[] levels, Sampler s)
@@ -137,46 +126,20 @@ private:
 		auto tex = &levels.front;
 		size = tex.sz;
 
+		_handle = bgfx_create_texture_2d(size.x, size.y, levels.length > 1, 1, textureFormats[t], t == TEX_SHADOW_MAP ? BGFX_TEXTURE_RT_ : 0, null, 0);
+
+		foreach (i, ref m; levels)
 		{
-			uint v;
-			glGenTextures(1, &v);
-			id = v;
-		}
-
-		// int bound;
-		// glGetIntegerv(GL_TEXTURE_BINDING_2D, &bound);
-		glBindTexture(GL_TEXTURE_2D, id);
-		// scope (exit)
-		// 	glBindTexture(GL_TEXTURE_2D, bound);
-
-		auto ts = textureTypes[t];
-
-		if (t <= TEX_DXT_5)
-		{
-			glTexStorage2D(GL_TEXTURE_2D, cast(uint)levels.length, ts[0], size.x, size.y);
-
-			foreach (i, ref m; levels)
+			if (m.data.ptr)
 			{
-				assert(m.data.ptr);
-				assert(m.data.length == dxtTextureSize(m.sz.x, m.sz.y, type == TEX_DXT_5));
+				if (t <= TEX_DXT_5)
+					assert(m.data.length == dxtTextureSize(m.sz.x, m.sz.y, type == TEX_DXT_5));
 
-				glCompressedTexSubImage2D(GL_TEXTURE_2D, cast(uint)i, 0, 0, m.sz.x, m.sz.y, ts[0], cast(uint)m.data.length, m.data.ptr);
+				bgfx_update_texture_2d(_handle, 0, cast(ubyte)i, 0, 0, m.sz.x, m.sz.y, bgfx_copy(m.data.ptr, cast(uint)m.data.length), ushort.max);
 			}
-		}
-		else
-		{
-			assert(levels.length == 1);
-
-			glTexStorage2D(GL_TEXTURE_2D, 1, ts[0], size.x, size.y);
-
-			if (auto p = tex.data.ptr)
-			{
-				glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size.x, size.y, ts[1], ts[2], p);
-			}
-			//else
-			//	glTexImage2D(GL_TEXTURE_2D, 0, ts[0], size.x, size.y, 0, ts[1], ts[2], null);
 		}
 	}
 
 	const Sampler _samp;
+	bgfx_texture_handle_t _handle;
 }

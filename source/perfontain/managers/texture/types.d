@@ -1,5 +1,5 @@
 module perfontain.managers.texture.types;
-import perfontain, perfontain.opengl, stb.dxt;
+import bgfx_c, perfontain, stb.dxt;
 
 enum : ubyte
 {
@@ -34,10 +34,9 @@ struct TextureInfo
 
 package:
 
-static immutable uint[][TEX_MAX] textureTypes = [
-	[GL_COMPRESSED_RGBA_S3TC_DXT1_EXT], [GL_COMPRESSED_RGBA_S3TC_DXT3_EXT],
-	[GL_COMPRESSED_RGBA_S3TC_DXT5_EXT], [GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE],
-	[GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT],
-	[GL_RGBA8UI, GL_RGBA_INTEGER, GL_UNSIGNED_BYTE],
-	[GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT],
+static immutable bgfx_texture_format_t[TEX_MAX] textureFormats = [
+	BGFX_TEXTURE_FORMAT_BC1, BGFX_TEXTURE_FORMAT_BC2,
+	BGFX_TEXTURE_FORMAT_BC3, BGFX_TEXTURE_FORMAT_RGBA8,
+	BGFX_TEXTURE_FORMAT_D32F, BGFX_TEXTURE_FORMAT_RGBA8U,
+	BGFX_TEXTURE_FORMAT_R32U,
 ];

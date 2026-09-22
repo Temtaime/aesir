@@ -1,40 +1,36 @@
 module perfontain.sampler;
 
-import std.stdio, std.traits, perfontain, perfontain.opengl;
+import bgfx_c, std.stdio, perfontain, perfontain.opengl;
 
 final class Sampler : RCounted
 {
-	this()
-	{
-		glGenSamplers(1, &_id);
-	}
-
-	~this()
-	{
-		// foreach (uint i, ref v; PEstate._texLayers)
-		// {
-		// 	if (v.samp == _id)
-		// 	{
-		// 		glBindSampler(i, v.samp = 0);
-		// 	}
-		// }
-
-		glDeleteSamplers(1, &_id);
-	}
-
 	auto set(T)(uint e, T v)
 	{
-		static if (is(T : const(float)*))
-			alias F = glSamplerParameterfv;
-		else static if (isFloatingPoint!T)
-			alias F = glSamplerParameterf;
-		else
-			alias F = glSamplerParameteri;
+		switch (e)
+		{
+			case GL_TEXTURE_MAG_FILTER:
+				v == GL_NEAREST && (_flags |= BGFX_SAMPLER_MAG_POINT_);
+				break;
+			case GL_TEXTURE_MIN_FILTER:
+				if (v == GL_NEAREST)
+					_flags |= BGFX_SAMPLER_MIN_POINT_ | BGFX_SAMPLER_MIP_POINT_;
+				break;
+			case GL_TEXTURE_WRAP_S:
+				v == GL_CLAMP_TO_EDGE && (_flags |= BGFX_SAMPLER_U_CLAMP_);
+				break;
+			case GL_TEXTURE_WRAP_T:
+				v == GL_CLAMP_TO_EDGE && (_flags |= BGFX_SAMPLER_V_CLAMP_);
+				break;
+			case GL_TEXTURE_MAX_ANISOTROPY_EXT:
+				_flags |= BGFX_SAMPLER_MIN_ANISOTROPIC_;
+				break;
+			default:
+				assert(0, `unsupported sampler parameter`);
+		}
 
-		F(_id, e, v);
 		return this;
 	}
 
 package:
-	uint _id;
+	uint _flags;
 }

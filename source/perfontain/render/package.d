@@ -17,6 +17,7 @@ final class IndexVertex : RCounted
 
 	void bind()
 	{
+		/* Legacy OpenGL VAO setup retained until draw submission migrates to bgfx.
 		if (_vao)
 			_vao.bind;
 		else
@@ -27,11 +28,14 @@ final class IndexVertex : RCounted
 			_va.vbo.enable;
 			_ia.vbo.enable;
 		}
+		*/
 	}
 
 	void unbind()
 	{
+		/*
 		_vao.unbind;
+		*/
 	}
 
 	auto alloc(in SubMeshData sd)
@@ -61,5 +65,8 @@ final class IndexVertex : RCounted
 private:
 	RC!VMemAlloc _ia, _va;
 
+	// bgfx vertex and index bindings replace this VAO during draw submission.
+	/*
 	RC!ArrayBuffer _vao;
+	*/
 }
