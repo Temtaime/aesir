@@ -316,9 +316,12 @@ final class Program : RCounted
 {
 	this(Shader[] shaders)
 	{
-		assert(shaders.length == 2);
+		assert(shaders.length == 1 || shaders.length == 2);
 
-		_handle = bgfx_create_program(shaders[0].handle, shaders[1].handle, true);
+		_compute = shaders.length == 1;
+		_handle = _compute ? bgfx_create_compute_program(shaders[0].handle, true)
+			: bgfx_create_program(shaders[0].handle, shaders[1].handle, true);
+		_handle.idx != ushort.max || throwError!`cannot create bgfx %s program`(_compute ? `compute` : `draw`);
 		shaders.each!(a => a.relinquish);
 		_depthOnly = shaders[0].sourceName.canFind(`depth_`);
 
@@ -327,6 +330,12 @@ final class Program : RCounted
 		_shadowMatrix = bgfx_create_uniform(`u_shadowMatrix`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
 		_shadowModel = bgfx_create_uniform(`u_shadowModel`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
 		_shadowMap = bgfx_create_uniform(`s_shadowMap`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
+		_lightsDepth = bgfx_create_uniform(`s_lightsDepth`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
+		_projViewInversed = bgfx_create_uniform(`u_projViewInversed`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
+		_lights = bgfx_create_uniform(`u_lights`.toStringz, BGFX_UNIFORM_TYPE_VEC4, 256);
+		_lightsInfo = bgfx_create_uniform(`u_lightsInfo`.toStringz, BGFX_UNIFORM_TYPE_VEC4, 1);
+		_lightsIndices = bgfx_create_uniform(`s_lightsIndices`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
+		_lightingModel = bgfx_create_uniform(`u_lightingModel`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
 	}
 
 	~this()
@@ -336,6 +345,12 @@ final class Program : RCounted
 		bgfx_destroy_uniform(_shadowMatrix);
 		bgfx_destroy_uniform(_shadowModel);
 		bgfx_destroy_uniform(_shadowMap);
+		bgfx_destroy_uniform(_lightsDepth);
+		bgfx_destroy_uniform(_projViewInversed);
+		bgfx_destroy_uniform(_lights);
+		bgfx_destroy_uniform(_lightsInfo);
+		bgfx_destroy_uniform(_lightsIndices);
+		bgfx_destroy_uniform(_lightingModel);
 		bgfx_destroy_program(_handle);
 	}
 
@@ -364,6 +379,27 @@ final class Program : RCounted
 	{
 	}
 
+	void depthOnly(bool value)
+	{
+		_depthOnly = value;
+	}
+
+	void setLights(in LightSource[] lights)
+	{
+		_lightData.length = 0;
+		foreach (ref light; lights[0 .. (lights.length < 128 ? lights.length : 128)])
+		{
+			_lightData ~= Vector4(light.pos, light.range);
+			_lightData ~= Vector4(light.color, 0);
+		}
+		if (_compute)
+		{
+			logger.info2!`uploaded %u light sources`(_lightData.length / 2);
+			foreach (i, ref light; lights[0 .. (lights.length < 4 ? lights.length : 4)])
+				logger.info3!`light %u: pos %g, %g, %g, range %g, color %g, %g, %g`(i + 1, light.pos.x, light.pos.y, light.pos.z, light.range, light.color.x, light.color.y, light.color.z);
+		}
+	}
+
 	bgfx_program_handle_t handle() const => _handle;
 	bgfx_uniform_handle_t mainTexture() const => _mainTexture;
 	const(Texture) mainTextureValue() const => _texs[ShaderTexture.main];
@@ -384,6 +420,13 @@ final class Program : RCounted
 			bgfx_set_texture(1, _shadowMap, tex.handle, tex.samplerFlags);
 		}
 
+		if (auto tex = _texs[ShaderTexture.lights_indices])
+		{
+			bgfx_set_uniform(_lightingModel, model.ptr, 1);
+			setLightUniforms(tex.size);
+			bgfx_set_texture(2, _lightsIndices, tex.handle, tex.samplerFlags);
+		}
+
 		auto vertex = iv.vertexBuffer;
 		bgfx_set_dynamic_vertex_buffer(0, vertex.vertexHandle, 0, vertex.length / vertex.alignment);
 		bgfx_set_dynamic_index_buffer(iv.indexBuffer.indexHandle, firstIndex, numIndices);
@@ -402,9 +445,30 @@ final class Program : RCounted
 		bgfx_submit(view, _handle, 0, 0);
 	}
 
+	void dispatch(ushort view, Texture depth, Texture output, in Matrix4 projViewInversed)
+	{
+		assert(_compute);
+
+		bgfx_set_uniform(_projViewInversed, projViewInversed.ptr, 1);
+		setLightUniforms(output.size);
+		bgfx_set_view_rect(view, 0, 0, output.size.x, output.size.y, 0, 1);
+		bgfx_set_texture(0, _lightsDepth, depth.handle, depth.samplerFlags);
+		bgfx_set_image(1, output.handle, 0, cast(bgfx_access_t)BGFX_ACCESS_WRITE_, BGFX_TEXTURE_FORMAT_R32U);
+		auto groupsX = (output.size.x + 31) / 32, groupsY = (output.size.y + 31) / 32;
+		bgfx_dispatch(view, _handle, groupsX, groupsY, 1, BGFX_DISCARD_ALL_);
+	}
+
+	private void setLightUniforms(Vector2s size = Vector2s(0))
+	{
+		auto info = Vector4(_lightData.length / 2, size.x, size.y, 0);
+		bgfx_set_uniform(_lights, _lightData.ptr, cast(ushort)_lightData.length);
+		bgfx_set_uniform(_lightsInfo, info.ptr, 1);
+	}
+
 private:
 	bgfx_program_handle_t _handle;
-	bgfx_uniform_handle_t _mainTexture, _color, _shadowMatrix, _shadowModel, _shadowMap;
+	bgfx_uniform_handle_t _mainTexture, _color, _shadowMatrix, _shadowModel, _shadowMap, _lightsDepth, _projViewInversed, _lights, _lightsInfo, _lightsIndices, _lightingModel;
 	Texture[ShaderTexture.max] _texs;
-	bool _depthOnly;
+	Vector4[] _lightData;
+	bool _depthOnly, _compute;
 }

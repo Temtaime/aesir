@@ -1,9 +1,6 @@
 $input v_color0
-$input v_texcoord0
 #include "bgfx_shader.sh"
-SAMPLER2D(s_texMain, 0);
 void main()
 {
-	if (texture2D(s_texMain, v_texcoord0).a < 0.05)
-		discard;
+	gl_FragColor = vec4(vec3_splat(gl_FragCoord.z), 1.0);
 }

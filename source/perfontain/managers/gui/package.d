@@ -238,7 +238,7 @@ private:
 
 		}
 
-		PE.render.doDraw(_prog, RENDER_GUI, _proj, null, false);
+		PE.render.doDraw(_prog, RENDER_GUI, _proj, null, 4, false);
 	}
 
 	void drawPopups()

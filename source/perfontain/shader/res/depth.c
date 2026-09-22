@@ -27,4 +27,6 @@ fragment:
 		TEXTURED
 			if (texture2D(s_texMain, v_texcoord0).a < 0.05)
 				discard;
+		LIGHTS_DEPTH
+			gl_FragColor = vec4(vec3_splat(gl_FragCoord.z), 1.0);
 	}

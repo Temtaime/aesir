@@ -102,7 +102,7 @@ package:
 private:
 	void mapViewer()
 	{
-		ROres.load(`prontera`);
+		ROres.load(`niflheim`);
 
 		//PE.hotkeys.add(Hotkey({ log(`lispsm %s`, PE.shadows.lispsm ^= true); }, SDLK_LCTRL, SDLK_a));
 		debug

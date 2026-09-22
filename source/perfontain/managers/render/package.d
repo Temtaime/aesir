@@ -18,12 +18,12 @@ final class RenderManager
 		_infos ~= di;
 	}
 
-	void doDraw(Program pg, ubyte tp, ref const(Matrix4) viewProj, RenderTarget rt, bool doSort = true)
+	void doDraw(Program pg, ubyte tp, ref const(Matrix4) viewProj, RenderTarget rt, ushort view, bool doSort = true)
 	{
 		_tp = tp;
 		_pg = pg;
 		_rt = rt;
-		_view = rt ? 0 : (tp == RENDER_SCENE ? 1 : 2);
+		_view = view;
 		_viewProj = &viewProj;
 
 		if (_infos.length)

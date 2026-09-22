@@ -17,10 +17,10 @@ final class Texture : RCounted
 		this(t, data.sliceOne, null);
 	}
 
-	this(ubyte t, Vector2s sz, Sampler s)
+	this(ubyte t, Vector2s sz, Sampler s, ulong extraFlags = 0)
 	{
 		auto data = TextureData(sz, null);
-		this(t, data.sliceOne, s);
+		this(t, data.sliceOne, s, extraFlags);
 	}
 
 	~this()
@@ -112,7 +112,7 @@ final class Texture : RCounted
 	uint samplerFlags() const => _samp ? _samp._flags : 0;
 
 private:
-	this(ubyte t, in TextureData[] levels, Sampler s)
+	this(ubyte t, in TextureData[] levels, Sampler s, ulong extraFlags = 0)
 	{
 		type = t;
 
@@ -126,7 +126,14 @@ private:
 		auto tex = &levels.front;
 		size = tex.sz;
 
-		_handle = bgfx_create_texture_2d(size.x, size.y, levels.length > 1, 1, textureFormats[t], t == TEX_SHADOW_MAP ? BGFX_TEXTURE_RT_ : 0, null, 0);
+		ulong flags;
+		if (t == TEX_SHADOW_MAP)
+			flags = cast(ulong)BGFX_TEXTURE_RT_;
+		else if (t == TEX_RED_UINT && !(extraFlags & cast(ulong)BGFX_TEXTURE_READ_BACK_))
+			flags = cast(ulong)BGFX_TEXTURE_COMPUTE_WRITE_;
+		flags |= extraFlags;
+
+		_handle = bgfx_create_texture_2d(size.x, size.y, levels.length > 1, 1, textureFormats[t], flags, null, 0);
 
 		foreach (i, ref m; levels)
 		{

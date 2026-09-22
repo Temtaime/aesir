@@ -71,15 +71,15 @@ final class BgfxManager
 		_swapChain.height = size.y;
 
 		bgfx_reset(BGFX_RESET_NONE_, &_swapChain);
-		bgfx_set_view_rect(1, 0, 0, size.x, size.y, 0, 1);
-		bgfx_set_view_rect(2, 0, 0, size.x, size.y, 0, 1);
+		bgfx_set_view_rect(3, 0, 0, size.x, size.y, 0, 1);
+		bgfx_set_view_rect(4, 0, 0, size.x, size.y, 0, 1);
 	}
 
 	void frame()
 	{
-		bgfx_set_view_clear(1, BGFX_CLEAR_COLOR_ | BGFX_CLEAR_DEPTH_, 0xFF00_FFFF, 1, 0);
-		bgfx_touch(1);
-		bgfx_frame(BGFX_FRAME_NONE_);
+		bgfx_set_view_clear(3, BGFX_CLEAR_COLOR_ | BGFX_CLEAR_DEPTH_, 0xFF00_FFFF, 1, 0);
+		bgfx_touch(3);
+		_frameNumber = bgfx_frame(BGFX_FRAME_NONE_);
 	}
 
 	void setView(ushort id, bgfx_frame_buffer_handle_t frameBuffer, Vector2s size, ushort clearFlags)
@@ -114,9 +114,11 @@ final class BgfxManager
 
 	bool homogeneousDepth() const => bgfx_get_caps.homogeneousDepth;
 	bool originBottomLeft() const => bgfx_get_caps.originBottomLeft;
+	uint frameNumber() const => _frameNumber;
 
 private:
 	bgfx_swap_chain_t _swapChain;
 	bgfx_vertex_layout_t[2] _layouts;
 	bool _initialized;
+	uint _frameNumber;
 }

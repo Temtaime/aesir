@@ -5,6 +5,7 @@ enum ShaderTexture : ubyte
 {
 	main,
 	lights_depth,
+	lights_indices,
 	shadows_depth,
 
 	max

@@ -1,10 +1,11 @@
 module perfontain.managers.scene.renderdata;
-import std, perfontain;
+import bgfx_c, std, perfontain;
 
 class SceneRenderData : RCounted
 {
 	this(Scene sc)
 	{
+		const lightsFull = PE.settings.lights == Lights.full && sc.lights.length;
 		Texture texShadowsDepth;
 
 		if (PE.settings.shadows)
@@ -25,6 +26,8 @@ class SceneRenderData : RCounted
 
 		{
 			auto creator = ProgramCreator(ProgramSource.draw);
+			if (lightsFull)
+				creator.define(`LIGHTS_FULL`);
 			if (texShadowsDepth)
 			{
 				creator.define(`SHADOWS_ENABLED`);
@@ -68,48 +71,39 @@ class SceneRenderData : RCounted
 		{
 			_draw.add(ShaderTexture.shadows_depth, texShadowsDepth);
 		}
-		/*
 
 		if (lightsFull)
 		{
-			_depth = ProgramCreator(ProgramSource.depth).create;
-			_compute = ProgramCreator(ProgramSource.light_compute).create;
-
-			VertexBuffer vbo = new VertexBuffer;
-			{
-				ubyte[] data;
-
-				foreach (ref r; sc.lights)
-				{
-					auto v = Vector4(r.pos, r.range), u = Vector4(r.color, 0);
-
-					data ~= v.toByte;
-					data ~= u.toByte;
-				}
-
-				vbo.realloc(data);
-			}
-
-			_draw.add(ShaderBuffer.lights, vbo);
-			_compute.add(ShaderBuffer.lights, vbo);
+			auto depthCreator = ProgramCreator(ProgramSource.depth);
+			depthCreator.define(`LIGHTS_DEPTH`);
+			_depth = depthCreator.create;
+			_depth.depthOnly = false;
+			auto computeCreator = ProgramCreator(ProgramSource.light_compute);
+			if (PE.bgfx.homogeneousDepth)
+				computeCreator.define(`LIGHTS_DEPTH_NEG_ONE_TO_ONE`);
+			_compute = computeCreator.create;
+			_draw.setLights(sc.lights);
+			_compute.setLights(sc.lights);
 
 			{
-				auto s = PEsamplers.shadowMap;
+				auto s = PEsamplers.noMipMap;
+				auto size = PEwindow._size;
 
 				{
-					auto tex = new Texture(TEX_SHADOW_MAP, PEwindow._size, s);
-					_lightsDepth = new RenderTarget(tex, null);
+					auto depth = new Texture(TEX_SHADOW_MAP, size, s);
+					auto tex = new Texture(TEX_RGBA, size, s, cast(ulong)BGFX_TEXTURE_RT_);
+					_lightsDepth = new RenderTarget(depth, [tex]);
 
-					_compute.add(ShaderTexture.lights_depth, tex);
 				}
 
-				_ind = new Texture(TEX_RED_UINT, PEwindow._size, s);
+				_ind = new Texture(TEX_RED_UINT, size, s);
+				_draw.add(ShaderTexture.lights_indices, _ind);
 			}
 		}
-		*/
 	}
 
 	Texture lightsIndices() => _ind;
+	Texture lightsDepthTexture() => _lightsDepth.attachments[1];
 	RenderTarget lightsDepth() => _lightsDepth;
 
 	Program progDraw() => _draw;

@@ -1,8 +1,12 @@
 $input v_texcoord0
 $input v_shadowPos
+$input v_normal, v_worldPos
 #include "bgfx_shader.sh"
 SAMPLER2D(s_texMain, 0);
 SAMPLER2D(s_shadowMap, 1);
+USAMPLER2D(s_lightsIndices, 2);
+uniform vec4 u_lights[256];
+uniform vec4 u_lightsInfo;
 uniform vec4 u_color;
 void main()
 {
@@ -13,5 +17,22 @@ void main()
 	shadowCoord.y = 1.0 - shadowCoord.y;
 	float shadow = step(shadowCoord.z - 0.001, texture2D(s_shadowMap, shadowCoord.xy).x);
 	color.rgb *= 0.5 + shadow * 0.5;
+	vec3 lightResult = vec3_splat(1.0);
+	uint packed = texelFetch(s_lightsIndices, ivec2(gl_FragCoord.xy), 0).x;
+	gl_FragColor = vec4(vec3_splat(float(packed) / 255.0), color.a) * u_color;
+	return;
+	for (int i = 0; i < 4; i++)
+	{
+		uint index = packed & 0xFFu;
+		if (index == 0u)
+			break;
+		packed >>= 8;
+		vec4 light = u_lights[(index - 1u) * 2u];
+		vec3 delta = light.xyz - v_worldPos;
+		float distanceToLight = length(delta);
+		float attenuation = max(1.0 - distanceToLight / light.w, 0.0);
+		lightResult += u_lights[(index - 1u) * 2u + 1u].xyz * attenuation;
+	}
+	color.rgb *= lightResult;
 	gl_FragColor = color * u_color;
 }

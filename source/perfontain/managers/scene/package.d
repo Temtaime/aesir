@@ -140,6 +140,8 @@ package(perfontain):
 	void draw()
 	{
 		Program pg;
+		Program compute;
+		Texture lights;
 		_vp = _camera.view * proj;
 
 		if (_scene)
@@ -154,57 +156,47 @@ package(perfontain):
 				if (auto rt = shadowsDepth)
 				{
 					_shadowPass = true;
-					draw(progShadowsDepth, rt, PE.shadows.makeMatrix);
+					draw(progShadowsDepth, rt, PE.shadows.makeMatrix, 0);
 					_shadowPass = false;
 				}
 
 				if (auto rt = lightsDepth)
 				{
-					draw(progLightsDepth, rt, _vp);
-					// computeLights(lightsIndices, progLightsCompute, computeBlock);
+					draw(progLightsDepth, rt, _vp, 1);
+					lights = lightsIndices;
+					compute = progLightsCompute;
 				}
 
 				pg = progDraw;
 			}
 		}
 
-		draw(pg, null, _vp);
-	}
+		draw(pg, null, _vp, 3);
 
-	/* Legacy OpenGL compute path retained until bgfx compute migration.
-	void computeLights(Texture tex, Program compute, ushort bs)
-	{
-		tex.imageBind(0, GL_READ_WRITE);
-
-		compute.send(`proj_view_inversed`, _vp.inversed);
-		compute.bind;
-
+		if (compute)
 		{
-			Vector2s sz = tex.size;
-
-			sz += bs;
-			sz -= 1;
-			sz /= bs;
-
-			glDispatchCompute(sz.x, sz.y, 1);
+			computeLights(lights, compute);
 		}
-
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	}
-	*/
+
+	void computeLights(Texture tex, Program compute)
+	{
+		auto projViewInversed = _vp.inversed;
+		compute.dispatch(5, _rd.lightsDepthTexture, tex, projViewInversed);
+	}
 
 	void clear(Vector2s size, uint flags)
 	{
 		// bgfx view clear is configured by BgfxManager.
 	}
 
-	void draw(Program pg, RenderTarget rt, Matrix4 vp)
+	void draw(Program pg, RenderTarget rt, Matrix4 vp, ushort view)
 	{
 		_culler = FrustumCuller(vp);
 
 		if (rt)
 		{
-			PE.bgfx.setView(0, rt.frameBuffer, rt.size, rt.clearFlags);
+			PE.bgfx.setView(view, rt.frameBuffer, rt.size, rt.clearFlags);
 			clear(rt.size, rt.clearFlags);
 		}
 		else
@@ -218,7 +210,7 @@ package(perfontain):
 			DrawInfo di;
 			_scene.node.draw(&di);
 
-			PE.render.doDraw(pg, RENDER_SCENE, vp, rt);
+			PE.render.doDraw(pg, RENDER_SCENE, vp, rt, view);
 		}
 	}
 
