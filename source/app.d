@@ -19,17 +19,8 @@ extern (C) __gshared
 	// }
 }
 
-void foo()
-{
-	import bindbc.bgfx;
-
-	auto init_ = bgfx.Init(0);
-}
-
 void main(string[] args)
 {
-	foo;
-
 	version (Windows)
 	{
 		SetConsoleOutputCP(65001);

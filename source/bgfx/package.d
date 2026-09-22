@@ -1317,12 +1317,7 @@ extern(C++, "bgfx") struct SwapChain{
 	TextureHandle depth;
 	ubyte numBackBuffers; ///Number of back buffers.
 	ubyte maxFrameLatency; ///Maximum frame latency.
-	extern(D) mixin(joinFnBinds((){
-		FnBind[] ret = [
-			{q{void}, q{this}, q{}, ext: `C++`},
-		];
-		return ret;
-	}()));
+	pragma(mangle, `??0SwapChain@bgfx@@QEAA@XZ`) extern(C++) this(int _);
 }
 
 ///Initialization parameters used by `bgfx::init`.
@@ -2557,21 +2552,21 @@ mixin(joinFnBinds((){
 			max = Maximum number of elements in _enum array.
 			enum_ = Array where supported renderers will be written.
 		*/
-		{q{ubyte}, q{getSupportedRenderers}, q{ubyte max=0, bgfx.impl.RendererType.Enum* enum_=null}, ext: `C++, "bgfx"`},
+		{q{ubyte}, q{getSupportedRenderersBroken}, q{ubyte max=0, bgfx.impl.RendererType.Enum* enum_=null}, ext: `C++, "bgfx"`},
 		
 		/**
 		* Returns name of renderer.
 		Params:
 			type = Renderer backend type. See: `bgfx::RendererType`
 		*/
-		{q{const(char)*}, q{getRendererName}, q{bgfx.impl.RendererType.Enum type}, ext: `C++, "bgfx"`},
+		{q{const(char)*}, q{getRendererNameBroken}, q{bgfx.impl.RendererType.Enum type}, ext: `C++, "bgfx"`},
 		
 		/**
 		* Initialize the bgfx library.
 		Params:
 			init = Initialization parameters. See: `bgfx::Init` for more info.
 		*/
-		{q{bool}, q{init}, q{ref const Init init}, ext: `C++, "bgfx"`},
+		{q{bool}, q{initBroken}, q{ref const Init init}, ext: `C++, "bgfx"`},
 		
 		/**
 		* Shutdown bgfx library.
@@ -2605,7 +2600,7 @@ mixin(joinFnBinds((){
 		value, and `nwh`/`ndt` are ignored -- main's are bgfx's own.
 		Must be `NULL` when `bgfx::init` created no main window.
 		*/
-		{q{void}, q{reset}, q{uint flags=Reset.none, const(SwapChain)* swapChain=null}, ext: `C++, "bgfx"`},
+		{q{void}, q{resetBroken}, q{uint flags=Reset.none, const(SwapChain)* swapChain=null}, ext: `C++, "bgfx"`},
 		
 		/**
 		* Advance to next frame. This is the main frame-advancement call on the
@@ -2649,7 +2644,7 @@ mixin(joinFnBinds((){
 		*   Library must be initialized.
 		* 
 		*/
-		{q{RendererType}, q{getRendererType}, q{}, ext: `C++, "bgfx"`},
+		{q{RendererType}, q{getRendererTypeBroken}, q{}, ext: `C++, "bgfx"`},
 		
 		/**
 		* Returns renderer capabilities.
@@ -4601,6 +4596,12 @@ mixin(joinFnBinds((){
 	];
 	return ret;
 }(), "SwapChain, Init.Limits, Init, TextureRegion, BufferRegion, Attachment, VertexLayout, Encoder, "));
+
+pragma(mangle, `?init@bgfx@@YA_NAEBUInit@1@@Z`) extern(C++) bool init(ref const Init init);
+pragma(mangle, `?reset@bgfx@@YAXIPEBUSwapChain@1@@Z`) extern(C++) void reset(uint flags = Reset.none, const(SwapChain)* swapChain = null);
+pragma(mangle, `?getSupportedRenderers@bgfx@@YAEEPEAW4Enum@RendererType@1@@Z`) extern(C++) ubyte getSupportedRenderers(ubyte max, RendererType* enum_);
+pragma(mangle, `?getRendererName@bgfx@@YAPEBDW4Enum@RendererType@1@@Z`) extern(C++) const(char)* getRendererName(RendererType type);
+pragma(mangle, `?getRendererType@bgfx@@YA?AW4Enum@RendererType@1@XZ`) extern(C++) RendererType getRendererType();
 
 static if(!staticBinding):
 import bindbc.loader;

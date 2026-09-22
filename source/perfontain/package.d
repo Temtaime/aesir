@@ -3,7 +3,7 @@ import std.utf, std.file, std.path, std.conv, std.array, std.range, std.stdio, s
 std.exception, std.algorithm : filter, map;
 
 import core.time, core.thread, core.memory, perfontain.misc, perfontain.managers.state, perfontain.opengl,
-perfontain.sampler, perfontain.filesystem, perfontain.managers.audio, perfontain.math.frustum,
+	perfontain.bgfx, perfontain.sampler, perfontain.filesystem, perfontain.managers.audio, perfontain.math.frustum,
 perfontain.managers.shadow, perfontain.managers.sampler;
 
 public import perfontain.misc, perfontain.misc.rc, perfontain.misc.dxt, perfontain.meshholder,
@@ -82,6 +82,12 @@ final class Engine
 		// 	gui.root = null;
 		// }
 
+		if (bgfx)
+		{
+			bgfx.shutdown;
+			bgfx = null;
+		}
+
 		dtors;
 
 		debug
@@ -98,7 +104,10 @@ final class Engine
 
 		window = new WindowManager;
 		window.create(makeTitle, _backend);
+		bgfx = new BgfxManager(window.nativeHandle, window.size);
+		onResize.permanent(&bgfx.resize);
 
+		/* Legacy OpenGL capability queries retained until the bgfx migration is complete.
 		logger.info2(`[gpu info]`);
 		logger.info3!`opengl vendor: %s`(glGetString(GL_VENDOR).fromStringz);
 		logger.info3!`opengl version: %s`(glGetString(GL_VERSION).fromStringz);
@@ -129,11 +138,15 @@ final class Engine
 		{
 			logger.error(`msaa is not supported`);
 		}
+*/
+		logger.info2(`legacy OpenGL renderer disabled pending bgfx initialization`);
 
 		_run = true;
 
+		/* Legacy OpenGL resource initialization retained until its bgfx replacements are available.
 		ctors;
 		onResize(PE.window.size);
+*/
 
 		{
 
@@ -153,15 +166,16 @@ final class Engine
 	{
 		while (processWork)
 		{
+			/*
 			glEnable(GL_DEPTH_TEST);
-
+			*/
+			// Legacy OpenGL frame execution retained until its bgfx replacements are available.
 			//shadows.process;
-			scene.draw;
-
-			glDisable(GL_DEPTH_TEST);
-			gui.draw;
-
-			PEwindow.swapBuffers;
+			//scene.draw;
+			//glDisable(GL_DEPTH_TEST);
+			//gui.draw;
+			//PEwindow.swapBuffers;
+			bgfx.frame;
 		}
 	}
 
@@ -177,6 +191,7 @@ final class Engine
 	TimerManager timers;
 	RenderManager render;
 	WindowManager window;
+	BgfxManager bgfx;
 	HotkeyManager hotkeys;
 	ShadowManager shadows;
 	TextureManager textures;
@@ -240,7 +255,9 @@ package:
 			}
 		}
 
+		/*
 		timers.process;
+		*/
 		return _run;
 	}
 

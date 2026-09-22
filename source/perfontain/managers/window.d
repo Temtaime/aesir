@@ -2,6 +2,28 @@ module perfontain.managers.window;
 import std, perfontain.misc, perfontain, perfontain.math.matrix, perfontain.opengl, utile.except, nuklear;
 public import derelict.sdl2.sdl;
 
+private extern(C)
+{
+	int SDL_GetWindowWMInfo(SDL_Window*, SDLSysWMinfo*);
+}
+
+private struct SDLSysVersion
+{
+	ubyte major, minor, patch;
+}
+
+private struct SDLWindowsInfo
+{
+	void* window, hdc, hinstance;
+}
+
+private struct SDLSysWMinfo
+{
+	SDLSysVersion version_;
+	int subsystem;
+	SDLWindowsInfo info;
+}
+
 enum : ubyte
 {
 	MOUSE_LEFT = 1,
@@ -17,6 +39,7 @@ class WindowManager
 	{
 		environment[`ANGLE_DEFAULT_PLATFORM`] = backend;
 
+		/* Legacy ANGLE/OpenGL setup retained until the bgfx migration is complete.
 		{
 			string suffix;
 			debug suffix = `_debug`;
@@ -35,6 +58,7 @@ class WindowManager
 			environment[`SDL_VIDEO_GL_DRIVER`] = buildPath(path, `libGLESv2`.setExtension(ext));
 			environment[`SDL_VIDEO_EGL_DRIVER`] = buildPath(path, `libEGL`.setExtension(ext));
 		}
+*/
 
 		SDL_Init(SDL_INIT_VIDEO) && throwSDLError;
 
@@ -46,6 +70,7 @@ class WindowManager
 			_size -= Vector2s(100, 90);
 		}
 
+		/* Legacy GL context attributes retained until the bgfx migration is complete.
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8) && throwSDLError;
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8) && throwSDLError;
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8) && throwSDLError;
@@ -62,9 +87,10 @@ class WindowManager
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION / 10) && throwSDLError;
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION % 10) && throwSDLError;
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES) && throwSDLError;
+*/
 
 		{
-			auto f = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+			auto f = SDL_WINDOW_RESIZABLE;
 
 			if (PE.settings.fullscreen)
 			{
@@ -75,11 +101,13 @@ class WindowManager
 			_win || throwSDLError;
 		}
 
+		/* Legacy GL context setup retained until the bgfx migration is complete.
 		_ctx = SDL_GL_CreateContext(_win);
 		hookGL;
 
 		SDL_GL_SetSwapInterval(0);
 		//SDL_GL_SetSwapInterval(1);
+*/
 
 		//SDL_StopTextInput();
 		SDL_SetWindowMinimumSize(_win, 640, 480);
@@ -92,9 +120,13 @@ class WindowManager
 
 	~this()
 	{
+		/*
 		SDL_GL_DeleteContext(_ctx);
+		*/
 		SDL_DestroyWindow(_win);
+		/*
 		SDL_GL_UnloadLibrary();
+		*/
 		SDL_Quit();
 	}
 
@@ -106,6 +138,23 @@ class WindowManager
 	@property title(string s)
 	{
 		SDL_SetWindowTitle(_win, s.toStringz);
+	}
+
+	void* nativeHandle()
+	{
+		version (Windows)
+		{
+			SDLSysWMinfo info;
+			info.version_ = SDLSysVersion(2, 0, 0);
+			SDL_GetWindowWMInfo(_win, &info) || throwSDLError;
+			info.info.window || throwError!`cannot get SDL window handle`();
+
+			return info.info.window;
+		}
+		else
+		{
+			static assert(false, `bgfx native window handle is not implemented for this platform`);
+		}
 	}
 
 	@property left()
@@ -168,6 +217,8 @@ package(perfontain):
 
 	void processEvents()
 	{
+		version (none)
+		{
 		auto inGui = isGuiHovered();
 
 		nk_input_begin(ctx);
@@ -295,6 +346,21 @@ package(perfontain):
 		}
 
 		nk_input_end(ctx);
+		}
+
+		for (SDL_Event evt; SDL_PollEvent(&evt);) switch (evt.type)
+		{
+		case SDL_WINDOWEVENT:
+			if (evt.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+				PE.onResize(_size = Vector2s(evt.window.data1, evt.window.data2));
+			break;
+
+		case SDL_QUIT:
+			PE._run = false;
+			break;
+
+		default:
+		}
 	}
 
 private:

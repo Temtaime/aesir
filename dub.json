@@ -36,6 +36,9 @@
 	"dflags": [
 		"-preview=in"
 	],
+	"buildRequirements": [
+		"silenceDeprecations"
+	],
 	"dflags-ldc": [
 		"-ffast-math"
 	],
