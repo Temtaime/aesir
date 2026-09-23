@@ -37,29 +37,6 @@ class WindowManager
 {
 	void create(string title, string backend)
 	{
-		environment[`ANGLE_DEFAULT_PLATFORM`] = backend;
-
-		/* Legacy ANGLE/OpenGL setup retained until the bgfx migration is complete.
-		{
-			string suffix;
-			debug suffix = `_debug`;
-
-			const path = buildPath(thisExePath.dirName, ANGLE_DIR ~ suffix);
-
-			version (Windows)
-			{
-				const ext = `dll`;
-			}
-			else
-			{
-				const ext = `so`;
-			}
-
-			environment[`SDL_VIDEO_GL_DRIVER`] = buildPath(path, `libGLESv2`.setExtension(ext));
-			environment[`SDL_VIDEO_EGL_DRIVER`] = buildPath(path, `libEGL`.setExtension(ext));
-		}
-*/
-
 		SDL_Init(SDL_INIT_VIDEO) && throwSDLError;
 
 		{
@@ -69,25 +46,6 @@ class WindowManager
 			_size = Vector2s(mode.w, mode.h);
 			_size -= Vector2s(100, 90);
 		}
-
-		/* Legacy GL context attributes retained until the bgfx migration is complete.
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8) && throwSDLError;
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8) && throwSDLError;
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8) && throwSDLError;
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8) && throwSDLError;
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24) && throwSDLError;
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) && throwSDLError;
-
-		// if (PE.settings.msaa)
-		// {
-		// 	!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1) || throwSDLError;
-		// 	!SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAA_LEVEL) || throwSDLError;
-		// }
-
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION / 10) && throwSDLError;
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION % 10) && throwSDLError;
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES) && throwSDLError;
-*/
 
 		{
 			auto f = SDL_WINDOW_RESIZABLE;
@@ -101,15 +59,6 @@ class WindowManager
 			_win || throwSDLError;
 		}
 
-		/* Legacy GL context setup retained until the bgfx migration is complete.
-		_ctx = SDL_GL_CreateContext(_win);
-		hookGL;
-
-		SDL_GL_SetSwapInterval(0);
-		//SDL_GL_SetSwapInterval(1);
-*/
-
-		//SDL_StopTextInput();
 		SDL_SetWindowMinimumSize(_win, 640, 480);
 
 		onVSync(PE.settings.vsync);
@@ -120,9 +69,6 @@ class WindowManager
 
 	~this()
 	{
-		/*
-		SDL_GL_DeleteContext(_ctx);
-		*/
 		SDL_DestroyWindow(_win);
 		/*
 		SDL_GL_UnloadLibrary();

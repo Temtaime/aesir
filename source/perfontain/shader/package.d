@@ -4,51 +4,6 @@ import bgfx_c, std.file, std.path, std.process, std.conv, std.stdio, std.range, 
 	perfontain.misc, perfontain.shader.lang,
 	perfontain.shader.types, utile.except;
 
-/* Legacy OpenGL shader compilation retained until all shader paths use bgfx.
-final class Shader : RCounted
-{
-	this(string name, string data, ubyte type)
-	{
-		auto p = data.toStringz;
-		id = glCreateShader(shaderInfo[this.type = type].type);
-
-		glShaderSource(id, 1, &p, null);
-		glCompileShader(id);
-
-		{
-			int status;
-			glGetShaderiv(id, GL_COMPILE_STATUS, &status);
-
-			status || throwError!"cannot compile %s:\n%s"(name, compileLog);
-		}
-	}
-
-	~this()
-	{
-		glDeleteShader(id);
-	}
-
-	const
-	{
-		uint id;
-		ubyte type;
-	}
-
-private:
-	auto compileLog()
-	{
-		int len;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &len);
-
-		assert(len);
-		auto str = new char[len];
-
-		glGetShaderInfoLog(id, len, null, str.ptr);
-		return str[0 .. $ - 1].assumeUnique;
-	}
-}
-*/
-
 final class Shader : RCounted
 {
 	this(string name, string data, ubyte type)

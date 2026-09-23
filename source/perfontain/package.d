@@ -164,10 +164,6 @@ final class Engine
 	{
 		while (processWork)
 		{
-			/*
-			glEnable(GL_DEPTH_TEST);
-			*/
-			// Shadows, compute lighting, and framebuffer passes remain disabled.
 			scene.draw;
 			gui.draw;
 			//PEwindow.swapBuffers;

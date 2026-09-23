@@ -12,10 +12,6 @@ final class VertexBuffer : RCounted
 	{
 		_type = type;
 		_flags = flags;
-
-		/* Legacy OpenGL buffer allocation retained until the bgfx migration is complete.
-		id = gen!glGenBuffers;
-		*/
 	}
 
 	~this()
@@ -27,10 +23,6 @@ final class VertexBuffer : RCounted
 			else
 				bgfx_destroy_dynamic_vertex_buffer(_vertex);
 		}
-
-		/*
-		glDeleteBuffers(1, &id);
-		*/
 	}
 
 	ubyte alignment() const
@@ -48,11 +40,6 @@ final class VertexBuffer : RCounted
 			bgfx_update_dynamic_index_buffer(_index, start / 4, mem);
 		else
 			bgfx_update_dynamic_vertex_buffer(_vertex, start / alignment, mem);
-
-		/*
-		bind;
-		glBufferSubData(typeGL, start, data.length, data.ptr);
-		*/
 	}
 
 	void realloc(in void[] data) => realloc(cast(uint)data.length, data.ptr);
@@ -81,41 +68,14 @@ final class VertexBuffer : RCounted
 
 		if (ptr)
 			update(ptr[0 .. len], 0);
-
-		/*
-		bind;
-		glBufferData(typeGL, _length = len, ptr, _flags & VBO_DYNAMIC ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-		*/
 	}
 
 	void enable()
 	{
-		/* Legacy VAO attribute setup retained until draw submission migrates to bgfx.
-		bind;
-
-		if (untyped)
-			return;
-
-		auto arr = renderLoc[_type];
-		ubyte ptr, size = _type.vertexSize;
-
-		foreach (i, v; arr)
-		{
-			auto r = cast(uint)i;
-
-			glEnableVertexAttribArray(r);
-			glVertexAttribPointer(r, v, GL_FLOAT, false, size, cast(void*)ptr);
-
-			ptr += v * 4;
-		}
-		*/
 	}
 
 	void bind(ubyte idx)
 	{
-		/*
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, idx, id);
-		*/
 	}
 
 	bgfx_dynamic_index_buffer_handle_t indexHandle() const => _index;

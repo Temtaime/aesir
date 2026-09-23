@@ -36,18 +36,8 @@ final class RenderTarget : RCounted
 
 	~this() => bgfx_destroy_frame_buffer(_frameBuffer);
 
-	void bind()
-	{
-		/* Legacy OpenGL framebuffer bind retained until scene views migrate to bgfx.
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _id);
-		*/
-	}
-
 	static unbind()
 	{
-		/*
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		*/
 	}
 
 	auto attachments() => _attachments[];
