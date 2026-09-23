@@ -128,9 +128,9 @@ private:
 
 		ulong flags;
 		if (t == TEX_SHADOW_MAP)
-			flags = _BGFX_TEXTURE_RT;
-		else if (t == TEX_RED_UINT && !(extraFlags & _BGFX_TEXTURE_READ_BACK))
-			flags = _BGFX_TEXTURE_COMPUTE_WRITE;
+			flags = BGFX_TEXTURE_RT;
+		else if (t == TEX_RED_UINT && !(extraFlags & BGFX_TEXTURE_READ_BACK))
+			flags = BGFX_TEXTURE_COMPUTE_WRITE;
 		flags |= extraFlags;
 
 		_handle = bgfx_create_texture_2d(size.x, size.y, levels.length > 1, 1, textureFormats[t], flags, null, 0);
@@ -142,7 +142,8 @@ private:
 				if (t <= TEX_DXT_5)
 					assert(m.data.length == dxtTextureSize(m.sz.x, m.sz.y, type == TEX_DXT_5));
 
-				bgfx_update_texture_2d(_handle, 0, cast(ubyte)i, 0, 0, m.sz.x, m.sz.y, bgfx_copy(m.data.ptr, cast(uint)m.data.length), ushort.max);
+				bgfx_update_texture_2d(_handle, 0, cast(ubyte)i, 0, 0, m.sz.x, m.sz.y, bgfx_copy(m.data.ptr, cast(uint)m.data.length), ushort
+						.max);
 			}
 		}
 	}

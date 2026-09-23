@@ -32,7 +32,7 @@ string shaderInclude(string name)
 
 private string resource(string name, string data)
 {
-	debug return PEfs.get(`../source/perfontain/shader/res/` ~ name ~ `.c`).assumeUTF;
+	debug return PEfs.get(`../source/perfontain/shader/resource/` ~ name ~ `.c`).assumeUTF;
 	else return data;
 }
 

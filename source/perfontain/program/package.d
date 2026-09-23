@@ -319,10 +319,12 @@ final class Program : RCounted
 		assert(shaders.length == 1 || shaders.length == 2);
 
 		_compute = shaders.length == 1;
+
 		_handle = _compute ? bgfx_create_compute_program(shaders[0].handle, true) : bgfx_create_program(shaders[0].handle, shaders[1].handle, true);
 		_handle.idx != ushort.max || throwError!`cannot create bgfx %s program`(_compute ? `compute` : `draw`);
+
 		shaders.each!(a => a.relinquish);
-		_depthOnly = shaders[0].sourceName.canFind(`depth_`);
+		_depthOnly = shaders[0].sourceName.canFind(`depth`);
 
 		_mainTexture = bgfx_create_uniform(`s_texMain`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
 		_color = bgfx_create_uniform(`u_color`.toStringz, BGFX_UNIFORM_TYPE_VEC4, 1);
@@ -434,16 +436,16 @@ final class Program : RCounted
 			bgfx_set_scissor(scissor.x, scissor.y, scissor.z, scissor.w);
 		else
 			bgfx_set_scissor(0, 0, ushort.max, ushort.max);
-		ulong state = _BGFX_STATE_DEPTH_TEST_LESS;
+		ulong state = BGFX_STATE_DEPTH_TEST_LESS;
 
 		if (PEstate.culling)
-			state |= _BGFX_STATE_CULL_CW;
+			state |= BGFX_STATE_CULL_CW;
 
 		if (!_depthOnly)
-			state |= _BGFX_STATE_WRITE_RGB | _BGFX_STATE_WRITE_A;
+			state |= BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A;
 
 		if (!noDepth)
-			state |= _BGFX_STATE_WRITE_Z;
+			state |= BGFX_STATE_WRITE_Z;
 
 		if (blend)
 			state |= BGFX_STATE_BLEND_ALPHA;
@@ -462,7 +464,7 @@ final class Program : RCounted
 		bgfx_set_texture(0, _lightsDepth, depth.handle, depth.samplerFlags);
 		bgfx_set_image(1, output.handle, 0, BGFX_ACCESS_WRITE, BGFX_TEXTURE_FORMAT_R32U);
 		auto groupsX = (output.size.x + 31) / 32, groupsY = (output.size.y + 31) / 32;
-		bgfx_dispatch(view, _handle, groupsX, groupsY, 1, _BGFX_DISCARD_ALL);
+		bgfx_dispatch(view, _handle, groupsX, groupsY, 1, BGFX_DISCARD_ALL);
 	}
 
 	private void setLightUniforms(Vector2s size = Vector2s(0))

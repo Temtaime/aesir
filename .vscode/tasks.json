@@ -24,12 +24,12 @@
 			}
 		},
 		{
-			"label": "Gen OpenGL",
+			"label": "Gen BGFX",
 			"type": "shell",
-			"command": "dub run -a x86_64",
+			"command": "python3 utils/bgfx.py",
 			"options": {
-				"cwd": "utils/opengl"
-			},
+				"cwd": "${workspaceFolder}"
+			}
 		},
 		{
 			"label": "Gen shader",

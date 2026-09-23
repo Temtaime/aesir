@@ -93,7 +93,7 @@ class SceneRenderData : RCounted
 
 				{
 					auto depth = new Texture(TEX_SHADOW_MAP, size, s);
-					auto tex = new Texture(TEX_RGBA, size, s, _BGFX_TEXTURE_RT);
+					auto tex = new Texture(TEX_RGBA, size, s, BGFX_TEXTURE_RT);
 					_lightsDepth = new RenderTarget(depth, [tex]);
 
 				}
