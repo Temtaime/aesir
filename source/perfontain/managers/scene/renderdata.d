@@ -78,10 +78,7 @@ class SceneRenderData : RCounted
 			depthCreator.define(`LIGHTS_DEPTH`);
 			_depth = depthCreator.create;
 			_depth.depthOnly = false;
-			auto computeCreator = ProgramCreator(ProgramSource.light_compute);
-			if (PE.bgfx.homogeneousDepth)
-				computeCreator.define(`LIGHTS_DEPTH_NEG_ONE_TO_ONE`);
-			_compute = computeCreator.create;
+			_compute = ProgramCreator(ProgramSource.light_compute).create;
 			_draw.setLights(sc.lights);
 			_compute.setLights(sc.lights);
 

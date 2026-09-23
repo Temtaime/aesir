@@ -59,8 +59,6 @@ fragment:
 		LIGHTS_FULL
 			vec3 lightResult = vec3_splat(1.0);
 			uint packed = texelFetch(s_lightsIndices, ivec2(gl_FragCoord.xy), 0).x;
-			gl_FragColor = vec4(vec3_splat(float(packed) / 255.0), color.a) * u_color;
-			return;
 			for (int i = 0; i < 4; i++)
 			{
 				uint index = packed & 0xFFu;
@@ -71,7 +69,7 @@ fragment:
 				vec3 delta = light.xyz - v_worldPos;
 				float distanceToLight = length(delta);
 				float attenuation = max(1.0 - distanceToLight / light.w, 0.0);
-				lightResult += u_lights[(index - 1u) * 2u + 1u].xyz * attenuation;
+				lightResult += u_lights[(index - 1u) * 2u + 1u].xyz * attenuation * max(dot(normalize(-v_normal), normalize(delta)), 0.0);
 			}
 			color.rgb *= lightResult;
 		gl_FragColor = color * u_color;
