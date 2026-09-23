@@ -220,19 +220,9 @@ private:
 				d.id = n++;
 				d.flags = DI_NO_DEPTH;
 				d.blendingMode = blendingNormal;
-				d.scissor = Vector4s(cmd.clip_rect.x, (PE.window.size.y - (cmd.clip_rect.y + cmd.clip_rect.h)),
-						(cmd.clip_rect.w), (cmd.clip_rect.h));
-
-				d.scissor.z += d.scissor.x;
-				d.scissor.w += d.scissor.y;
+				d.scissor = Vector4s(cmd.clip_rect.x, cmd.clip_rect.y, cmd.clip_rect.w, cmd.clip_rect.h);
 
 				PE.render.toQueue(d);
-				/* glBindTexture(GL_TEXTURE_2D, cast(GLuint)cmd.texture.id);
-		glScissor(cast(GLint)(cmd.clip_rect.x * scale.x),
-		cast(GLint)((height - cast(GLint)(cmd.clip_rect.y + cmd.clip_rect.h)) * scale.y),
-		cast(GLint)(cmd.clip_rect.w * scale.x),
-		cast(GLint)(cmd.clip_rect.h * scale.y));
-		glDrawElements(GL_TRIANGLES, cast(GLsizei)cmd.elem_count, GL_UNSIGNED_INT, offset);*/
 				offset += cmd.elem_count;
 			}
 

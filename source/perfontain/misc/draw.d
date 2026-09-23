@@ -61,7 +61,7 @@ final class DrawAllocator : RCounted
 
 					cnt++;
 					auto node = nodes[sm.node];
-					pg.submit(iv, off / 4 + sm.start, sm.len, node.matrix * viewProj, node.matrix, node.color, !!(node.flags & DI_NO_DEPTH), node.blendingMode != noBlending, view);
+					pg.submit(iv, off / 4 + sm.start, sm.len, node.matrix * viewProj, node.matrix, node.color, !!(node.flags & DI_NO_DEPTH), node.blendingMode != noBlending, node.scissor, view);
 				}
 				k += cnt;
 			}
@@ -71,7 +71,7 @@ final class DrawAllocator : RCounted
 			foreach (sm; SubMeshRange(nodes))
 			{
 				auto node = nodes[sm.node];
-				pg.submit(iv, off / 4 + sm.start, sm.len, node.matrix * viewProj, node.matrix, node.color, !!(node.flags & DI_NO_DEPTH), node.blendingMode != noBlending, view);
+				pg.submit(iv, off / 4 + sm.start, sm.len, node.matrix * viewProj, node.matrix, node.color, !!(node.flags & DI_NO_DEPTH), node.blendingMode != noBlending, node.scissor, view);
 				k++;
 
 				_drawnTriangles += sm.len / 3;

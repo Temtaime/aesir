@@ -43,6 +43,11 @@ final class StateManager
 		{
 			return _wireframe;
 		}
+
+		bool culling()
+		{
+			return _culling;
+		}
 	}
 
 package(perfontain):

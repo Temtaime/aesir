@@ -35,3 +35,5 @@ string shaderSource(ProgramSource pt)
 
 	assert(false);
 }
+
+extern (C++) int shaderc_main(int, const(char)**);

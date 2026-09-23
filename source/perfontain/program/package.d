@@ -404,7 +404,7 @@ final class Program : RCounted
 	bgfx_uniform_handle_t mainTexture() const => _mainTexture;
 	const(Texture) mainTextureValue() const => _texs[ShaderTexture.main];
 
-	void submit(IndexVertex iv, uint firstIndex, uint numIndices, in Matrix4 mvp, in Matrix4 model, in Color color, bool noDepth, bool blend, ushort view)
+	void submit(IndexVertex iv, uint firstIndex, uint numIndices, in Matrix4 mvp, in Matrix4 model, in Color color, bool noDepth, bool blend, in Vector4s scissor, ushort view)
 	{
 		bgfx_set_transform(mvp.ptr, 1);
 		auto c = color.toVec;
@@ -430,7 +430,14 @@ final class Program : RCounted
 		auto vertex = iv.vertexBuffer;
 		bgfx_set_dynamic_vertex_buffer(0, vertex.vertexHandle, 0, vertex.length / vertex.alignment);
 		bgfx_set_dynamic_index_buffer(iv.indexBuffer.indexHandle, firstIndex, numIndices);
+		if (scissor.z && scissor.w)
+			bgfx_set_scissor(scissor.x, scissor.y, scissor.z, scissor.w);
+		else
+			bgfx_set_scissor(0, 0, ushort.max, ushort.max);
 		ulong state = BGFX_STATE_DEPTH_TEST_LESS_;
+
+		if (PEstate.culling)
+			state |= BGFX_STATE_CULL_CW_;
 
 		if (!_depthOnly)
 			state |= BGFX_STATE_WRITE_RGB_ | BGFX_STATE_WRITE_A_;

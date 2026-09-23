@@ -1,6 +1,7 @@
 module perfontain.managers.sampler;
 
 import
+		bgfx_c,
 		perfontain,
 		perfontain.sampler,
 		perfontain.misc.rc;
@@ -10,39 +11,10 @@ final class SamplerManager
 {
 	this()
 	{
-		// used for bindless textures
-		main = new Sampler;
-
-		/* Legacy GL sampler configuration retained until bgfx sampler presets are completed.
-		main.set(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		main.set(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-		//s.set(GL_TEXTURE_WRAP_S, GL_REPEAT);
-		//s.set(GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		main.set(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // TODO: use repeat here
-		main.set(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		if(PE._aaLevel)
-		{
-			main.set(GL_TEXTURE_MAX_ANISOTROPY_EXT, PE._aaLevel);
-		}
-
-		// used for texture atlases
-		noMipMap = new Sampler;
-
-		noMipMap.set(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		noMipMap.set(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-		// used for shadow maps
-		shadowMap = new Sampler;
-
-		shadowMap.set(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		shadowMap.set(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		shadowMap.set(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		shadowMap.set(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		*/
+		const clamp = BGFX_SAMPLER_U_CLAMP_ | BGFX_SAMPLER_V_CLAMP_;
+		main = new Sampler(clamp | BGFX_SAMPLER_MIN_ANISOTROPIC_);
+		noMipMap = new Sampler(clamp);
+		shadowMap = new Sampler(clamp | BGFX_SAMPLER_MIN_POINT_ | BGFX_SAMPLER_MAG_POINT_ | BGFX_SAMPLER_MIP_POINT_);
 	}
 
 	RC!Sampler

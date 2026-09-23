@@ -4,6 +4,11 @@ import bgfx_c, std.stdio, perfontain;
 
 final class Sampler : RCounted
 {
+	this(uint flags = 0)
+	{
+		_flags = flags;
+	}
+
 	/*
 	auto set(T)(uint e, T v)
 	{
