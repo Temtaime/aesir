@@ -27,7 +27,12 @@ class SceneRenderData : RCounted
 		{
 			auto creator = ProgramCreator(ProgramSource.draw);
 			if (lightsFull)
+			{
 				creator.define(`LIGHTS_FULL`);
+				creator.define(`LIGHT_AMBIENT`, sc.ambient);
+				creator.define(`LIGHT_DIFFUSE`, sc.diffuse);
+				creator.define(`LIGHT_DIR`, sc.lightDir);
+			}
 			if (texShadowsDepth)
 			{
 				creator.define(`SHADOWS_ENABLED`);

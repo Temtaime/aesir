@@ -41,6 +41,7 @@ fragment:
 		USAMPLER2D(s_lightsIndices, 2);
 		uniform vec4 u_lights[256];
 		uniform vec4 u_lightsInfo;
+		import lighting
 	uniform vec4 u_color;
 
 	void main()
@@ -57,20 +58,6 @@ fragment:
 			float shadow = step(shadowCoord.z - 0.001, texture2D(s_shadowMap, shadowCoord.xy).x);
 			color.rgb *= 0.5 + shadow * 0.5;
 		LIGHTS_FULL
-			vec3 lightResult = vec3_splat(1.0);
-			uint packed = texelFetch(s_lightsIndices, ivec2(gl_FragCoord.xy), 0).x;
-			for (int i = 0; i < 4; i++)
-			{
-				uint index = packed & 0xFFu;
-				if (index == 0u)
-					break;
-				packed >>= 8;
-				vec4 light = u_lights[(index - 1u) * 2u];
-				vec3 delta = light.xyz - v_worldPos;
-				float distanceToLight = length(delta);
-				float attenuation = max(1.0 - distanceToLight / light.w, 0.0);
-				lightResult += u_lights[(index - 1u) * 2u + 1u].xyz * attenuation * max(dot(normalize(-v_normal), normalize(delta)), 0.0);
-			}
-			color.rgb *= lightResult;
+			calcLights(color.rgb, normalize(v_normal), v_worldPos, ivec2(gl_FragCoord.xy));
 		gl_FragColor = color * u_color;
 	}
