@@ -11,10 +11,10 @@ final class SamplerManager
 {
 	this()
 	{
-		const clamp = BGFX_SAMPLER_U_CLAMP_ | BGFX_SAMPLER_V_CLAMP_;
-		main = new Sampler(clamp | BGFX_SAMPLER_MIN_ANISOTROPIC_);
+		const clamp = _BGFX_SAMPLER_U_CLAMP | _BGFX_SAMPLER_V_CLAMP;
+		main = new Sampler(clamp | _BGFX_SAMPLER_MIN_ANISOTROPIC);
 		noMipMap = new Sampler(clamp);
-		shadowMap = new Sampler(clamp | BGFX_SAMPLER_MIN_POINT_ | BGFX_SAMPLER_MAG_POINT_ | BGFX_SAMPLER_MIP_POINT_);
+		shadowMap = new Sampler(clamp | _BGFX_SAMPLER_MIN_POINT | _BGFX_SAMPLER_MAG_POINT | _BGFX_SAMPLER_MIP_POINT);
 	}
 
 	RC!Sampler

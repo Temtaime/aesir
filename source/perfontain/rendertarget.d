@@ -13,7 +13,7 @@ final class RenderTarget : RCounted
 		if (depth)
 		{
 			_attachments ~= depth;
-			_clearFlags |= BGFX_CLEAR_DEPTH_;
+			_clearFlags |= _BGFX_CLEAR_DEPTH;
 		}
 
 		if (color)
@@ -21,7 +21,7 @@ final class RenderTarget : RCounted
 			uint[] arr;
 
 			_attachments ~= color;
-			_clearFlags |= BGFX_CLEAR_COLOR_;
+			_clearFlags |= _BGFX_CLEAR_COLOR;
 		}
 
 		_size = _attachments[0].size;

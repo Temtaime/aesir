@@ -319,8 +319,7 @@ final class Program : RCounted
 		assert(shaders.length == 1 || shaders.length == 2);
 
 		_compute = shaders.length == 1;
-		_handle = _compute ? bgfx_create_compute_program(shaders[0].handle, true)
-			: bgfx_create_program(shaders[0].handle, shaders[1].handle, true);
+		_handle = _compute ? bgfx_create_compute_program(shaders[0].handle, true) : bgfx_create_program(shaders[0].handle, shaders[1].handle, true);
 		_handle.idx != ushort.max || throwError!`cannot create bgfx %s program`(_compute ? `compute` : `draw`);
 		shaders.each!(a => a.relinquish);
 		_depthOnly = shaders[0].sourceName.canFind(`depth_`);
@@ -396,7 +395,8 @@ final class Program : RCounted
 		{
 			logger.info2!`uploaded %u light sources`(_lightData.length / 2);
 			foreach (i, ref light; lights[0 .. (lights.length < 4 ? lights.length : 4)])
-				logger.info3!`light %u: pos %g, %g, %g, range %g, color %g, %g, %g`(i + 1, light.pos.x, light.pos.y, light.pos.z, light.range, light.color.x, light.color.y, light.color.z);
+				logger.info3!`light %u: pos %g, %g, %g, range %g, color %g, %g, %g`(i + 1, light.pos.x, light.pos.y, light.pos.z, light.range, light.color.x, light
+						.color.y, light.color.z);
 		}
 	}
 
@@ -434,19 +434,19 @@ final class Program : RCounted
 			bgfx_set_scissor(scissor.x, scissor.y, scissor.z, scissor.w);
 		else
 			bgfx_set_scissor(0, 0, ushort.max, ushort.max);
-		ulong state = BGFX_STATE_DEPTH_TEST_LESS_;
+		ulong state = _BGFX_STATE_DEPTH_TEST_LESS;
 
 		if (PEstate.culling)
-			state |= BGFX_STATE_CULL_CW_;
+			state |= _BGFX_STATE_CULL_CW;
 
 		if (!_depthOnly)
-			state |= BGFX_STATE_WRITE_RGB_ | BGFX_STATE_WRITE_A_;
+			state |= _BGFX_STATE_WRITE_RGB | _BGFX_STATE_WRITE_A;
 
 		if (!noDepth)
-			state |= BGFX_STATE_WRITE_Z_;
+			state |= _BGFX_STATE_WRITE_Z;
 
 		if (blend)
-			state |= BGFX_STATE_BLEND_ALPHA_;
+			state |= BGFX_STATE_BLEND_ALPHA;
 
 		bgfx_set_state(state, 0);
 		bgfx_submit(view, _handle, 0, 0);
@@ -460,9 +460,9 @@ final class Program : RCounted
 		setLightUniforms(output.size);
 		bgfx_set_view_rect(view, 0, 0, output.size.x, output.size.y, 0, 1);
 		bgfx_set_texture(0, _lightsDepth, depth.handle, depth.samplerFlags);
-		bgfx_set_image(1, output.handle, 0, cast(bgfx_access_t)BGFX_ACCESS_WRITE_, BGFX_TEXTURE_FORMAT_R32U);
+		bgfx_set_image(1, output.handle, 0, BGFX_ACCESS_WRITE, BGFX_TEXTURE_FORMAT_R32U);
 		auto groupsX = (output.size.x + 31) / 32, groupsY = (output.size.y + 31) / 32;
-		bgfx_dispatch(view, _handle, groupsX, groupsY, 1, BGFX_DISCARD_ALL_);
+		bgfx_dispatch(view, _handle, groupsX, groupsY, 1, _BGFX_DISCARD_ALL);
 	}
 
 	private void setLightUniforms(Vector2s size = Vector2s(0))

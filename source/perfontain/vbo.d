@@ -59,11 +59,11 @@ final class VertexBuffer : RCounted
 
 		if (untyped)
 		{
-			_index = bgfx_create_dynamic_index_buffer(len / 4, BGFX_BUFFER_INDEX32_ | BGFX_BUFFER_ALLOW_RESIZE_);
+			_index = bgfx_create_dynamic_index_buffer(len / 4, _BGFX_BUFFER_INDEX32 | _BGFX_BUFFER_ALLOW_RESIZE);
 		}
 		else
 		{
-			_vertex = bgfx_create_dynamic_vertex_buffer(len / alignment, &PE.bgfx.layout(cast(ubyte)_type), BGFX_BUFFER_ALLOW_RESIZE_);
+			_vertex = bgfx_create_dynamic_vertex_buffer(len / alignment, &PE.bgfx.layout(cast(ubyte)_type), _BGFX_BUFFER_ALLOW_RESIZE);
 		}
 
 		if (ptr)

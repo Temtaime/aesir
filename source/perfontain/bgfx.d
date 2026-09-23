@@ -71,6 +71,8 @@ final class BgfxManager
 		_swapChain.width = size.x;
 		_swapChain.height = size.y;
 
+		auto e = BGFX_RENDERER_TYPE_DIRECT3D12;
+
 		bgfx_reset(_BGFX_RESET_NONE, &_swapChain);
 		bgfx_set_view_rect(3, 0, 0, size.x, size.y, 0, 1);
 		bgfx_set_view_rect(4, 0, 0, size.x, size.y, 0, 1);
@@ -78,9 +80,9 @@ final class BgfxManager
 
 	void frame()
 	{
-		bgfx_set_view_clear(3, BGFX_CLEAR_COLOR_ | BGFX_CLEAR_DEPTH_, 0xFF00_FFFF, 1, 0);
+		bgfx_set_view_clear(3, _BGFX_CLEAR_COLOR | _BGFX_CLEAR_DEPTH, 0xFF00_FFFF, 1, 0);
 		bgfx_touch(3);
-		_frameNumber = bgfx_frame(BGFX_FRAME_NONE_);
+		_frameNumber = bgfx_frame(_BGFX_FRAME_NONE);
 	}
 
 	void setView(ushort id, bgfx_frame_buffer_handle_t frameBuffer, Vector2s size, ushort clearFlags)

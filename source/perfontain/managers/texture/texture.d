@@ -128,9 +128,9 @@ private:
 
 		ulong flags;
 		if (t == TEX_SHADOW_MAP)
-			flags = cast(ulong)BGFX_TEXTURE_RT_;
-		else if (t == TEX_RED_UINT && !(extraFlags & cast(ulong)BGFX_TEXTURE_READ_BACK_))
-			flags = cast(ulong)BGFX_TEXTURE_COMPUTE_WRITE_;
+			flags = _BGFX_TEXTURE_RT;
+		else if (t == TEX_RED_UINT && !(extraFlags & _BGFX_TEXTURE_READ_BACK))
+			flags = _BGFX_TEXTURE_COMPUTE_WRITE;
 		flags |= extraFlags;
 
 		_handle = bgfx_create_texture_2d(size.x, size.y, levels.length > 1, 1, textureFormats[t], flags, null, 0);
