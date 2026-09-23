@@ -1,0 +1,65 @@
+diff -rub a/bgfx/tools/shaderc/shaderc.cpp b/bgfx/tools/shaderc/shaderc.cpp
+--- a/bgfx/tools/shaderc/shaderc.cpp	2026-09-19 23:59:40.000000000 +0200
++++ b/bgfx/tools/shaderc/shaderc.cpp	2026-09-23 20:55:02.564362000 +0200
+@@ -241,7 +241,7 @@
+ 		NULL
+ 	};
+ 
+-	void fatal(const char* _filePath, uint16_t _line, Fatal::Enum _code, const char* _format, ...)
++	static void fatal(const char* _filePath, uint16_t _line, Fatal::Enum _code, const char* _format, ...)
+ 	{
+ 		BX_UNUSED(_filePath, _line, _code);
+ 
+@@ -255,7 +255,7 @@
+ 		abort();
+ 	}
+ 
+-	void trace(const char* _filePath, uint16_t _line, const char* _format, ...)
++	static void trace(const char* _filePath, uint16_t _line, const char* _format, ...)
+ 	{
+ 		BX_UNUSED(_filePath, _line);
+ 
+@@ -361,7 +361,7 @@
+ 		return _glsl; // centroid, noperspective
+ 	}
+ 
+-	const char* s_uniformTypeName[] =
++	static const char* s_uniformTypeName[] =
+ 	{
+ 		"int",  "int",
+ 		NULL,   NULL,
+@@ -2750,7 +2750,7 @@
+ 
+ } // namespace bgfx
+ 
+-int main(int _argc, const char* _argv[])
++int shaderc_main(int _argc, const char** _argv)
+ {
+ 	return bgfx::compileShader(_argc, _argv);
+ }
+diff -rub a/bgfx/tools/shaderc/shaderc.h b/bgfx/tools/shaderc/shaderc.h
+--- a/bgfx/tools/shaderc/shaderc.h	2026-09-19 23:59:40.000000000 +0200
++++ b/bgfx/tools/shaderc/shaderc.h	2026-09-23 20:55:02.565409000 +0200
+@@ -99,8 +99,8 @@
+ 		| kUniformCompareBit
+ 		;
+ 
+-	const char* getUniformTypeName(UniformType::Enum _enum);
+-	UniformType::Enum nameToUniformTypeEnum(const char* _name);
++	static const char* getUniformTypeName(UniformType::Enum _enum);
++	static UniformType::Enum nameToUniformTypeEnum(const char* _name);
+ 
+ 	/// Converts a SPIR-V `spv::Dim` (plus the arrayed flag) into the texture
+ 	/// dimension id stored in `Uniform::texDimension`.
+diff -rub a/bx/src/debug.cpp b/bx/src/debug.cpp
+--- a/bx/src/debug.cpp	2026-09-19 08:50:32.000000000 +0200
++++ b/bx/src/debug.cpp	2026-09-23 20:55:13.075416300 +0200
+@@ -84,7 +84,7 @@
+ #elif  BX_PLATFORM_WINDOWS \
+ 	|| BX_PLATFORM_WINRT   \
+ 	|| BX_PLATFORM_XBOXONE
+-extern "C" __declspec(dllimport) bool  __stdcall IsDebuggerPresent();
++extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
+ extern "C" __declspec(dllimport) void  __stdcall OutputDebugStringA(const char* _str);
+ extern "C" __declspec(dllimport) void* __stdcall GetStdHandle(unsigned long _stdHandle);
+ extern "C" __declspec(dllimport) int   __stdcall WriteFile(void* _file, const void* _buffer, unsigned long _sizeInBytes, unsigned long* _outNumberOfBytesWritten, struct _OVERLAPPED* _overlapped);
