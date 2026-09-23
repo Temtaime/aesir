@@ -1,29 +1,33 @@
-vertex:
-	$input a_position, a_color0
-	$output v_texcoord0, v_color0
+#if BGFX_SHADER_TYPE_VERTEX
 
-	#include "bgfx_shader.sh"
+$input a_position, a_color0
+$output v_texcoord0, v_color0
 
-	void main()
-	{
-		v_texcoord0 = a_position.zw;
-		v_color0 = a_color0;
-		gl_Position = mul(u_modelViewProj, vec4(a_position.xy, 0.0, 1.0));
-	}
+#include "bgfx_shader.sh"
 
-fragment:
-	$input v_texcoord0, v_color0
+void main()
+{
+	v_texcoord0 = a_position.zw;
+	v_color0 = a_color0;
+	gl_Position = mul(u_modelViewProj, vec4(a_position.xy, 0.0, 1.0));
+}
 
-	#include "bgfx_shader.sh"
+#else
 
-	SAMPLER2D(s_texMain, 0);
+$input v_texcoord0, v_color0
 
-	void main()
-	{
-		vec4 c = texture2D(s_texMain, v_texcoord0) * v_color0;
+#include "bgfx_shader.sh"
 
-		if (c.a < 0.05)
-			discard;
+SAMPLER2D(s_texMain, 0);
 
-		gl_FragColor = c;
-	}
+void main()
+{
+	vec4 c = texture2D(s_texMain, v_texcoord0) * v_color0;
+
+	if (c.a < 0.05)
+		discard;
+
+	gl_FragColor = c;
+}
+
+#endif

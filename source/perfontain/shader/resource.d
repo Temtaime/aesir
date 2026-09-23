@@ -3,37 +3,37 @@ import std, perfontain;
 
 enum ProgramSource
 {
-	header,
-	misc,
 	depth,
-	shadows,
-	lighting,
 	light_compute,
 	gui,
 	draw
 }
 
-ProgramSource programSource(string name)
+string shaderSource(ProgramSource ps, string type)
 {
-	foreach (ps; EnumMembers!ProgramSource)
-		if (ps.to!string == name)
-			return ps;
-
-	assert(false, name);
+	final switch (ps)
+	{
+	case ProgramSource.depth:
+		return type == `vertex` || type == `fragment` ? resource(`depth`, import(`depth.c`)) : null;
+	case ProgramSource.light_compute:
+		return type == `compute` ? resource(`light_compute`, import(`light_compute.c`)) : null;
+	case ProgramSource.gui:
+		return type == `vertex` || type == `fragment` ? resource(`gui`, import(`gui.c`)) : null;
+	case ProgramSource.draw:
+		return type == `vertex` || type == `fragment` ? resource(`draw`, import(`draw.c`)) : null;
+	}
 }
 
-string shaderSource(ProgramSource pt)
+string shaderInclude(string name)
 {
-	foreach (ps; EnumMembers!ProgramSource)
-		if (ps == pt)
-		{
-			enum Name = ps.to!string ~ `.c`;
+	assert(name == `lighting`);
+	return resource(`lighting`, import(`lighting.c`));
+}
 
-			debug return PEfs.get(`../source/perfontain/shader/res/` ~ Name).assumeUTF;
-		else return import(Name);
-		}
-
-	assert(false);
+private string resource(string name, string data)
+{
+	debug return PEfs.get(`../source/perfontain/shader/res/` ~ name ~ `.c`).assumeUTF;
+	else return data;
 }
 
 extern (C++) int shaderc_main(int, const(char)**);

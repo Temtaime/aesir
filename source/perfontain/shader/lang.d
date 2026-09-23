@@ -1,5 +1,5 @@
 module perfontain.shader.lang;
-import std.conv, std.string, std.algorithm, perfontain, perfontain.shader.types, perfontain.shader.defineprocessor;
+import std.conv, std.string, std.algorithm, std.file, perfontain, perfontain.shader.types;
 public import perfontain.shader.resource;
 
 struct ProgramCreator
@@ -13,42 +13,52 @@ struct ProgramCreator
 
 	void define(string s)
 	{
-		_dp.defs[s] = null;
+		_defs[s] = null;
 	}
 
 	void define(string s, int v)
 	{
-		_dp.defs[s] = v.to!string;
+		_defs[s] = v.to!string;
 	}
 
 	void define(string s, float v)
 	{
-		_dp.defs[s] = format(`float(%g)`, v);
+		_defs[s] = format(`float(%g)`, v);
 	}
 
 	void define(string s, in Vector3 v)
 	{
-		_dp.defs[s] = format(`vec3(%(%s, %))`, v.flat);
+		_defs[s] = format(`vec3(%(%s, %))`, v.flat);
 	}
 
 	void define(string s, in Vector2s v)
 	{
-		_dp.defs[s] = format(`ivec2(%(%s, %))`, v.flat);
+		_defs[s] = format(`ivec2(%(%s, %))`, v.flat);
 	}
 
 	auto create()
 	{
 		RCArray!Shader res;
-		auto aa = _dp.process(_ps);
+		mkdirRecurse(`bgfx/shaders`);
+		write(`bgfx/shaders/lighting.sc`, shaderInclude(`lighting`));
+		bool writeSource = true;
 
-		foreach (t, s; aa)
+		foreach (type, info; shaderInfo)
 		{
-			auto data = replace(s ~ "\n", "\n", "\r\n");
-			auto name = format(`shader/%s_%s.glsl`, _ps, t);
+			auto source = shaderSource(_ps, info.name);
+			if (!source.length)
+				continue;
 
-			debug PEfs.put(name, data);
+			string data;
+			foreach (name, value; _defs)
+				data ~= `#define ` ~ name ~ (value.length ? ` ` ~ value : null) ~ '\n';
+			data = replace(data ~ source ~ '\n', "\n", "\r\n");
+			auto name = format(`shader/%s.glsl`, _ps);
 
-			res ~= new Shader(name, data, t.shaderType);
+			debug if (writeSource) PEfs.put(name, data);
+
+			res ~= new Shader(name, data, cast(ubyte)type, writeSource);
+			writeSource = false;
 		}
 
 		auto shaders = res[];
@@ -57,5 +67,5 @@ struct ProgramCreator
 
 private:
 	ProgramSource _ps;
-	DefineProcessor _dp;
+	string[string] _defs;
 }
