@@ -14,30 +14,67 @@ then
 	cd ..
 fi
 
-clang -w -O3 -ffast-math -m64 -std=c++20 -march=x86-64-v2 \
-	\
-	-D BX_CONFIG_DEBUG=0 \
-	-D BGFX_CONFIG_RENDERER_DIRECT3D11=1 \
-	-D BGFX_CONFIG_RENDERER_DIRECT3D12=1 \
-	-D BGFX_CONFIG_RENDERER_VULKAN=1 \
-	-D BGFX_CONFIG_RENDERER_OPENGL=33 \
-	\
-	-I deps/bx/include \
-	-I deps/bimg/include \
-	\
-	-I deps/bgfx/include \
-	-I deps/bgfx/3rdparty \
-	-I deps/bgfx/3rdparty/khronos \
-	\
-	-D BIMG_CONFIG_DECODE_ASTC=0 \
-	\
-	-I deps/bx/include/compat/msvc \
-	\
-	deps/bimg/src/image.cpp \
-	deps/bx/src/amalgamated.cpp \
-	deps/bgfx/src/amalgamated.cpp \
-	\
-	deps/bgfx/tools/shaderc/*.cpp \
-	\
-	-fuse-ld=llvm-lib \
-	-o ../deps/bgfx_x64.lib
+compile()
+{
+	local IS_DEBUG=$1; shift
+	local NAME=$1; shift
+
+	cd deps
+
+	local DEFS=(
+		-D BGFX_CONFIG_RENDERER_DIRECT3D11=1
+	)
+
+	if (( IS_DEBUG ))
+	then
+		DEFS+=(
+			-D BGFX_CONFIG_RENDERER_DIRECT3D12=1
+			-I bgfx/3rdparty/directx-headers/include/directx
+
+			-D BGFX_CONFIG_RENDERER_VULKAN=1
+			-D BGFX_CONFIG_RENDERER_OPENGL=33
+		)
+	else
+		DEFS+=(
+			-D NDEBUG
+		)
+	fi
+
+	clang -w -m64 -std=c++20 -march=x86-64-v2 \
+		\
+		$@ \
+		\
+		${DEFS[@]} \
+		-D BX_CONFIG_DEBUG=$IS_DEBUG \
+		\
+		-I bx/include \
+		-I bimg/include \
+		\
+		-I bgfx/include \
+		-I bgfx/3rdparty \
+		-I bgfx/3rdparty/khronos \
+		\
+		-D BIMG_CONFIG_DECODE_ASTC=0 \
+		\
+		-I bx/include/compat/msvc \
+		\
+		bimg/src/image.cpp \
+		bx/src/amalgamated.cpp \
+		bgfx/src/amalgamated.cpp \
+		\
+		bgfx/tools/shaderc/*.cpp \
+		\
+		-fuse-ld=llvm-lib \
+		\
+		-o ../../deps/$NAME
+}
+
+compile 1 debug/bgfx_x64.lib -O2 &
+compile 0 release/bgfx_x64.lib -O3 -ffast-math &
+
+for p in bgfx_shader bgfx_compute
+do
+	cp deps/bgfx/src/$p.sh ../../source/perfontain/shader/resource/$p.sh
+done
+
+wait

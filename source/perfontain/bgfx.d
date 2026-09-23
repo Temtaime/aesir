@@ -47,7 +47,8 @@ final class BgfxManager
 
 		auto type = bgfx_get_renderer_type();
 		logger.info!`bgfx renderer: %s (%d), window: 0x%X, swap chain: %ux%u`(
-			bgfx_get_renderer_name(type).fromStringz, cast(uint)type, cast(size_t)window, size.x, size.y);
+			bgfx_get_renderer_name(type)
+				.fromStringz, cast(uint)type, cast(size_t)window, size.x, size.y);
 		resize(size);
 	}
 
@@ -70,7 +71,7 @@ final class BgfxManager
 		_swapChain.width = size.x;
 		_swapChain.height = size.y;
 
-		bgfx_reset(BGFX_RESET_NONE_, &_swapChain);
+		bgfx_reset(_BGFX_RESET_NONE, &_swapChain);
 		bgfx_set_view_rect(3, 0, 0, size.x, size.y, 0, 1);
 		bgfx_set_view_rect(4, 0, 0, size.x, size.y, 0, 1);
 	}
@@ -98,17 +99,17 @@ final class BgfxManager
 	{
 		switch (bgfx_get_renderer_type())
 		{
-			case BGFX_RENDERER_TYPE_DIRECT3D11:
-			case BGFX_RENDERER_TYPE_DIRECT3D12:
-				return `s_5_0`;
-			case BGFX_RENDERER_TYPE_OPENGL:
-				return `430`;
-			case BGFX_RENDERER_TYPE_OPENGLES:
-				return `310_es`;
-			case BGFX_RENDERER_TYPE_VULKAN:
-				return `spirv`;
-			default:
-				throwError!`unsupported bgfx renderer for shaderc: %d`(cast(uint)bgfx_get_renderer_type());
+		case BGFX_RENDERER_TYPE_DIRECT3D11:
+		case BGFX_RENDERER_TYPE_DIRECT3D12:
+			return `s_5_0`;
+		case BGFX_RENDERER_TYPE_OPENGL:
+			return `430`;
+		case BGFX_RENDERER_TYPE_OPENGLES:
+			return `310_es`;
+		case BGFX_RENDERER_TYPE_VULKAN:
+			return `spirv`;
+		default:
+			throwError!`unsupported bgfx renderer for shaderc: %d`(cast(uint)bgfx_get_renderer_type());
 		}
 	}
 

@@ -6,6 +6,11 @@
 			"buildOptions": [
 				"debugMode"
 			]
+		},
+		"release-nobounds": {
+			"preBuildCommands": [
+				"python3 utils/pack.py"
+			]
 		}
 	},
 	"dependencies": {
@@ -23,7 +28,7 @@
 		"derelict-sdl2": "derelict-sdl2-static"
 	},
 	"stringImportPaths": [
-		"source/perfontain/shader/res"
+		"source/perfontain/shader/resource"
 	],
 	"libs": [
 		"sdl_x64",
