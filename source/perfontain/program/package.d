@@ -451,7 +451,7 @@ final class Program : RCounted
 			state |= BGFX_STATE_BLEND_ALPHA;
 
 		bgfx_set_state(state, 0);
-		bgfx_submit(view, _handle, 0, 0);
+		bgfx_submit(view, _handle, 0, BGFX_DISCARD_ALL);
 	}
 
 	void dispatch(ushort view, Texture depth, Texture output, in Matrix4 projViewInversed)

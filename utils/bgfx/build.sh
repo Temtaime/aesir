@@ -33,6 +33,21 @@ compile()
 
 			-D BGFX_CONFIG_RENDERER_VULKAN=1
 			-D BGFX_CONFIG_RENDERER_OPENGL=33
+
+			-D SHADERC_CONFIG_HAS_GLSLANG=1
+			-I bgfx/3rdparty/spirv-cross
+			-I bgfx/3rdparty/glslang/glslang/Public
+			-I bgfx/3rdparty/glslang
+			-I bgfx/3rdparty/spirv-tools/include
+			-I bgfx/3rdparty/spirv-tools/include/generated
+			-I bgfx/3rdparty/spirv-tools
+			-I bgfx/3rdparty/spirv-headers/include
+			bgfx/3rdparty/glslang/glslang/CInterface/glslang_c_interface.cpp
+			bgfx/3rdparty/glslang/glslang/MachineIndependent/*.cpp
+			bgfx/3rdparty/glslang/glslang/MachineIndependent/preprocessor/*.cpp
+			# bgfx/3rdparty/spirv-cross/*.cpp
+			# bgfx/3rdparty/spirv-tools/source/val/*.cpp
+			# bgfx/3rdparty/spirv-tools/source/opt/*.cpp
 		)
 	else
 		DEFS+=(
