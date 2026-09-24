@@ -333,7 +333,7 @@ final class Program : RCounted
 		_shadowMap = bgfx_create_uniform(`s_shadowMap`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
 		_lightsDepth = bgfx_create_uniform(`s_lightsDepth`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
 		_projViewInversed = bgfx_create_uniform(`u_projViewInversed`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
-		_lights = bgfx_create_uniform(`u_lights`.toStringz, BGFX_UNIFORM_TYPE_VEC4, 256);
+		_lights = bgfx_create_uniform(`u_lights`.toStringz, BGFX_UNIFORM_TYPE_VEC4, 254);
 		_lightsInfo = bgfx_create_uniform(`u_lightsInfo`.toStringz, BGFX_UNIFORM_TYPE_VEC4, 1);
 		_lightsIndices = bgfx_create_uniform(`s_lightsIndices`.toStringz, BGFX_UNIFORM_TYPE_SAMPLER, 1);
 		_lightingModel = bgfx_create_uniform(`u_lightingModel`.toStringz, BGFX_UNIFORM_TYPE_MAT4, 1);
@@ -387,16 +387,18 @@ final class Program : RCounted
 
 	void setLights(in LightSource[] lights)
 	{
-		_lightData.length = 0;
-		foreach (ref light; lights[0 .. (lights.length < 128 ? lights.length : 128)])
+		_lightCount = lights.length < 127 ? cast(uint)lights.length : 127;
+		_lightData.length = 254;
+		_lightData[] = Vector4(0);
+		foreach (i, ref light; lights[0 .. _lightCount])
 		{
-			_lightData ~= Vector4(light.pos, light.range);
-			_lightData ~= Vector4(light.color, 0);
+			_lightData[i * 2] = Vector4(light.pos, light.range);
+			_lightData[i * 2 + 1] = Vector4(light.color, 0);
 		}
 		if (_compute)
 		{
-			logger.info2!`uploaded %u light sources`(_lightData.length / 2);
-			foreach (i, ref light; lights[0 .. (lights.length < 4 ? lights.length : 4)])
+			logger.info2!`uploaded %u light sources`(_lightCount);
+			foreach (i, ref light; lights[0 .. (_lightCount < 4 ? _lightCount : 4)])
 				logger.info3!`light %u: pos %g, %g, %g, range %g, color %g, %g, %g`(i + 1, light.pos.x, light.pos.y, light.pos.z, light.range, light.color.x, light
 						.color.y, light.color.z);
 		}
@@ -422,10 +424,12 @@ final class Program : RCounted
 			bgfx_set_texture(1, _shadowMap, tex.handle, tex.samplerFlags);
 		}
 
+		if (_lightData.length)
+			setLightUniforms;
+
 		if (auto tex = _texs[ShaderTexture.lights_indices])
 		{
 			bgfx_set_uniform(_lightingModel, model.ptr, 1);
-			setLightUniforms(tex.size);
 			bgfx_set_texture(2, _lightsIndices, tex.handle, tex.samplerFlags);
 		}
 
@@ -469,7 +473,7 @@ final class Program : RCounted
 
 	private void setLightUniforms(Vector2s size = Vector2s(0))
 	{
-		auto info = Vector4(_lightData.length / 2, size.x, size.y, 0);
+		auto info = Vector4(_lightCount, size.x, size.y, 0);
 		bgfx_set_uniform(_lights, _lightData.ptr, cast(ushort)_lightData.length);
 		bgfx_set_uniform(_lightsInfo, info.ptr, 1);
 	}
@@ -479,5 +483,6 @@ private:
 	bgfx_uniform_handle_t _mainTexture, _color, _shadowMatrix, _shadowModel, _shadowMap, _lightsDepth, _projViewInversed, _lights, _lightsInfo, _lightsIndices, _lightingModel;
 	Texture[ShaderTexture.max] _texs;
 	Vector4[] _lightData;
+	uint _lightCount;
 	bool _depthOnly, _compute;
 }

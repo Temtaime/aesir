@@ -23,7 +23,6 @@ void calcLights(inout vec3 c, vec3 nn, vec3 P, ivec2 coord)
 	vec3 res = LIGHT_AMBIENT + LIGHT_DIFFUSE * max(dot(nn, LIGHT_DIR), 0.0);
 
 	uint value = texelFetch(s_lightsIndices, coord, 0).x;
-
 	for(int i = 0; i < 4; i++)
 	{
 		uint k = value & 0xFFu;

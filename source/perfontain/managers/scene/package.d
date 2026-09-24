@@ -182,7 +182,7 @@ package(perfontain):
 	void computeLights(Texture tex, Program compute)
 	{
 		auto projViewInversed = _vp.inversed;
-		compute.dispatch(5, _rd.lightsDepthTexture, tex, projViewInversed);
+		compute.dispatch(2, _rd.lightsDepthTexture, tex, projViewInversed);
 	}
 
 	void clear(Vector2s size, uint flags)

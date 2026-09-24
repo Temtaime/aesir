@@ -59,7 +59,7 @@ SAMPLER2D(s_shadowMap, 1);
 #endif
 #ifdef LIGHTS_FULL
 USAMPLER2D(s_lightsIndices, 2);
-uniform vec4 u_lights[256];
+uniform vec4 u_lights[254];
 uniform vec4 u_lightsInfo;
 #include "lighting.sc"
 #endif

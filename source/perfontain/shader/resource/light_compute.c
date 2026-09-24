@@ -7,16 +7,19 @@ SAMPLER2D(s_lightsDepth, 0);
 UIMAGE2D_WO(u_lightsIndices, r32ui, 1);
 
 uniform mat4 u_projViewInversed;
-uniform vec4 u_lights[256];
+uniform vec4 u_lights[254];
 uniform vec4 u_lightsInfo;
 
 vec3 pixelPos(vec2 uv, float depth)
 {
 #if BGFX_SHADER_LANGUAGE_GLSL
 	vec3 ndc = vec3(uv, depth) * 2.0 - 1.0;
+#elif BGFX_SHADER_LANGUAGE_SPIRV
+	vec3 ndc = vec3(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, depth);
 #else
 	vec3 ndc = vec3(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, depth);
 #endif
+
 	vec4 p = mul(u_projViewInversed, vec4(ndc, 1.0));
 	return p.xyz / p.w;
 }

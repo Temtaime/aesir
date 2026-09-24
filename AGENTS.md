@@ -15,6 +15,8 @@
 
 These rules incorporate `.github/copilot-instructions.md` and apply to all source changes.
 
+- Do not rebuild the project when changes are limited to shader resources in `source/perfontain/shader/resource/*.c`; shaders compile at runtime.
+
 1. Prefix private struct/class fields with `_`.
 2. Prefer compact error checks such as `foo() || throwError!`foo failed`();` and `auto code = foo(); code && throwError!`foo failed, error is %d`(code);`. Include relevant context when useful; otherwise keep messages short.
 3. Use `logger` methods rather than `writeln`; choose `info`, `info2`, `info3`, `dbg`, `warn`, `error`, or `fatal` appropriately.
