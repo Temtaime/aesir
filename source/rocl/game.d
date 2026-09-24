@@ -120,7 +120,7 @@ private:
 	bool initialize(uint fov, string backend)
 	{
 		auto t = TimeMeter(`main window creation`);
-		PE.create(`Æsir`, backend ? backend : `vulkan`);
+		PE.create(`Æsir`, backend);
 
 		void onResize(Vector2s sz)
 		{

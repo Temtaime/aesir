@@ -104,7 +104,7 @@ final class Engine
 
 		window = new WindowManager;
 		window.create(makeTitle, _backend);
-		bgfx = new BgfxManager(window.nativeHandle, window.size);
+		bgfx = new BgfxManager(window.nativeHandle, window.size, _backend);
 		onResize.permanent(&bgfx.resize);
 
 		/* Legacy OpenGL capability queries retained until the bgfx migration is complete.

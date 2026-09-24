@@ -5,11 +5,11 @@ import bgfx_c, perfontain.math.matrix, perfontain.render.types, utile.except, ut
 
 final class BgfxManager
 {
-	this(void* window, Vector2s size)
+	this(void* window, Vector2s size, string backend)
 	{
 		bgfx_init_t init;
 		bgfx_init_ctor(&init);
-		init.type = BGFX_RENDERER_TYPE_COUNT;
+		init.type = rendererType(backend);
 		init.swapChain.nwh = window;
 		init.swapChain.width = size.x;
 		init.swapChain.height = size.y;
@@ -17,7 +17,7 @@ final class BgfxManager
 
 		with (_layouts[RENDER_GUI])
 		{
-			bgfx_vertex_layout_begin(&_layouts[RENDER_GUI], BGFX_RENDERER_TYPE_COUNT);
+			bgfx_vertex_layout_begin(&_layouts[RENDER_GUI], init.type);
 			bgfx_vertex_layout_add(&_layouts[RENDER_GUI], BGFX_ATTRIB_POSITION, 4, BGFX_ATTRIB_TYPE_FLOAT, false, false);
 			bgfx_vertex_layout_add(&_layouts[RENDER_GUI], BGFX_ATTRIB_COLOR0, 4, BGFX_ATTRIB_TYPE_FLOAT, false, false);
 			bgfx_vertex_layout_end(&_layouts[RENDER_GUI]);
@@ -25,7 +25,7 @@ final class BgfxManager
 
 		with (_layouts[RENDER_SCENE])
 		{
-			bgfx_vertex_layout_begin(&_layouts[RENDER_SCENE], BGFX_RENDERER_TYPE_COUNT);
+			bgfx_vertex_layout_begin(&_layouts[RENDER_SCENE], init.type);
 			bgfx_vertex_layout_add(&_layouts[RENDER_SCENE], BGFX_ATTRIB_POSITION, 3, BGFX_ATTRIB_TYPE_FLOAT, false, false);
 			bgfx_vertex_layout_add(&_layouts[RENDER_SCENE], BGFX_ATTRIB_NORMAL, 3, BGFX_ATTRIB_TYPE_FLOAT, false, false);
 			bgfx_vertex_layout_add(&_layouts[RENDER_SCENE], BGFX_ATTRIB_TEXCOORD0, 2, BGFX_ATTRIB_TYPE_FLOAT, false, false);
@@ -70,8 +70,6 @@ final class BgfxManager
 	{
 		_swapChain.width = size.x;
 		_swapChain.height = size.y;
-
-		auto e = BGFX_RENDERER_TYPE_DIRECT3D12;
 
 		bgfx_reset(BGFX_RESET_NONE, &_swapChain);
 		bgfx_set_view_rect(3, 0, 0, size.x, size.y, 0, 1);
@@ -120,6 +118,26 @@ final class BgfxManager
 	uint frameNumber() const => _frameNumber;
 
 private:
+	bgfx_renderer_type_t rendererType(string backend)
+	{
+		switch (backend)
+		{
+		case `gl`:
+			return BGFX_RENDERER_TYPE_OPENGL;
+		case `d12`:
+			return BGFX_RENDERER_TYPE_DIRECT3D12;
+		case `vulkan`:
+			return BGFX_RENDERER_TYPE_VULKAN;
+		default:
+			version (Windows)
+				return BGFX_RENDERER_TYPE_DIRECT3D11;
+			else version (linux)
+				return BGFX_RENDERER_TYPE_OPENGL;
+			else
+				static assert(false, `default bgfx renderer is not defined for this platform`);
+		}
+	}
+
 	bgfx_swap_chain_t _swapChain;
 	bgfx_vertex_layout_t[2] _layouts;
 	bool _initialized;
