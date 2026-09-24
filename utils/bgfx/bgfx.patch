@@ -1,4 +1,4 @@
-diff -rub a/bgfx/tools/shaderc/shaderc.cpp b/bgfx/tools/shaderc/shaderc.cpp
+diff -ru a/bgfx/tools/shaderc/shaderc.cpp b/bgfx/tools/shaderc/shaderc.cpp
 --- a/bgfx/tools/shaderc/shaderc.cpp	2026-09-19 23:59:40.000000000 +0200
 +++ b/bgfx/tools/shaderc/shaderc.cpp	2026-09-23 20:55:02.564362000 +0200
 @@ -241,7 +241,7 @@
@@ -37,7 +37,7 @@ diff -rub a/bgfx/tools/shaderc/shaderc.cpp b/bgfx/tools/shaderc/shaderc.cpp
  {
  	return bgfx::compileShader(_argc, _argv);
  }
-diff -rub a/bgfx/tools/shaderc/shaderc.h b/bgfx/tools/shaderc/shaderc.h
+diff -ru a/bgfx/tools/shaderc/shaderc.h b/bgfx/tools/shaderc/shaderc.h
 --- a/bgfx/tools/shaderc/shaderc.h	2026-09-19 23:59:40.000000000 +0200
 +++ b/bgfx/tools/shaderc/shaderc.h	2026-09-23 20:55:02.565409000 +0200
 @@ -99,8 +99,8 @@
@@ -51,7 +51,34 @@ diff -rub a/bgfx/tools/shaderc/shaderc.h b/bgfx/tools/shaderc/shaderc.h
  
  	/// Converts a SPIR-V `spv::Dim` (plus the arrayed flag) into the texture
  	/// dimension id stored in `Uniform::texDimension`.
-diff -rub a/bx/src/debug.cpp b/bx/src/debug.cpp
+diff -ru a/bgfx/tools/shaderc/shaderc_spirv.cpp b/bgfx/tools/shaderc/shaderc_spirv.cpp
+--- a/bgfx/tools/shaderc/shaderc_spirv.cpp	2026-09-19 23:59:40.000000000 +0200
++++ b/bgfx/tools/shaderc/shaderc_spirv.cpp	2026-09-24 01:54:49.628980700 +0200
+@@ -32,13 +32,17 @@
+ namespace bgfx
+ {
+ 	static bx::DefaultAllocator s_allocator;
+-	bx::AllocatorI* g_allocator = &s_allocator;
+-
+-	struct TinyStlAllocator
++	
++	namespace 
+ 	{
+-		static void* static_allocate(size_t _bytes);
+-		static void static_deallocate(void* _ptr, size_t /*_bytes*/);
+-	};
++		bx::AllocatorI* g_allocator = &s_allocator;
++
++		struct TinyStlAllocator
++		{
++			static void* static_allocate(size_t _bytes);
++			static void static_deallocate(void* _ptr, size_t /*_bytes*/);
++		};
++	}
+ 
+ 	void* TinyStlAllocator::static_allocate(size_t _bytes)
+ 	{
+diff -ru a/bx/src/debug.cpp b/bx/src/debug.cpp
 --- a/bx/src/debug.cpp	2026-09-19 08:50:32.000000000 +0200
 +++ b/bx/src/debug.cpp	2026-09-23 20:55:13.075416300 +0200
 @@ -84,7 +84,7 @@
@@ -59,7 +86,7 @@ diff -rub a/bx/src/debug.cpp b/bx/src/debug.cpp
  	|| BX_PLATFORM_WINRT   \
  	|| BX_PLATFORM_XBOXONE
 -extern "C" __declspec(dllimport) bool  __stdcall IsDebuggerPresent();
-+extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
++extern "C" __declspec(dllimport) int   __stdcall IsDebuggerPresent();
  extern "C" __declspec(dllimport) void  __stdcall OutputDebugStringA(const char* _str);
  extern "C" __declspec(dllimport) void* __stdcall GetStdHandle(unsigned long _stdHandle);
  extern "C" __declspec(dllimport) int   __stdcall WriteFile(void* _file, const void* _buffer, unsigned long _sizeInBytes, unsigned long* _outNumberOfBytesWritten, struct _OVERLAPPED* _overlapped);

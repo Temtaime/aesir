@@ -12,7 +12,11 @@ uniform vec4 u_lightsInfo;
 
 vec3 pixelPos(vec2 uv, float depth)
 {
+#if BGFX_SHADER_LANGUAGE_GLSL
+	vec3 ndc = vec3(uv, depth) * 2.0 - 1.0;
+#else
 	vec3 ndc = vec3(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, depth);
+#endif
 	vec4 p = mul(u_projViewInversed, vec4(ndc, 1.0));
 	return p.xyz / p.w;
 }
@@ -28,10 +32,9 @@ void main()
 
 	vec2 uv = vec2(coord) / vec2(size);
 	float depth = texture2DLod(s_lightsDepth, uv, 0.0).x;
-	const uint end = 1u << 24;
 	uint pixel = 0u;
 
-	if (depth < 1.0)
+	if (depth < 0.9999)
 	{
 		vec3 pos = pixelPos(uv, depth);
 
@@ -42,8 +45,6 @@ void main()
 			if (distance(light.xyz, pos) < light.w)
 			{
 				pixel = (pixel << 8) | uint(i + 1);
-				if (pixel >= end)
-					break;
 			}
 		}
 	}
