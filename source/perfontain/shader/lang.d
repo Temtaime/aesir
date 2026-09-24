@@ -39,9 +39,6 @@ struct ProgramCreator
 	auto create()
 	{
 		RCArray!Shader res;
-		mkdirRecurse(`bgfx/shaders`);
-		write(`bgfx/shaders/lighting.sc`, shaderInclude(`lighting`));
-		bool writeSource = true;
 
 		foreach (type, info; shaderInfo)
 		{
@@ -55,10 +52,9 @@ struct ProgramCreator
 			data = replace(data ~ source ~ '\n', "\n", "\r\n");
 			auto name = format(`shader/%s.glsl`, _ps);
 
-			debug if (writeSource) PEfs.put(name, data);
+			debug PEfs.put(name, data);
 
-			res ~= new Shader(name, data, cast(ubyte)type, writeSource);
-			writeSource = false;
+			res ~= new Shader(name, data, cast(ubyte)type);
 		}
 
 		auto shaders = res[];

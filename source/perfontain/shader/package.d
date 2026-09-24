@@ -18,25 +18,33 @@ else
 
 final class Shader : RCounted
 {
-	this(string name, string data, ubyte type, bool writeSource)
+	this(string name, string data, ubyte type)
 	{
 		_name = name;
 		_type = type;
 
-		mkdirRecurse(`bgfx/shaders`);
-
 		auto sourceStem = stripExtension(baseName(name));
 		auto binaryStem = format!`%s_%s`(sourceStem, shaderInfo[type].name);
-		auto source = `bgfx/shaders/` ~ sourceStem ~ `.sc`;
-		auto binary = `bgfx/shaders/` ~ binaryStem ~ `.bin`;
-		auto varying = baseName(name).startsWith(`gui`) ? `bgfx/varying_gui.def.sc` : `bgfx/varying.def.sc`;
+		auto workspace = buildPath(tempDir, format!`__perfontain_shader_%s`(binaryStem));
+		if (exists(workspace))
+			rmdirRecurse(workspace);
+		mkdirRecurse(workspace);
+		scope (exit) rmdirRecurse(workspace);
 
-		if (writeSource)
-			std.file.write(source, data);
+		auto source = buildPath(workspace, sourceStem ~ `.sc`);
+		auto binary = buildPath(workspace, binaryStem ~ `.bin`);
+		auto varyingName = baseName(name).startsWith(`gui`) ? `varying_gui.def.sc` : `varying.def.sc`;
+		auto varying = buildPath(workspace, varyingName);
+
+		std.file.write(source, data);
+		std.file.write(buildPath(workspace, `bgfx_shader.sh`), shaderInclude(`bgfx_shader`));
+		std.file.write(buildPath(workspace, `bgfx_compute.sh`), shaderInclude(`bgfx_compute`));
+		std.file.write(buildPath(workspace, `lighting.sc`), shaderInclude(`lighting`));
+		std.file.write(varying, shaderInclude(varyingName == `varying_gui.def.sc` ? `varying_gui` : `varying`));
 
 		auto args = [
 			`shaderc`, `-f`, source, `-o`, binary,
-			`-i`, `bgfx`,
+			`-i`, workspace,
 			`--type`, shaderInfo[type].name,
 			`--platform`, `windows`,
 			`--profile`, PE.bgfx.shaderProfile,

@@ -14,8 +14,6 @@ vec3 pixelPos(vec2 uv, float depth)
 {
 #if BGFX_SHADER_LANGUAGE_GLSL
 	vec3 ndc = vec3(uv, depth) * 2.0 - 1.0;
-#elif BGFX_SHADER_LANGUAGE_SPIRV
-	vec3 ndc = vec3(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, depth);
 #else
 	vec3 ndc = vec3(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0, depth);
 #endif

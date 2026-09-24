@@ -12,7 +12,7 @@
 		},
 		"release-nobounds": {
 			"preBuildCommands": [
-				"python3 utils/pack.py"
+				"python3 utils/pack.py || rem"
 			],
 			"lflags": [
 				"/LIBPATH:utils/deps/release"

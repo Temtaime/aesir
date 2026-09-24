@@ -26,13 +26,24 @@ string shaderSource(ProgramSource ps, string type)
 
 string shaderInclude(string name)
 {
-	assert(name == `lighting`);
-	return resource(`lighting`, import(`lighting.c`));
+	final switch (name)
+	{
+	case `bgfx_shader`:
+		return resource(`bgfx_shader`, import(`bgfx_shader.sh`), `sh`);
+	case `bgfx_compute`:
+		return resource(`bgfx_compute`, import(`bgfx_compute.sh`), `sh`);
+	case `lighting`:
+		return resource(`lighting`, import(`lighting.c`));
+	case `varying`:
+		return resource(`varying`, import(`varying.def.sc`), `def.sc`);
+	case `varying_gui`:
+		return resource(`varying_gui`, import(`varying_gui.def.sc`), `def.sc`);
+	}
 }
 
-private string resource(string name, string data)
+private string resource(string name, string data, string extension = `c`)
 {
-	debug return PEfs.get(`../source/perfontain/shader/resource/` ~ name ~ `.c`).assumeUTF;
+	debug return PEfs.get(`../source/perfontain/shader/resource/` ~ name ~ `.` ~ extension).assumeUTF;
 	else return data;
 }
 
